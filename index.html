@@ -569,6 +569,19 @@ button.lrow{cursor:pointer}button.lrow:hover{background:var(--canvas)}
 details.look[open] #lookCtl{max-height:none;overflow:visible}
 .sgrid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
 .fixbar{position:sticky;top:calc(var(--doch,104px) + 8px)}
+
+/* 슬라이드 미리보기: 왼쪽 설정, 오른쪽 화면 */
+.shotbody{display:grid;grid-template-columns:380px minmax(0,1fr);align-items:start}
+.shotbody .shots-top{position:sticky;top:calc(var(--doch,104px) + 12px);padding:4px 0 22px 24px;z-index:3}
+.shotbody details.look summary{pointer-events:none}
+.shotbody details.look summary::before{display:none}
+.shotbody .lkfold{display:none}
+.shotbody .lkgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+.shotbody .num input{width:48px}
+.shotbody .lktabs{flex-wrap:wrap}
+.shotbody .shots{padding:4px 24px 22px 20px}
+.shotbody .sgrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+@media (max-width:1100px){.shotbody{grid-template-columns:minmax(0,1fr)}.shotbody .shots-top{position:static;padding:4px 24px 14px}.shotbody .shots{padding:4px 24px 22px}}
 </style>
 </head>
 <body>
@@ -672,10 +685,12 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
     <section class="panel shots-panel" id="slidePanel">
       <div class="ph2"><span class="pico c4" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span><h2>슬라이드 미리보기</h2><span class="meta" id="shotCount"></span>
         <div class="acts"><button class="btn" id="dlShots">이미지 내려받기</button><button class="btn pri" id="dlPptx">PowerPoint로 내보내기</button></div></div>
+      <div class="shotbody">
       <div class="shots-top">
         <details class="look" open><summary>슬라이드 설정</summary><div id="lookCtl"></div><button type="button" class="lkfold" id="lkFold" aria-label="슬라이드 설정 접기" title="접기"><span></span></button></details>
       </div>
       <div class="shots" id="shots"></div>
+      </div>
     </section>
     </div>
   </section>
