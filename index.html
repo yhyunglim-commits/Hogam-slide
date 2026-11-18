@@ -613,9 +613,8 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
 .doc .r1 .onbar+.steps{margin-left:12px}
 .oav{position:relative;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;border:2px solid #fff;margin-left:-8px;box-shadow:0 1px 3px rgba(0,0,0,.15);cursor:default;outline:none}
 .oav:first-child{margin-left:0}
-.oav.same::after{content:'';position:absolute;right:-2px;bottom:-2px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #fff}
 .oav.more{background:#e5e9ee;color:var(--text2);font-size:12px}
-.oav:hover,.oav:focus-visible{z-index:5;transform:translateY(-2px)}
+.oav:hover,.oav:focus-visible{z-index:20!important;transform:translateY(-2px)}
 .oav[data-tip]:hover::before,.oav[data-tip]:focus-visible::before{content:attr(data-tip);position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1f2933;color:#fff;font-size:12px;font-weight:500;white-space:nowrap;padding:5px 9px;border-radius:7px;z-index:30;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 
 /* ===== 아이콘 버튼: 모든 칸 오른쪽 위, 같은 순서(특수 → 복사 → 비우기 → 접기) ===== */
@@ -2621,7 +2620,7 @@ function renderOnline(){
   const MAX=6,shown=list.slice(0,MAX),rest=list.slice(MAX);
   const tip=o=>{const same=o.sess.includes(curSess),nm=SESS.find(x=>x.id===o.sess[0])?.name;
     return o.name+(o.name===me?.name?' (나)':'')+' · '+(same?'이 예배 자막을 보는 중':nm?`‘${nm}’ 보는 중`:'접속 중');};
-  bar.innerHTML=shown.map(o=>`<span class="oav${o.sess.includes(curSess)?' same':''}" tabindex="0" style="background:${avColor(o.name)}" data-tip="${esc(tip(o))}" aria-label="${esc(tip(o))}">${esc(o.name.slice(0,1))}</span>`).join('')
+  bar.innerHTML=shown.map((o,i)=>`<span class="oav${o.sess.includes(curSess)?' same':''}" tabindex="0" style="background:${avColor(o.name)};z-index:${10-i}" data-tip="${esc(tip(o))}" aria-label="${esc(tip(o))}">${esc(o.name.slice(0,1))}</span>`).join('')
     +(rest.length?`<span class="oav more" tabindex="0" data-tip="${esc(rest.map(o=>o.name).join(', '))}" aria-label="${esc(rest.map(o=>o.name).join(', '))}">+${rest.length}</span>`:'');
 }
 let chan=null;
