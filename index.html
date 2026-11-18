@@ -773,6 +773,44 @@ body.sorting,body.sorting *{user-select:none!important;cursor:grabbing!important
 /* 접속 중 점: 5칸, 테두리 없이 */
 .oav::after{width:5px;height:5px;border:0;top:1px;right:1px}
 
+/* ===== 자막 양식 창 ===== */
+.fmtbox{position:fixed;inset:0;z-index:62;background:rgba(3,26,23,.45);display:none;align-items:flex-start;justify-content:center;padding:4vh 16px}
+.fmtbox.on{display:flex}
+.fmtcard{width:min(980px,100%);max-height:92vh;background:var(--surface);border-radius:22px;box-shadow:0 20px 50px -16px rgba(3,26,23,.4);display:flex;flex-direction:column;overflow:hidden}
+.fmthead{display:flex;align-items:center;gap:14px;padding:18px 18px 12px 24px;flex-wrap:wrap}
+.fmthead h2{margin:0;font-size:18px;font-weight:800}
+.fmthead .seg2{background:var(--canvas)}
+.fmthead .ibtn{margin-left:auto}
+.fmthead .ibtn svg{width:18px;height:18px}
+.fmtbody{overflow:auto;padding:0 24px 24px}
+.fmtbox .view{display:none}.fmtbox .view.on{display:block}
+.fmtbox .lead{margin:0 0 14px;color:var(--text2);font-size:13.5px;line-height:1.6}
+.fmtbox .panel{box-shadow:none;border:1px solid var(--line);padding:16px 18px;margin-bottom:14px}
+.fmtbox .panel h2{margin:0 0 4px;font-size:15px;font-weight:700}
+.fmtbox .fgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px;align-items:start}
+.fmtbox .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px}
+.fmtbox .two select,.fmtbox .two input,.fmtbox input[type=text],.fmtbox textarea{width:100%;box-sizing:border-box}
+.fmtbox .seg{display:flex;flex-wrap:wrap;gap:6px}
+.fmtbox .seg label{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px solid var(--line2);border-radius:16px;font-size:13px;cursor:pointer}
+.fmtbox .seg label:has(input:checked){border-color:var(--pri);background:var(--pri-soft);color:var(--pri-ink);font-weight:600}
+.fmtbox .seg input{accent-color:var(--pri);margin:0}
+.fmtbox .mine{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.fmtbox .mine li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;background:var(--canvas)}
+.fmtbox .mine li.empty{display:block;background:none;padding:12px 0}
+.fmtbox .mine .hint{margin:0}
+.fmtbox .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:18px}
+.fmtbox .fcard{display:flex;flex-direction:column;gap:6px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.fmtbox .fcard.cur{border-color:var(--pri);box-shadow:0 0 0 2px var(--pri-soft)}
+.fmtbox .fcard h3{margin:0;font-size:14.5px;font-weight:700}
+.fmtbox .fcard .for{font-size:12px;color:var(--pri-ink);font-weight:600}
+.fmtbox .fcard p{margin:0;font-size:12.5px;color:var(--text2);line-height:1.55;flex:1}
+.fmtbox .fcard .btn{align-self:flex-start}
+.fmtbox .prev.sm{font-size:12px;line-height:1.6;max-height:150px;overflow:auto;padding:10px 12px}
+.fmtbox .sec-title{font-size:14px;font-weight:700;margin:18px 0 8px}
+.fmtbox .ai-out:empty{display:none}
+.fmtbox .ai-out{margin-top:12px}
+@media (max-width:760px){.fmtbox .fgrid,.fmtbox .two{grid-template-columns:minmax(0,1fr)}}
+
 /* 위쪽 색 바탕: 아래로 갈수록 옅어져 경계 없이 이어지게 */
 header.doc{background:transparent!important;border-bottom:0!important;box-shadow:none!important;isolation:isolate}
 header.doc::before{content:'';position:absolute;left:0;right:0;top:0;bottom:-36px;z-index:-1;pointer-events:none;
@@ -861,7 +899,7 @@ header.doc::before{content:'';position:absolute;left:0;right:0;top:0;bottom:-36p
         <div class="acts tools"><button class="tbtn" id="checkBtn" data-tip="맞춤법 검사" aria-label="맞춤법 검사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l4-11 4 11M5.5 12h5"/><path d="M13 17l3 3 5-6"/></svg></button><button class="tbtn" id="copyAll" data-tip="복사" aria-label="복사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button><button class="tbtn" id="songClear" data-tip="비우기" aria-label="비우기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button><button class="tbtn" id="foldRes" data-tip="접기" aria-label="접기" data-fold="resPanel" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></button></div></div>
       <div id="resBody" class="foldbody">
       <div class="rbar">
-        <label for="outFmt">양식</label><select id="outFmt"></select>
+        <label for="outFmt">양식</label><select id="outFmt"></select><button type="button" class="btn sm ghost" id="openFmt">양식 설정</button>
         <span class="div"></span>
         <label for="outLines">한 화면</label><select id="outLines"><option value="1">1줄</option><option value="2">2줄</option><option value="3">3줄</option><option value="4">4줄</option></select>
         <label for="outMax">한 줄</label><input type="number" id="outMax" min="6" max="30"><label for="outMax">자</label>
@@ -906,11 +944,14 @@ header.doc::before{content:'';position:absolute;left:0;right:0;top:0;bottom:-36p
     </div>
   </section>
 
-  <div class="legacy" aria-hidden="true">
-  <span id="curFmtName"></span><span id="curFmtDesc"></span>
-  <section class="view" id="v-formats">
-    <div class="ph"><h1>자막 양식 정하기</h1>
-      <p>교회에서 쓰는 프로그램에 맞게 한 화면의 모양을 정하세요. 오른쪽 미리보기가 바로 바뀌어요.</p></div>
+  <div class="fmtbox" id="fmtbox" role="dialog" aria-modal="true" aria-labelledby="fmtTitle"><div class="fmtcard">
+  <div class="fmthead"><h2 id="fmtTitle">자막 양식</h2>
+    <div class="seg2" role="tablist"><button type="button" role="tab" data-ft="formats" aria-selected="true">양식 다듬기</button><button type="button" role="tab" data-ft="recommend" aria-selected="false">추천받기</button></div>
+    <button class="btn ghost ibtn" id="fmtClose" aria-label="닫기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="fmtbody">
+  <span class="hidden" id="curFmtName"></span><span class="hidden" id="curFmtDesc"></span>
+  <section class="view on" id="v-formats">
+    <p class="lead">자막을 띄우는 프로그램에 맞게 한 화면의 모양을 정해요. 바꾸면 찬양 자막과 오른쪽 미리보기가 바로 바뀌고, 팀 모두에게 같이 적용돼요.</p>
     <div class="fgrid">
       <div class="panel">
         <label class="fl" for="fName">양식 이름</label>
@@ -960,8 +1001,7 @@ header.doc::before{content:'';position:absolute;left:0;right:0;top:0;bottom:-36p
 
   <!-- ================= 양식 추천 ================= -->
   <section class="view" id="v-recommend">
-    <div class="ph"><h1>우리 교회에 맞는 양식 찾기</h1>
-      <p>자주 쓰는 양식을 골라 쓰거나, 예배 환경을 알려 주고 추천을 받아 보세요.</p></div>
+    <p class="lead">자주 쓰는 양식을 골라 쓰거나, 예배 환경을 알려 주고 AI에게 추천을 받아 보세요.</p>
 
     <div class="cards" id="presetCards"></div>
 
@@ -997,7 +1037,7 @@ header.doc::before{content:'';position:absolute;left:0;right:0;top:0;bottom:-36p
 
 </div>
   </section>
-  </div>
+  </div></div></div>
   </main>
 </div>
 <div id="lightbox" role="dialog" aria-label="악보 크게 보기"><img alt=""><div class="lbbar"><button id="lbPrev">이전 쪽</button><span id="lbNum"></span><button id="lbNext">다음 쪽</button><button id="lbClose">닫기</button></div></div>
@@ -2249,8 +2289,8 @@ function renderOutFmt(){
   let cur=opts.find(o=>same(o.f)&&o.f.name===FMT.name)||opts.find(o=>same(o.f));
   sel.innerHTML=(cur?'':`<option value="cur" selected>${esc(FMT.name)} (지금)</option>`)+
     `<optgroup label="추천 양식">${opts.filter(o=>o.v[0]==='p').map(o=>`<option value="${o.v}"${cur===o?' selected':''}>${esc(o.f.name)}</option>`).join('')}</optgroup>`+
-    (mine.length?`<optgroup label="저장한 양식">${opts.filter(o=>o.v[0]==='m').map(o=>`<option value="${o.v}"${cur===o?' selected':''}>${esc(o.f.name)}</option>`).join('')}</optgroup>`:'')+
-    '';
+    (mine.length?`<optgroup label="팀 양식">${opts.filter(o=>o.v[0]==='m').map(o=>`<option value="${o.v}"${cur===o?' selected':''}>${esc(o.f.name)}</option>`).join('')}</optgroup>`:'')+
+    '<option value="edit">양식 설정 열기…</option>';
   sel._opts=opts;$('outLines').value=FMT.lines;$('outMax').value=FMT.maxChars;
 }
 function fillForm(){renderOutFmt();
@@ -2267,7 +2307,7 @@ function readForm(){
   return normFmt(o);
 }
 $('outFmt').addEventListener('change',e=>{
-  const v=e.target.value;if(v==='edit'){renderOutFmt();location.hash='formats';return;}
+  const v=e.target.value;if(v==='edit'){renderOutFmt();openFmt('formats');return;}
   const o=(e.target._opts||[]).find(x=>x.v===v);if(o)useFormat(o.f,`‘${o.f.name}’ 양식으로 바꿨어요`);
 });
 $('outLines').addEventListener('change',e=>useFormat({...FMT,lines:+e.target.value}));
@@ -2283,6 +2323,15 @@ document.querySelectorAll('#v-formats input,#v-formats select,#v-formats textare
   clearTimeout(window._fr);window._fr=setTimeout(()=>{if(results.length)setOutput(allText(results,FMT));renderPresets();},500);
 }));
 function renderFmtPreview(){$('fmtPreview').textContent=allText(SAMPLE,FMT);}
+// 자막 양식 창: 양식 다듬기 / 추천받기
+function fmtTab(t){document.querySelectorAll('[data-ft]').forEach(b=>b.setAttribute('aria-selected',b.dataset.ft===t));
+  $('v-formats').classList.toggle('on',t==='formats');$('v-recommend').classList.toggle('on',t==='recommend');}
+function openFmt(t='formats'){fillForm();renderFmtPreview();renderPresets();renderMine();fmtTab(t);$('fmtbox').classList.add('on');$('fmtClose').focus();}
+function closeFmt(){$('fmtbox').classList.remove('on');renderOutFmt();}
+document.querySelectorAll('[data-ft]').forEach(b=>b.onclick=()=>fmtTab(b.dataset.ft));
+$('openFmt').onclick=()=>openFmt('formats');$('fmtClose').onclick=closeFmt;
+$('fmtbox').addEventListener('click',e=>{if(e.target.id==='fmtbox')closeFmt();});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&$('fmtbox').classList.contains('on'))closeFmt();});
 
 // 팀 양식: 팀이 저장해 둔 자막 양식 목록 (팀 서버의 mine 설정에 함께 저장돼요)
 let mine=store.get('mine',[]).filter(m=>m&&m.f);
@@ -2319,7 +2368,7 @@ function showAIFormat(box,f,reason){
   box.querySelector('h3').textContent=f.name;box.querySelector('.r').textContent=reason||fmtDesc(f);
   box.querySelector('pre').textContent=allText(SAMPLE,f);
   box.querySelector('[data-u]').onclick=()=>useFormat(f,`‘${f.name}’ 양식으로 바꿨어요`);
-  box.querySelector('[data-e]').onclick=()=>{useFormat(f);location.hash='formats';};
+  box.querySelector('[data-e]').onclick=()=>{useFormat(f);openFmt('formats');};
 }
 $('recBtn').onclick=async()=>{
   const st=$('recStatus');st.className='status';
