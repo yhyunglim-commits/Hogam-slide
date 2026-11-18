@@ -102,6 +102,26 @@ end $$;
 drop trigger if exists team_settings_stamp on public.team_settings;
 create trigger team_settings_stamp before insert or update on public.team_settings for each row execute function public.stamp_setting();
 
+-- ───────────── 4단계 추가 (2026-11): 곡 보관함 강화 ─────────────
+-- 찬송가 번호, 가사를 확인한 사람·때. 가사가 바뀌면 '확인됨'은 저절로 풀려요.
+alter table public.songs add column if not exists hymn        int;
+alter table public.songs add column if not exists verified_by text;
+alter table public.songs add column if not exists verified_at timestamptz;
+create or replace function public.song_verify_guard() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if tg_op = 'UPDATE' and new.result is distinct from old.result and new.verified_at is not distinct from old.verified_at then
+    new.verified_by := null; new.verified_at := null;           -- 가사가 바뀌었으니 다시 확인해야 해요
+  elsif new.verified_at is not null and (tg_op = 'INSERT' or old.verified_at is null or new.verified_at is distinct from old.verified_at) then
+    new.verified_by := public.my_name(); new.verified_at := now(); -- 확인한 사람은 서버가 직접 적어요
+  elsif new.verified_at is null then
+    new.verified_by := null;
+  else
+    new.verified_by := old.verified_by;                          -- 확인한 사람 이름을 화면에서 바꿀 수 없게
+  end if;
+  return new;
+end $$;
+
 -- 누가 고쳤는지는 서버가 직접 적어요 (화면에서 이름을 꾸며 넣을 수 없게)
 create or replace function public.stamp_editor() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -210,6 +230,8 @@ end $$;
 
 drop trigger if exists songs_stamp on public.songs;
 create trigger songs_stamp before insert or update on public.songs for each row execute function public.stamp_editor();
+drop trigger if exists songs_verify on public.songs;
+create trigger songs_verify before insert or update on public.songs for each row execute function public.song_verify_guard();
 drop trigger if exists songs_log on public.songs;
 create trigger songs_log after insert or update or delete on public.songs for each row execute function public.log_change();
 
