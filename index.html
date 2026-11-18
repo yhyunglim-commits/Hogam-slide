@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>호감슬라이드</title>
 <script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@400;700&family=Do+Hyeon&family=Jua&family=Black+Han+Sans&display=swap" rel="stylesheet">
@@ -204,6 +204,9 @@ label.fl{display:block;font-size:12.5px;color:var(--text2);font-weight:500;margi
 .notes{margin-top:8px;background:var(--warn-soft);border-radius:6px;padding:7px 10px;font-size:12.5px;color:#7a3e06}
 .notes b{font-size:12px}
 .notes ol{margin:2px 0 0;padding-left:18px;line-height:1.6}
+.notes.clash{background:var(--pri-soft);color:var(--pri)}
+.notes.clash p{margin:2px 0 8px}
+.notes.clash .row{display:flex;flex-wrap:wrap;gap:6px}
 
 /* ---------- word ---------- */
 .wgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
@@ -1020,7 +1023,9 @@ header.doc::before{content:'';position:absolute;left:0;right:0;top:0;bottom:-36p
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2200);}
-const store={get(k,d){try{const v=localStorage.getItem('cj_'+k);return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){try{localStorage.setItem('cj_'+k,JSON.stringify(v));}catch(e){}}};
+const store={get(k,d){try{const v=localStorage.getItem('cj_'+k);return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){try{localStorage.setItem('cj_'+k,JSON.stringify(v));return true;}catch(e){return false;}}};
+// 데이터베이스에서 온 썸네일은 그림 주소(data:image/…)일 때만 써요
+const safeImg=u=>typeof u==='string'&&/^data:image\/(png|jpe?g|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(u)?u:null;
 
 /* ======================== 줄바꿈 엔진 ======================== */
 const width=s=>{let w=0;for(const ch of s){if(ch===' ')continue;w+=/[\x00-\x7f]/.test(ch)?(/[A-Za-z0-9]/.test(ch)?.6:.35):1;}return w;};
@@ -1236,7 +1241,7 @@ function renderSongs(){
     let cover;
     if(s.mode==='score')cover=s.pages.length?`<button class="cover" data-lb="0" aria-label="${i+1}번 곡 악보 크게 보기"><img src="${s.pages[0].url}" alt=""><span class="no">${i+1}</span>${s.pages.length>1?`<span class="cnt">${s.pages.length}쪽</span>`:''}</button>`
         :`<label class="cover text"><input type="file" accept="image/*,application/pdf" multiple hidden data-add><span class="no">${i+1}</span>악보<br>추가</label>`;
-    else if(s.mode==='lib')cover=s.thumb?`<div class="cover" style="cursor:default"><img src="${s.thumb}" alt=""><span class="no">${i+1}</span></div>`:`<div class="cover text"><span class="no">${i+1}</span>보관함</div>`;
+    else if(s.mode==='lib')cover=s.thumb?`<div class="cover" style="cursor:default"><img src="${esc(s.thumb)}" alt=""><span class="no">${i+1}</span></div>`:`<div class="cover text"><span class="no">${i+1}</span>보관함</div>`;
     else cover=`<div class="cover text"><span class="no">${i+1}</span>가사</div>`;
     const screens=s.result?s.result.sections.reduce((a,x)=>a+x.slides.length,0):0;
     const sub=[s.mode==='score'?`${s.pages.length}쪽`:s.mode==='lib'?'보관함에서 추가':'붙여 넣은 가사',screens?`${screens}화면`:''].filter(Boolean).join(' · ');
@@ -1247,6 +1252,7 @@ function renderSongs(){
         <label class="addpg"><input type="file" accept="image/*,application/pdf" multiple hidden data-add>+ 다음 쪽</label></div>`
       :s.mode==='text'?`<textarea rows="4" placeholder="가사를 붙여 넣으세요. 줄바꿈은 대충이어도 괜찮아요.">${esc(s.text)}</textarea>`:''}
       ${s.msg?`<div class="msg">${esc(s.msg)}</div>`:''}
+      ${s.libClash&&s.result&&LIB[s.libClash]?`<div class="notes clash"><b>팀 곡 보관함에 ‘${esc(s.libClash)}’ 가사가 이미 있어요</b><p>새로 읽은 가사는 이번 예배에만 쓰고, 보관함은 그대로 뒀어요.</p><span class="row"><button class="btn sm" data-a="useLib">보관함 가사 쓰기</button><button class="btn sm ghost" data-a="overLib">보관함을 새 가사로 바꾸기</button></span></div>`:''}
       ${s.status==='done'&&s.notes&&s.notes.length?`<div class="notes"><b>확인해 주세요</b><ol>${s.notes.map(n=>`<li>${esc(n)}</li>`).join('')}</ol></div>`:''}
       </div>
       <div class="acts">
@@ -1255,16 +1261,20 @@ function renderSongs(){
         <button class="btn sm ghost" data-a="del">빼기</button>
       </div>`;
     li.querySelector('.top input').oninput=e=>{s.title=e.target.value;if(s.result){s.result.title=e.target.value;}};
-    li.querySelector('.top input').onchange=()=>{if(s.result){if(s.status==='done')saveToLib(s);orderChanged();}};
+    li.querySelector('.top input').onchange=()=>{if(s.result){if(s.status==='done')saveToLib(s,{auto:true});orderChanged();}};
     li.querySelector('textarea')?.addEventListener('input',e=>{s.text=e.target.value;updateConvertBtn();});
     li.querySelectorAll('[data-lb]').forEach(b=>b.onclick=e=>{if(e.target.closest('[data-rm]'))return;openLB(s,+b.dataset.lb);});
     li.querySelectorAll('[data-rm]').forEach(b=>b.onclick=e=>{e.stopPropagation();const j=+b.dataset.rm;URL.revokeObjectURL(s.pages[j].url);s.pages.splice(j,1);s.status='idle';renderSongs();});
     li.querySelectorAll('[data-add]').forEach(inp=>inp.addEventListener('change',async e=>{for(const f of e.target.files)s.pages.push(...await fileToPages(f));s.status='idle';renderSongs();}));
     li.querySelectorAll('[data-a]').forEach(b=>b.onclick=async()=>{
       const a=b.dataset.a;
+      if(a==='useLib'){const L=LIB[s.libClash];if(L){s.result=JSON.parse(JSON.stringify({...L.result,title:s.result.title}));s.thumb=s.thumb||L.thumb;
+        // 보관함에서 추가한 곡과 똑같이 다뤄서, 양식을 바꿔도 다시 읽지 않게 해요
+        s.pages.forEach(p=>URL.revokeObjectURL(p.url));s.pages=[];s.mode='lib';s.status='done';}s.libClash=null;renderSongs();orderChanged();toast('보관함 가사로 바꿨어요');return;}
+      if(a==='overLib'){if(!confirm(`팀 곡 보관함의 ‘${s.libClash}’ 가사를 방금 읽은 가사로 바꿀까요? 팀 전체에 바로 반영돼요.`))return;await saveToLib(s);renderSongs();toast('보관함 가사를 새 가사로 바꿨어요');return;}
       if(a==='merge'){songs[i-1].pages.push(...s.pages);songs[i-1].status='idle';songs.splice(i,1);renderSongs();orderChanged();return;}
       if(a==='del'){s.pages.forEach(p=>URL.revokeObjectURL(p.url));songs.splice(i,1);renderSongs();orderChanged();return;}
-      if(a==='retry'){if(busy)return;busy=true;updateConvertBtn();await convertOne(s,FMT,$('optExpand').checked);if(s.status==='done')saveToLib(s);busy=false;updateConvertBtn();renderSongs();orderChanged();}
+      if(a==='retry'){if(busy)return;busy=true;updateConvertBtn();await convertOne(s,FMT,$('optExpand').checked);if(s.status==='done')saveToLib(s,{auto:true});busy=false;updateConvertBtn();renderSongs();orderChanged();}
     });
     setupDrag(li,li.querySelector('.grip'),i);
     ol.appendChild(li);
@@ -1455,7 +1465,7 @@ async function readSongs(){
   const f=FMT,expand=$('optExpand').checked;let n=0;
   // 두 곡씩 동시에 읽어요 (무료 사용량 한도 안에서)
   const q=[...todo],show=()=>{st.textContent=`${todo.length}곡 중 ${n}곡 읽음`;};show();
-  const worker=async()=>{while(q.length){const s=q.shift();await convertOne(s,f,expand);n++;show();if(s.status==='done')saveToLib(s);renderSongs();}};
+  const worker=async()=>{while(q.length){const s=q.shift();await convertOne(s,f,expand);n++;show();if(s.status==='done')saveToLib(s,{auto:true});renderSongs();}};
   await Promise.all(Array.from({length:Math.min(2,todo.length)},worker));
   busy=false;updateConvertBtn();
   const failed=songs.filter(s=>s.status==='err').length,ok=songs.filter(s=>s.result).length;
@@ -1830,7 +1840,7 @@ let MEDIA=store.get('media',{song:null,word:null,logo:null});
 const IMG={};
 function mediaImg(k){const src=MEDIA[k];if(!src)return null;if(IMG[k]&&IMG[k].src===src)return IMG[k].complete?IMG[k]:null;
   const im=new Image();im.onload=()=>renderShots();im.src=src;IMG[k]=im;return null;}
-function saveMedia(){try{store.set('media',MEDIA);}catch(e){toast('사진이 너무 커서 저장하지 못했어요. 더 작은 사진을 써 주세요');}}
+function saveMedia(){if(!store.set('media',MEDIA))toast('사진이 커서 이 브라우저에 저장하지 못했어요. 지금은 보이지만 새로고침하면 사라져요. 더 작은 사진을 써 주세요');}
 function readImage(file,max,type){return new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height));
   const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext('2d');if(type==='image/jpeg'){x.fillStyle='#000';x.fillRect(0,0,c.width,c.height);}
   x.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL(type,.86));};im.onerror=()=>rej(new Error('이미지를 열 수 없어요'));im.src=u;});}
@@ -2466,8 +2476,13 @@ function renderHist(){
 let LIB={};
 async function makeThumb(blob){return new Promise(res=>{const img=new Image(),u=URL.createObjectURL(blob);img.onload=()=>{const w=96,h=Math.round(img.height*w/img.width);
   const c=document.createElement('canvas');c.width=w;c.height=Math.min(h,128);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,c.height);x.drawImage(img,0,0,w,h);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.7));};img.onerror=()=>res(null);img.src=u;});}
-async function saveToLib(s){
+// auto: 악보를 읽고 저절로 저장할 때. 보관함에 같은 제목의 다른 가사가 있으면 덮어쓰지 않고 곡 칸에서 물어봐요.
+async function saveToLib(s,{auto=false}={}){
   const t=(s.title||s.result?.title||'').trim();if(!t||!s.result)return;
+  const ex=LIB[t];
+  if(ex&&ex.result&&songKey(ex.result,FMT)===songKey(s.result,FMT)){if(s.libClash){s.libClash=null;renderSongs();}return;}
+  if(auto&&ex){s.libClash=t;renderSongs();return;}
+  s.libClash=null;
   if(!s.thumb&&s.pages&&s.pages[0])s.thumb=await makeThumb(s.pages[0].blob);
   LIB[t]={title:t,result:{...s.result,title:t},thumb:s.thumb||LIB[t]?.thumb||null,saved:Date.now()};
   LIB[t].by=me?.name||'';renderLib();
@@ -2482,7 +2497,7 @@ function renderLib(){
   $('libCount').textContent=Object.keys(LIB).length?Object.keys(LIB).length+'곡':'';
   if(!list.length){ul.innerHTML=`<li class="empty">${Object.keys(LIB).length?'찾는 곡이 없어요':'가사를 읽은 곡이 여기에 모여요'}</li>`;return;}
   list.slice(0,80).forEach(it=>{const li=document.createElement('li');
-    li.innerHTML=`${it.thumb?`<img class="th" src="${it.thumb}" alt="">`:'<span class="th"></span>'}<div class="t"><b></b><span>${it.result.sections.reduce((a,x)=>a+x.slides.length,0)}화면 · ${fmtDate(it.saved)}${it.by?' · '+esc(it.by):''}</span></div><button class="ib" aria-label="보관함에서 지우기" title="보관함에서 지우기">×</button>`;
+    li.innerHTML=`${it.thumb?`<img class="th" src="${esc(it.thumb)}" alt="">`:'<span class="th"></span>'}<div class="t"><b></b><span>${it.result.sections.reduce((a,x)=>a+x.slides.length,0)}화면 · ${fmtDate(it.saved)}${it.by?' · '+esc(it.by):''}</span></div><button class="ib" aria-label="보관함에서 지우기" title="보관함에서 지우기">×</button>`;
     li.querySelector('b').textContent=it.title;li.title='눌러서 이번 예배에 추가';
     li.onclick=e=>{if(e.target.closest('.ib'))return;addFromLib(it.title);closeRail();};
     li.querySelector('.ib').onclick=async()=>{if(!confirm(`‘${it.title}’을 팀 곡 보관함에서 지울까요?`))return;delete LIB[it.title];renderLib();if(sb&&me){const {error}=await sb.from('songs').delete().eq('title',it.title);if(error)netErr(error);}};
@@ -2495,7 +2510,7 @@ function renderLibDrop(){
   const box=$('libDrop'),q=$('libQuick').value,list=libMatches(q).slice(0,8);
   if(!list.length){box.innerHTML=`<div class="empty" style="padding:12px">${Object.keys(LIB).length?'찾는 곡이 보관함에 없어요':'아직 보관함이 비어 있어요. 악보를 한 번 읽으면 여기서 다시 쓸 수 있어요.'}</div>`;box.classList.remove('hidden');return;}
   ldI=Math.min(ldI,list.length-1);
-  box.innerHTML=list.map((it,k)=>`<button data-t="${esc(it.title)}" class="${k===ldI?'on':''}">${it.thumb?`<img src="${it.thumb}" alt="">`:'<span class="ph"></span>'}<span>${esc(it.title)}</span><small>${fmtDate(it.saved)}</small></button>`).join('');
+  box.innerHTML=list.map((it,k)=>`<button data-t="${esc(it.title)}" class="${k===ldI?'on':''}">${it.thumb?`<img src="${esc(it.thumb)}" alt="">`:'<span class="ph"></span>'}<span>${esc(it.title)}</span><small>${fmtDate(it.saved)}</small></button>`).join('');
   box.querySelectorAll('button').forEach(b=>b.onmousedown=e=>{e.preventDefault();addFromLib(b.dataset.t);$('libQuick').value='';box.classList.add('hidden');});
   box.classList.remove('hidden');
 }
@@ -2539,17 +2554,23 @@ function renderSteps(){
 const nameToEmail=n=>'u'+[...new TextEncoder().encode(n)].map(b=>b.toString(16).padStart(2,'0')).join('')+'@hogamslide.app';
 const normName=n=>String(n||'').trim().replace(/\s+/g,' ');
 function netErr(e){console.warn(e);toast('서버에 저장하지 못했어요. 인터넷 연결을 확인해 주세요');}
-const rowToSong=r=>({title:r.title,result:r.result,thumb:r.thumb,saved:Date.parse(r.updated_at),by:r.updated_by_name||''});
+const rowToSong=r=>({title:r.title,result:r.result,thumb:safeImg(r.thumb),saved:Date.parse(r.updated_at),by:r.updated_by_name||''});
 const rowToSess=r=>({id:r.id,name:r.name,text:r.text,results:r.results||[],verseIn:r.verse_in||'',bTitle:r.b_title||'',dirty:!!r.dirty,created:Date.parse(r.created_at),updated:Date.parse(r.updated_at),by:r.updated_by_name||''});
-const pushT={};
+// 고칠 때마다 1.2초 모아서 서버에 보내요. 나가거나 탭을 닫을 때는 기다리지 않고 바로 보내요.
+const pushT={},pushC={};
 function pushSession(c){
   if(!sb||!me||!c)return;if(!(c.text||(c.results&&c.results.length)||c.verseIn))return;
-  clearTimeout(pushT[c.id]);
-  pushT[c.id]=setTimeout(async()=>{c.by=me.name;
-    const {error}=await sb.from('services').upsert({id:c.id,name:c.name,text:c.text,results:c.results||[],verse_in:c.verseIn||'',b_title:c.bTitle||'',dirty:!!c.dirty});
-    if(error)netErr(error);},1200);
+  clearTimeout(pushT[c.id]);pushC[c.id]=c;
+  pushT[c.id]=setTimeout(()=>sendSession(c.id),1200);
 }
-async function removeSession(id){if(!sb||!me)return;clearTimeout(pushT[id]);const {error}=await sb.from('services').delete().eq('id',id);if(error)netErr(error);}
+async function sendSession(id){
+  const c=pushC[id];clearTimeout(pushT[id]);delete pushT[id];delete pushC[id];if(!c||!sb||!me)return;c.by=me.name;
+  const {error}=await sb.from('services').upsert({id:c.id,name:c.name,text:c.text,results:c.results||[],verse_in:c.verseIn||'',b_title:c.bTitle||'',dirty:!!c.dirty});
+  if(error)netErr(error);
+}
+function flushSessions(){if(saveT){clearTimeout(saveT);saveT=null;saveSession();}return Promise.all(Object.keys(pushC).map(sendSession));}
+addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSessions();});
+async function removeSession(id){if(!sb||!me)return;clearTimeout(pushT[id]);delete pushT[id];delete pushC[id];const {error}=await sb.from('services').delete().eq('id',id);if(error)netErr(error);}
 
 
 async function fnErrMsg(error,fn){
@@ -2596,7 +2617,7 @@ async function afterLogin(u){
   me={id:u.id,name:m.name};$('meName').textContent=me.name;$('meAv').textContent=me.name.slice(0,1);
   hideGate();await bootRemote();
 }
-$('logout').onclick=async()=>{if(!confirm('나갈까요? 다음에 이름과 개인 암호로 다시 들어오면 돼요.'))return;saveSession();await new Promise(r=>setTimeout(r,1300));await sb?.auth.signOut();me=null;location.reload();};
+$('logout').onclick=async()=>{if(!confirm('나갈까요? 다음에 이름과 개인 암호로 다시 들어오면 돼요.'))return;saveSession();await flushSessions();await sb?.auth.signOut();me=null;location.reload();};
 
 // 예배 이름 칸을 글자 길이에 맞춰서, 저장 시각이 이름 바로 옆에 붙게
 function fitTitle(){const el=$('docTitle');if(!el)return;const m=fitTitle.m||(fitTitle.m=Object.assign(document.createElement('span'),{style:'position:absolute;visibility:hidden;white-space:pre;left:-9999px;top:0'}));
