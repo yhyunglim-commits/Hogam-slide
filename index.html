@@ -43,6 +43,17 @@ button,input,select,textarea{font:inherit;color:inherit}
 .nav a.on{background:var(--pri-soft);color:var(--pri);font-weight:600}
 .nav a.on svg{color:var(--pri)}
 .railsec{padding:14px 10px 4px;border-top:1px solid var(--line);margin-top:10px}
+.railsec.online{border-top:0;margin-top:0}
+.olist{list-style:none;margin:0;padding:0 4px;display:flex;flex-direction:column;gap:2px}
+.olist li{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:12px}
+.olist li .av{width:30px;height:30px;border-radius:15px;background:var(--pri-ink,#0f5f52);color:#fff;font-weight:700;font-size:13px;display:grid;place-items:center;flex:none;position:relative}
+.olist li .av::after{content:'';position:absolute;right:-1px;bottom:-1px;width:9px;height:9px;border-radius:50%;background:#22c55e;border:2px solid #fff}
+.olist li div{min-width:0;display:flex;flex-direction:column}
+.olist li b{font-size:13.5px;font-weight:600;color:var(--text)}
+.olist li b i{font-style:normal;font-weight:500;color:var(--text3);font-size:12px;margin-left:4px}
+.olist li small{font-size:12px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.olist li small.same{color:var(--pri)}
+.olist .oempty{font-size:12.5px;color:var(--text3);padding:4px 10px}
 .railsec h4{margin:0 8px 6px;font-size:11.5px;font-weight:600;color:var(--text3);display:flex;justify-content:space-between;align-items:center}
 .rlist{list-style:none;margin:0;padding:0}
 .rlist li{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:var(--rs);cursor:pointer;position:relative}
@@ -76,10 +87,11 @@ main{min-width:0;padding:0 28px 80px}
 /* ---------- document header ---------- */
 .doc{position:sticky;top:0;z-index:20;background:rgba(244,245,247,.92);backdrop-filter:saturate(1.4) blur(8px);padding:16px 0 12px;margin-bottom:6px;border-bottom:1px solid var(--line)}
 .doc .r1{display:flex;align-items:center;gap:12px}
-.doc input.title{border:0;background:transparent;font-size:21px;font-weight:700;letter-spacing:-.02em;padding:2px 6px;margin-left:-6px;border-radius:6px;width:auto;min-width:0;flex:1;max-width:520px}
+.doc input.title{border:0;background:transparent;font-size:21px;font-weight:700;letter-spacing:-.02em;padding:2px 6px;margin-left:-6px;border-radius:6px;min-width:80px;flex:0 1 auto;max-width:100%}
 .doc input.title:hover{background:#fff}
 .doc input.title:focus{background:#fff;box-shadow:0 0 0 1px var(--line2);outline:none}
-.saved{font-size:12px;color:var(--text3);white-space:nowrap}
+.saved{font-size:12px;color:var(--text3);white-space:nowrap;display:inline-flex;align-items:center;gap:5px;flex:none}
+.saved:not(:empty)::before{content:'';width:7px;height:7px;border-radius:50%;background:#22c55e;opacity:.8}
 .steps{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center}
 .step{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 10px 0 6px;border-radius:14px;background:#fff;border:1px solid var(--line);font-size:12.5px;color:var(--text2);text-decoration:none;cursor:pointer}
 .step i{font-style:normal;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;background:var(--sunken);color:var(--text3);border:1px solid var(--line)}
@@ -549,10 +561,7 @@ button.lrow{cursor:pointer}button.lrow:hover{background:var(--canvas)}
 <div class="shell">
   <aside class="rail" id="rail">
     <div class="brand"><div class="mk" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="13" rx="2.5"/><path d="M7.5 10h9M9 13.5h6"/></svg></div><div><b>호감슬라이드</b><small>예배 자막과 슬라이드</small></div></div>
-    <nav class="nav">
-      <a href="#songs" data-v="songs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span>찬양</span></a>
-      <a href="#word" data-v="word"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg><span>말씀</span></a>
-    </nav>
+    <div class="railsec online"><h4>지금 접속 중 <span id="onCount"></span></h4><ul class="olist" id="onlineList"><li class="oempty">로그인하면 함께 쓰는 팀원이 보여요</li></ul></div>
     <div class="railsec"><h4>예배 기록</h4><ul class="rlist" id="histList"></ul></div>
     <div class="railsec"><h4>곡 보관함 <span id="libCount"></span></h4>
       <input type="search" class="libsearch" id="libSearch" placeholder="곡 이름 찾기" aria-label="보관함에서 곡 찾기">
@@ -2067,7 +2076,7 @@ function loadSession(id){
   $('verseIn').value=c.verseIn||'';$('bTitle').value=c.bTitle||'';BSET.title=c.bTitle||'';
   issues=[];checked=false;exported=false;$('regenBanner').classList.add('hidden');libPend=[];libSkipKey={};$('libBanner').classList.add('hidden');
   renderSongs();renderIssues();refreshOutMeta();renderVerse();renderHist();
-  $('savedAt').textContent=`저장됨 · ${fmtTime(c.updated)}`;closeRail();scrollTo(0,0);
+  $('savedAt').textContent=`저장됨 · ${fmtTime(c.updated)}`;fitTitle();closeRail();scrollTo(0,0);trackMe();
 }
 function newSessClick(){saveSession();const c=newSessionObj();SESS.unshift(c);loadSession(c.id);toast('새 예배 자막을 시작했어요');}
 $('docTitle').addEventListener('input',scheduleSave);
@@ -2238,6 +2247,27 @@ async function afterLogin(u){
 }
 $('logout').onclick=async()=>{if(!confirm('나갈까요? 다음에 이름과 개인 암호로 다시 들어오면 돼요.'))return;saveSession();await new Promise(r=>setTimeout(r,1300));await sb?.auth.signOut();me=null;location.reload();};
 
+// 예배 이름 칸을 글자 길이에 맞춰서, 저장 시각이 이름 바로 옆에 붙게
+function fitTitle(){const el=$('docTitle');if(!el)return;const m=fitTitle.m||(fitTitle.m=Object.assign(document.createElement('span'),{style:'position:absolute;visibility:hidden;white-space:pre;left:-9999px;top:0'}));
+  if(!m.isConnected)document.body.appendChild(m);const cs=getComputedStyle(el);['fontFamily','fontSize','fontWeight','fontStyle'].forEach(k=>m.style[k]=cs[k]);m.style.letterSpacing=cs.letterSpacing;m.textContent=el.value||el.placeholder||' ';
+  el.style.width=Math.ceil(m.getBoundingClientRect().width+parseFloat(cs.paddingLeft)+parseFloat(cs.paddingRight)+4)+'px';}
+$('docTitle').addEventListener('input',fitTitle);addEventListener('resize',fitTitle);document.fonts?.ready?.then(fitTitle);
+// 지금 접속 중인 팀원 (Supabase Realtime presence)
+let pres=null;const TAB=Math.random().toString(36).slice(2,8);
+function startPresence(){if(pres||!sb||!me)return;
+  pres=sb.channel('hogam-online',{config:{presence:{key:me.id+':'+TAB}}});
+  pres.on('presence',{event:'sync'},renderOnline).subscribe(st=>{if(st==='SUBSCRIBED')trackMe();});
+  addEventListener('beforeunload',()=>{try{pres.untrack();}catch(e){}});}
+function trackMe(){if(pres&&me)pres.track({name:me.name,sess:curSess,at:Date.now()}).catch(()=>{});}
+function renderOnline(){
+  const ul=$('onlineList');if(!ul)return;const st=pres?pres.presenceState():{},by={};
+  Object.values(st).flat().forEach(p=>{if(!p||!p.name)return;const o=by[p.name]||(by[p.name]={name:p.name,sess:[]});if(p.sess&&!o.sess.includes(p.sess))o.sess.push(p.sess);});
+  const list=Object.values(by).sort((a,b)=>(b.name===me?.name)-(a.name===me?.name)||a.name.localeCompare(b.name,'ko'));
+  $('onCount').textContent=list.length?list.length+'명':'';
+  if(!list.length){ul.innerHTML='<li class="oempty">로그인하면 함께 쓰는 팀원이 보여요</li>';return;}
+  ul.innerHTML=list.map(o=>{const same=o.sess.includes(curSess),nm=SESS.find(x=>x.id===o.sess[0])?.name;
+    const where=same?'이 예배 자막을 보는 중':nm?`‘${nm}’ 보는 중`:'접속 중';
+    return `<li><span class="av">${esc(o.name.slice(0,1))}</span><div><b>${esc(o.name)}${o.name===me?.name?'<i>나</i>':''}</b><small class="${same?'same':''}">${esc(where)}</small></div></li>`;}).join('');}
 let chan=null;
 async function bootRemote(){
   const [sv,sg]=await Promise.all([sb.from('services').select('*').order('updated_at',{ascending:false}).limit(120),sb.from('songs').select('*')]);
@@ -2249,7 +2279,7 @@ async function bootRemote(){
     else if((l.updated||0)>(r.updated||0)+2000){Object.assign(r,l);pushSession(r);}});
   SESS=remote;store.set('sessions',SESS);
   if(!SESS.find(x=>x.id===curSess)){const wk=SESS.find(x=>x.name===sundayName());const c=wk||newSessionObj();if(!SESS.includes(c))SESS.unshift(c);curSess=c.id;}
-  renderLib();loadSession(curSess);subscribe();
+  renderLib();loadSession(curSess);subscribe();startPresence();
 }
 function subscribe(){
   if(chan)return;
