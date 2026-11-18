@@ -205,6 +205,8 @@ label.fl{display:block;font-size:12.5px;color:var(--text2);font-weight:500;margi
 .notes b{font-size:12px}
 .notes ol{margin:2px 0 0;padding-left:18px;line-height:1.6}
 .notes.clash{background:var(--pri-soft);color:var(--pri)}
+.banner.clash{background:var(--bad-soft);border-color:#f3b8b2;color:var(--bad);font-weight:500;margin:12px 0 0}
+.banner.clash .row{display:flex;flex-wrap:wrap;gap:6px}
 .notes.clash p{margin:2px 0 8px}
 .notes.clash .row{display:flex;flex-wrap:wrap;gap:6px}
 
@@ -536,6 +538,10 @@ details.look summary{font-size:13px;color:var(--text)}
 .llist h3{font-size:12.5px;color:var(--text3);font-weight:700;margin:14px 10px 6px}
 .lrow{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:12px;border:0;background:none;text-align:left;font:inherit;color:var(--text)}
 button.lrow{cursor:pointer}button.lrow:hover{background:var(--canvas)}
+.lrow:hover{background:var(--canvas)}
+.lrow .lgo{border:0;background:none;padding:0;font:inherit;text-align:left;cursor:pointer;flex:1}
+.lrow .lgo:hover{color:var(--pri);text-decoration:underline}
+.lrow .lundo{margin-left:auto;flex:none}
 .lrow time{font-size:12px;color:var(--text3);width:62px;flex:none;font-variant-numeric:tabular-nums}
 .lrow .av{width:26px;height:26px;font-size:12px}
 .lrow b{font-size:13.5px;flex:none}
@@ -798,6 +804,10 @@ header.doc::before{content:'';position:absolute;left:0;right:0;top:0;bottom:-36p
         <div class="steps" id="steps"></div>
       </div>
     </header>
+    <div class="banner clash hidden" id="clashBanner" role="alert">
+      <span id="clashMsg"></span>
+      <span class="row"><button class="btn sm" id="clashCopy">내 글 복사</button><button class="btn sm" id="clashLoad">최신 글 불러오기</button><button class="btn sm pri" id="clashKeep">내 글로 저장</button></span>
+    </div>
 
     <div class="split">
       <section class="panel" id="colSong">
@@ -2438,7 +2448,7 @@ function loadSession(id){
   $('verseIn').value=c.verseIn||'';$('bTitle').value=c.bTitle||'';BSET.title=c.bTitle||'';
   issues=[];checked=false;exported=false;$('regenBanner').classList.add('hidden');libPend=[];libSkipKey={};$('libBanner').classList.add('hidden');
   renderSongs();renderIssues();refreshOutMeta();renderVerse();renderHist();
-  $('savedAt').textContent=`저장됨 · ${fmtTime(c.updated)}`;fitTitle();closeRail();scrollTo(0,0);trackMe();
+  $('savedAt').textContent=`저장됨 · ${fmtTime(c.updated)}`;fitTitle();closeRail();scrollTo(0,0);trackMe();showClash();
 }
 function newSessClick(){saveSession();const c=newSessionObj();SESS.unshift(c);loadSession(c.id);toast('새 예배 자막을 시작했어요');}
 $('docTitle').addEventListener('input',scheduleSave);
@@ -2555,19 +2565,59 @@ const nameToEmail=n=>'u'+[...new TextEncoder().encode(n)].map(b=>b.toString(16).
 const normName=n=>String(n||'').trim().replace(/\s+/g,' ');
 function netErr(e){console.warn(e);toast('서버에 저장하지 못했어요. 인터넷 연결을 확인해 주세요');}
 const rowToSong=r=>({title:r.title,result:r.result,thumb:safeImg(r.thumb),saved:Date.parse(r.updated_at),by:r.updated_by_name||''});
-const rowToSess=r=>({id:r.id,name:r.name,text:r.text,results:r.results||[],verseIn:r.verse_in||'',bTitle:r.b_title||'',dirty:!!r.dirty,created:Date.parse(r.created_at),updated:Date.parse(r.updated_at),by:r.updated_by_name||''});
+const rowToSess=r=>({id:r.id,name:r.name,text:r.text,results:r.results||[],verseIn:r.verse_in||'',bTitle:r.b_title||'',dirty:!!r.dirty,created:Date.parse(r.created_at),updated:Date.parse(r.updated_at),by:r.updated_by_name||'',ver:r.version??null});
 // 고칠 때마다 1.2초 모아서 서버에 보내요. 나가거나 탭을 닫을 때는 기다리지 않고 바로 보내요.
-const pushT={},pushC={};
+// 저장할 때 내가 본 판 번호(c.ver)를 함께 보내요. 그사이 다른 사람이 고쳤으면 서버가 막고, 위에 고를 수 있는 안내를 띄워요.
+const pushT={},pushC={},inflight={},clash={};let noRpc=false;
 function pushSession(c){
   if(!sb||!me||!c)return;if(!(c.text||(c.results&&c.results.length)||c.verseIn))return;
+  if(clash[c.id]){showClash();return;} // 고를 때까지는 보내지 않아요
   clearTimeout(pushT[c.id]);pushC[c.id]=c;
   pushT[c.id]=setTimeout(()=>sendSession(c.id),1200);
 }
-async function sendSession(id){
-  const c=pushC[id];clearTimeout(pushT[id]);delete pushT[id];delete pushC[id];if(!c||!sb||!me)return;c.by=me.name;
-  const {error}=await sb.from('services').upsert({id:c.id,name:c.name,text:c.text,results:c.results||[],verse_in:c.verseIn||'',b_title:c.bTitle||'',dirty:!!c.dirty});
-  if(error)netErr(error);
+// 같은 예배의 저장은 한 줄로 차례대로 보내요 (앞 저장의 판 번호를 받은 뒤에 다음 저장을 보내야 해서)
+const chain={};
+function sendSession(id){
+  const c=pushC[id];clearTimeout(pushT[id]);delete pushT[id];delete pushC[id];if(!c||!sb||!me)return Promise.resolve();
+  inflight[id]=(inflight[id]||0)+1;
+  return chain[id]=(chain[id]||Promise.resolve()).then(()=>doSend(c)).catch(netErr).finally(()=>{inflight[id]--;});
 }
+async function doSend(c){
+  const id=c.id;if(clash[id]||!sb||!me)return;c.by=me.name;
+  const row={id:c.id,name:c.name,text:c.text,results:c.results||[],verse_in:c.verseIn||'',b_title:c.bTitle||'',dirty:!!c.dirty};
+  {
+    if(!noRpc){
+      const {data,error}=await sb.rpc('save_service',{p_id:row.id,p_base:c.ver??null,p_name:row.name,p_text:row.text,p_results:row.results,p_verse_in:row.verse_in,p_b_title:row.b_title,p_dirty:row.dirty});
+      if(!error){
+        if(data&&data.ok){c.ver=data.version;store.set('sessions',SESS);}
+        else if(data){clash[id]={by:data.by||'다른 팀원',version:data.version};showClash();}
+        return;
+      }
+      // 서버에 아직 새 저장 기능(2단계 SQL)이 없으면 예전 방식으로 저장해요
+      if(error.code==='PGRST202'||/save_service/.test(error.message||''))noRpc=true;else{netErr(error);return;}
+    }
+    const {error}=await sb.from('services').upsert(row);if(error)netErr(error);
+  }
+}
+// 다른 사람이 먼저 고쳐서 내 저장이 막혔을 때
+function showClash(){
+  const b=$('clashBanner'),k=clash[curSess];if(!k){b.classList.add('hidden');return;}
+  $('clashMsg').textContent=`${k.by}님이 이 예배 자막을 먼저 고쳤어요. 내가 고친 글은 아직 서버에 저장되지 않았어요.`;
+  b.classList.remove('hidden');
+}
+$('clashCopy').onclick=()=>copy(combinedText());
+$('clashLoad').onclick=async()=>{
+  if(!confirm('팀원이 고친 최신 글을 불러올까요? 내가 고친 글은 사라져요. 필요하면 먼저 ‘내 글 복사’를 눌러 두세요.'))return;
+  const id=curSess,{data,error}=await sb.from('services').select('*').eq('id',id).maybeSingle();if(error){netErr(error);return;}
+  delete clash[id];clearTimeout(pushT[id]);delete pushT[id];delete pushC[id];
+  if(data){const r=rowToSess(data),k=SESS.findIndex(x=>x.id===id);if(k>=0)SESS[k]=r;else SESS.unshift(r);}
+  loadSession(id);showClash();toast('최신 글을 불러왔어요');
+};
+$('clashKeep').onclick=()=>{
+  const id=curSess,k=clash[id];if(!k)return;
+  if(!confirm(`${k.by}님이 고친 글 대신 지금 내 화면의 글로 저장할까요? ${k.by}님이 고친 내용은 편집 기록의 ‘되돌리기’로 되살릴 수 있어요.`))return;
+  const c=curS();delete clash[id];showClash();if(!c)return;c.ver=k.version;pushC[id]=c;sendSession(id).then(()=>{if(!clash[id])toast('내 글로 저장했어요');});
+};
 function flushSessions(){if(saveT){clearTimeout(saveT);saveT=null;saveSession();}return Promise.all(Object.keys(pushC).map(sendSession));}
 addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSessions();});
 async function removeSession(id){if(!sb||!me)return;clearTimeout(pushT[id]);delete pushT[id];delete pushC[id];const {error}=await sb.from('services').delete().eq('id',id);if(error)netErr(error);}
@@ -2652,7 +2702,7 @@ async function bootRemote(){
   const remote=sv.data.map(rowToSess),local=[...SESS];
   // 이 브라우저에만 있던(아직 못 올린) 기록은 올리고, 둘 다 있으면 최근 것을 써요
   local.forEach(l=>{const r=remote.find(x=>x.id===l.id);if(!r){if(l.text||(l.results&&l.results.length)||l.verseIn){remote.unshift(l);pushSession(l);}}
-    else if((l.updated||0)>(r.updated||0)+2000){Object.assign(r,l);pushSession(r);}});
+    else if((l.updated||0)>(r.updated||0)+2000){const v=r.ver;Object.assign(r,l);r.ver=l.ver??v;pushSession(r);}});
   SESS=remote;store.set('sessions',SESS);
   if(!SESS.find(x=>x.id===curSess)){const wk=SESS.find(x=>x.name===sundayName());const c=wk||newSessionObj();if(!SESS.includes(c))SESS.unshift(c);curSess=c.id;}
   renderLib();loadSession(curSess);subscribe();startPresence();
@@ -2666,12 +2716,14 @@ function subscribe(){
   .on('postgres_changes',{event:'*',schema:'public',table:'services'},p=>{
     if(p.eventType==='DELETE'){const id=p.old.id;SESS=SESS.filter(x=>x.id!==id);
       if(id===curSess)toast('다른 팀원이 이 예배 기록을 지웠어요. 지금 화면의 글은 남아 있어요');renderHist();return;}
-    const r=rowToSess(p.new),i=SESS.findIndex(x=>x.id===r.id),mine=p.new.updated_by_name===me?.name;
+    const r=rowToSess(p.new),i=SESS.findIndex(x=>x.id===r.id),cur=SESS[i];
+    // 내가 방금 저장한 것이 돌아온 것인지: 판 번호로 확인해요 (같은 사람이 다른 탭에서 고친 것도 알아봐요)
+    const mine=r.ver!=null?((cur&&cur.ver!=null&&r.ver<=cur.ver)||(inflight[r.id]>0&&r.by===me?.name)):p.new.updated_by_name===me?.name;
     if(r.id===curSess){
       if(mine){const c=curS();if(c){c.by=r.by;}renderHist();return;}
-      toastUndo(`${r.by}님이 지금 이 예배 자막을 고쳤어요`,()=>{const k=SESS.findIndex(x=>x.id===r.id);if(k>=0)SESS[k]=r;else SESS.unshift(r);loadSession(r.id);toast('최신 내용으로 불러왔어요');},'최신으로 불러오기',9000);
+      toastUndo(r.by===me?.name?'이 예배 자막이 다른 탭이나 되돌리기로 바뀌었어요':`${r.by}님이 지금 이 예배 자막을 고쳤어요`,()=>{const k=SESS.findIndex(x=>x.id===r.id);if(k>=0)SESS[k]=r;else SESS.unshift(r);delete clash[r.id];clearTimeout(pushT[r.id]);delete pushT[r.id];delete pushC[r.id];loadSession(r.id);toast('최신 내용으로 불러왔어요');},'최신으로 불러오기',9000);
       return;}
-    if(i>=0)SESS[i]=r;else SESS.unshift(r);renderHist();})
+    if(mine)return;if(i>=0)SESS[i]=r;else SESS.unshift(r);renderHist();})
   .on('postgres_changes',{event:'INSERT',schema:'public',table:'edit_log'},()=>{if($('logbox').classList.contains('on'))loadLog();})
   .on('postgres_changes',{event:'UPDATE',schema:'public',table:'edit_log'},()=>{if($('logbox').classList.contains('on'))loadLog();})
   .subscribe();
@@ -2682,7 +2734,9 @@ const LOG_TXT={'song:create':t=>`‘${t}’ 곡을 보관함에 넣었어요`,'s
   'service:create':t=>`‘${t}’ 자막을 만들었어요`,'service:edit':t=>`‘${t}’ 자막을 고쳤어요`,'service:delete':t=>`‘${t}’ 기록을 지웠어요`,'member:join':()=>'팀에 들어왔어요'};
 async function loadLog(){
   const box=$('logList');
-  const {data,error}=await sb.from('edit_log').select('*').order('at',{ascending:false}).limit(200);
+  // 바뀌기 전 내용(before) 전체는 무거워서, 있는지만 알 수 있게 제목·번호만 받아요
+  let {data,error}=await sb.from('edit_log').select('id,at,name,action,target_type,target_id,summary,bt:before->>title,bi:before->>id').order('at',{ascending:false}).limit(200);
+  if(error){({data,error}=await sb.from('edit_log').select('id,at,name,action,target_type,target_id,summary').order('at',{ascending:false}).limit(200));} // 2단계 SQL 전
   if(error){box.innerHTML='<div class="empty">편집 기록을 불러오지 못했어요.</div>';return;}
   if(!data.length){box.innerHTML='<div class="empty">아직 기록이 없어요.</div>';return;}
   $('logMeta').textContent=`최근 ${data.length}건`;
@@ -2691,9 +2745,16 @@ async function loadLog(){
     if(dk!==day){day=dk;html+=`<h3>${d.getMonth()+1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})</h3>`;}
     const f=LOG_TXT[r.target_type+':'+r.action],txt=f?f(esc(r.summary||r.target_id||'')):esc(r.summary||'');
     const go=r.target_type==='service'&&r.action!=='delete'&&SESS.find(x=>x.id===r.target_id);
-    html+=`<${go?'button type="button"':'div'} class="lrow" ${go?`data-s="${esc(r.target_id)}"`:''}><time>${fmtTime(r.at)}</time><span class="av">${esc((r.name||'?').slice(0,1))}</span><b>${esc(r.name||'알 수 없음')}</b><span class="lt">${txt}</span></${go?'button':'div'}>`;});
+    const undo=(r.action==='edit'||r.action==='delete')&&(r.bt||r.bi);
+    html+=`<div class="lrow"><time>${fmtTime(r.at)}</time><span class="av">${esc((r.name||'?').slice(0,1))}</span><b>${esc(r.name||'알 수 없음')}</b>${go?`<button type="button" class="lt lgo" data-s="${esc(r.target_id)}" title="이 예배 자막 열기">${txt}</button>`:`<span class="lt">${txt}</span>`}${undo?`<button type="button" class="btn sm ghost lundo" data-u="${r.id}" data-a="${esc(r.action)}" data-n="${esc(r.summary||r.target_id||'')}" title="${r.action==='delete'?'지운 것을 되살려요':'이렇게 고치기 전으로 되돌려요'}">${r.action==='delete'?'되살리기':'되돌리기'}</button>`:''}</div>`;});
   box.innerHTML=html;
   box.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{closeLog();if(b.dataset.s!==curSess){saveSession();loadSession(b.dataset.s);}});
+  box.querySelectorAll('[data-u]').forEach(b=>b.onclick=async()=>{
+    const del=b.dataset.a==='delete';
+    if(!confirm(del?`지운 ‘${b.dataset.n}’을 되살릴까요?`:`‘${b.dataset.n}’을 이 기록의 고치기 전 모습으로 되돌릴까요? 그 뒤에 고친 내용은 사라지지만, 되돌린 일도 기록에 남아서 다시 되돌릴 수 있어요.`))return;
+    b.disabled=true;const {data:m,error:e}=await sb.rpc('restore_from_log',{p_log_id:+b.dataset.u});b.disabled=false;
+    if(e){toast(e.code==='PGRST202'?'관리자가 2단계 SQL을 실행하면 쓸 수 있어요':'되돌리지 못했어요: '+(e.message||e));return;}
+    toast(m||'되돌렸어요');});
 }
 function openLog(){$('logbox').classList.add('on');$('logList').innerHTML='<div class="empty">불러오는 중…</div>';loadLog();$('logClose').focus();}
 function closeLog(){$('logbox').classList.remove('on');}

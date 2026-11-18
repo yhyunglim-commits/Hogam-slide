@@ -25,6 +25,15 @@ Deno.serve(async (req) => {
     const { data: m } = await admin.from("members").select("name").eq("user_id", u.user.id).maybeSingle();
     if (!m) return reply({ error: "팀원만 쓸 수 있어요", code: "not_granted" }, 403);
 
+    // 한 사람이 하루(24시간)에 쓸 수 있는 횟수. Secrets의 AI_DAILY_LIMIT로 바꿀 수 있어요 (기본 200번)
+    // (ai_usage 표가 아직 없으면 세지 못하고 그냥 지나가요)
+    const limit = Number(Deno.env.get("AI_DAILY_LIMIT") ?? "200") || 200;
+    const { count: used } = await admin.from("ai_usage").select("id", { count: "exact", head: true })
+      .eq("user_id", u.user.id).gte("at", new Date(Date.now() - 24 * 3600_000).toISOString());
+    if ((used ?? 0) >= limit) return reply({ error: `오늘 AI를 ${limit}번 써서 더 쓸 수 없어요. 내일 다시 해 주세요`, code: "rate_limited" }, 429);
+    await admin.from("ai_usage").insert({ user_id: u.user.id });
+    if (Math.random() < 0.02) await admin.from("ai_usage").delete().lt("at", new Date(Date.now() - 3 * 86400_000).toISOString()); // 가끔 오래된 기록 지우기
+
     const { prompt, images = [], tier } = await req.json();
 
     // ── Claude 먼저 (키가 있을 때만) ──

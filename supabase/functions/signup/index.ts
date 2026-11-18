@@ -34,11 +34,24 @@ Deno.serve(async (req) => {
     const name = String(rawName ?? "").trim().replace(/\s+/g, " ");
     const team = Deno.env.get("TEAM_CODE") ?? "";
     if (!team) return reply({ error: "관리자가 아직 팀 암호를 정하지 않았어요" }, 500);
-    if (!same(String(code ?? ""), team)) return reply({ error: "팀 암호가 맞지 않아요" }, 403);
+    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+
+    // 팀 암호를 여러 번 틀리면 잠시 막아요: 한 곳에서 15분에 5번, 전체 1시간에 30번
+    // (signup_attempts 표가 아직 없으면 세지 못하고 그냥 지나가요)
+    const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+    const ago = (min: number) => new Date(Date.now() - min * 60_000).toISOString();
+    const { count: mine } = await admin.from("signup_attempts").select("id", { count: "exact", head: true }).eq("ip", ip).gte("at", ago(15));
+    if ((mine ?? 0) >= 5) return reply({ error: "팀 암호를 여러 번 틀렸어요. 15분 뒤에 다시 해 주세요" }, 429);
+    const { count: all } = await admin.from("signup_attempts").select("id", { count: "exact", head: true }).gte("at", ago(60));
+    if ((all ?? 0) >= 30) return reply({ error: "팀 암호가 너무 많이 틀려서 가입을 잠시 막았어요. 1시간 뒤에 다시 해 주세요" }, 429);
+    if (!same(String(code ?? ""), team)) {
+      await admin.from("signup_attempts").insert({ ip });
+      await admin.from("signup_attempts").delete().lt("at", ago(24 * 60)); // 하루 지난 기록은 지워요
+      return reply({ error: "팀 암호가 맞지 않아요" }, 403);
+    }
     if (name.length < 2 || name.length > 10) return reply({ error: "이름은 2~10글자로 적어 주세요" }, 400);
     if (String(password ?? "").length < 6) return reply({ error: "개인 암호는 6글자 이상으로 정해 주세요" }, 400);
 
-    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: taken } = await admin.from("members").select("user_id").eq("name", name).maybeSingle();
     if (taken) return reply({ error: "이미 쓰고 있는 이름이에요. 다른 이름이나 이름 뒤에 숫자를 붙여 주세요" }, 409);
 
