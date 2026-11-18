@@ -385,7 +385,9 @@ main{padding:0 36px 96px}
 .step.cur i{background:#fff;color:var(--ink)}
 .step.cur em{color:rgba(255,255,255,.7)}
 .step em{color:var(--text3);font-weight:500}
-.nextact.btn.pri{height:44px;padding:0 22px;border-radius:22px;font-size:15px;font-weight:700}
+.nextact.btn{height:44px;padding:0 22px;border-radius:22px;font-size:15px;font-weight:700}
+.nextact.two{margin-left:8px}
+.newsess svg{width:17px;height:17px}
 
 /* controls */
 .btn{height:38px;border-radius:19px;border-color:var(--line2);font-weight:600;font-size:13.5px;padding:0 16px}
@@ -547,7 +549,6 @@ button.lrow{cursor:pointer}button.lrow:hover{background:var(--canvas)}
 <div class="shell">
   <aside class="rail" id="rail">
     <div class="brand"><div class="mk" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="13" rx="2.5"/><path d="M7.5 10h9M9 13.5h6"/></svg></div><div><b>호감슬라이드</b><small>예배 자막과 슬라이드</small></div></div>
-    <button class="btn pri newbtn" id="newSess"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>새 예배 자막 만들기</button>
     <nav class="nav">
       <a href="#songs" data-v="songs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span>찬양</span></a>
       <a href="#word" data-v="word"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg><span>말씀</span></a>
@@ -2068,7 +2069,7 @@ function loadSession(id){
   renderSongs();renderIssues();refreshOutMeta();renderVerse();renderHist();
   $('savedAt').textContent=`저장됨 · ${fmtTime(c.updated)}`;closeRail();scrollTo(0,0);
 }
-$('newSess').onclick=()=>{saveSession();const c=newSessionObj();SESS.unshift(c);loadSession(c.id);toast('새 예배 자막을 시작했어요');};
+function newSessClick(){saveSession();const c=newSessionObj();SESS.unshift(c);loadSession(c.id);toast('새 예배 자막을 시작했어요');}
 $('docTitle').addEventListener('input',scheduleSave);
 ['verseIn','bTitle'].forEach(id=>$(id).addEventListener('input',scheduleSave));
 function showTip(el,name,titles,ref,by){
@@ -2162,15 +2163,16 @@ function renderSteps(){
   const cur=st.findIndex(x=>!x.done&&x.k!=='word');
   let act;
   if(busy)act={t:'가사 읽는 중…',dis:true};
-  else if(!songs.length&&!$('outText').value.trim())act={t:'악보 올리기',f:()=>$('bulkIn').click()};
   else if(pend)act={t:`${pend}곡 가사 읽기`,f:()=>$('convertBtn').click()};
   else if(errs)act={t:`실패한 ${errs}곡 다시 읽기`,f:()=>{songs.filter(s=>s.status==='err').forEach(s=>s.status='idle');renderSongs();$('convertBtn').click();}};
   else if(!checked&&$('outText').value.trim())act={t:'맞춤법 검사',f:()=>{location.hash='result';$('checkBtn').click();}};
   else if(open)act={t:`고칠 곳 ${open}개 보기`,f:()=>{location.hash='result';renderFixbar(true);}};
   else if($('outText').value.trim())act={t:'전체 복사',f:()=>$('copyAll').click()};
   box.innerHTML=st.map((x,i)=>`${i?'<span class="sep"></span>':''}<a class="step ${x.done?'done':''} ${i===cur?'cur':''}" href="#${x.k}"><i>${x.done?'✓':i+1}</i>${x.label}${x.meta?` <em>${x.meta}</em>`:''}</a>`).join('')+
-    (act?`<button class="btn sm pri nextact" id="nextAct" ${act.dis?'disabled':''}>${act.t}</button>`:'');
+    (act?`<button class="btn sm nextact" id="nextAct" ${act.dis?'disabled':''}>${act.t}</button>`:'')+
+    `<button class="btn sm pri nextact newsess${act?' two':''}" id="newSess"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>새 예배 자막 만들기</button>`;
   if(act&&act.f)$('nextAct').onclick=act.f;
+  $('newSess').onclick=newSessClick;
 }
 
 /* ======================== 함께 쓰기: 로그인 · 공유 보관함 · 편집 기록 ======================== */
