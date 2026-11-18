@@ -904,7 +904,7 @@ function blobToB64(b){return new Promise((res,rej)=>{const r=new FileReader();r.
 async function sample(prompt,opts={}){
   if(!sb)throw{message:'서버 설정(config.js)이 아직 비어 있어요.'};
   const images=[];
-  for(const b0 of (opts.images||[])){let x=b0;if(x.size>1.5e6)x=await smaller(x,1600);images.push({mime:x.type||'image/jpeg',data:await blobToB64(x)});}
+  for(const b0 of (opts.images||[])){let x=b0;if(x.size>350e3)x=await smaller(x,1600);images.push({mime:x.type||'image/jpeg',data:await blobToB64(x)});}
   const {data,error}=await sb.functions.invoke('ai',{body:{prompt,images,tier:opts.modelTier}});
   if(error){let code;try{code=(await error.context.clone().json()).code;}catch(e){}throw{message:await fnErrMsg(error,'ai'),code};}
   if(data?.error)throw{message:data.error,code:data.code};
@@ -1138,7 +1138,10 @@ $('convertBtn').onclick=async()=>{
   const todo=pendingSongs();if(!todo.length)return;
   busy=true;updateConvertBtn();const st=$('convStatus');st.className='status';
   const f=FMT,expand=$('optExpand').checked;let n=0;
-  for(const s of todo){n++;st.textContent=`${n} / ${todo.length}곡 읽는 중 — 곡당 20~60초쯤 걸려요.`;await convertOne(s,f,expand);if(s.status==='done')saveToLib(s);orderChanged(true);}
+  // 세 곡씩 동시에 읽어요 (무료 사용량 한도 안에서 가장 빠르게)
+  const q=[...todo],show=()=>{st.textContent=`${todo.length}곡 중 ${n}곡 끝남 — 동시에 읽고 있어요`;};show();
+  const worker=async()=>{while(q.length){const s=q.shift();await convertOne(s,f,expand);n++;show();if(s.status==='done')saveToLib(s);orderChanged(true);}};
+  await Promise.all(Array.from({length:Math.min(3,todo.length)},worker));
   busy=false;updateConvertBtn();
   const failed=songs.filter(s=>s.status==='err').length,ok=songs.filter(s=>s.result).length;
   st.className=failed?'status err':'status';
