@@ -8,7 +8,7 @@
 <script>try{var th=JSON.parse(localStorage.getItem("cj_theme")||"\"auto\"");if(th==="dark"||th==="light")document.documentElement.dataset.theme=th;}catch(e){}</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/bold/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/regular/style.css">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/fill/style.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -177,7 +177,7 @@ label.fl{display:block;font-size:12.5px;color:var(--text2);font-weight:500;margi
 .grip{width:22px;height:104px;border:0;background:transparent;border-radius:5px;cursor:grab;touch-action:none;color:#b4bcc8;display:grid;place-items:center;padding:0}
 .grip:hover{background:var(--sunken);color:var(--text2)}
 .grip svg{width:14px;height:14px}
-$1#fff;padding:0;cursor:zoom-in;display:block}
+.cover{position:relative;width:78px;height:104px;border-radius:4px;overflow:hidden;border:1px solid var(--line);background:#fff;padding:0;cursor:zoom-in;display:block}
 .cover img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
 .cover .no{position:absolute;left:4px;top:4px;min-width:20px;height:20px;padding:0 5px;border-radius:4px;background:var(--text);color:#fff;font-size:11.5px;font-weight:700;display:grid;place-items:center;line-height:1}
 .cover .cnt{position:absolute;right:4px;bottom:4px;font-size:10.5px;background:rgba(18,24,38,.75);color:#fff;border-radius:3px;padding:0 5px;line-height:16px}
@@ -189,7 +189,7 @@ $1#fff;padding:0;cursor:zoom-in;display:block}
 .song .top input:focus{background:var(--surface);border-color:var(--pri)}
 .song .sub{font-size:12px;color:var(--text3);margin-top:2px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .song .pages{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;align-items:center}
-$1#fff;padding:0;cursor:zoom-in}
+.pg{position:relative;width:34px;height:45px;border-radius:3px;overflow:hidden;border:1px solid var(--line);background:#fff;padding:0;cursor:zoom-in}
 .pg img{width:100%;height:100%;object-fit:cover;object-position:top}
 .pg i{position:absolute;left:2px;bottom:1px;font-style:normal;font-size:9.5px;background:rgba(18,24,38,.75);color:#fff;border-radius:2px;padding:0 3px}
 .pg .x{position:absolute;top:1px;right:1px;width:15px;height:15px;border-radius:50%;background:rgba(18,24,38,.7);color:#fff;font-size:10px;line-height:15px;text-align:center;cursor:pointer}
@@ -327,7 +327,7 @@ details.look[open] #lookCtl{max-height:38vh;overflow:auto;padding-right:4px}
 /* ---------- overlays ---------- */
 #lightbox,#slidebox{position:fixed;inset:0;background:rgba(10,14,22,.9);z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;padding:16px}
 #lightbox.on,#slidebox.on{display:flex}
-$1#fff;border-radius:4px;object-fit:contain}
+#lightbox img{max-width:min(980px,100%);max-height:calc(100vh - 100px);background:#fff;border-radius:4px;object-fit:contain}
 #slidebox canvas{width:min(1280px,100%,calc((100vh - 100px)*16/9));height:auto;aspect-ratio:16/9;border-radius:4px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
 .lbbar{display:flex;gap:6px;margin-top:12px;align-items:center;color:#fff;font-size:13px;flex-wrap:wrap;justify-content:center}
 .lbbar button{background:rgba(255,255,255,.12);color:#fff;border:0;border-radius:6px;height:32px;padding:0 12px;cursor:pointer;font-size:13px}
@@ -429,16 +429,16 @@ a{color:var(--pri-ink)}
 main{padding:0 36px 96px}
 .doc{margin:0 -36px 0;padding:24px 36px 18px;border-bottom:0;box-shadow:none;background:var(--hero);backdrop-filter:none}
 .doc input.title{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1.25;padding:2px 8px;margin-left:-8px;border-radius:12px}
-$1var(--glass)}
+.doc input.title:hover,.doc input.title:focus{background:var(--glass)}
 .saved{font-size:12.5px;color:var(--text2)}
 .steps{gap:6px;margin-top:14px}
 .steps .sep{display:none}
-$1var(--glass);padding:0 14px 0 6px;border-radius:17px;color:var(--text2);font-weight:600;font-size:13px}
-$1var(--glass2)}
+.step{height:34px;border:0;background:var(--glass);padding:0 14px 0 6px;border-radius:17px;color:var(--text2);font-weight:600;font-size:13px}
+.step:hover{background:var(--glass2)}
 .step i{width:22px;height:22px;border:0;background:var(--surface);color:var(--text3);box-shadow:none;font-size:11.5px}
 .step.done i{background:var(--pri);color:#fff}
 .step.cur{background:var(--ink);color:#fff;font-weight:700}
-$1#fff;color:var(--ink)}
+.step.cur i{background:#fff;color:var(--ink)}
 .step.cur em{color:rgba(255,255,255,.7)}
 .step em{color:var(--text3);font-weight:500}
 .nextact.btn{height:44px;padding:0 22px;border-radius:22px;font-size:15px;font-weight:700}
@@ -694,7 +694,7 @@ label.opts{gap:7px;align-items:center}
 .shotck{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(3,26,23,.45);cursor:pointer;z-index:3;opacity:.85;transition:opacity .12s,background .12s;border:0;box-shadow:none;pointer-events:auto}
 .shotck input{width:17px;height:17px;margin:0;accent-color:var(--pri);cursor:pointer}
 .shotw:hover .shotck,.selecting .shotck{opacity:1}
-$1#fff}
+.shotw.sel .shotck{background:#fff}
 .shotw.sel .shot{box-shadow:0 0 0 3px var(--pri),0 6px 16px -10px rgba(3,26,23,.35)}
 .selecting .shot{cursor:zoom-in}
 .selbar{display:inline-flex;align-items:center;gap:10px;margin-right:6px}
@@ -714,7 +714,7 @@ $1#fff}
 /* 제목 옆 연필 */
 .pen{width:30px;height:30px;border:0;background:transparent;border-radius:8px;display:grid;place-items:center;color:var(--text3);cursor:pointer;flex:none;margin-left:-6px;padding:0}
 .pen svg{width:17px;height:17px}
-$1var(--glass);color:var(--text)}
+.pen:hover{background:var(--glass);color:var(--text)}
 /* 찬양 화면 / 말씀 화면 토글 색 */
 .seg2 button[data-g]{display:inline-flex;align-items:center;gap:6px}
 .seg2 button[data-g]::before{content:'';width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.9}
@@ -722,7 +722,7 @@ $1var(--glass);color:var(--text)}
 .seg2 button[data-g=word]{color:var(--amber,#b45309)}
 .seg2 button[data-g=song][aria-selected=true]{background:var(--pri);color:#fff}
 .seg2 button[data-g=word][aria-selected=true]{background:var(--amber,#d97706);color:#fff}
-$1#fff}
+.seg2 button[data-g][aria-selected=true]::before{background:#fff}
 /* 끌어서 순서 바꾸기 */
 body.sorting,body.sorting *{user-select:none!important;cursor:grabbing!important}
 .song.dragging,.chipw.dragging{position:relative;z-index:20;transition:none!important;box-shadow:0 14px 32px -8px rgba(16,24,40,.35);outline:1.5px solid var(--pri);scale:1.02}
@@ -895,290 +895,307 @@ header.doc::before{content:'';position:absolute;left:0;right:0;top:0;bottom:-36p
           mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 64px),rgba(0,0,0,.6) calc(100% - 36px),transparent 100%)}
 
 /* ================================================================
-   디자인 v3 — 깔끔하게 (흰 바탕 · 큰 글씨 · 넉넉한 여백 · 파란 강조)
+   디자인 v4 — 맥 기본 앱(Keynote·Pages) 느낌
+   반투명 옆 메뉴 · 도구 막대 · 흰 맥 버튼 · 시스템 파랑 · 가는 아이콘
    이 아래가 마지막 층이에요. 색은 모두 토큰으로만 써요.
    ================================================================ */
 :root{
-  --canvas:#F2F4F6; --surface:#FFFFFF; --sunken:#F9FAFB; --field:#F2F4F6; --line:#E5E8EB; --line2:#D1D6DB;
-  --text:#191F28; --text2:#4E5968; --text3:#8B95A1;
-  --pri:#3182F6; --pri-h:#1B64DA; --pri-soft:#E8F3FF; --pri-ink:#1B64DA;
-  --amber:#E58A00; --amber-soft:#FFF4DB; --blue:#3182F6; --blue-soft:#E8F3FF; --violet:#7B61FF; --violet-soft:#F1EDFF;
-  --ok:#03A65F; --ok-soft:#E4F7EE; --bad:#F04452; --bad-soft:#FFEEEF; --bad-line:#FFD1D5;
-  --warn:#E58A00; --warn-soft:#FFF4DB; --warn-line:#FFE1A6; --warn-ink:#8A5300;
-  --ink:#191F28; --stage:#14171C; --stage2:#1E222A;
-  --hero:none; --glass:rgba(0,0,0,.04); --glass2:rgba(0,0,0,.06);
-  --hair:#F2F4F6; --field2:#F2F4F6; --field3:#EBEEF1; --chip:#E5E8EB; --drop-line:#C9DDFB; --drop-h:#DCEBFF;
-  --sans:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
-  --r:24px; --rs:12px; --lift:none;
-  --focus:0 0 0 3px rgba(49,130,246,.28);
+  --canvas:#F5F5F7; --surface:#FFFFFF; --sunken:#F7F7F9; --field:#FFFFFF; --line:#E1E1E6; --line2:#C9C9CF;
+  --side:rgba(232,232,237,.82); --sidesel:rgba(0,0,0,.075); --bar:linear-gradient(#FBFBFC,#F1F1F4);
+  --text:#1D1D1F; --text2:#4B4B50; --text3:#86868B;
+  --pri:#007AFF; --pri-h:#0066D6; --pri-soft:#E8F2FF; --pri-ink:#0062CC; --pri-grad:linear-gradient(#2D8FFF,#007AFF);
+  --amber:#FF9500; --amber-soft:#FFF3E0; --blue:#007AFF; --blue-soft:#E8F2FF; --violet:#AF52DE; --violet-soft:#F6ECFC;
+  --ok:#1E9E4A; --ok-soft:#E3F6E9; --bad:#E5352B; --bad-soft:#FDECEB; --bad-line:#F6C7C4;
+  --warn:#C77700; --warn-soft:#FFF4E0; --warn-line:#FFDFA8; --warn-ink:#7A4A00;
+  --ink:#1D1D1F; --stage:#1C1C1E; --stage2:#2C2C2E;
+  --hero:none; --glass:rgba(0,0,0,.05); --glass2:rgba(0,0,0,.08);
+  --hair:#EDEDF0; --field2:#F2F2F5; --field3:#F2F2F5; --chip:#E8E8ED; --drop-line:#A9CBFF; --drop-h:#DDEBFF;
+  --btn:#FFFFFF; --btn-h:#F6F6F8; --btn-edge:0 0 0 .5px rgba(0,0,0,.2),0 .5px 1.5px rgba(0,0,0,.1);
+  --card-edge:0 0 0 .5px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.05);
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Apple SD Gothic Neo","Pretendard Variable",Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif;
+  --r:12px; --rs:7px; --lift:none;
+  --focus:0 0 0 3.5px rgba(0,122,255,.35);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --canvas:#101013; --surface:#1B1B21; --sunken:#212128; --field:#26262E; --line:#2C2C35; --line2:#3A3A45;
-  --text:#F2F4F6; --text2:#B0B8C1; --text3:#7E8794;
-  --pri:#3182F6; --pri-h:#4C93FF; --pri-soft:#1A2A45; --pri-ink:#7AB2FF;
-  --amber:#FFB331; --amber-soft:#3A2D14; --blue-soft:#1A2A45; --violet:#A797FF; --violet-soft:#2A2445;
-  --ok:#3DD68C; --ok-soft:#14322A; --bad:#FF6B76; --bad-soft:#3A1C20; --bad-line:#5C2A30;
-  --warn:#FFB331; --warn-soft:#3A2D14; --warn-line:#5A4318; --warn-ink:#FFD58A;
-  --ink:#2C2C35; --stage:#0B0B0E; --stage2:#16161B;
-  --glass:rgba(255,255,255,.06); --glass2:rgba(255,255,255,.1);
-  --hair:#26262E; --field2:#26262E; --field3:#2C2C35; --chip:#2C2C35; --drop-line:#2A4470; --drop-h:#1D3050;
-  --focus:0 0 0 3px rgba(76,147,255,.35);
+  --canvas:#1E1E20; --surface:#2A2A2D; --sunken:#252528; --field:#1C1C1E; --line:#3A3A3E; --line2:#4A4A50;
+  --side:rgba(40,40,44,.86); --sidesel:rgba(255,255,255,.1); --bar:linear-gradient(#323236,#2A2A2D);
+  --text:#F5F5F7; --text2:#C7C7CC; --text3:#8E8E93;
+  --pri:#0A84FF; --pri-h:#409CFF; --pri-soft:#173252; --pri-ink:#64A8FF; --pri-grad:linear-gradient(#3D9BFF,#0A84FF);
+  --amber:#FF9F0A; --amber-soft:#3D2C12; --blue-soft:#173252; --violet:#BF5AF2; --violet-soft:#36203F;
+  --ok:#32D74B; --ok-soft:#173A20; --bad:#FF453A; --bad-soft:#3F1D1B; --bad-line:#6A2A26;
+  --warn:#FF9F0A; --warn-soft:#3D2C12; --warn-line:#5E4317; --warn-ink:#FFCC80;
+  --ink:#3A3A3E; --stage:#111113; --stage2:#1C1C1E;
+  --glass:rgba(255,255,255,.07); --glass2:rgba(255,255,255,.11);
+  --hair:#333337; --field2:#323236; --field3:#38383C; --chip:#3A3A3E; --drop-line:#2D5A96; --drop-h:#1D3A5E;
+  --btn:#4A4A4F; --btn-h:#55555B; --btn-edge:0 0 0 .5px rgba(0,0,0,.5),inset 0 .5px 0 rgba(255,255,255,.12);
+  --card-edge:0 0 0 .5px rgba(0,0,0,.6),0 1px 3px rgba(0,0,0,.3);
+  --focus:0 0 0 3.5px rgba(10,132,255,.45);
 }}
 :root[data-theme="dark"]{
-  --canvas:#101013; --surface:#1B1B21; --sunken:#212128; --field:#26262E; --line:#2C2C35; --line2:#3A3A45;
-  --text:#F2F4F6; --text2:#B0B8C1; --text3:#7E8794;
-  --pri:#3182F6; --pri-h:#4C93FF; --pri-soft:#1A2A45; --pri-ink:#7AB2FF;
-  --amber:#FFB331; --amber-soft:#3A2D14; --blue-soft:#1A2A45; --violet:#A797FF; --violet-soft:#2A2445;
-  --ok:#3DD68C; --ok-soft:#14322A; --bad:#FF6B76; --bad-soft:#3A1C20; --bad-line:#5C2A30;
-  --warn:#FFB331; --warn-soft:#3A2D14; --warn-line:#5A4318; --warn-ink:#FFD58A;
-  --ink:#2C2C35; --stage:#0B0B0E; --stage2:#16161B;
-  --glass:rgba(255,255,255,.06); --glass2:rgba(255,255,255,.1);
-  --hair:#26262E; --field2:#26262E; --field3:#2C2C35; --chip:#2C2C35; --drop-line:#2A4470; --drop-h:#1D3050;
-  --focus:0 0 0 3px rgba(76,147,255,.35);
+  --canvas:#1E1E20; --surface:#2A2A2D; --sunken:#252528; --field:#1C1C1E; --line:#3A3A3E; --line2:#4A4A50;
+  --side:rgba(40,40,44,.86); --sidesel:rgba(255,255,255,.1); --bar:linear-gradient(#323236,#2A2A2D);
+  --text:#F5F5F7; --text2:#C7C7CC; --text3:#8E8E93;
+  --pri:#0A84FF; --pri-h:#409CFF; --pri-soft:#173252; --pri-ink:#64A8FF; --pri-grad:linear-gradient(#3D9BFF,#0A84FF);
+  --amber:#FF9F0A; --amber-soft:#3D2C12; --blue-soft:#173252; --violet:#BF5AF2; --violet-soft:#36203F;
+  --ok:#32D74B; --ok-soft:#173A20; --bad:#FF453A; --bad-soft:#3F1D1B; --bad-line:#6A2A26;
+  --warn:#FF9F0A; --warn-soft:#3D2C12; --warn-line:#5E4317; --warn-ink:#FFCC80;
+  --ink:#3A3A3E; --stage:#111113; --stage2:#1C1C1E;
+  --glass:rgba(255,255,255,.07); --glass2:rgba(255,255,255,.11);
+  --hair:#333337; --field2:#323236; --field3:#38383C; --chip:#3A3A3E; --drop-line:#2D5A96; --drop-h:#1D3A5E;
+  --btn:#4A4A4F; --btn-h:#55555B; --btn-edge:0 0 0 .5px rgba(0,0,0,.5),inset 0 .5px 0 rgba(255,255,255,.12);
+  --card-edge:0 0 0 .5px rgba(0,0,0,.6),0 1px 3px rgba(0,0,0,.3);
+  --focus:0 0 0 3.5px rgba(10,132,255,.45);
 }
 
 /* ---- 바탕 · 글자 ---- */
-html,body{font-size:15px;letter-spacing:-.01em}
+html,body{font-size:14px;letter-spacing:0;-webkit-font-smoothing:antialiased}
 body{background:var(--canvas);color:var(--text);font-family:var(--sans)}
 button,input,select,textarea{font-family:var(--sans)}
 a{color:var(--pri-ink)}
 :focus-visible{outline:none;box-shadow:var(--focus)!important}
-i[class^="ph-"],i[class*=" ph-"]{font-size:20px;line-height:1;display:inline-block;flex:none}
+i[class^="ph"],i[class*=" ph"]{font-size:17px;line-height:1;display:inline-block;flex:none}
 
-/* ---- 버튼: 세 단계 (파랑 > 연한 파랑 > 회색), 둥근 네모 ---- */
-.btn{height:40px;padding:0 16px;border:0;border-radius:12px;background:var(--field);color:var(--text2);font-weight:600;font-size:14.5px;box-shadow:none;gap:6px;transition:background .12s,color .12s,transform .06s}
-.btn:hover{background:var(--field3);color:var(--text)}
-.btn:active:not(:disabled){transform:scale(.98)}
-.btn.pri{background:var(--pri);color:#fff}
-.btn.pri:hover{background:var(--pri-h);color:#fff}
-.btn.sm{height:34px;padding:0 12px;border-radius:10px;font-size:13.5px}
-.btn.ghost{background:transparent;color:var(--text2)}
-.btn.ghost:hover{background:var(--field);color:var(--text)}
-.btn.ibtn{width:40px;padding:0;display:inline-grid;place-items:center;color:var(--text2)}
-.btn.danger:not(:disabled),.btn.danger{background:var(--bad-soft);color:var(--bad)}
-.btn.danger:not(:disabled):hover{background:var(--bad-soft);color:var(--bad);filter:brightness(.97)}
-.btn:disabled{opacity:.4}
-#dlShots,#openFmt,#ldOk{background:var(--pri-soft);color:var(--pri-ink)}
-#dlShots:hover,#openFmt:hover,#ldOk:hover{background:var(--drop-h)}
+/* ---- 맥 버튼: 흰 버튼 + 가는 테두리, 중요한 것만 파랑 ---- */
+.btn{height:28px;padding:0 12px;border:0;border-radius:7px;background:var(--btn);color:var(--text);font-weight:500;font-size:13px;box-shadow:var(--btn-edge);gap:5px;transition:background .1s}
+.btn:hover{background:var(--btn-h);color:var(--text)}
+.btn:active:not(:disabled){filter:brightness(.94)}
+.btn.pri{background:var(--pri-grad);color:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 .5px 1.5px rgba(0,0,0,.12)}
+.btn.pri:hover{background:var(--pri);color:#fff}
+.btn.sm{height:24px;padding:0 9px;border-radius:6px;font-size:12px}
+.btn.ghost{background:transparent;box-shadow:none;color:var(--text2)}
+.btn.ghost:hover{background:var(--glass);color:var(--text)}
+.btn.ibtn{width:28px;padding:0;display:inline-grid;place-items:center;color:var(--text2)}
+.btn.danger:not(:disabled),.btn.danger{background:var(--btn);color:var(--bad)}
+.btn.danger:not(:disabled):hover{background:var(--bad-soft);color:var(--bad)}
+.btn:disabled{opacity:.45}
+.nextact.btn{height:28px;font-size:13px;border-radius:7px;padding:0 12px}
+.nextact.btn:not(.pri){background:var(--btn);color:var(--text)}
+.newsess i{font-size:14px}
+#dlShots,#openFmt,#ldOk{background:var(--btn);color:var(--text)}
 
-/* ---- 입력칸: 테두리 없이 회색으로 채우고, 누르면 파란 테 ---- */
-input[type=text],input[type=number],input[type=search],input[type=password],select,textarea{background:var(--field);border:1px solid transparent;border-radius:12px;color:var(--text);font-size:15px;box-shadow:none}
-input[type=text],input[type=number],input[type=search],input[type=password],select{height:44px;padding:0 14px}
-textarea{padding:12px 14px;line-height:1.65}
-input:hover,select:hover,textarea:hover{background:var(--field3)}
-input:focus,select:focus,textarea:focus{background:var(--surface);border-color:var(--pri);box-shadow:var(--focus);outline:none}
+/* ---- 입력칸: 흰 칸 + 가는 테두리, 누르면 맥 파란 테 ---- */
+input[type=text],input[type=number],input[type=search],input[type=password],select,textarea{background:var(--field);border:1px solid var(--line2);border-radius:7px;color:var(--text);font-size:13.5px;box-shadow:inset 0 .5px 1px rgba(0,0,0,.04)}
+input[type=text],input[type=number],input[type=search],input[type=password],select{height:30px;padding:0 9px}
+textarea{padding:9px 10px;line-height:1.6}
+input:focus,select:focus,textarea:focus{border-color:var(--pri);box-shadow:var(--focus);outline:none}
 ::placeholder{color:var(--text3)}
-label.fl{font-size:13.5px;font-weight:600;color:var(--text2);margin:16px 0 8px}
+label.fl{font-size:12.5px;font-weight:600;color:var(--text2);margin:14px 0 6px}
 input[type=checkbox],input[type=radio],input[type=range]{accent-color:var(--pri)}
 
-/* ---- 옆 메뉴: 노션처럼 조용하게 ---- */
-.rail{background:var(--surface);border-right:1px solid var(--line)}
-.brand{padding:22px 18px 16px}
-.brand .mk{width:34px;height:34px;border-radius:10px;background:var(--pri)}
-.brand b{font-size:16px;font-weight:700;letter-spacing:-.02em}
-.brand small{font-size:12px;color:var(--text3)}
-.railsec{padding:14px 12px 4px}
-.railsec h4{margin:0 8px 6px;font-size:12.5px;font-weight:600;color:var(--text3)}
-.rfold i{font-size:12px;transition:transform .15s}
+/* ---- 옆 메뉴: 반투명 회색, 고른 줄은 회색 둥근 바탕 ---- */
+.rail{background:var(--side);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-right:1px solid var(--line)}
+.brand{padding:18px 16px 12px;gap:9px}
+.brand .mk{width:28px;height:28px;border-radius:7px;background:var(--pri-grad);box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.brand .mk svg{width:18px;height:18px}
+.brand b{font-size:14px;font-weight:600;letter-spacing:-.01em}
+.brand small{font-size:11.5px;color:var(--text3)}
+.railsec{padding:12px 10px 2px}
+.railsec h4{margin:0 8px 4px;font-size:11.5px;font-weight:600;color:var(--text3)}
+.rfold i{font-size:10px;transition:transform .15s}
 .railsec.closed .rfold i{transform:rotate(-90deg)}
-.rlist li{border-radius:10px;padding:8px 10px}
-.rlist li:hover{background:var(--field)}
-.rlist li.on{background:var(--pri-soft)}
-.rlist li.on .t b{color:var(--pri-ink)}
-.rlist .t b{font-size:14px;font-weight:600}
-.rlist .t span{font-size:12px}
-.rail .libsearch{background:var(--field);border-radius:10px;height:38px;font-size:14px}
-.rail .foot{background:var(--field);border-radius:14px;margin:12px}
-.mebox .av,.lrow .av{background:var(--pri)}
-.ricon{background:transparent;color:var(--text2);border-radius:10px;width:40px;height:40px}
-.ricon i{font-size:22px}
-.pin i{font-size:18px;transition:transform .15s}
+.rlist li{border-radius:7px;padding:6px 9px}
+.rlist li:hover{background:var(--glass)}
+.rlist li.on{background:var(--sidesel)}
+.rlist li.on .t b{color:var(--text)}
+.rlist .t b{font-size:13px;font-weight:500}
+.rlist .t span{font-size:11.5px}
+.rail .libsearch{background:var(--glass);border:0;border-radius:7px;height:28px;font-size:13px;box-shadow:none}
+.rail .libsearch:focus{background:var(--field);box-shadow:var(--focus)}
+.rail .foot{background:transparent;border-top:1px solid var(--line);border-radius:0;margin:10px 0 0;padding:12px 16px}
+.mebox .av,.lrow .av{background:var(--pri-grad)}
+.ricon{background:transparent;color:var(--text2);border-radius:8px;width:36px;height:36px}
+.ricon i{font-size:19px}
+.pin i{font-size:15px;transition:transform .15s}
 .pin[aria-pressed=true] i{transform:rotate(-30deg)}
-.pin[aria-pressed=true]{background:var(--pri-soft);color:var(--pri-ink)}
-.libopen{color:var(--pri-ink)}
+.pin[aria-pressed=true]{background:var(--sidesel);color:var(--text)}
+.libopen{color:var(--pri-ink);font-weight:500}
 
-/* ---- 위쪽: 색 바탕 없이 큰 제목 ---- */
+/* ---- 위쪽: 맥 창의 도구 막대처럼 ---- */
 header.doc::before{display:none!important}
-header.doc,.doc{background:var(--canvas)!important;padding:32px 40px 20px}
-.doc input.title{font-size:30px;font-weight:700;letter-spacing:-.035em;color:var(--text);background:transparent;height:auto;border:0;padding:2px 8px}
-.doc input.title:hover{background:var(--field)}
-.doc input.title:focus{background:var(--surface);box-shadow:var(--focus)}
-.pen{color:var(--text3)}.pen i{font-size:18px}.pen:hover{background:var(--field);color:var(--text)}
-.saved{font-size:13px;color:var(--text3)}
-.nextact.btn{height:44px;border-radius:12px;font-size:15px;padding:0 18px}
-.nextact.btn:not(.pri){background:var(--pri-soft);color:var(--pri-ink)}
-.nextact.btn:not(.pri):hover{background:var(--drop-h)}
-.newsess i{font-size:18px}
-main{padding:0 40px 120px}
-@media (max-width:960px){main{padding:0 16px 80px}header.doc,.doc{padding:18px 16px 14px;margin:0 -16px}.doc input.title{font-size:24px}}
+header.doc,.doc{background:var(--bar)!important;border-bottom:1px solid var(--line)!important;box-shadow:none!important;padding:12px 28px;margin:0 -28px}
+.doc input.title{font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--text);background:transparent;height:28px;border:0;padding:0 6px;border-radius:6px;box-shadow:none}
+.doc input.title:hover{background:var(--glass)}
+.doc input.title:focus{background:var(--field);box-shadow:var(--focus)}
+.pen{color:var(--text3);width:26px;height:26px;border-radius:6px}.pen i{font-size:15px}.pen:hover{background:var(--glass);color:var(--text)}
+.saved{font-size:12px;color:var(--text3)}
+main{padding:0 28px 100px}
+@media (max-width:960px){main{padding:0 14px 80px}header.doc,.doc{padding:10px 14px;margin:0 -14px}}
+@media (min-width:961px){.mtop{display:none!important}}
 
-/* ---- 칸: 흰 블록, 그림자 없이, 넉넉한 안쪽 여백 ---- */
-.split,.resgrid{gap:16px}
-.split{margin-top:8px}
-.panel{background:var(--surface);border:0;border-radius:var(--r);box-shadow:none;margin-bottom:16px}
-.ph2{padding:24px 28px 8px;min-height:0;gap:12px}
-.ph2 h2{font-size:20px;font-weight:700;letter-spacing:-.03em}
-.ph2 .meta{font-size:13.5px;color:var(--text3)}
-.pb{padding:12px 28px 24px}
-.pf{border-top:0;padding:4px 28px 24px;background:transparent}
-.pico{width:40px;height:40px;border-radius:12px}
-.pico i{font-size:22px}
-.pico.c1{background:var(--blue-soft);color:var(--blue)}
-.pico.c2{background:var(--amber-soft);color:var(--amber)}
-.pico.c3{background:var(--violet-soft);color:var(--violet)}
-.pico.c4{background:var(--stage);color:#fff}
+/* ---- 칸: 흰 카드, 아주 옅은 그림자 ---- */
+.split,.resgrid{gap:14px}
+.split{margin-top:18px}
+.panel{background:var(--surface);border:0;border-radius:var(--r);box-shadow:var(--card-edge);margin-bottom:14px}
+.ph2{padding:14px 18px 8px;min-height:0;gap:10px;border-bottom:0!important}
+.ph2 h2{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.ph2 .meta{font-size:12px;color:var(--text3)}
+.pb{padding:8px 18px 18px}
+.pf{border-top:0;padding:0 18px 16px;background:transparent}
+.pico{width:26px;height:26px;border-radius:7px;color:#fff!important;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.08)}
+.pico i{font-size:15px}
+.pico.c1{background:linear-gradient(#3D9BFF,#007AFF)}
+.pico.c2{background:linear-gradient(#FFAE3D,#FF9500)}
+.pico.c3{background:linear-gradient(#C778EA,#AF52DE)}
+.pico.c4{background:linear-gradient(#48484D,#1D1D1F)}
 
 /* 칸 머리의 도구 버튼 */
-.tbtn{width:38px;height:38px;border-radius:10px;color:var(--text2)}
-.tbtn i{font-size:20px}
-.tbtn:hover,.tbtn:focus-visible{background:var(--field);color:var(--text)}
-.tbtn.lab{height:38px;border:0;border-radius:10px;background:var(--field);color:var(--text);padding:0 14px 0 11px;font-size:14px;gap:6px}
-.tbtn.lab i{font-size:18px}
-.tbtn.lab:hover,.tbtn.lab:focus-visible{background:var(--pri-soft);color:var(--pri-ink)}
-.tbtn.danger{margin-left:6px;color:var(--text3)}
+.tbtn{width:28px;height:28px;border-radius:7px;color:var(--text2)}
+.tbtn i{font-size:17px}
+.tbtn:hover,.tbtn:focus-visible{background:var(--glass);color:var(--text)}
+.tbtn.lab{height:26px;border:0;border-radius:7px;background:var(--btn);color:var(--text);box-shadow:var(--btn-edge);padding:0 10px 0 8px;font-size:12.5px;font-weight:500;gap:5px}
+.tbtn.lab i{font-size:14px}
+.tbtn.lab:hover,.tbtn.lab:focus-visible{background:var(--btn-h);color:var(--text)}
+.tbtn.danger{margin-left:4px;color:var(--text3)}
 .tbtn.danger:hover,.tbtn.danger:focus-visible{background:var(--bad-soft);color:var(--bad)}
 .folded .tbtn[data-fold] i,.folded .foldpill i{transform:rotate(180deg)}
 .tbtn[data-fold] i,.foldpill i{transition:transform .18s}
-.tlink{height:38px;border-radius:10px;color:var(--text2);font-size:14px}
-.tlink i{font-size:17px}
-.tlink:hover{background:var(--field);color:var(--text)}
-[data-tip]:not(.oav):hover::after,[data-tip]:not(.oav):focus-visible::after{background:var(--text);color:var(--surface);border-radius:8px;font-size:12.5px;padding:6px 10px;box-shadow:none}
-.foldpill{height:30px;border-radius:10px;border:0;background:var(--field);color:var(--text2);font-size:13px;box-shadow:none;padding:0 12px 0 10px}
-.foldpill i{font-size:14px}
-.foldpill:hover{background:var(--field3);color:var(--text)}
+.tlink{height:26px;border-radius:7px;color:var(--pri-ink);font-size:12.5px;font-weight:500;padding:0 8px}
+.tlink i{font-size:14px}
+.tlink:hover{background:var(--pri-soft);color:var(--pri-ink)}
+[data-tip]:not(.oav):hover::after,[data-tip]:not(.oav):focus-visible::after{background:rgba(30,30,32,.92);color:#fff;border-radius:6px;font-size:11.5px;padding:4px 8px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.foldpill{height:22px;border-radius:6px;border:0;background:var(--glass);color:var(--text2);font-size:11.5px;box-shadow:none;padding:0 9px 0 7px}
+.foldpill i{font-size:12px}
+.foldpill:hover{background:var(--glass2);color:var(--text)}
 
 /* ---- 찬양: 악보 올리기 · 곡 목록 ---- */
-.drop{border:1.5px dashed var(--drop-line);background:var(--pri-soft);border-radius:18px;padding:30px 16px}
+.drop{border:1.5px dashed var(--drop-line);background:var(--pri-soft);border-radius:10px;padding:20px 14px;gap:8px}
 .drop:hover,.drop.over{border-color:var(--pri);background:var(--drop-h)}
-.drop .ic{width:52px;height:52px;border-radius:16px;background:var(--pri);color:#fff;box-shadow:none}
-.drop .ic i{font-size:24px}
-.drop strong{font-size:16px;font-weight:700}
-.libpick{position:relative}
-.libpick>span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);display:flex;z-index:1}
-.libpick>span i{font-size:18px}
-.libpick input{height:46px;border-radius:12px;padding-left:42px;background:var(--field)}
-.libdrop{border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px -12px rgba(0,0,0,.18);padding:6px}
-.libdrop button{border-radius:10px;padding:8px 10px}
-.libdrop button:hover,.libdrop button.on{background:var(--field)}
-.setlist{background:transparent;padding:0;gap:8px;border:0}
-.song{background:var(--sunken);border:1px solid var(--line);border-radius:16px}
-.grip{color:var(--text3)}.grip i{font-size:18px}
-.cover .no{background:var(--text);color:var(--surface);border-radius:6px}
-.pill{border-radius:8px}
+.drop .ic{width:36px;height:36px;border-radius:9px;background:var(--pri-grad);color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.drop .ic i{font-size:18px}
+.drop strong{font-size:13.5px;font-weight:600}
+.drop span span{font-size:12px}
+.libpick{position:relative;margin-top:10px}
+.libpick>span{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);display:flex;z-index:1}
+.libpick>span i{font-size:14px}
+.libpick input{height:30px;border-radius:15px;padding-left:30px}
+.libdrop{border:0;border-radius:10px;box-shadow:0 0 0 .5px rgba(0,0,0,.15),0 10px 30px -8px rgba(0,0,0,.25);padding:5px;background:var(--surface)}
+.libdrop button{border-radius:6px;padding:6px 8px}
+.libdrop button:hover,.libdrop button.on{background:var(--pri);color:#fff}
+.libdrop button:hover small,.libdrop button.on small{color:rgba(255,255,255,.8)}
+.setlist{display:block;background:var(--surface);padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:10px}
+.song{background:var(--surface);border:0;border-top:1px solid var(--hair);box-shadow:none;border-radius:0;padding:10px 12px 10px 6px;gap:10px;grid-template-columns:20px 60px minmax(0,1fr) auto}
+.song:first-child{border-top:0}
+.cover{width:60px;height:80px}
+.grip{color:var(--text3)}.grip i{font-size:15px}
+.cover{border-radius:6px;border:.5px solid var(--line2)}
+.cover.text{background:var(--sunken);color:var(--text3);font-weight:500;font-size:11.5px}
+.cover .no{background:rgba(0,0,0,.72);color:#fff;border-radius:5px;font-size:11px}
+.song .top input{font-size:14px;font-weight:600;background:transparent;border-color:transparent;box-shadow:none;height:28px;padding:0 6px;margin-left:-6px}
+.song .top input:hover{background:var(--glass)}
+.song .top input:focus{background:var(--field);border-color:var(--pri);box-shadow:var(--focus)}
+.song textarea{font-size:13px}
+.song .acts .btn{height:24px}
+.pill{border-radius:5px}
 
 /* ---- 말씀 ---- */
-.prev{background:var(--field);border:0;border-radius:14px}
-.stepper output{color:var(--pri-ink)}
-.stepper .btn{width:34px;height:34px;border-radius:10px;padding:0}
+.prev{background:var(--sunken);border:1px solid var(--line);border-radius:8px;font-size:13px}
+.stepper output{color:var(--pri-ink);font-size:15px}
+.stepper .btn{width:24px;height:24px;border-radius:6px;padding:0}
 
 /* ---- 찬양 자막 · 말씀 자막 ---- */
-.rbar{border-bottom:0;padding:4px 28px 12px;gap:8px}
-.rbar label{font-size:13.5px;color:var(--text3)}
-.rbar select,.rbar input{height:38px;border-radius:10px;font-size:14px}
-.edcol{padding:8px 28px 24px}
-.hl .back,#outText,#wordText{border-radius:16px}
-#wordText{background:var(--field);border:1px solid transparent;font-family:var(--sans);font-size:15px}
-#wordText:focus{background:var(--surface);border-color:var(--pri);box-shadow:var(--focus)}
-.chip,.chipx{background:var(--field);border:0}
+.rbar{border-bottom:1px solid var(--hair);padding:2px 18px 12px;gap:7px}
+.rbar label{font-size:12.5px;color:var(--text3)}
+.rbar select,.rbar input{height:26px;border-radius:6px;font-size:12.5px;padding:0 7px}
+#outFmt{max-width:150px} #outMax{width:52px}
+.rbar .div{background:var(--line)}
+.edcol{padding:12px 18px 18px}
+.hl .back,#outText{border-radius:8px}
+#wordText{border-radius:8px;background:var(--field);border:1px solid var(--line2);font-family:var(--sans);font-size:14px}
+#wordText:focus{border-color:var(--pri);box-shadow:var(--focus)}
+.chip,.chipx{background:var(--glass);border:0}
 .chip:hover{background:var(--pri-soft);color:var(--pri-ink)}
-.banner{border-radius:14px;border:0;background:var(--warn-soft);color:var(--warn-ink)}
-.banner.clash{background:var(--bad-soft);color:var(--bad);border:0}
-.fixbar{border-radius:16px}
+.banner{border-radius:8px;border:0;background:var(--warn-soft);color:var(--warn-ink);margin:10px 18px 0}
+.banner.clash{background:var(--bad-soft);color:var(--bad);border:0;margin:12px 0 0}
+.fixbar{border-radius:10px}
 
-/* ---- 슬라이드 미리보기: 이 화면에서 단 하나, 어두운 무대 ---- */
-#slidePanel{background:var(--surface)}
-.shotbody .shots,.shots{background:var(--stage);border-radius:20px;margin:0 28px 28px 8px;padding:20px 22px 24px;color:#E5E8EB}
-.shead b{color:#C9CED6;font-weight:600}
-.shot{border-radius:6px;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 10px 24px -14px rgba(0,0,0,.8)}
-.shot:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,255,255,.14),0 16px 32px -14px rgba(0,0,0,.9)}
+/* ---- 슬라이드 미리보기: Keynote 슬라이드 탐색기처럼 어두운 판 위에 ---- */
+.shotbody .shots,.shots{background:var(--stage);border-radius:10px;margin:0 18px 18px 6px;padding:16px 18px 20px;color:#E5E5EA}
+.shead b{color:#D1D1D6;font-weight:600;font-size:12.5px}
+.shot{border-radius:4px;box-shadow:0 0 0 .5px rgba(255,255,255,.12),0 6px 16px -8px rgba(0,0,0,.8)}
+.shot:hover{transform:none;box-shadow:0 0 0 .5px rgba(255,255,255,.25),0 6px 16px -8px rgba(0,0,0,.8)}
 .shotw.cur .shot{box-shadow:0 0 0 2px #fff}
 .shotw.sel .shot,.shotw.sel.cur .shot{box-shadow:0 0 0 3px var(--pri)}
 .shotzoom{color:var(--text3)}
-.shotzoom i{font-size:16px}
-.shotzoom button{border:0;background:var(--field);border-radius:8px;color:var(--text2)}
-.shotx{background:rgba(0,0,0,.6)}.shotx i{font-size:13px}
-details.look{background:var(--field);border-radius:18px;padding:14px 18px 10px}
-details.look summary{font-size:15px;font-weight:700;color:var(--text)}
-.lksec{border-top-color:var(--line)}
-.lksec h5{font-size:12.5px;color:var(--text3);letter-spacing:0}
-#lookCtl .lktabs{border-bottom-color:var(--line)}
-.lksec .lktext,.lk select,.num input{background:var(--surface)}
-.seg2{background:var(--field);border:0;border-radius:12px;padding:3px}
-.seg2 button{height:32px;border-radius:9px;padding:0 14px;font-size:13.5px;font-weight:600;color:var(--text2)}
-.seg2 button[aria-selected=true]{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.seg2 button[data-g=song][aria-selected=true]{background:var(--pri);color:#fff}
-.seg2 button[data-g=word][aria-selected=true]{background:var(--amber);color:#fff}
-details.look .seg2{background:var(--surface)}
-.mchip{background:var(--surface);border-radius:10px}
+.shotzoom i{font-size:13px}
+.shotzoom button{border:0;background:var(--btn);box-shadow:var(--btn-edge);border-radius:6px;color:var(--text2);width:20px;height:20px}
+.shotx{background:rgba(0,0,0,.6)}.shotx i{font-size:12px}
+details.look{background:var(--sunken);border:1px solid var(--hair);border-radius:10px;padding:12px 14px 8px}
+details.look summary{font-size:13.5px;font-weight:600;color:var(--text)}
+.lksec{border-top-color:var(--hair)}
+.lksec h5{font-size:11.5px;color:var(--text3);letter-spacing:0}
+#lookCtl .lktabs{border-bottom-color:var(--hair)}
+.lk{font-size:12px;color:var(--text2)}
+.lk select,.lksec .lktext{height:26px;border-radius:6px;font-size:12.5px;padding:0 7px}
+.num{border:1px solid var(--line2);border-radius:6px;background:var(--field);height:24px;padding-right:6px}
+.num input,.num input:hover,.num input:focus{width:46px;height:22px;padding:0 0 0 7px;border:0;background:transparent;box-shadow:none;font-size:12.5px}
+.num:focus-within{border-color:var(--pri);box-shadow:var(--focus)}
+.lkfold span{background:var(--line2)}
+.mchip{background:var(--btn);box-shadow:var(--btn-edge);border:0;border-radius:6px}
+/* 맥 세그먼트 컨트롤 */
+.seg2{background:var(--glass2);border:0;border-radius:8px;padding:2px}
+.seg2 button{height:22px;border-radius:6px;padding:0 11px;font-size:12px;font-weight:500;color:var(--text)}
+.seg2 button[aria-selected=true]{background:var(--btn);color:var(--text);box-shadow:0 0 0 .5px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.12)}
+.seg2 button[data-g=song],.seg2 button[data-g=word]{color:var(--text)}
+.seg2 button[data-g=song][aria-selected=true],.seg2 button[data-g=word][aria-selected=true]{background:var(--btn);color:var(--text)}
+.seg2 button[data-g]::before{opacity:1}
+.seg2 button[data-g=song]::before{background:var(--pri)}
+.seg2 button[data-g=word]::before{background:var(--amber)}
+.seg2 button[data-g][aria-selected=true]::before{background:currentColor}
+.seg2 button[data-g=song][aria-selected=true]::before{background:var(--pri)}
+.seg2 button[data-g=word][aria-selected=true]::before{background:var(--amber)}
 
-/* ---- 떠 있는 것들: 알림 · 말풍선 · 창 ---- */
-.toast{background:var(--text);color:var(--surface);border-radius:14px;padding:12px 18px;font-size:14px;box-shadow:0 10px 30px -10px rgba(0,0,0,.35)}
-.tundo{color:var(--pri-h)}
-:root[data-theme="dark"] .tundo{color:var(--pri)}
-.tip{background:var(--text);color:var(--surface);border-radius:12px}
-.tip::before{background:var(--text)}
-.logbox,.fmtbox{background:rgba(0,0,0,.4);backdrop-filter:blur(2px)}
-.lcard,.fmtcard{border-radius:24px;box-shadow:0 24px 60px -20px rgba(0,0,0,.35);background:var(--surface)}
-.lhead{padding:22px 22px 12px 28px}.lhead h2,.fmthead h2{font-size:20px;font-weight:700;letter-spacing:-.03em}
-.lhead .ibtn i,.fmthead .ibtn i{font-size:20px}
-.fmthead{padding:22px 22px 14px 28px}.fmtbody{padding:0 28px 28px}
-.fmtbox .panel{border:1px solid var(--line);border-radius:18px}
-.fmtbox .fcard{border-radius:18px}
-.fmtbox .seg label{border-radius:10px;border:0;background:var(--field);height:36px}
-.fmtbox .seg label:has(input:checked){background:var(--pri-soft);color:var(--pri-ink)}
-.libtools{padding:0 28px 14px}
-.liblist button.on{background:var(--pri-soft)}
-.liblist button.on .t b{color:var(--pri-ink)}
-.ldlyrics section{background:var(--field)}
+/* ---- 떠 있는 것들: 알림 · 말풍선 · 시트 ---- */
+.toast{background:rgba(30,30,32,.94);color:#fff;border-radius:10px;padding:10px 16px;font-size:13px;box-shadow:0 8px 28px -6px rgba(0,0,0,.35)}
+.tundo{color:#64A8FF}
+.tip{background:var(--surface);color:var(--text);border-radius:10px;box-shadow:0 0 0 .5px rgba(0,0,0,.15),0 10px 30px -8px rgba(0,0,0,.3)}
+.tip::before{background:var(--surface)}
+.logbox,.fmtbox{background:rgba(0,0,0,.28)}
+.lcard,.fmtcard{border-radius:12px;box-shadow:0 0 0 .5px rgba(0,0,0,.2),0 24px 70px -12px rgba(0,0,0,.45);background:var(--surface)}
+.lhead{padding:16px 16px 10px 20px}.lhead h2,.fmthead h2{font-size:15px;font-weight:600}
+.lhead .ibtn i,.fmthead .ibtn i{font-size:16px}
+.fmthead{padding:16px 16px 12px 20px}.fmtbody{padding:0 20px 20px}
+.fmtbox .panel{box-shadow:none;border:1px solid var(--line);border-radius:10px}
+.fmtbox .fcard{border-radius:10px;box-shadow:var(--card-edge);border:0}
+.fmtbox .fcard.cur{box-shadow:0 0 0 2px var(--pri)}
+.fmtbox .seg label{border-radius:7px;border:0;background:var(--btn);box-shadow:var(--btn-edge);height:28px;font-size:12.5px}
+.fmtbox .seg label:has(input:checked){background:var(--pri);color:#fff}
+.libtools{padding:0 20px 12px}
+.libtools input[type=search]{height:30px;border-radius:15px}
+.libtools select{height:30px}
+.liblist button{border-radius:7px;padding:7px 9px}
+.liblist button.on{background:var(--pri)}
+.liblist button.on .t b,.liblist button.on .t span{color:#fff}
+.liblist button.on .okb{background:rgba(255,255,255,.25);color:#fff}
+.ldlyrics section{background:var(--sunken);border:1px solid var(--hair);border-radius:8px}
 .ldlyrics h5{color:var(--pri-ink)}
-.ldhead h3{font-size:22px;font-weight:700}
-.okb{background:var(--ok-soft);color:var(--ok);border-radius:6px}
+.ldhead h3{font-size:19px;font-weight:700}
+.okb{background:var(--ok-soft);color:var(--ok);border-radius:4px}
 .oav{border-color:var(--surface)}
-#lightbox,#slidebox{background:rgba(10,12,16,.94)}
+#lightbox,#slidebox{background:rgba(0,0,0,.88)}
 
 /* ---- 로그인 ---- */
 .gate{background:var(--canvas)}
-.gcard{border-radius:28px;box-shadow:none;border:1px solid var(--line);padding:40px 36px 32px}
-.gmk{background:var(--pri);border-radius:16px}
-.gcard h1{font-size:26px;font-weight:700;letter-spacing:-.035em}
-.gtabs{background:var(--field);border-radius:12px}
-.gtabs button[aria-selected=true]{background:var(--surface);color:var(--text)}
-.gcard .gl input{background:var(--field);border-radius:12px;height:50px}
-.gcard .gl input:hover{background:var(--field3)}
-.gcard .gl input:focus{background:var(--surface);border-color:var(--pri);box-shadow:var(--focus)}
-.gcard .btn.big{height:52px;border-radius:14px;font-size:16px}
+.gcard{border-radius:14px;box-shadow:0 0 0 .5px rgba(0,0,0,.12),0 20px 60px -16px rgba(0,0,0,.3);border:0;padding:32px 30px 26px;background:var(--surface)}
+.gmk{background:var(--pri-grad);border-radius:12px;width:48px;height:48px}
+.gcard h1{font-size:21px;font-weight:700;letter-spacing:-.01em}
+.gtabs{background:var(--glass2);border-radius:8px;padding:2px}
+.gtabs button{height:26px;border-radius:6px;font-size:13px}
+.gtabs button[aria-selected=true]{background:var(--btn);color:var(--text);box-shadow:0 0 0 .5px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.12)}
+.gl{font-size:12px;color:var(--text2)}
+.gcard .gl input{background:var(--field);border:1px solid var(--line2);border-radius:7px;height:34px;font-size:14px;padding:0 10px}
+.gcard .gl input:hover{background:var(--field)}
+.gcard .gl input:focus{border-color:var(--pri);box-shadow:var(--focus)}
+.gcard .btn.big{height:34px;border-radius:8px;font-size:14px}
 
-@media (prefers-reduced-motion:reduce){.btn:active:not(:disabled){transform:none}}
-
-/* 작은 숫자 칸·슬라이드 설정 칸은 작게 */
-.num{border:0;border-radius:8px;background:var(--surface);height:32px;padding-right:8px}
-.num input,.num input:hover,.num input:focus{width:52px;height:32px;padding:0 0 0 10px;border:0;border-radius:8px;background:transparent;box-shadow:none;font-size:13.5px}
-.num:focus-within{box-shadow:var(--focus)}
-.lk{font-size:13px;color:var(--text2)}
-.lk select,.lksec .lktext{height:36px;border-radius:10px;font-size:13.5px;padding:0 10px}
-.lkfold span{background:var(--line2)}
-#outMax{width:72px}
-.rbar .div{background:var(--line)}
-.ldmeta input{width:90px;height:36px}
-
-@media (min-width:961px){.mtop{display:none!important}}
-.song{padding:12px 14px 12px 8px;gap:12px}
-.cover{border-radius:10px;border:1px solid var(--line)}
-.cover.text{background:var(--surface);color:var(--text3);font-weight:600;font-size:12.5px;min-height:96px}
-.cover .no{border-radius:6px}
-.song .top input{font-size:15px;font-weight:600;background:transparent;height:36px;padding:0 8px;margin-left:-8px}
-.song .top input:hover{background:var(--field)}
-.song textarea{background:var(--surface);border:1px solid var(--line)}
-.song .acts .btn{height:30px}
-#outFmt{max-width:170px}
+@media (prefers-reduced-motion:reduce){.btn:active:not(:disabled){filter:none}}
 </style>
 </head>
 <body>
 <div class="shell">
-  <aside class="rail" id="rail"><button class="pin" id="railPin" type="button" aria-pressed="false" aria-label="옆 메뉴 늘 펼쳐 두기" title="늘 펼쳐 두기"><i class="ph-bold ph-push-pin" aria-hidden="true"></i></button>
+  <aside class="rail" id="rail"><button class="pin" id="railPin" type="button" aria-pressed="false" aria-label="옆 메뉴 늘 펼쳐 두기" title="늘 펼쳐 두기"><i class="ph ph-push-pin" aria-hidden="true"></i></button>
     <div class="brand"><div class="mk" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="13" rx="2.5"/><path d="M7.5 10h9M9 13.5h6"/></svg></div><div><b>호감슬라이드</b><small>예배 자막과 슬라이드</small></div></div>
-    <div class="railsec" data-sec="hist"><span class="ricon" aria-hidden="true"><i class="ph-bold ph-clock-counter-clockwise" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph-bold ph-caret-down" aria-hidden="true"></i>예배 기록</button></h4><ul class="rlist" id="histList"></ul></div>
-    <div class="railsec" data-sec="lib"><span class="ricon" aria-hidden="true"><i class="ph-bold ph-music-notes" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph-bold ph-caret-down" aria-hidden="true"></i>곡 보관함</button> <span class="row" style="gap:6px"><span id="libCount"></span><button type="button" class="libopen" id="libOpen">전체 보기</button></span></h4>
+    <div class="railsec" data-sec="hist"><span class="ricon" aria-hidden="true"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>예배 기록</button></h4><ul class="rlist" id="histList"></ul></div>
+    <div class="railsec" data-sec="lib"><span class="ricon" aria-hidden="true"><i class="ph ph-music-notes" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>곡 보관함</button> <span class="row" style="gap:6px"><span id="libCount"></span><button type="button" class="libopen" id="libOpen">전체 보기</button></span></h4>
       <input type="search" class="libsearch" id="libSearch" placeholder="제목·초성·가사 찾기" aria-label="보관함에서 곡 찾기">
       <ul class="rlist" id="libList"></ul></div>
     <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="themeBtn" title="화면 밝기 바꾸기">화면: 자동</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
@@ -1189,8 +1206,8 @@ details.look .seg2{background:var(--surface)}
   <section class="view on" id="v-home">
     <header class="doc">
       <div class="r1">
-        <button class="btn ghost ibtn mtop" id="menuBtn" aria-label="기록과 보관함 열기"><i class="ph-bold ph-list" aria-hidden="true"></i></button>
-        <input class="title" id="docTitle" aria-label="예배 이름"><button class="pen" id="titlePen" type="button" aria-label="예배 이름 고치기" title="예배 이름 고치기"><i class="ph-bold ph-pencil-simple" aria-hidden="true"></i></button>
+        <button class="btn ghost ibtn mtop" id="menuBtn" aria-label="기록과 보관함 열기"><i class="ph ph-list" aria-hidden="true"></i></button>
+        <input class="title" id="docTitle" aria-label="예배 이름"><button class="pen" id="titlePen" type="button" aria-label="예배 이름 고치기" title="예배 이름 고치기"><i class="ph ph-pencil-simple" aria-hidden="true"></i></button>
         <span class="saved" id="savedAt"></span>
         <div class="onbar" id="onlineBar" aria-label="지금 접속 중인 팀원"></div>
         <div class="steps" id="steps"></div>
@@ -1204,14 +1221,14 @@ details.look .seg2{background:var(--surface)}
     <div class="split">
       <section class="panel" id="colSong">
         <div class="ph2"><span class="pico c1" aria-hidden="true"><i class="ph-fill ph-music-notes" aria-hidden="true"></i></span><h2>찬양</h2><span class="meta" id="songMeta"></span>
-          <div class="acts tools"><button class="tbtn" id="addTextSong" data-tip="가사 붙여 넣기" aria-label="가사 붙여 넣기"><i class="ph-bold ph-clipboard-text" aria-hidden="true"></i></button><button class="tbtn danger" id="clearSongs" data-tip="비우기" aria-label="비우기"><i class="ph-bold ph-trash" aria-hidden="true"></i></button></div></div>
+          <div class="acts tools"><button class="tbtn" id="addTextSong" data-tip="가사 붙여 넣기" aria-label="가사 붙여 넣기"><i class="ph ph-clipboard-text" aria-hidden="true"></i></button><button class="tbtn danger" id="clearSongs" data-tip="비우기" aria-label="비우기"><i class="ph ph-trash" aria-hidden="true"></i></button></div></div>
         <div class="pb">
           <label class="drop" id="drop">
             <input type="file" id="bulkIn" accept="image/*,application/pdf" multiple hidden>
-            <span class="ic"><i class="ph-bold ph-upload-simple" aria-hidden="true"></i></span>
+            <span class="ic"><i class="ph ph-upload-simple" aria-hidden="true"></i></span>
             <span><strong>악보 올리기</strong><span>사진·PDF</span></span>
           </label>
-          <div class="libpick"><span><i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i></span><input type="search" id="libQuick" placeholder="보관함에서 곡 추가 (제목·초성·찬송가 번호)" autocomplete="off" aria-label="보관함에서 곡 추가"><div class="libdrop hidden" id="libDrop"></div></div>
+          <div class="libpick"><span><i class="ph ph-magnifying-glass" aria-hidden="true"></i></span><input type="search" id="libQuick" placeholder="보관함에서 곡 추가 (제목·초성·찬송가 번호)" autocomplete="off" aria-label="보관함에서 곡 추가"><div class="libdrop hidden" id="libDrop"></div></div>
           <ol class="setlist" id="setlist"></ol>
           <div id="emptySet" class="empty">콘티 순서대로 악보를 올려 주세요.</div>
           <div class="status" id="convStatus"></div>
@@ -1224,7 +1241,7 @@ details.look .seg2{background:var(--surface)}
 
       <section class="panel" id="colWord">
         <div class="ph2"><span class="pico c2" aria-hidden="true"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span><h2>말씀</h2><span class="meta" id="verseCount"></span>
-          <div class="acts tools"><a class="tlink" href="https://www.godpia.com/read/reading.asp" target="_blank" rel="noopener" aria-label="갓피아성경 열기"><i class="ph-bold ph-arrow-square-out" aria-hidden="true"></i><span>갓피아성경</span></a><button class="tbtn lab" id="verseCopy"><i class="ph-bold ph-copy" aria-hidden="true"></i><span>복사</span></button><button class="tbtn danger" id="verseClear" data-tip="비우기" aria-label="비우기"><i class="ph-bold ph-trash" aria-hidden="true"></i></button></div></div>
+          <div class="acts tools"><a class="tlink" href="https://www.godpia.com/read/reading.asp" target="_blank" rel="noopener" aria-label="갓피아성경 열기"><i class="ph ph-arrow-square-out" aria-hidden="true"></i><span>갓피아성경</span></a><button class="tbtn lab" id="verseCopy"><i class="ph ph-copy" aria-hidden="true"></i><span>복사</span></button><button class="tbtn danger" id="verseClear" data-tip="비우기" aria-label="비우기"><i class="ph ph-trash" aria-hidden="true"></i></button></div></div>
         <div class="pb">
           <div class="wgrid">
             <div>
@@ -1250,7 +1267,7 @@ details.look .seg2{background:var(--surface)}
     <div class="resgrid" id="resultSec">
     <section class="panel" id="resPanel">
       <div class="ph2"><span class="pico c3" aria-hidden="true"><i class="ph-fill ph-subtitles" aria-hidden="true"></i></span><h2>찬양 자막</h2><span class="meta" id="outCount"></span>
-        <div class="acts tools"><button class="tbtn lab" id="checkBtn"><i class="ph-bold ph-seal-check" aria-hidden="true"></i><span>맞춤법 검사</span></button><button class="tbtn lab" id="copyAll"><i class="ph-bold ph-copy" aria-hidden="true"></i><span>복사</span></button><button class="tbtn danger" id="songClear" data-tip="비우기" aria-label="비우기"><i class="ph-bold ph-trash" aria-hidden="true"></i></button><button class="tbtn" id="foldRes" data-tip="접기" aria-label="접기" data-fold="resPanel" aria-expanded="true"><i class="ph-bold ph-caret-up" aria-hidden="true"></i></button></div></div>
+        <div class="acts tools"><button class="tbtn lab" id="checkBtn"><i class="ph ph-seal-check" aria-hidden="true"></i><span>맞춤법 검사</span></button><button class="tbtn lab" id="copyAll"><i class="ph ph-copy" aria-hidden="true"></i><span>복사</span></button><button class="tbtn danger" id="songClear" data-tip="비우기" aria-label="비우기"><i class="ph ph-trash" aria-hidden="true"></i></button><button class="tbtn" id="foldRes" data-tip="접기" aria-label="접기" data-fold="resPanel" aria-expanded="true"><i class="ph ph-caret-up" aria-hidden="true"></i></button></div></div>
       <div id="resBody" class="foldbody">
       <div class="rbar">
         <label for="outFmt">양식</label><select id="outFmt"></select><button type="button" class="btn sm" id="openFmt">양식 설정</button>
@@ -1272,14 +1289,14 @@ details.look .seg2{background:var(--surface)}
         <div class="edscroll" id="edScroll"><div class="hl"><div class="back" id="hlBack" aria-hidden="true"></div><div class="gut" id="hlNums"></div><textarea id="outText" spellcheck="false" placeholder="‘찬양 자막에 넣기’를 누르면 여기에 들어와요."></textarea></div></div>
       </div>
       </div>
-      <button class="foldpill" data-fold="resPanel" type="button"><i class="ph-bold ph-caret-up" aria-hidden="true"></i><span>접기</span></button>
+      <button class="foldpill" data-fold="resPanel" type="button"><i class="ph ph-caret-up" aria-hidden="true"></i><span>접기</span></button>
     </section>
 
     <section class="panel" id="wordPanel">
       <div class="ph2"><span class="pico c2" aria-hidden="true"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span><h2>말씀 자막</h2><span class="meta" id="wordCount"></span>
-        <div class="acts tools"><button class="tbtn lab" id="wordCopy"><i class="ph-bold ph-copy" aria-hidden="true"></i><span>복사</span></button><button class="tbtn danger" id="wordClear" data-tip="비우기" aria-label="비우기"><i class="ph-bold ph-trash" aria-hidden="true"></i></button><button class="tbtn" id="foldWord" data-tip="접기" aria-label="접기" data-fold="wordPanel" aria-expanded="true"><i class="ph-bold ph-caret-up" aria-hidden="true"></i></button></div></div>
+        <div class="acts tools"><button class="tbtn lab" id="wordCopy"><i class="ph ph-copy" aria-hidden="true"></i><span>복사</span></button><button class="tbtn danger" id="wordClear" data-tip="비우기" aria-label="비우기"><i class="ph ph-trash" aria-hidden="true"></i></button><button class="tbtn" id="foldWord" data-tip="접기" aria-label="접기" data-fold="wordPanel" aria-expanded="true"><i class="ph ph-caret-up" aria-hidden="true"></i></button></div></div>
       <div class="foldbody" id="wordBody"><div class="edcol"><textarea id="wordText" spellcheck="false" placeholder="‘말씀 자막에 넣기’를 누르면 여기에 들어와요."></textarea></div></div>
-      <button class="foldpill" data-fold="wordPanel" type="button"><i class="ph-bold ph-caret-up" aria-hidden="true"></i><span>접기</span></button>
+      <button class="foldpill" data-fold="wordPanel" type="button"><i class="ph ph-caret-up" aria-hidden="true"></i><span>접기</span></button>
     </section>
 
     <section class="panel shots-panel" id="slidePanel">
@@ -1290,7 +1307,7 @@ details.look .seg2{background:var(--surface)}
         <details class="look" open><summary>슬라이드 설정</summary><div id="lookCtl"></div><button type="button" class="lkfold" id="lkFold" aria-label="슬라이드 설정 접기" title="접기"><span></span></button></details>
       </div>
       <div class="shotcol">
-        <div class="shotzoom"><i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i><button type="button" id="zoomOut" aria-label="미리보기 작게">−</button><input type="range" id="shotZoom" min="1" max="6" step="1" aria-label="미리보기 크기"><button type="button" id="zoomIn" aria-label="미리보기 크게">+</button></div>
+        <div class="shotzoom"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><button type="button" id="zoomOut" aria-label="미리보기 작게">−</button><input type="range" id="shotZoom" min="1" max="6" step="1" aria-label="미리보기 크기"><button type="button" id="zoomIn" aria-label="미리보기 크게">+</button></div>
         <div class="shots" id="shots"></div>
       </div>
       </div>
@@ -1301,7 +1318,7 @@ details.look .seg2{background:var(--surface)}
   <div class="fmtbox" id="fmtbox" role="dialog" aria-modal="true" aria-labelledby="fmtTitle"><div class="fmtcard">
   <div class="fmthead"><h2 id="fmtTitle">자막 양식</h2>
     <div class="seg2" role="tablist"><button type="button" role="tab" data-ft="formats" aria-selected="true">양식 다듬기</button><button type="button" role="tab" data-ft="recommend" aria-selected="false">추천받기</button></div>
-    <button class="btn ghost ibtn" id="fmtClose" aria-label="닫기"><i class="ph-bold ph-x" aria-hidden="true"></i></button></div>
+    <button class="btn ghost ibtn" id="fmtClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
   <div class="fmtbody">
   <span class="hidden" id="curFmtName"></span><span class="hidden" id="curFmtDesc"></span>
   <section class="view on" id="v-formats">
@@ -1416,11 +1433,11 @@ details.look .seg2{background:var(--surface)}
   </form>
 </div>
 <div class="logbox" id="logbox" role="dialog" aria-modal="true" aria-labelledby="logTitle">
-  <div class="lcard"><div class="lhead"><h2 id="logTitle">편집 기록</h2><span class="meta" id="logMeta"></span><button class="btn ghost ibtn" id="logClose" aria-label="닫기"><i class="ph-bold ph-x" aria-hidden="true"></i></button></div>
+  <div class="lcard"><div class="lhead"><h2 id="logTitle">편집 기록</h2><span class="meta" id="logMeta"></span><button class="btn ghost ibtn" id="logClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
   <div class="llist" id="logList"></div></div>
 </div>
 <div class="logbox libbox" id="libbox" role="dialog" aria-modal="true" aria-labelledby="libTitle">
-  <div class="lcard libcard"><div class="lhead"><h2 id="libTitle">곡 보관함</h2><span class="meta" id="libAllMeta"></span><button class="btn ghost ibtn" id="libClose" aria-label="닫기"><i class="ph-bold ph-x" aria-hidden="true"></i></button></div>
+  <div class="lcard libcard"><div class="lhead"><h2 id="libTitle">곡 보관함</h2><span class="meta" id="libAllMeta"></span><button class="btn ghost ibtn" id="libClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
   <div class="libtools"><input type="search" id="libQ" placeholder="제목 · 초성(ㅎㅅㅇ) · 가사 · 찬송가 번호" aria-label="곡 찾기">
     <select id="libSort" aria-label="정렬"><option value="recent">최근 고친 순</option><option value="most">많이 부른 순</option><option value="old">오래 안 부른 순</option><option value="name">가나다순</option></select>
     <label class="ck"><input type="checkbox" id="libOk"><span>확인된 곡만</span></label></div>
@@ -1697,7 +1714,7 @@ async function addSongFiles(files){
 $('addTextSong').onclick=()=>{songs.push(newSong({mode:'text'}));location.hash='songs';renderSongs();setTimeout(()=>{const t=document.querySelectorAll('.song textarea');t[t.length-1]?.focus();},50);};
 $('clearSongs').onclick=()=>{if(!songs.length)return;const before=songs;songs=[];renderSongs();toastUndo('찬양 목록을 비웠어요',()=>{songs=before;renderSongs();});};
 
-const GRIP='<i class="ph-bold ph-dots-six-vertical" aria-hidden="true"></i>';
+const GRIP='<i class="ph ph-dots-six-vertical" aria-hidden="true"></i>';
 function renderSongs(){
   const ol=$('setlist');ol.innerHTML='';
   $('emptySet').classList.toggle('hidden',songs.length>0);
@@ -2493,7 +2510,7 @@ function renderShots(){
         const cv=document.createElement('canvas');cv.width=cw*dpr;cv.height=cw*9/16*dpr;drawScreen(cv,s,g.songIdx||0);
         bt.innerHTML=`<span class="no">${n}</span>`;bt.appendChild(cv);
         const wrap=document.createElement('div');wrap.className='shotw';
-        const del=document.createElement('button');del.className='shotx';del.type='button';del.title='이 슬라이드 지우기';del.setAttribute('aria-label',`${n}번째 슬라이드 지우기`);del.innerHTML='<i class="ph-bold ph-x" aria-hidden="true"></i>';
+        const del=document.createElement('button');del.className='shotx';del.type='button';del.title='이 슬라이드 지우기';del.setAttribute('aria-label',`${n}번째 슬라이드 지우기`);del.innerHTML='<i class="ph ph-x" aria-hidden="true"></i>';
         del.onclick=e=>{e.stopPropagation();deleteScreen(s);};
         if(s.type==='song'&&(s.lines.some(l=>width(l)>FMT.maxChars+.5)||s.lines.length>FMT.lines))bt.classList.add('over');
         const idx=n-1,k=shotKey(s);wrap.dataset.k=k;
@@ -3036,7 +3053,7 @@ function renderSteps(){
   else if(open)act={t:`고칠 곳 ${open}개 보기`,f:()=>{location.hash='result';renderFixbar(true);}};
   else if(combinedText())act={t:'전체 복사',f:()=>copy(combinedText())};
   box.innerHTML=(act?`<button class="btn sm nextact" id="nextAct" ${act.dis?'disabled':''}>${act.t}</button>`:'')+
-    `<button class="btn sm pri nextact newsess${act?' two':''}" id="newSess"><i class="ph-bold ph-plus" aria-hidden="true"></i>새 예배 자막 만들기</button>`;
+    `<button class="btn sm pri nextact newsess${act?' two':''}" id="newSess"><i class="ph ph-plus" aria-hidden="true"></i>새 예배 자막 만들기</button>`;
   if(act&&act.f)$('nextAct').onclick=act.f;
   $('newSess').onclick=newSessClick;
 }
