@@ -600,13 +600,29 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
 .selecting .shot{cursor:pointer}
 .shotw.sel .shot{box-shadow:0 0 0 3px var(--pri),0 6px 16px -10px rgba(3,26,23,.35)}
 .shotw.sel .shotck{background:var(--pri) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/15px no-repeat}
+
+/* 찬양 자막 | 말씀 자막 나란히, 미리보기는 아래 전체 폭 */
+.resgrid,#resultSec.closed{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch}
+#slidePanel{grid-column:1/-1}
+#resPanel,#wordPanel{display:flex;flex-direction:column}
+#resPanel .rbar{flex-wrap:wrap}
+@media (max-width:1100px){.resgrid,#resultSec.closed{grid-template-columns:minmax(0,1fr)}}
+/* 접속 중: 동그라미 프로필 */
+.doc .r1 .onbar{margin-left:auto;display:flex;align-items:center;padding-left:6px}
+.doc .r1 .onbar:empty{display:none}
+.doc .r1 .onbar+.steps{margin-left:12px}
+.oav{position:relative;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;border:2px solid #fff;margin-left:-8px;box-shadow:0 1px 3px rgba(0,0,0,.15);cursor:default;outline:none}
+.oav:first-child{margin-left:0}
+.oav.same::after{content:'';position:absolute;right:-2px;bottom:-2px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #fff}
+.oav.more{background:#e5e9ee;color:var(--text2);font-size:12px}
+.oav:hover,.oav:focus-visible{z-index:5;transform:translateY(-2px)}
+.oav[data-tip]:hover::before,.oav[data-tip]:focus-visible::before{content:attr(data-tip);position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1f2933;color:#fff;font-size:12px;font-weight:500;white-space:nowrap;padding:5px 9px;border-radius:7px;z-index:30;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 </style>
 </head>
 <body>
 <div class="shell">
   <aside class="rail" id="rail">
     <div class="brand"><div class="mk" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="13" rx="2.5"/><path d="M7.5 10h9M9 13.5h6"/></svg></div><div><b>호감슬라이드</b><small>예배 자막과 슬라이드</small></div></div>
-    <div class="railsec online"><h4>지금 접속 중 <span id="onCount"></span></h4><ul class="olist" id="onlineList"><li class="oempty">로그인하면 함께 쓰는 팀원이 보여요</li></ul></div>
     <div class="railsec"><h4>예배 기록</h4><ul class="rlist" id="histList"></ul></div>
     <div class="railsec"><h4>곡 보관함 <span id="libCount"></span></h4>
       <input type="search" class="libsearch" id="libSearch" placeholder="곡 이름 찾기" aria-label="보관함에서 곡 찾기">
@@ -622,6 +638,7 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
         <button class="btn ghost ibtn mtop" id="menuBtn" aria-label="기록과 보관함 열기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
         <input class="title" id="docTitle" aria-label="예배 이름">
         <span class="saved" id="savedAt"></span>
+        <div class="onbar" id="onlineBar" aria-label="지금 접속 중인 팀원"></div>
         <div class="steps" id="steps"></div>
       </div>
     </header>
@@ -669,14 +686,14 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
             </div>
           </div>
         </div>
-        <div class="pf"><button class="btn" id="verseCopy">복사</button><button class="btn pri" id="verseToEdit" style="margin-left:auto">말씀 자막에 넣기</button></div>
+        <div class="pf"><button class="btn" id="verseClear">비우기</button><button class="btn" id="verseCopy">복사</button><button class="btn pri" id="verseToEdit" style="margin-left:auto">말씀 자막에 넣기</button></div>
       </section>
     </div>
 
     <div class="resgrid" id="resultSec">
     <section class="panel" id="resPanel">
       <div class="ph2"><button class="fold" id="foldRes" aria-expanded="true" aria-controls="resBody"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg><span class="pico c3" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span><h2>찬양 자막</h2></button><span class="meta" id="outCount"></span>
-        <div class="acts"><button class="btn" id="checkBtn">맞춤법 검사</button><button class="btn pri" id="copyAll">찬양 복사</button></div></div>
+        <div class="acts"><button class="btn" id="songClear">비우기</button><button class="btn" id="checkBtn">맞춤법 검사</button><button class="btn pri" id="copyAll">찬양 복사</button></div></div>
       <div id="resBody">
       <div class="rbar">
         <label for="outFmt">양식</label><select id="outFmt"></select>
@@ -1278,6 +1295,11 @@ $('wordText').value=store.get('wordOut','');
 {const sp=splitCombined($('outText').value);if(sp.word){$('outText').value=sp.song;store.set('out',sp.song);$('wordText').value=[$('wordText').value.trim(),sp.word].filter(Boolean).join(gapStr());store.set('wordOut',$('wordText').value);}}
 $('wordText').addEventListener('input',()=>{clearTimeout(window._wv);window._wv=setTimeout(()=>store.set('wordOut',$('wordText').value),400);refreshWordMeta();renderShots();scheduleSave();renderSteps();});
 addEventListener('resize',autosizeWord);document.fonts?.ready?.then(autosizeWord);
+$('songClear').onclick=()=>{const ta=$('outText'),before=ta.value;if(!before.trim())return;ta.value='';ta.dispatchEvent(new Event('input',{bubbles:true}));issues=[];renderIssues();refreshOutMeta();
+  toastUndo('찬양 자막을 비웠어요',()=>{ta.value=before;ta.dispatchEvent(new Event('input',{bubbles:true}));});};
+$('verseClear').onclick=()=>{const t=$('bTitle'),v=$('verseIn'),b={t:t.value,v:v.value};if(!b.t.trim()&&!b.v.trim())return;
+  t.value='';v.value='';v.dispatchEvent(new Event('input',{bubbles:true}));t.dispatchEvent(new Event('input',{bubbles:true}));
+  toastUndo('말씀 입력을 비웠어요',()=>{t.value=b.t;v.value=b.v;v.dispatchEvent(new Event('input',{bubbles:true}));t.dispatchEvent(new Event('input',{bubbles:true}));});};
 $('wordCopy').onclick=()=>{const t=$('wordText').value.trim();if(t)copy(t);else toast('말씀 자막이 비어 있어요');};
 $('wordClear').onclick=()=>{const ta=$('wordText'),before=ta.value;if(!before.trim())return;ta.value='';ta.dispatchEvent(new Event('input',{bubbles:true}));toastUndo('말씀 자막을 비웠어요',()=>{ta.value=before;ta.dispatchEvent(new Event('input',{bubbles:true}));});};
 function gotoWordLine(n){const ta=$('wordText'),ls=ta.value.split('\n');if(n<0||n>=ls.length)return;
@@ -2357,15 +2379,19 @@ function startPresence(){if(pres||!sb||!me)return;
   pres.on('presence',{event:'sync'},renderOnline).subscribe(st=>{if(st==='SUBSCRIBED')trackMe();});
   addEventListener('beforeunload',()=>{try{pres.untrack();}catch(e){}});}
 function trackMe(){if(pres&&me)pres.track({name:me.name,sess:curSess,at:Date.now()}).catch(()=>{});}
+const AVC=['#0f766e','#2563eb','#7c3aed','#db2777','#ea580c','#0891b2','#65a30d','#9333ea'];
+function avColor(n){let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))>>>0;return AVC[h%AVC.length];}
 function renderOnline(){
-  const ul=$('onlineList');if(!ul)return;const st=pres?pres.presenceState():{},by={};
+  const bar=$('onlineBar');if(!bar)return;const st=pres?pres.presenceState():{},by={};
   Object.values(st).flat().forEach(p=>{if(!p||!p.name)return;const o=by[p.name]||(by[p.name]={name:p.name,sess:[]});if(p.sess&&!o.sess.includes(p.sess))o.sess.push(p.sess);});
   const list=Object.values(by).sort((a,b)=>(b.name===me?.name)-(a.name===me?.name)||a.name.localeCompare(b.name,'ko'));
-  $('onCount').textContent=list.length?list.length+'명':'';
-  if(!list.length){ul.innerHTML='<li class="oempty">로그인하면 함께 쓰는 팀원이 보여요</li>';return;}
-  ul.innerHTML=list.map(o=>{const same=o.sess.includes(curSess),nm=SESS.find(x=>x.id===o.sess[0])?.name;
-    const where=same?'이 예배 자막을 보는 중':nm?`‘${nm}’ 보는 중`:'접속 중';
-    return `<li><span class="av">${esc(o.name.slice(0,1))}</span><div><b>${esc(o.name)}${o.name===me?.name?'<i>나</i>':''}</b><small class="${same?'same':''}">${esc(where)}</small></div></li>`;}).join('');}
+  if(!list.length){bar.innerHTML='';return;}
+  const MAX=6,shown=list.slice(0,MAX),rest=list.slice(MAX);
+  const tip=o=>{const same=o.sess.includes(curSess),nm=SESS.find(x=>x.id===o.sess[0])?.name;
+    return o.name+(o.name===me?.name?' (나)':'')+' · '+(same?'이 예배 자막을 보는 중':nm?`‘${nm}’ 보는 중`:'접속 중');};
+  bar.innerHTML=shown.map(o=>`<span class="oav${o.sess.includes(curSess)?' same':''}" tabindex="0" style="background:${avColor(o.name)}" data-tip="${esc(tip(o))}" aria-label="${esc(tip(o))}">${esc(o.name.slice(0,1))}</span>`).join('')
+    +(rest.length?`<span class="oav more" tabindex="0" data-tip="${esc(rest.map(o=>o.name).join(', '))}" aria-label="${esc(rest.map(o=>o.name).join(', '))}">+${rest.length}</span>`:'');
+}
 let chan=null;
 async function bootRemote(){
   const [sv,sg]=await Promise.all([sb.from('services').select('*').order('updated_at',{ascending:false}).limit(120),sb.from('songs').select('*')]);
