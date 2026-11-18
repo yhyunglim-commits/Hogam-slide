@@ -555,6 +555,20 @@ button.lrow{cursor:pointer}button.lrow:hover{background:var(--canvas)}
 .gcard .btn.big{margin-top:20px}
 .ghint{margin-top:14px}
 
+
+/* ===== 레이아웃: 스크롤은 페이지 하나로 ===== */
+/* 찬양·말씀 두 칸은 높이를 같게, 아래 버튼 줄도 같은 높이에 */
+.split{align-items:stretch}
+.split>.panel{display:flex;flex-direction:column}
+.split>.panel>.pb{flex:1}
+/* 자막 결과 → 슬라이드 미리보기를 위아래로, 칸 안 스크롤 없이 */
+.resgrid,#resultSec.closed{grid-template-columns:minmax(0,1fr)}
+#resPanel{position:static!important}
+.edscroll{max-height:none!important;overflow:visible;min-height:0}
+.shots-top{position:static}
+details.look[open] #lookCtl{max-height:none;overflow:visible}
+.sgrid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.fixbar{position:sticky;top:calc(var(--doch,104px) + 8px)}
 </style>
 </head>
 <body>
@@ -1301,13 +1315,10 @@ function paintHL(){
 function showIssue(k,scroll){
   hotIssue=k;paintHL();
   if(!scroll)return;const m=$('hlBack').querySelector('mark.on');if(!m)return;
-  const sc=$('edScroll'),r=m.getBoundingClientRect(),b=sc.getBoundingClientRect();if(r.top<b.top+20||r.bottom>b.bottom-20)scrollEditorTo(m);
+  const r=m.getBoundingClientRect(),top=(document.querySelector('.doc')?.offsetHeight||104)+120;if(r.top<top||r.bottom>innerHeight-40)scrollEditorTo(m);
 }
 // 자막 결과 상자가 화면 높이 안에 꼭 들어오게
-function setEdMax(){const sc=$('edScroll'),pn=$('resPanel');if(!sc||!pn)return;
-  if(innerWidth<=1100){sc.style.maxHeight='70vh';return;}
-  const doch=document.querySelector('.doc')?.offsetHeight||104,off=sc.getBoundingClientRect().top-pn.getBoundingClientRect().top;
-  sc.style.maxHeight=Math.max(260,innerHeight-doch-8-off-18)+'px';}
+function setEdMax(){const sc=$('edScroll');if(sc)sc.style.maxHeight='';}
 addEventListener('resize',setEdMax);
 function refreshOutMeta(){autosize();paintHL();renderShots();scheduleSave();renderSteps();
   const ch=songChunks(),box=$('songCopy');box.innerHTML='';
@@ -1445,13 +1456,12 @@ function applyFix(x){
   ls[i]=ls[i].replace(x.before,x.after);ta.value=ls.join('\n');x.applied=true;
   dirty=true;store.set('dirty',true);store.set('out',ta.value);refreshOutMeta();scheduleLibSync();
 }
-// 자막 결과 칸 안에서만 스크롤해서 그 줄을 보여줘요 (페이지는 그대로)
+// 페이지를 움직여 그 줄을 보여줘요
 function scrollEditorTo(el){
-  const sc=$('edScroll');if(!el||!sc)return;
+  if(!el)return;
   if($('resultSec').classList.contains('closed'))$('foldRes').click();
-  const top=el.getBoundingClientRect().top-sc.getBoundingClientRect().top+sc.scrollTop;
-  sc.scrollTo({top:Math.max(0,top-sc.clientHeight/3),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
-  const r=sc.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)sc.scrollIntoView({block:'nearest'});
+  const top=el.getBoundingClientRect().top+scrollY,doch=document.querySelector('.doc')?.offsetHeight||104;
+  scrollTo({top:Math.max(0,top-doch-(innerHeight-doch)/3),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
 }
 function gotoLine(n){
     goLine=n;paintHL();scrollEditorTo($('hlBack').querySelector('mark.go'));
