@@ -524,6 +524,23 @@ button.lrow{cursor:pointer}button.lrow:hover{background:var(--canvas)}
 .lrow b{font-size:13.5px;flex:none}
 .lrow .lt{font-size:13.5px;color:var(--text2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+/* 로그인 화면 다듬기 */
+.gcard{padding:36px 32px 28px;gap:0}
+.gcard h1{font-size:22px}
+.gsub{margin:4px 0 22px}
+.gtabs{padding:4px;border-radius:14px;margin-bottom:8px}
+.gtabs button{height:36px;border-radius:11px;font-weight:600}
+.gl{gap:7px;margin-top:14px;font-size:12.5px;font-weight:600;color:var(--text3)}
+.gl span{padding-left:2px}
+.gcard .gl input{-webkit-appearance:none;appearance:none;height:48px;width:100%;box-sizing:border-box;border:1px solid transparent;border-radius:14px;background:#f2f5f8;padding:0 16px;font:500 15.5px var(--sans);color:var(--text);box-shadow:none;outline:none;transition:background .12s,border-color .12s,box-shadow .12s}
+.gcard .gl input::placeholder{color:#9aa6b2;font-weight:400}
+.gcard .gl input:hover{background:#edf1f5}
+.gcard .gl input:focus{background:#fff;border-color:var(--pri);box-shadow:0 0 0 4px rgba(18,133,117,.12)}
+.gerr{min-height:0;margin:12px 2px 0;line-height:1.5}
+.gerr:empty{display:none}
+.gcard .btn.big{margin-top:20px}
+.ghint{margin-top:14px}
+
 </style>
 </head>
 <body>
@@ -587,8 +604,9 @@ button.lrow{cursor:pointer}button.lrow:hover{background:var(--canvas)}
               <label class="fl" for="verseIn">복사한 본문</label>
               <textarea id="verseIn" rows="9" placeholder="갓피아성경에서 새번역으로 복사해 붙여 넣으세요.&#10;절 사이에 빈 줄을 넣으면 화면에서도 한 줄 띄워요."></textarea>
               <label class="fl" for="bMax">한 줄 글자 수 <span style="color:var(--text3);font-weight:400">· 띄어쓰기 빼고</span></label>
+              <label class="opts" style="margin:2px 0 6px"><input type="checkbox" id="bAuto"> 슬라이드 설정에 맞춰 자동</label>
               <div class="stepper"><button class="btn" id="bMaxDn" aria-label="한 글자 줄이기">−</button><input type="range" id="bMax" min="10" max="60"><button class="btn" id="bMaxUp" aria-label="한 글자 늘리기">+</button><output id="bMaxOut"></output></div>
-              <div class="opts" style="margin-top:12px"><label><input type="checkbox" id="vNums"> 절 번호 남기기</label><label><input type="checkbox" id="vHeads"> 소제목 빼기</label></div>
+              <div class="opts" style="margin-top:12px"><label><input type="checkbox" id="vNums"> 절 번호 남기기</label><label><input type="checkbox" id="vHeads"> 소제목 빼기</label><label><input type="checkbox" id="vGap"> 절마다 한 줄 띄우기</label></div>
             </div>
             <div>
               <label class="fl" style="margin-top:0">정리된 본문</label>
@@ -612,7 +630,7 @@ button.lrow{cursor:pointer}button.lrow:hover{background:var(--canvas)}
         <label for="outMax">한 줄</label><input type="number" id="outMax" min="6" max="30"><label for="outMax">자</label>
       </div>
       <div class="banner hidden" id="regenBanner">
-        <span>양식이나 곡 순서가 바뀌었어요. 다시 만들면 직접 고친 글은 사라져요.</span>
+        <span>양식이 바뀌었어요. 다시 만들면 직접 고친 글은 사라져요.</span>
         <span class="row"><button class="btn sm" id="regenNo">지금 글 유지</button><button class="btn sm pri" id="regenYes">다시 만들기</button></span>
       </div>
       <div class="edcol">
@@ -742,9 +760,9 @@ button.lrow{cursor:pointer}button.lrow:hover{background:var(--canvas)}
     <div id="gSetup" class="gsetup hidden">아직 서버 설정이 비어 있어요.<br><b>config.js</b>에 Supabase 주소와 공개 키를 넣어 주세요.</div>
     <div id="gBody">
       <div class="seg2 gtabs" role="tablist"><button type="button" role="tab" data-m="in" aria-selected="true">들어가기</button><button type="button" role="tab" data-m="up" aria-selected="false">처음이에요</button></div>
-      <label class="gl">이름<input id="gName" maxlength="10" autocomplete="username" placeholder="예) 김목자"></label>
-      <label class="gl">개인 암호<input id="gPw" type="password" autocomplete="current-password" placeholder="6글자 이상"></label>
-      <label class="gl gup hidden">팀 암호<input id="gCode" type="password" autocomplete="off" placeholder="팀에서 받은 암호"></label>
+      <label class="gl"><span>이름</span><input id="gName" type="text" maxlength="10" autocomplete="username" placeholder="예) 김목자"></label>
+      <label class="gl"><span>개인 암호</span><input id="gPw" type="password" autocomplete="current-password" placeholder="6글자 이상"></label>
+      <label class="gl gup hidden"><span>팀 암호</span><input id="gCode" type="password" autocomplete="off" placeholder="팀에서 받은 암호"></label>
       <p class="gerr" id="gErr" role="alert"></p>
       <button class="btn pri big" id="gGo" type="submit">들어가기</button>
       <p class="ghint" id="gHint">처음 오셨다면 ‘처음이에요’를 누르고 팀 암호를 함께 넣어 주세요.</p>
@@ -1028,7 +1046,30 @@ function setupDrag(li,grip,i){
 function orderChanged(force){
   const done=songs.filter(s=>s.result&&(s.status==='done'||s.mode==='lib'));
   if(!done.length&&!results.length)return;
-  results=done.map(s=>s.result);store.set('results',results);setOutput(allText(results,FMT),force);
+  results=done.map(s=>s.result);store.set('results',results);
+  const t=$('outText').value.trim();
+  if(!t||!dirty){setOutput(allText(results,FMT),true);return;}
+  setOutput(mergeOutput(results),true);dirty=true;store.set('dirty',true);
+}
+// 자막 결과를 다시 만들 때, 이미 있는 곡(직접 고친 글 포함)과 말씀은 그대로 두고
+// 새 곡만 지금 순서 자리에 끼워 넣어요. 목록에서 뺀 곡은 빠져요.
+function mergeOutput(list){
+  const gap='\n'+'\n'.repeat(FMT.songGap),chunks=songChunks();
+  const norm=x=>String(x||'').replace(/^\d+\.\s*/,'').replace(/\/\/\s*$/,'').replace(/\s+/g,'').trim();
+  const firstLine=c=>c.split('\n').find(l=>l.trim())||'';
+  const wordIdx=new Set(parseScreens().filter(sc=>sc.type==='word').map(sc=>sc.chunk));
+  const used=new Set(),songOut=[];
+  list.forEach((r,i)=>{
+    const gen=songText(r,FMT,i),gl=gen.split('\n').filter(l=>l.trim());
+    const keys=[norm(r.title),norm(gl[0]),norm(gl[1])].filter(Boolean);
+    const j=chunks.findIndex((c,k)=>!used.has(k)&&!wordIdx.has(k)&&(()=>{const f=norm(firstLine(c)),sec=norm((c.split('\n').filter(l=>l.trim())[1])||'');return keys.includes(f)||(gl[1]&&norm(gl[1])===sec&&norm(gl[0])===f);})());
+    if(j>=0){used.add(j);let c=chunks[j];if(FMT.numberSongs&&FMT.titleMode==='song')c=c.replace(/^\d+\.\s*/,`${i+1}. `);songOut.push(c);}
+    else songOut.push(gen);
+  });
+  // 말씀은 원래 자리(곡 앞이었으면 앞, 아니면 뒤)에 그대로
+  const before=[],after=[];const firstSong=chunks.findIndex((c,k)=>!wordIdx.has(k));
+  chunks.forEach((c,k)=>{if(wordIdx.has(k))(firstSong>=0&&k<firstSong?before:after).push(c);});
+  return[...before,...songOut,...after].join(gap);
 }
 // ---- 악보 크게 보기 ----
 let lb={s:null,j:0};
@@ -1412,7 +1453,7 @@ const FONTS=[
 const fontW=f=>(FONTS.find(x=>x.f===f)||FONTS[0]).w;
 const LOOK_DEF={
   song:{font:'Noto Sans KR',bgDim:15,logoPos:'off',logoSize:6,size:5,spacing:-6,lineH:1.22,posY:61,title:true,titleSize:1.6,titleGap:7,footer:'OKSU ASSEMBLIES OF GOD CHURCH',footerOn:true},
-  word:{font:'Nanum Myeongjo',bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,box:88,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true}
+  word:{font:'Nanum Myeongjo',refSpacing:-5,bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,box:88,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true}
 };
 // 배경 사진·로고 (이 브라우저에 저장)
 let MEDIA=store.get('media',{song:null,word:null,logo:null});
@@ -1427,9 +1468,10 @@ let LOOK=(()=>{const v=store.get('look',{});return{song:{...LOOK_DEF.song,...(v.
 let songColors=store.get('songColors',{}); // 제목 → 팔레트 id
 const LOOK_CTRLS=[
  ['song','size','가사 크기',3,7,.1,''],['song','spacing','가사 자간',-8,20,1,'%'],['song','lineH','가사 줄간격',1,2,.02,''],['song','posY','가사 높이',40,80,1,'%'],['song','titleSize','제목 크기',1,3.5,.1,''],['song','titleGap','제목·가사 간격',2,20,.5,'%'],
- ['word','size','본문 크기',1.8,4,.05,''],['word','spacing','본문 자간',-8,20,1,'%'],['word','lineH','본문 줄간격',1,2.2,.02,''],['word','maxLines','화면당 줄',2,8,1,'줄'],['word','box','상자 진하기',40,100,1,'%'],['song','bgDim','사진 어둡게',0,80,1,'%'],['word','bgDim','사진 어둡게',0,80,1,'%'],['song','logoSize','로고 크기',2,20,.5,'%'],['word','logoSize','로고 크기',2,20,.5,'%'],
+ ['word','size','본문 크기',1.8,4,.05,''],['word','spacing','본문 자간',-8,20,1,'%'],['word','refSpacing','제목 자간',-12,20,1,'%'],['word','lineH','본문 줄간격',1,2.2,.02,''],['word','maxLines','화면당 줄',2,8,1,'줄'],['word','box','상자 진하기',40,100,1,'%'],['song','bgDim','사진 어둡게',0,80,1,'%'],['word','bgDim','사진 어둡게',0,80,1,'%'],['song','logoSize','로고 크기',2,20,.5,'%'],['word','logoSize','로고 크기',2,20,.5,'%'],
 ];
 let lookTab=store.get('lookTab','song');
+function lookChanged(){if(BSET.auto){const m=autoWordMax();if(m!==BSET.max){BSET.max=m;store.set('bset2',BSET);$('bMax').value=m;$('bMaxOut').textContent=m+'자';renderVerse();}}}
 function buildLookUI(){
   const box=$('lookCtl');box.innerHTML='';
   const tabs=document.createElement('div');tabs.className='lktabs';
@@ -1456,7 +1498,7 @@ function buildLookUI(){
   // 글꼴
   const fr=document.createElement('label');fr.className='lk';
   fr.innerHTML=`<span>글꼴</span><select data-font>${FONTS.map(o=>`<option value="${o.f}" ${LOOK[grp].font===o.f?'selected':''}>${o.n}</option>`).join('')}</select>`;
-  fr.querySelector('select').onchange=e=>{LOOK[grp].font=e.target.value;store.set('look',LOOK);loadFont(e.target.value).then(renderShots);};
+  fr.querySelector('select').onchange=e=>{LOOK[grp].font=e.target.value;store.set('look',LOOK);loadFont(e.target.value).then(()=>{renderShots();lookChanged();});};
   g.appendChild(fr);
   // 숫자 항목: 슬라이더 + 직접 입력(위아래 화살표)
   LOOK_CTRLS.filter(c=>c[0]===grp).forEach(([gk,k,label,min,max,step,unit])=>{
@@ -1479,7 +1521,7 @@ function buildLookUI(){
     else{el.value=LOOK[grp][k];el.oninput=()=>{LOOK[grp][k]=el.value;saveLook();};}});
   g.appendChild(t);box.appendChild(g);
 }
-function saveLook(){store.set('look',LOOK);renderShots();}
+function saveLook(){store.set('look',LOOK);renderShots();lookChanged();}
 
 /* ---- 캔버스로 화면 그리기 (미리보기와 내려받기가 똑같이 나와요) ---- */
 function shade(hex,k){const n=parseInt(hex.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;
@@ -1531,6 +1573,22 @@ function drawScreen(cv,sc,songIdx,opt={}){
   return lay;
 }
 // 미리보기·이미지·파워포인트가 함께 쓰는 배치 계산
+
+// 말씀 화면은 모든 장이 같은 글자 크기가 되도록, 가장 많이 줄여야 하는 화면에 맞춰요
+let _wk={key:'',k:1};
+function wordK(x,W,H,fs,sp,availW,availH,L){
+  const key=[W,fs,sp,availW,availH,L.lineH,$('outText').value].join('|');if(_wk.key===key)return _wk.k;
+  let k=1;for(const s of parseScreens()){if(s.type!=='word')continue;
+    const mw=Math.max(1,...s.lines.map(l=>spacedW(x,l,sp)));k=Math.min(k,availW/mw,availH/(fs*L.lineH*Math.max(1,s.lines.length)));}
+  _wk={key,k};return k;
+}
+// 지금 슬라이드 설정에서 말씀 한 줄에 들어가는 글자 수 (띄어쓰기 빼고)
+function autoWordMax(){
+  const L=LOOK.word,W=1920,c=autoWordMax.c||(autoWordMax.c=document.createElement('canvas').getContext('2d'));
+  const fs=W*L.size/100,sp=fs*L.spacing/100;c.font=`${fontW(L.font)} ${fs}px "${L.font}", "Noto Sans KR", serif`;
+  const sample='하나님이세상을이처럼사랑하사독생자를주셨으니';const per=c.measureText(sample).width/[...sample].length+sp;
+  const availW=W*.719-W*.032*2;return Math.max(10,Math.min(60,Math.floor(availW/per*.97)));
+}
 function slideLayout(x,W,H,sc){
   const texts=[];let box=null,footer=null;
   if(sc.type==='song'){
@@ -1545,11 +1603,11 @@ function slideLayout(x,W,H,sc){
     const L=LOOK.word,WF=`"${L.font}", "Noto Sans KR", serif`,WWt=fontW(L.font);
     texts.push({kind:'head',lines:[L.head],size:W*.031,weight:800,family:'Noto Sans KR',css:'"Noto Sans KR", sans-serif',color:'#fff',hex:'FFFFFF',alpha:1,sp:0,align:'left',ax:W*.065,y0:H*.245-W*.031*.6,lh:W*.031*1.2});
     texts.push({kind:'sub',lines:[L.sub],size:W*.0135,weight:400,family:'Noto Sans KR',css:'"Noto Sans KR", sans-serif',color:'rgba(255,255,255,.85)',hex:'E3E6EA',alpha:.85,sp:W*.0135*.18,align:'left',ax:W*.065,y0:H*.305-W*.0135*.6,lh:W*.0135*1.2});
-    texts.push({kind:'ref',lines:[sc.ref||''],size:W*.029,weight:WWt,family:L.font,css:WF,color:'#fff',hex:'FFFFFF',alpha:1,sp:0,align:'left',ax:W*.262,y0:H*.255-W*.029*.6,lh:W*.029*1.2});
+    texts.push({kind:'ref',lines:[sc.ref||''],size:W*.029,weight:WWt,family:L.font,css:WF,color:'#fff',hex:'FFFFFF',alpha:1,sp:W*.029*(L.refSpacing||0)/100,align:'left',ax:W*.262,y0:H*.255-W*.029*.6,lh:W*.029*1.2});
     const bx=W*.228,by=H*.315,bw=W*.719,bh=H*.49;box={x:bx,y:by,w:bw,h:bh,fill:`rgba(236,236,238,${L.box/100})`,alpha:L.box/100};
     let fs=W*L.size/100,sp=fs*L.spacing/100;x.font=`${WWt} ${fs}px ${WF}`;
     const pad=W*.032,availW=bw-pad*2,availH=bh-pad*1.6;
-    const mw=Math.max(1,...sc.lines.map(l=>spacedW(x,l,sp)));const k=Math.min(1,availW/mw,availH/(fs*L.lineH*sc.lines.length));
+    const k=wordK(x,W,H,fs,sp,availW,availH,L);
     if(k<1){fs*=k;sp=fs*L.spacing/100;}
     texts.push({kind:'body',lines:sc.lines,size:fs,weight:WWt,family:L.font,css:WF,color:'#1d1d1d',hex:'1D1D1D',alpha:1,sp,align:'left',ax:bx+pad,y0:by+pad*.9,lh:fs*L.lineH,boxW:availW});
     if(L.footerOn)footer={text:L.footer,y:H*.89};
@@ -1559,7 +1617,7 @@ function slideLayout(x,W,H,sc){
 let shotT,fontsReady=false;
 function loadFont(f){const w=fontW(f);return Promise.all([w,400,500].map(x=>document.fonts.load(`${x} 40px "${f}"`,'가나다 하나님 에베소서 OKSU 0123,.'))).catch(()=>{});}
 Promise.all([400,500,700,800].map(w=>document.fonts.load(`${w} 40px "Noto Sans KR", sans-serif`,'OKSU CHURCH Bible 가나다 0123'))
-  .concat([loadFont(LOOK.song.font),loadFont(LOOK.word.font)])).catch(()=>{}).then(()=>{fontsReady=true;renderShots();});
+  .concat([loadFont(LOOK.song.font),loadFont(LOOK.word.font)])).catch(()=>{}).then(()=>{fontsReady=true;renderShots();if(typeof lookChanged==='function')lookChanged();});
 function songGroups(){
   const sc=parseScreens(),groups=[];let si=0;
   sc.forEach(s=>{let g=groups.find(g=>g.chunk===s.chunk);if(!g){g={chunk:s.chunk,type:s.type,title:s.type==='word'?(s.ref||'성경봉독'):(s.title||`${groups.length+1}번째 곡`),items:[]};if(s.type==='song')g.songIdx=si++;groups.push(g);}
@@ -1843,14 +1901,17 @@ ${ex}`,{modelTier:'default'});
 };
 
 /* ======================== 5. 말씀 자막 ======================== */
-let BSET={max:32,title:'',nums:true,heads:true,...store.get('bset2',{})};
+let BSET={max:32,title:'',nums:true,heads:true,auto:true,gap:false,...store.get('bset2',{})};
 function fillBible(){
-  $('bMax').value=BSET.max;$('bMaxOut').textContent=BSET.max+'자';
+  $('bAuto').checked=!!BSET.auto;$('vGap').checked=!!BSET.gap;if(BSET.auto)BSET.max=autoWordMax();
+  $('bMax').value=BSET.max;$('bMaxOut').textContent=BSET.max+'자';syncAuto();
   $('bTitle').value=BSET.title;$('vNums').checked=BSET.nums;$('vHeads').checked=BSET.heads;
 }
+function syncAuto(){['bMax','bMaxDn','bMaxUp'].forEach(id=>$(id).disabled=!!BSET.auto);}
 function readBible(){
-  BSET={max:+$('bMax').value,title:$('bTitle').value.trim(),nums:$('vNums').checked,heads:$('vHeads').checked};
-  store.set('bset2',BSET);$('bMaxOut').textContent=BSET.max+'자';renderVerse();
+  const auto=$('bAuto').checked;
+  BSET={max:auto?autoWordMax():+$('bMax').value,title:$('bTitle').value.trim(),nums:$('vNums').checked,heads:$('vHeads').checked,auto,gap:$('vGap').checked};
+  $('bMax').value=BSET.max;store.set('bset2',BSET);$('bMaxOut').textContent=BSET.max+'자';syncAuto();renderVerse();
 }
 // 붙여 넣은 본문 → [{n:절번호, t:본문, head:소제목여부}]
 function cleanVerses(raw){
@@ -1895,18 +1956,23 @@ function verseResult(){
   const vs=cleanVerses($('verseIn').value).filter(v=>!(BSET.heads&&v.head));
   if(!vs.length)return{text:'',lines:0};
   const out=[];
-  for(const v of vs){if(v.gap){if(out.length&&out[out.length-1]!=='')out.push('');continue;}out.push(...splitLine((BSET.nums&&v.n?v.n+' ':'')+v.t,BSET.max));}
+  for(const v of vs){if(v.gap){if(out.length&&out[out.length-1]!=='')out.push('');continue;}
+    if(BSET.gap&&v.n&&out.length&&out[out.length-1]!=='')out.push('');
+    out.push(...splitLine((BSET.nums&&v.n?v.n+' ':'')+v.t,BSET.max));}
   while(out.length&&out[out.length-1]==='')out.pop();
   return{text:(BSET.title?BSET.title+'\n':'')+out.join('\n'),lines:out.filter(Boolean).length};
 }
 function renderVerse(){const r=verseResult();$('verseOut').textContent=r.text||'붙여 넣은 본문이 여기에 정리돼요.';$('verseCount').textContent=r.lines?`${r.lines}줄`:'';}
 $('verseIn').addEventListener('input',renderVerse);
-['bMax','bTitle','vNums','vHeads'].forEach(id=>$(id).addEventListener('input',readBible));
+['bMax','bTitle','vNums','vHeads','bAuto','vGap'].forEach(id=>$(id).addEventListener('input',readBible));
 $('bMaxDn').onclick=()=>{$('bMax').value=Math.max(10,+$('bMax').value-1);readBible();};
 $('bMaxUp').onclick=()=>{$('bMax').value=Math.min(60,+$('bMax').value+1);readBible();};
 $('verseCopy').onclick=()=>{const r=verseResult().text;if(r)copy(r);else toast('본문을 먼저 붙여 넣어 주세요');};
 $('verseToEdit').onclick=()=>{const r=verseResult().text;if(!r){toast('본문을 먼저 붙여 넣어 주세요');return;}
-  const ta=$('outText');ta.value=ta.value.trim()?ta.value.trim()+'\n'+'\n'.repeat(FMT.songGap)+r:r;dirty=true;store.set('dirty',true);store.set('out',ta.value);refreshOutMeta();location.hash='result';toast('자막 결과에 추가했어요');};
+  const ta=$('outText'),gap='\n'+'\n'.repeat(FMT.songGap),ch=songChunks(),head=r.split('\n')[0].trim();
+  const at=BSET.title?ch.findIndex(c=>c.split('\n')[0].trim()===head):-1;
+  if(at>=0){ch[at]=r;ta.value=ch.join(gap);}else ta.value=ta.value.trim()?ta.value.trim()+gap+r:r;
+  dirty=true;store.set('dirty',true);store.set('out',ta.value);ta.dispatchEvent(new Event('input',{bubbles:true}));refreshOutMeta();location.hash='result';toast(at>=0?'자막 결과의 같은 본문을 새로 바꿨어요':'자막 결과에 추가했어요');};
 fillBible();
 
 /* ======================== 시작 ======================== */
