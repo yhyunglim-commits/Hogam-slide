@@ -4,6 +4,6 @@
 // 두 값은 공개돼도 괜찮은 값이에요. 데이터는 팀원만 볼 수 있게 서버에서 막혀 있어요.
 window.HOGAM_CONFIG = {
   SUPABASE_URL: 'https://scwxnpbedcixfwtkhnlo.supabase.co',
-  SUPABASE_ANON_KEY: 'sb_publishable_77yWr9RCQ5AF9mgvz1IzdQ_mBRhB5jianon-public-',
+  SUPABASE_ANON_KEY: 'sb_publishable_77yWr9RCQ5AF9mgvz1IzdQ_mBRhB5ji',
   TEAM_NAME: '옥수교회 미디어팀'
 };
