@@ -739,6 +739,19 @@ body.sorting,body.sorting *{user-select:none!important;cursor:grabbing!important
 
 /* 접속 중 점: 작게, 오른쪽 위 */
 .oav::after{top:0;right:0;bottom:auto;width:7px;height:7px;border-width:1.5px}
+
+/* 미리보기: 지금 보는 화면 표시 + 크기 조절 */
+.shotw.cur .shot{box-shadow:0 0 0 2px var(--ink,#1f2933),0 6px 16px -10px rgba(3,26,23,.35)}
+.shotw.sel.cur .shot{box-shadow:0 0 0 2.5px var(--pri),0 0 0 5px rgba(18,133,117,.25)}
+.shotbody .sgrid,#shots .sgrid{grid-template-columns:repeat(var(--cols,3),minmax(0,1fr))}
+.shotcol{min-width:0}
+.shotw .shot{width:100%}
+.shotzoom{display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:0 24px 6px 20px;color:var(--text3)}
+.shotzoom svg{width:15px;height:15px;margin-right:2px}
+.shotzoom button{width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--text2);font-size:15px;line-height:1;cursor:pointer;padding:0;display:grid;place-items:center}
+.shotzoom button:hover{color:var(--text);border-color:var(--line2)}
+.shotzoom input[type=range]{width:110px;accent-color:var(--pri)}
+@media (max-width:1100px){.shotzoom{padding:0 24px 6px}}
 </style>
 </head>
 <body>
@@ -853,7 +866,10 @@ body.sorting,body.sorting *{user-select:none!important;cursor:grabbing!important
       <div class="shots-top">
         <details class="look" open><summary>슬라이드 설정</summary><div id="lookCtl"></div><button type="button" class="lkfold" id="lkFold" aria-label="슬라이드 설정 접기" title="접기"><span></span></button></details>
       </div>
-      <div class="shots" id="shots"></div>
+      <div class="shotcol">
+        <div class="shotzoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg><button type="button" id="zoomOut" aria-label="미리보기 작게">−</button><input type="range" id="shotZoom" min="1" max="6" step="1" aria-label="미리보기 크기"><button type="button" id="zoomIn" aria-label="미리보기 크게">+</button></div>
+        <div class="shots" id="shots"></div>
+      </div>
       </div>
     </section>
     </div>
@@ -1981,7 +1997,8 @@ function renderShots(){
       const grid=document.createElement('div');grid.className='sgrid';
       g.items.forEach(s=>{n++;
         const bt=document.createElement('button');bt.className='shot';bt.setAttribute('aria-label',`${n}번째 화면 크게 보기`);
-        const cv=document.createElement('canvas');cv.width=480*dpr;cv.height=270*dpr;drawScreen(cv,s,g.songIdx||0);
+        const cols=+getComputedStyle($('shots')).getPropertyValue('--cols')||3,cw=cols>=3?480:cols===2?720:960;
+        const cv=document.createElement('canvas');cv.width=cw*dpr;cv.height=cw*9/16*dpr;drawScreen(cv,s,g.songIdx||0);
         bt.innerHTML=`<span class="no">${n}</span>`;bt.appendChild(cv);
         const wrap=document.createElement('div');wrap.className='shotw';
         const del=document.createElement('button');del.className='shotx';del.type='button';del.title='이 슬라이드 지우기';del.setAttribute('aria-label',`${n}번째 슬라이드 지우기`);del.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
@@ -1990,7 +2007,11 @@ function renderShots(){
         const idx=n-1,k=shotKey(s);wrap.dataset.k=k;
         const ck=document.createElement('label');ck.className='shotck';ck.title='고르기';ck.innerHTML=`<input type="checkbox" aria-label="${n}번째 슬라이드 고르기">`;
         ck.querySelector('input').onchange=e=>{e.target.checked?selKeys.add(k):selKeys.delete(k);renderSelBar();};
-        bt.onclick=()=>openSlide(idx);wrap.appendChild(bt);wrap.appendChild(ck);grid.appendChild(wrap);});
+        if(k===curShot)wrap.classList.add('cur');
+        bt.onclick=e=>{const again=curShot===k;curShot=k;$('shots').querySelectorAll('.shotw.cur').forEach(x=>x.classList.remove('cur'));wrap.classList.add('cur');
+          if(lookTab!==s.type){lookTab=s.type;store.set('lookTab',lookTab);buildLookUI();}
+          if(e.detail===0&&again)openSlide(idx);};
+        bt.ondblclick=()=>openSlide(idx);bt.title='누르면 이 화면 설정, 두 번 누르면 크게 보기';wrap.appendChild(bt);wrap.appendChild(ck);grid.appendChild(wrap);});
       box.appendChild(grid);
     });
     renderSelBar();
@@ -2034,7 +2055,7 @@ function deleteScreens(list){
 }
 function deleteScreen(sc){deleteScreens([sc]);}
 // ---- 선택 · 전체 선택 · 삭제
-const selKeys=new Set();
+const selKeys=new Set();let curShot=null;
 const shotKey=s=>s.ed+':'+s.line;
 function allShots(){return songGroups().flatMap(g=>g.items);}
 function renderSelBar(){
@@ -2049,6 +2070,8 @@ function renderSelBar(){
 }
 $('selAllCk').onchange=()=>{const all=allShots();if($('selAllCk').checked)all.forEach(s=>selKeys.add(shotKey(s)));else selKeys.clear();renderSelBar();};
 $('selDel').onclick=()=>{const list=allShots().filter(s=>selKeys.has(shotKey(s)));if(!list.length)return;deleteScreens(list);renderSelBar();};
+{const z=$('shotZoom'),apply=v=>{v=Math.min(6,Math.max(1,+v||4));z.value=v;const old=$('shots').style.getPropertyValue('--cols');$('shots').style.setProperty('--cols',7-v);store.set('shotZoom',v);if(old&&+old!==7-v&&(7-v<3||+old<3))renderShots();};
+  apply(store.get('shotZoom',4));z.oninput=()=>apply(z.value);$('zoomOut').onclick=()=>apply(+z.value-1);$('zoomIn').onclick=()=>apply(+z.value+1);}
 // 내보낼 화면: 고른 게 있으면 고른 것만
 function exportGroups(){const g=songGroups();if(!selKeys.size)return g;
   return g.map(x=>({...x,items:x.items.filter(s=>selKeys.has(shotKey(s)))})).filter(x=>x.items.length);}
