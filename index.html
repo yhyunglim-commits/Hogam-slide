@@ -633,6 +633,10 @@ button.lrow{cursor:pointer}button.lrow:hover{background:var(--canvas)}
         <span>양식이 바뀌었어요. 다시 만들면 직접 고친 글은 사라져요.</span>
         <span class="row"><button class="btn sm" id="regenNo">지금 글 유지</button><button class="btn sm pri" id="regenYes">다시 만들기</button></span>
       </div>
+      <div class="banner hidden" id="libBanner">
+        <span id="libBannerMsg"></span>
+        <span class="row"><button class="btn sm" id="libSkip">이번 예배만</button><button class="btn sm pri" id="libSave">보관함에도 저장</button></span>
+      </div>
       <div class="edcol">
         <div class="songcopy" id="songCopy"></div>
         <div class="fixbar hidden" id="fixbar" aria-live="polite"></div>
@@ -1200,6 +1204,60 @@ $('outText').value=store.get('out','');
 $('outText').addEventListener('input',()=>{dirty=true;store.set('dirty',true);clearTimeout(window._sv);window._sv=setTimeout(()=>store.set('out',$('outText').value),400);refreshOutMeta();});
 $('regenYes').onclick=()=>{setOutput(allText(results,FMT),true);toast('지금 양식으로 다시 만들었어요');};
 $('regenNo').onclick=()=>$('regenBanner').classList.add('hidden');
+// ---- 자막 결과에서 직접 고친 가사 → 곡 데이터와 팀 곡 보관함에 반영 ----
+// 결과 글을 고치면 그 곡의 가사 데이터도 같이 바꿔 두고(양식을 바꿔 다시 만들어도 유지),
+// 보관함에 있는 곡이면 "보관함에도 저장" 버튼을 보여 줘요.
+let libPend=[],libSkipKey={};
+function songKey(r,f){return packSong(r,f).map(x=>x.lines.join('\n')).join('\n\n');}
+function readEditedSongs(){
+  const f=FMT,raw=$('outText').value.split('\n');
+  const groups=[];let last=-1;
+  parseScreens().forEach(sc=>{if(sc.type!=='song')return;if(sc.chunk!==last){groups.push([]);last=sc.chunk;}groups[groups.length-1].push(sc);});
+  const norm=x=>String(x||'').replace(/^\d+\.\s*/,'').replace(/\s+/g,'');
+  const labRe=f.labels?new RegExp('^'+f.labelStyle.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace('\\{label\\}','(.{1,8})').replace('{label}','(.{1,8})')+'$'):null;
+  const used=new Set(),out=[];
+  groups.forEach((g,gi)=>{
+    const t=norm(g[0].title);let r=t?results.find(x=>!used.has(x)&&norm(x.title)===t):null;
+    if(!r&&f.titleMode!=='song'&&groups.length===results.length)r=results[gi];
+    if(!r)return;used.add(r);
+    const orig=packSong(r,f),sections=[];
+    g.forEach((sc,k)=>{
+      const lines=sc.lines.map(l=>l.trim()).filter(Boolean);if(!lines.length)return;
+      let lab=null;if(labRe)for(const i of sc.src){const m=(raw[i]||'').trim().match(labRe);if(m){lab=m[1];break;}}
+      const guess=(orig[k]||orig[orig.length-1]||{}).label||'';
+      if(lab!=null)sections.push({label:lab,slides:[]});
+      else if(!sections.length||(!labRe&&sections[sections.length-1].label!==guess))sections.push({label:guess,slides:[]});
+      sections[sections.length-1].slides.push(lines);
+    });
+    if(sections.length)out.push({r,sections});
+  });
+  return out;
+}
+function syncEdits(){
+  const f=FMT;let changed=false;
+  for(const {r,sections} of readEditedSongs()){
+    const nr={...r,sections,linesUsed:f.lines};
+    if(songKey(nr,f)!==songKey(r,f)){r.sections=sections;r.linesUsed=f.lines;changed=true;}
+  }
+  if(changed){store.set('results',results);if(typeof scheduleSave==='function')scheduleSave();}
+  libPend=results.filter(r=>{const L=LIB[(r.title||'').trim()];if(!L)return false;const k=songKey(r,f);return k!==songKey(L.result,f)&&libSkipKey[r.title]!==k;});
+  showLibBanner();
+}
+function showLibBanner(){
+  const b=$('libBanner');if(!libPend.length){b.classList.add('hidden');return;}
+  const names=libPend.map(r=>`‘${r.title}’`);
+  $('libBannerMsg').textContent=`${names.slice(0,2).join(', ')}${names.length>2?` 외 ${names.length-2}곡`:''} 가사를 고쳤어요. 팀 곡 보관함에도 고친 가사로 저장할까요?`;
+  b.classList.remove('hidden');
+}
+function scheduleLibSync(){clearTimeout(window._ls);window._ls=setTimeout(syncEdits,900);}
+$('outText').addEventListener('input',scheduleLibSync);
+$('libSkip').onclick=()=>{libPend.forEach(r=>libSkipKey[r.title]=songKey(r,FMT));libPend=[];showLibBanner();};
+$('libSave').onclick=async()=>{
+  const list=libPend;libPend=[];showLibBanner();
+  for(const r of list){const t=(r.title||'').trim();
+    await saveToLib({title:t,result:JSON.parse(JSON.stringify(r)),thumb:LIB[t]?.thumb||songs.find(s=>s.result===r)?.thumb||null,pages:[]});}
+  toast(list.length>1?`${list.length}곡의 보관함 가사를 고쳤어요`:`‘${list[0].title}’ 보관함 가사를 고쳤어요`);
+};
 function songChunks(){
   const t=$('outText').value.trim();if(!t)return[];
   if(FMT.songGap<=FMT.slideGap)return[t];
@@ -1375,7 +1433,7 @@ function applyFix(x){
   let i=x.line;if(!(ls[i]||'').includes(x.before))i=ls.findIndex(l=>l.includes(x.before));
   if(i<0){x.applied=true;return;}
   ls[i]=ls[i].replace(x.before,x.after);ta.value=ls.join('\n');x.applied=true;
-  dirty=true;store.set('dirty',true);store.set('out',ta.value);refreshOutMeta();
+  dirty=true;store.set('dirty',true);store.set('out',ta.value);refreshOutMeta();scheduleLibSync();
 }
 // 자막 결과 칸 안에서만 스크롤해서 그 줄을 보여줘요 (페이지는 그대로)
 function scrollEditorTo(el){
@@ -2006,7 +2064,7 @@ function loadSession(id){
   songs=results.map(r=>newSong({mode:'lib',title:r.title,result:r,thumb:LIB[r.title]?.thumb,status:'done'}));
   $('outText').value=c.text||'';dirty=!!c.dirty;store.set('dirty',dirty);store.set('out',c.text||'');
   $('verseIn').value=c.verseIn||'';$('bTitle').value=c.bTitle||'';BSET.title=c.bTitle||'';
-  issues=[];checked=false;exported=false;$('regenBanner').classList.add('hidden');
+  issues=[];checked=false;exported=false;$('regenBanner').classList.add('hidden');libPend=[];libSkipKey={};$('libBanner').classList.add('hidden');
   renderSongs();renderIssues();refreshOutMeta();renderVerse();renderHist();
   $('savedAt').textContent=`저장됨 · ${fmtTime(c.updated)}`;closeRail();scrollTo(0,0);
 }
