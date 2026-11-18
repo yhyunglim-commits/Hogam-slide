@@ -582,6 +582,24 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
 .shotbody .shots{padding:4px 24px 22px 20px}
 .shotbody .sgrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
 @media (max-width:1100px){.shotbody{grid-template-columns:minmax(0,1fr)}.shotbody .shots-top{position:static;padding:4px 24px 14px}.shotbody .shots{padding:4px 24px 22px}}
+
+/* 위쪽: 단계 표시 없이 제목 줄 하나 */
+.doc .r1 .steps{margin:0 0 0 auto;flex:none}
+/* 말씀 자막 칸 */
+#wordText{display:block;width:100%;box-sizing:border-box;font-family:var(--sans);font-size:14.5px;line-height:1.8;padding:10px 12px;border:1px solid var(--line2);border-radius:14px;background:#fff;resize:none;overflow:hidden;min-height:140px;white-space:pre-wrap}
+#wordText:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-soft)}
+#wordPanel .edcol{padding:4px 24px 22px}
+/* 슬라이드 선택 */
+.selbar{display:inline-flex;gap:6px;margin-right:6px}
+.btn.danger:not(:disabled){color:#c0392b;border-color:#f0c4be}
+.btn.danger:not(:disabled):hover{background:#fdecea}
+.shotw{position:relative}
+.shotck{display:none;position:absolute;right:8px;top:8px;width:24px;height:24px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.3);box-shadow:0 1px 4px rgba(0,0,0,.35);pointer-events:none}
+.selecting .shotck{display:block}
+.selecting .shotx{display:none!important}
+.selecting .shot{cursor:pointer}
+.shotw.sel .shot{box-shadow:0 0 0 3px var(--pri),0 6px 16px -10px rgba(3,26,23,.35)}
+.shotw.sel .shotck{background:var(--pri) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/15px no-repeat}
 </style>
 </head>
 <body>
@@ -604,8 +622,8 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
         <button class="btn ghost ibtn mtop" id="menuBtn" aria-label="기록과 보관함 열기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
         <input class="title" id="docTitle" aria-label="예배 이름">
         <span class="saved" id="savedAt"></span>
+        <div class="steps" id="steps"></div>
       </div>
-      <div class="steps" id="steps"></div>
     </header>
 
     <div class="split">
@@ -651,14 +669,14 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
             </div>
           </div>
         </div>
-        <div class="pf"><button class="btn" id="verseCopy">복사</button><button class="btn pri" id="verseToEdit" style="margin-left:auto">자막 결과에 넣기</button></div>
+        <div class="pf"><button class="btn" id="verseCopy">복사</button><button class="btn pri" id="verseToEdit" style="margin-left:auto">말씀 자막에 넣기</button></div>
       </section>
     </div>
 
     <div class="resgrid" id="resultSec">
     <section class="panel" id="resPanel">
-      <div class="ph2"><button class="fold" id="foldRes" aria-expanded="true" aria-controls="resBody"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg><span class="pico c3" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span><h2>자막 결과</h2></button><span class="meta" id="outCount"></span>
-        <div class="acts"><button class="btn" id="checkBtn">맞춤법 검사</button><button class="btn pri" id="copyAll">전체 복사</button></div></div>
+      <div class="ph2"><button class="fold" id="foldRes" aria-expanded="true" aria-controls="resBody"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg><span class="pico c3" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span><h2>찬양 자막</h2></button><span class="meta" id="outCount"></span>
+        <div class="acts"><button class="btn" id="checkBtn">맞춤법 검사</button><button class="btn pri" id="copyAll">찬양 복사</button></div></div>
       <div id="resBody">
       <div class="rbar">
         <label for="outFmt">양식</label><select id="outFmt"></select>
@@ -677,14 +695,20 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
       <div class="edcol">
         <div class="songcopy" id="songCopy"></div>
         <div class="fixbar hidden" id="fixbar" aria-live="polite"></div>
-        <div class="edscroll" id="edScroll"><div class="hl"><div class="back" id="hlBack" aria-hidden="true"></div><div class="gut" id="hlNums"></div><textarea id="outText" spellcheck="false" placeholder="가사를 읽거나 말씀을 넣으면 여기에 모여요. 바로 고칠 수 있어요."></textarea></div></div>
+        <div class="edscroll" id="edScroll"><div class="hl"><div class="back" id="hlBack" aria-hidden="true"></div><div class="gut" id="hlNums"></div><textarea id="outText" spellcheck="false" placeholder="가사를 읽으면 여기에 모여요. 바로 고칠 수 있어요."></textarea></div></div>
       </div>
       </div>
     </section>
 
+    <section class="panel" id="wordPanel">
+      <div class="ph2"><span class="pico c2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg></span><h2>말씀 자막</h2><span class="meta" id="wordCount"></span>
+        <div class="acts"><button class="btn" id="wordClear">비우기</button><button class="btn pri" id="wordCopy">말씀 복사</button></div></div>
+      <div class="edcol"><textarea id="wordText" spellcheck="false" placeholder="위 말씀 칸에서 ‘말씀 자막에 넣기’를 누르면 여기에 들어와요. 바로 고칠 수 있어요."></textarea></div>
+    </section>
+
     <section class="panel shots-panel" id="slidePanel">
       <div class="ph2"><span class="pico c4" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span><h2>슬라이드 미리보기</h2><span class="meta" id="shotCount"></span>
-        <div class="acts"><button class="btn" id="dlShots">이미지 내려받기</button><button class="btn pri" id="dlPptx">PowerPoint로 내보내기</button></div></div>
+        <div class="acts"><span class="selbar" id="selBar"><button class="btn" id="selMode">선택</button><button class="btn hidden" id="selAll">전체 선택</button><button class="btn danger hidden" id="selDel" disabled>삭제</button></span><button class="btn" id="dlShots">이미지 내려받기</button><button class="btn pri" id="dlPptx">PowerPoint로 내보내기</button></div></div>
       <div class="shotbody">
       <div class="shots-top">
         <details class="look" open><summary>슬라이드 설정</summary><div id="lookCtl"></div><button type="button" class="lkfold" id="lkFold" aria-label="슬라이드 설정 접기" title="접기"><span></span></button></details>
@@ -1240,6 +1264,26 @@ function setOutput(t,force){
   issues=[];renderIssues();refreshOutMeta();
 }
 $('outText').value=store.get('out','');
+// ---- 말씀 자막: 찬양 자막과 따로 두고, 저장할 때는 예전처럼 한 글로 합쳐요 ----
+const gapStr=()=>'\n'+'\n'.repeat(Math.max(1,FMT.songGap));
+const gapRe=()=>new RegExp('\\n(?:[ \\t]*\\n){'+Math.max(1,FMT.songGap)+',}');
+function isWordChunk(c){const ls=c.split('\n').map(l=>l.trim()).filter(Boolean);return ls.some(l=>/^\d{1,3} \S/.test(l))&&!(FMT.endMark&&ls.some(l=>l.includes(FMT.endMark)));}
+function splitCombined(t){t=String(t||'');if(!t.trim())return{song:'',word:''};
+  const ch=t.split(gapRe()).filter(x=>x.trim());return{song:ch.filter(c=>!isWordChunk(c)).join(gapStr()),word:ch.filter(isWordChunk).join(gapStr())};}
+function combinedText(){return[$('outText').value.trim(),$('wordText').value.trim()].filter(Boolean).join(gapStr());}
+function wordChunks(){const t=$('wordText').value.trim();return t?t.split(gapRe()).filter(x=>x.trim()):[];}
+function autosizeWord(){const t=$('wordText');if(!t.offsetParent)return;t.style.height='auto';t.style.height=Math.max(t.scrollHeight+2,140)+'px';}
+function refreshWordMeta(){const n=wordChunks().length,l=$('wordText').value.trim()?$('wordText').value.trim().split('\n').length:0;$('wordCount').textContent=n?`본문 ${n}개 · ${l}줄`:'';autosizeWord();}
+$('wordText').value=store.get('wordOut','');
+{const sp=splitCombined($('outText').value);if(sp.word){$('outText').value=sp.song;store.set('out',sp.song);$('wordText').value=[$('wordText').value.trim(),sp.word].filter(Boolean).join(gapStr());store.set('wordOut',$('wordText').value);}}
+$('wordText').addEventListener('input',()=>{clearTimeout(window._wv);window._wv=setTimeout(()=>store.set('wordOut',$('wordText').value),400);refreshWordMeta();renderShots();scheduleSave();renderSteps();});
+addEventListener('resize',autosizeWord);document.fonts?.ready?.then(autosizeWord);
+$('wordCopy').onclick=()=>{const t=$('wordText').value.trim();if(t)copy(t);else toast('말씀 자막이 비어 있어요');};
+$('wordClear').onclick=()=>{const ta=$('wordText'),before=ta.value;if(!before.trim())return;ta.value='';ta.dispatchEvent(new Event('input',{bubbles:true}));toastUndo('말씀 자막을 비웠어요',()=>{ta.value=before;ta.dispatchEvent(new Event('input',{bubbles:true}));});};
+function gotoWordLine(n){const ta=$('wordText'),ls=ta.value.split('\n');if(n<0||n>=ls.length)return;
+  let a=0;for(let i=0;i<n;i++)a+=ls[i].length+1;ta.focus({preventScroll:true});ta.setSelectionRange(a,a+ls[n].length);
+  const lh=parseFloat(getComputedStyle(ta).lineHeight)||26,y=ta.getBoundingClientRect().top+scrollY+10+n*lh,doch=document.querySelector('.doc')?.offsetHeight||104;
+  scrollTo({top:Math.max(0,y-doch-(innerHeight-doch)/3),behavior:'smooth'});}
 $('outText').addEventListener('input',()=>{dirty=true;store.set('dirty',true);clearTimeout(window._sv);window._sv=setTimeout(()=>store.set('out',$('outText').value),400);refreshOutMeta();});
 $('regenYes').onclick=()=>{setOutput(allText(results,FMT),true);toast('지금 양식으로 다시 만들었어요');};
 $('regenNo').onclick=()=>$('regenBanner').classList.add('hidden');
@@ -1335,7 +1379,7 @@ function showIssue(k,scroll){
 // 자막 결과 상자가 화면 높이 안에 꼭 들어오게
 function setEdMax(){const sc=$('edScroll');if(sc)sc.style.maxHeight='';}
 addEventListener('resize',setEdMax);
-function refreshOutMeta(){autosize();paintHL();renderShots();scheduleSave();renderSteps();
+function refreshOutMeta(){autosize();if(typeof autosizeWord==='function')autosizeWord();paintHL();renderShots();scheduleSave();renderSteps();
   const ch=songChunks(),box=$('songCopy');box.innerHTML='';
   if(ch.length>1)ch.forEach((c,i)=>{const w=document.createElement('span');w.className='chipw';
     const name=esc((c.split('\n')[0]||'').replace(/^\d+\.\s*/,'').slice(0,14));
@@ -1353,7 +1397,7 @@ function removeChunk(i){
   else{ch.splice(i,1);const ta=$('outText');ta.value=ch.join('\n'+'\n'.repeat(FMT.songGap));dirty=true;store.set('dirty',true);store.set('out',ta.value);issues=[];renderIssues();refreshOutMeta();}
   toast(`${i+1}번을 결과에서 지웠어요`);
 }
-async function copy(t){try{await navigator.clipboard.writeText(t);toast('복사했어요');if(t===$('outText').value){exported=true;renderSteps();}}catch(e){toast('복사가 막혔어요. 글을 길게 눌러 직접 복사해 주세요');}}
+async function copy(t){try{await navigator.clipboard.writeText(t);toast('복사했어요');if(t===$('outText').value||t===combinedText()){exported=true;renderSteps();}}catch(e){toast('복사가 막혔어요. 글을 길게 눌러 직접 복사해 주세요');}}
 $('copyAll').onclick=()=>copy($('outText').value);
 
 let issues=[],curIssue=0,checkMsg='';
@@ -1485,8 +1529,9 @@ function gotoLine(n){
 
 /* ---- 화면 미리보기: 자막 결과 글을 화면 단위로 나눠 그려요 ---- */
 let wordLineSet=new Set();
-function parseScreens(){
-  const ls=$('outText').value.split('\n'),f=FMT,screens=[];wordLineSet=new Set();
+function parseScreens(){wordLineSet=new Set();return[...parseText($('outText').value,'song',0),...parseText($('wordText').value,'word',10000)];}
+function parseText(text,ed,base){
+  const ls=String(text||'').split('\n'),f=FMT,screens=[],forceWord=ed==='word';
   // 곡/본문 단위로 자르기 (빈 줄 songGap개 이상)
   const chunks=[];let cur=[],blank=0,start=0;
   ls.forEach((l,i)=>{if(!l.trim()){blank++;return;}
@@ -1494,15 +1539,15 @@ function parseScreens(){
     if(!cur.length)start=i;cur.push({t:l,i,gapBefore:blank});blank=0;});
   if(cur.length)chunks.push({lines:cur,start});
   chunks.forEach((ch,ci)=>{
-    const isWord=ch.lines.filter(o=>/^\d{1,3} \S/.test(o.t.trim())).length>=1&&!(f.endMark&&ch.lines.some(o=>o.t.includes(f.endMark)));
+    const isWord=forceWord||(ch.lines.filter(o=>/^\d{1,3} \S/.test(o.t.trim())).length>=1&&!(f.endMark&&ch.lines.some(o=>o.t.includes(f.endMark))));
     if(isWord){
-      ch.lines.forEach(o=>wordLineSet.add(o.i));
+      if(!forceWord)ch.lines.forEach(o=>wordLineSet.add(o.i));
       let ref='',body=ch.lines;if(!/^\d{1,3} /.test(body[0].t.trim())){ref=body[0].t.trim();body=body.slice(1);}
       // 절 단위로 묶어서, 한 절이 두 화면에 걸치지 않게
       const body2=[];body.forEach((o,k)=>{if(k>0&&o.gapBefore>0)body2.push({t:'',i:o.i,sp:true});body2.push(o);});
       const verses=[];for(const o of body2){if(o.sp){if(verses.length)verses[verses.length-1].push(o);continue;}if(/^\d{1,3} /.test(o.t.trim())||!verses.length)verses.push([o]);else verses[verses.length-1].push(o);}
       const max=LOOK.word.maxLines;let cur=[];
-      const push=()=>{while(cur.length&&cur[cur.length-1].sp)cur.pop();while(cur.length&&cur[0].sp)cur.shift();if(cur.length)screens.push({type:'word',chunk:ci,ref,title:ref||'성경봉독',lines:cur.map(o=>o.t.trim()),line:cur[0].i,src:cur.filter(o=>!o.sp).map(o=>o.i),cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});cur=[];};
+      const push=()=>{while(cur.length&&cur[cur.length-1].sp)cur.pop();while(cur.length&&cur[0].sp)cur.shift();if(cur.length)screens.push({type:'word',ed,chunk:base+ci,ref,title:ref||'성경봉독',lines:cur.map(o=>o.t.trim()),line:cur[0].i,src:cur.filter(o=>!o.sp).map(o=>o.i),cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});cur=[];};
       for(const v of verses){const real=v.filter(o=>!o.sp).length,curReal=cur.filter(o=>!o.sp).length;if(curReal&&cur.length+real>max)push();cur.push(...v);if(cur.filter(o=>!o.sp).length>=max)push();}
       push();
       return;
@@ -1522,7 +1567,7 @@ function parseScreens(){
       if(f.titleMode!=='none'&&(f.titleWhere==='every'||bi===0)&&lines.length>1){title=lines[0];lines=lines.slice(1);}
       if(f.labels&&lines.length>1){const re=new RegExp('^'+f.labelStyle.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace('\\{label\\}','(.{1,8})').replace('{label}','(.{1,8})')+'$');if(re.test(lines[0]))lines=lines.slice(1);}
       if(title)songTitle=title.replace(/^\d+\.\s*/,'');
-      screens.push({type:'song',chunk:ci,title:f.titleMode==='none'?'':(title?title.replace(/^\d+\.\s*/,''):songTitle),lines,line:bl[0].i,src:bl.map(o=>o.i),keep:(bi===0&&title&&blocks.length>1&&f.titleWhere!=='every')?bl[0].i:-1,cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});
+      screens.push({type:'song',ed,chunk:base+ci,title:f.titleMode==='none'?'':(title?title.replace(/^\d+\.\s*/,''):songTitle),lines,line:bl[0].i,src:bl.map(o=>o.i),keep:(bi===0&&title&&blocks.length>1&&f.titleWhere!=='every')?bl[0].i:-1,cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});
     });
   });
   return screens;
@@ -1670,7 +1715,7 @@ function drawScreen(cv,sc,songIdx,opt={}){
 // 말씀 화면은 모든 장이 같은 글자 크기가 되도록, 가장 많이 줄여야 하는 화면에 맞춰요
 let _wk={key:'',k:1};
 function wordK(x,W,H,fs,sp,availW,availH,L){
-  const key=[W,fs,sp,availW,availH,L.lineH,$('outText').value].join('|');if(_wk.key===key)return _wk.k;
+  const key=[W,fs,sp,availW,availH,L.lineH,$('wordText').value,$('outText').value].join('|');if(_wk.key===key)return _wk.k;
   let k=1;for(const s of parseScreens()){if(s.type!=='word')continue;
     const mw=Math.max(1,...s.lines.map(l=>spacedW(x,l,sp)));k=Math.min(k,availW/mw,availH/(fs*L.lineH*Math.max(1,s.lines.length)));}
   _wk={key,k};return k;
@@ -1744,20 +1789,20 @@ function renderShots(){
         const del=document.createElement('button');del.className='shotx';del.type='button';del.title='이 슬라이드 지우기';del.setAttribute('aria-label',`${n}번째 슬라이드 지우기`);del.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
         del.onclick=e=>{e.stopPropagation();deleteScreen(s);};
         if(s.type==='song'&&(s.lines.some(l=>width(l)>FMT.maxChars+.5)||s.lines.length>FMT.lines))bt.classList.add('over');
-        const idx=n-1;bt.onclick=()=>openSlide(idx);wrap.appendChild(bt);wrap.appendChild(del);grid.appendChild(wrap);});
+        const idx=n-1,k=shotKey(s);wrap.dataset.k=k;const ck=document.createElement('span');ck.className='shotck';ck.setAttribute('aria-hidden','true');
+        bt.onclick=()=>{if(selMode){selKeys.has(k)?selKeys.delete(k):selKeys.add(k);renderSelBar();return;}openSlide(idx);};wrap.appendChild(bt);wrap.appendChild(del);wrap.appendChild(ck);grid.appendChild(wrap);});
       box.appendChild(grid);
     });
+    renderSelBar();
   },fontsReady?120:0);
 }
 
-/* ---- 슬라이드 하나 지우기 (자막 결과에서 그 부분을 지운다) ---- */
-function deleteScreen(sc){
-  const ta=$('outText'),before=ta.value,ls=before.split('\n');
+/* ---- 슬라이드 지우기 (찬양·말씀 자막에서 그 부분을 지운다) ---- */
+function killLines(sc,ls,others){
   const blank=i=>i>=0&&i<ls.length&&!ls[i].trim();
   let a=Math.min(...sc.src),b=Math.max(...sc.src);
   if(sc.keep>=0&&sc.keep===a)a++;
   const kill=new Set();
-  const others=parseScreens().filter(o=>o.chunk===sc.chunk&&o!==sc&&o.line!==sc.line);
   const wholeChunk=!others.length||(sc.type==='word'&&!others.some(o=>o.src.length));
   if(wholeChunk){
     a=sc.cs;b=sc.ce;
@@ -1770,12 +1815,41 @@ function deleteScreen(sc){
     else if(a>sc.cs){let k=a-1;while(blank(k)){kill.add(k);k--;}}
     else{let k=b+1;while(blank(k)&&k<sc.ce){kill.add(k);k++;}}
   }
-  ta.value=ls.filter((_,i)=>!kill.has(i)).join('\n');
-  ta.dispatchEvent(new Event('input',{bubbles:true}));
-  if(typeof paintHL==='function')paintHL();
-  renderShots();
-  toastUndo('슬라이드를 지웠어요',()=>{ta.value=before;ta.dispatchEvent(new Event('input',{bubbles:true}));if(typeof paintHL==='function')paintHL();renderShots();});
+  return kill;
 }
+function deleteScreens(list){
+  if(!list.length)return;
+  const tas={song:$('outText'),word:$('wordText')},before={song:tas.song.value,word:tas.word.value};
+  // 뒤쪽 화면부터 지워야 앞쪽 화면의 줄 번호가 그대로예요
+  const todo=[...list].sort((x,y)=>x.ed===y.ed?y.line-x.line:(x.ed<y.ed?-1:1));
+  for(const old of todo){
+    const all=parseScreens(),sc=all.find(o=>o.ed===old.ed&&o.line===old.line);if(!sc)continue;
+    const ta=tas[sc.ed],ls=ta.value.split('\n');
+    const kill=killLines(sc,ls,all.filter(o=>o.chunk===sc.chunk&&o!==sc&&o.line!==sc.line));
+    ta.value=ls.filter((_,i)=>!kill.has(i)).join('\n');
+  }
+  const fire=prev=>{for(const k of ['song','word'])if(tas[k].value!==prev[k])tas[k].dispatchEvent(new Event('input',{bubbles:true}));if(typeof paintHL==='function')paintHL();renderShots();};
+  selKeys.clear();fire(before);
+  toastUndo(list.length>1?`슬라이드 ${list.length}장을 지웠어요`:'슬라이드를 지웠어요',()=>{const now={song:tas.song.value,word:tas.word.value};tas.song.value=before.song;tas.word.value=before.word;fire(now);});
+}
+function deleteScreen(sc){deleteScreens([sc]);}
+// ---- 선택 · 전체 선택 · 삭제
+let selMode=false;const selKeys=new Set();
+const shotKey=s=>s.ed+':'+s.line;
+function allShots(){return songGroups().flatMap(g=>g.items);}
+function renderSelBar(){
+  const all=allShots(),keys=new Set(all.map(shotKey));[...selKeys].forEach(k=>{if(!keys.has(k))selKeys.delete(k);});
+  const n=selKeys.size;
+  $('selMode').textContent=selMode?'선택 끝내기':'선택';$('selMode').disabled=!all.length&&!selMode;
+  $('selAll').classList.toggle('hidden',!selMode);$('selDel').classList.toggle('hidden',!selMode);
+  $('selAll').textContent=all.length&&n===all.length?'선택 해제':'전체 선택';
+  $('selDel').disabled=!n;$('selDel').textContent=n?`삭제 ${n}장`:'삭제';
+  $('shots').classList.toggle('selecting',selMode);
+  $('shots').querySelectorAll('.shotw').forEach(w=>w.classList.toggle('sel',selKeys.has(w.dataset.k)));
+}
+$('selMode').onclick=()=>{selMode=!selMode;if(!selMode)selKeys.clear();renderSelBar();};
+$('selAll').onclick=()=>{const all=allShots();if(selKeys.size===all.length)selKeys.clear();else all.forEach(s=>selKeys.add(shotKey(s)));renderSelBar();};
+$('selDel').onclick=()=>{const list=allShots().filter(s=>selKeys.has(shotKey(s)));if(!list.length)return;deleteScreens(list);selMode=false;renderSelBar();};
 function toastUndo(m,fn,label='되돌리기',ms=5000){const t=$('toast');t.innerHTML='';const sp=document.createElement('span');sp.textContent=m;const b=document.createElement('button');b.className='tundo';b.textContent=label;
   b.onclick=()=>{fn();t.classList.remove('on','act');};t.append(sp,b);t.classList.add('on','act');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on','act'),ms);}
 /* ---- 화면 크게 보기 ---- */
@@ -1785,7 +1859,7 @@ function drawSlide(){const o=sbList[sbI];if(!o)return;drawScreen($('slidebox').q
   $('sbNum').textContent=`${sbI+1} / ${sbList.length}`;$('sbPrev').disabled=sbI===0;$('sbNext').disabled=sbI>=sbList.length-1;}
 const closeSlide=()=>$('slidebox').classList.remove('on');
 $('sbPrev').onclick=()=>{if(sbI>0){sbI--;drawSlide();}};$('sbNext').onclick=()=>{if(sbI<sbList.length-1){sbI++;drawSlide();}};
-$('sbClose').onclick=closeSlide;$('sbGo').onclick=()=>{const o=sbList[sbI];closeSlide();if(o)gotoLine(o.s.line);};
+$('sbClose').onclick=closeSlide;$('sbGo').onclick=()=>{const o=sbList[sbI];closeSlide();if(o)(o.s.ed==='word'?gotoWordLine(o.s.line):gotoLine(o.s.line));};
 $('slidebox').addEventListener('click',e=>{if(e.target.id==='slidebox')closeSlide();});
 addEventListener('keydown',e=>{if(!$('slidebox').classList.contains('on'))return;
   if(e.key==='Escape')closeSlide();if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();$('sbNext').click();}if(e.key==='ArrowLeft')$('sbPrev').click();});
@@ -2062,10 +2136,10 @@ $('bMaxDn').onclick=()=>{$('bMax').value=Math.max(10,+$('bMax').value-1);readBib
 $('bMaxUp').onclick=()=>{$('bMax').value=Math.min(60,+$('bMax').value+1);readBible();};
 $('verseCopy').onclick=()=>{const r=verseResult().text;if(r)copy(r);else toast('본문을 먼저 붙여 넣어 주세요');};
 $('verseToEdit').onclick=()=>{const r=verseResult().text;if(!r){toast('본문을 먼저 붙여 넣어 주세요');return;}
-  const ta=$('outText'),gap='\n'+'\n'.repeat(FMT.songGap),ch=songChunks(),head=r.split('\n')[0].trim();
+  const ta=$('wordText'),ch=wordChunks(),head=r.split('\n')[0].trim();
   const at=BSET.title?ch.findIndex(c=>c.split('\n')[0].trim()===head):-1;
-  if(at>=0){ch[at]=r;ta.value=ch.join(gap);}else ta.value=ta.value.trim()?ta.value.trim()+gap+r:r;
-  dirty=true;store.set('dirty',true);store.set('out',ta.value);ta.dispatchEvent(new Event('input',{bubbles:true}));refreshOutMeta();location.hash='result';toast(at>=0?'자막 결과의 같은 본문을 새로 바꿨어요':'자막 결과에 추가했어요');};
+  if(at>=0){ch[at]=r;ta.value=ch.join(gapStr());}else ta.value=ta.value.trim()?ta.value.trim()+gapStr()+r:r;
+  ta.dispatchEvent(new Event('input',{bubbles:true}));setTimeout(()=>$('wordPanel').scrollIntoView({behavior:'smooth',block:'start'}),50);toast(at>=0?'말씀 자막의 같은 본문을 새로 바꿨어요':'말씀 자막에 넣었어요');};
 fillBible();
 
 /* ======================== 시작 ======================== */
@@ -2082,7 +2156,7 @@ function scheduleSave(){clearTimeout(saveT);saveT=setTimeout(saveSession,500);}
 function saveSession(){
   let c=curS();if(!c){c=newSessionObj();SESS.unshift(c);curSess=c.id;store.set('curSess',curSess);}
   const before=JSON.stringify([c.name,c.text,c.results,c.verseIn,c.bTitle]);
-  c.name=$('docTitle').value.trim()||sundayName();c.text=$('outText').value;c.results=results;c.dirty=dirty;
+  c.name=$('docTitle').value.trim()||sundayName();c.text=combinedText();c.results=results;c.dirty=dirty;
   c.verseIn=$('verseIn').value;c.bTitle=$('bTitle').value;
   const changed=before!==JSON.stringify([c.name,c.text,c.results,c.verseIn,c.bTitle]);
   if(changed){c.updated=Date.now();if(me)c.by=me.name;}
@@ -2097,7 +2171,7 @@ function loadSession(id){
   $('docTitle').value=c.name;results=c.results||[];store.set('results',results);
   songs.forEach(s=>s.pages.forEach(p=>URL.revokeObjectURL(p.url)));
   songs=results.map(r=>newSong({mode:'lib',title:r.title,result:r,thumb:LIB[r.title]?.thumb,status:'done'}));
-  $('outText').value=c.text||'';dirty=!!c.dirty;store.set('dirty',dirty);store.set('out',c.text||'');
+  {const sp=splitCombined(c.text);$('outText').value=sp.song;$('wordText').value=sp.word;store.set('out',sp.song);store.set('wordOut',sp.word);}dirty=!!c.dirty;store.set('dirty',dirty);refreshWordMeta();
   $('verseIn').value=c.verseIn||'';$('bTitle').value=c.bTitle||'';BSET.title=c.bTitle||'';
   issues=[];checked=false;exported=false;$('regenBanner').classList.add('hidden');libPend=[];libSkipKey={};$('libBanner').classList.add('hidden');
   renderSongs();renderIssues();refreshOutMeta();renderVerse();renderHist();
@@ -2186,7 +2260,7 @@ function renderSteps(){
   const box=$('steps');if(!box)return;
   const pend=typeof pendingSongs==='function'?pendingSongs().length:0,errs=songs.filter(s=>s.status==='err').length;
   const ready=songs.filter(s=>s.result).length;
-  const hasWord=/^\d{1,3} \S/m.test($('outText').value);
+  const hasWord=!!$('wordText').value.trim();
   const open=openIssues().length;
   const st=[
     {k:'songs',label:'찬양 준비',meta:songs.length?`${ready}/${songs.length}곡`:'',done:songs.length>0&&!pend&&!errs&&!busy},
@@ -2201,9 +2275,8 @@ function renderSteps(){
   else if(errs)act={t:`실패한 ${errs}곡 다시 읽기`,f:()=>{songs.filter(s=>s.status==='err').forEach(s=>s.status='idle');renderSongs();$('convertBtn').click();}};
   else if(!checked&&$('outText').value.trim())act={t:'맞춤법 검사',f:()=>{location.hash='result';$('checkBtn').click();}};
   else if(open)act={t:`고칠 곳 ${open}개 보기`,f:()=>{location.hash='result';renderFixbar(true);}};
-  else if($('outText').value.trim())act={t:'전체 복사',f:()=>$('copyAll').click()};
-  box.innerHTML=st.map((x,i)=>`${i?'<span class="sep"></span>':''}<a class="step ${x.done?'done':''} ${i===cur?'cur':''}" href="#${x.k}"><i>${x.done?'✓':i+1}</i>${x.label}${x.meta?` <em>${x.meta}</em>`:''}</a>`).join('')+
-    (act?`<button class="btn sm nextact" id="nextAct" ${act.dis?'disabled':''}>${act.t}</button>`:'')+
+  else if(combinedText())act={t:'전체 복사',f:()=>copy(combinedText())};
+  box.innerHTML=(act?`<button class="btn sm nextact" id="nextAct" ${act.dis?'disabled':''}>${act.t}</button>`:'')+
     `<button class="btn sm pri nextact newsess${act?' two':''}" id="newSess"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>새 예배 자막 만들기</button>`;
   if(act&&act.f)$('nextAct').onclick=act.f;
   $('newSess').onclick=newSessClick;
