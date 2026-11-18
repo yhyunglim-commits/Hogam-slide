@@ -684,14 +684,69 @@ body.sorting,body.sorting *{user-select:none!important;cursor:grabbing!important
 .chipw.dragging{border-radius:14px}
 .grip{cursor:grab;touch-action:none}
 #songCopy{touch-action:pan-y}
+
+/* ===== 1. 갓피아성경: 아이콘 + 이름 ===== */
+.tlink{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px 0 10px;border-radius:17px;color:var(--text2);text-decoration:none;font-size:13px;font-weight:600;transition:background .12s,color .12s}
+.tlink svg{width:16px;height:16px}
+.tlink:hover{background:var(--sunken);color:var(--text)}
+/* ===== 2. 슬라이드 고르기: 작은 동그라미 ===== */
+.shotck{top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.18);border:2px solid rgba(255,255,255,.9);box-shadow:0 1px 4px rgba(0,0,0,.25);opacity:0;transition:opacity .15s,background .15s,transform .15s}
+.shotck input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.shotw:hover .shotck,.selecting .shotck,.shotck:focus-within{opacity:1}
+.shotw.sel .shotck{opacity:1;background:var(--pri) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4L18 8'/%3E%3C/svg%3E") center/13px no-repeat;border-color:#fff;transform:scale(1.05)}
+.shotck:focus-within{outline:2px solid var(--pri);outline-offset:2px}
+.shotw.sel .shot{box-shadow:0 0 0 2.5px var(--pri),0 6px 16px -10px rgba(3,26,23,.35)}
+@media (hover:none){.shotck{opacity:1}}
+/* ===== 3. 옆 메뉴 자동 숨김 ===== */
+@media (min-width:1101px){
+  .rail{width:64px;overflow:hidden;transition:width .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s;z-index:60}
+  .rail:hover,.rail:focus-within,body.railpinned .rail{width:268px;overflow-y:auto;box-shadow:8px 0 30px -12px rgba(16,24,40,.25)}
+  body.railpinned .rail{box-shadow:none}
+  .shell{grid-template-columns:64px minmax(0,1fr)}
+  body.railpinned .shell{grid-template-columns:268px minmax(0,1fr)}
+  .rail>:not(.pin){min-width:236px}
+  .rail .ricon{display:none}
+  .rail:not(:hover):not(:focus-within) .ricon{display:grid}
+  body.railpinned .rail .ricon{display:none!important}
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .railsec>:not(.ricon),
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .brand>div:not(.mk),
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .mebox .mt,
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .pin{display:none!important}
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .mebox{background:transparent;padding-left:6px}
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .railsec{min-height:0;padding-bottom:6px}
+  .rail:not(:hover):not(:focus-within) .railsec{border-top-color:transparent}
+}
+.ricon{width:36px;height:36px;border-radius:12px;place-items:center;color:var(--text2);background:var(--sunken);margin:4px 0 0 4px;display:none}
+.ricon svg{width:18px;height:18px}
+.railsec{position:relative}
+.pin{position:absolute;top:18px;right:14px;width:30px;height:30px;border-radius:9px;border:0;background:transparent;color:var(--text3);display:grid;place-items:center;cursor:pointer;z-index:2;transition:opacity .15s,background .12s,color .12s}
+.pin svg{width:17px;height:17px;transition:transform .15s}
+.pin:hover{background:var(--sunken);color:var(--text)}
+.pin[aria-pressed=true]{color:var(--pri);background:var(--pri-soft)}
+.pin[aria-pressed=true] svg{transform:rotate(-30deg)}
+.rail .railsec>*,.rail .brand>div,.rail .mebox .mt{transition:opacity .15s}
+/* ===== 4. 슬라이드 설정: 종류별 묶음 ===== */
+.lksec{padding:14px 0 12px;border-top:1px solid #e3e8ee}
+.lksec:first-of-type{border-top:0;padding-top:6px}
+.lksec h5{margin:0 0 10px;font-size:11.5px;font-weight:700;color:var(--text3);letter-spacing:.02em}
+.lksec .lkgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;align-items:end}
+.lksec .lkwide{grid-column:1/-1}
+.lksec .media{margin:0;gap:8px}
+.lksec .mhint{font-size:11.5px;color:var(--text3)}
+.lksec .lktext{height:32px;padding:3px 10px;font-size:12.5px;width:100%;box-sizing:border-box}
+.lksec label.ck{font-size:12.5px;height:22px}
+#lookCtl .lktabs{padding-bottom:12px;margin-bottom:0;border-bottom:1px solid #e3e8ee}
+
+/* 접속 중 점: 작게, 오른쪽 위 */
+.oav::after{top:0;right:0;bottom:auto;width:7px;height:7px;border-width:1.5px}
 </style>
 </head>
 <body>
 <div class="shell">
-  <aside class="rail" id="rail">
+  <aside class="rail" id="rail"><button class="pin" id="railPin" type="button" aria-pressed="false" aria-label="옆 메뉴 늘 펼쳐 두기" title="늘 펼쳐 두기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 5 3 3v2H7v-2l3-3z"/><path d="M12 14v6"/></svg></button>
     <div class="brand"><div class="mk" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="13" rx="2.5"/><path d="M7.5 10h9M9 13.5h6"/></svg></div><div><b>호감슬라이드</b><small>예배 자막과 슬라이드</small></div></div>
-    <div class="railsec" data-sec="hist"><h4><button class="rfold" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>예배 기록</button></h4><ul class="rlist" id="histList"></ul></div>
-    <div class="railsec" data-sec="lib"><h4><button class="rfold" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>곡 보관함</button> <span id="libCount"></span></h4>
+    <div class="railsec" data-sec="hist"><span class="ricon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><h4><button class="rfold" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>예배 기록</button></h4><ul class="rlist" id="histList"></ul></div>
+    <div class="railsec" data-sec="lib"><span class="ricon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></span><h4><button class="rfold" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>곡 보관함</button> <span id="libCount"></span></h4>
       <input type="search" class="libsearch" id="libSearch" placeholder="곡 이름 찾기" aria-label="보관함에서 곡 찾기">
       <ul class="rlist" id="libList"></ul></div>
     <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
@@ -733,7 +788,7 @@ body.sorting,body.sorting *{user-select:none!important;cursor:grabbing!important
 
       <section class="panel" id="colWord">
         <div class="ph2"><span class="pico c2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg></span><h2>말씀</h2><span class="meta" id="verseCount"></span>
-          <div class="acts tools"><a class="tbtn" href="https://www.godpia.com/read/reading.asp" target="_blank" rel="noopener" data-tip="갓피아성경 열기" aria-label="갓피아성경 열기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9"/><path d="M19 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1h5"/></svg></a><button class="tbtn" id="verseCopy" data-tip="복사" aria-label="복사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button><button class="tbtn" id="verseClear" data-tip="비우기" aria-label="비우기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button></div></div>
+          <div class="acts tools"><a class="tlink" href="https://www.godpia.com/read/reading.asp" target="_blank" rel="noopener" aria-label="갓피아성경 열기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9"/><path d="M19 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1h5"/></svg><span>갓피아성경</span></a><button class="tbtn" id="verseCopy" data-tip="복사" aria-label="복사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button><button class="tbtn" id="verseClear" data-tip="비우기" aria-label="비우기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button></div></div>
         <div class="pb">
           <div class="wgrid">
             <div>
@@ -744,7 +799,7 @@ body.sorting,body.sorting *{user-select:none!important;cursor:grabbing!important
               <label class="fl" for="bMax">한 줄 글자 수 <span style="color:var(--text3);font-weight:400">· 띄어쓰기 빼고</span></label>
               <label class="opts" style="margin:2px 0 6px"><input type="checkbox" id="bAuto"> 슬라이드 설정에 맞춰 자동</label>
               <div class="stepper"><button class="btn" id="bMaxDn" aria-label="한 글자 줄이기">−</button><input type="range" id="bMax" min="10" max="60"><button class="btn" id="bMaxUp" aria-label="한 글자 늘리기">+</button><output id="bMaxOut"></output></div>
-              <div class="opts" style="margin-top:12px"><label><input type="checkbox" id="vNums"> 절 번호 남기기</label><label><input type="checkbox" id="vHeads"> 소제목 빼기</label><label><input type="checkbox" id="vGap"> 절마다 한 줄 띄우기</label></div>
+              <div class="opts" style="margin-top:12px"><label><input type="checkbox" id="vNums"> 절 번호 남기기</label><label><input type="checkbox" id="vHeads"> 소제목 빼기</label></div>
             </div>
             <div>
               <label class="fl" style="margin-top:0">정리된 본문</label>
@@ -1069,6 +1124,9 @@ document.querySelectorAll('[data-fold]').forEach(b=>b.addEventListener('click',(
 document.querySelectorAll('.railsec[data-sec] .rfold').forEach(b=>{const sec=b.closest('.railsec'),k='rail_'+sec.dataset.sec;
   const apply=open=>{sec.classList.toggle('closed',!open);b.setAttribute('aria-expanded',open);};apply(!store.get(k,false));
   b.onclick=()=>{const open=sec.classList.contains('closed');apply(open);store.set(k,!open);};});
+// 옆 메뉴: 평소엔 아이콘만, 커서를 올리면 펼쳐져요. 핀을 누르면 늘 펼쳐 둬요
+{const pin=$('railPin'),apply=on=>{document.body.classList.toggle('railpinned',on);pin.setAttribute('aria-pressed',on);pin.title=on?'자동으로 숨기기':'늘 펼쳐 두기';pin.setAttribute('aria-label',pin.title);};
+  apply(store.get('railPinned',false));pin.onclick=()=>{const on=!document.body.classList.contains('railpinned');apply(on);store.set('railPinned',on);};}
 // 예배 이름 옆 연필
 $('titlePen').onclick=()=>{const t=$('docTitle');t.focus();t.select();};
 const closeRail=()=>{$('rail').classList.remove('open');$('scrim').classList.remove('on');};
@@ -1684,8 +1742,8 @@ function parseText(text,ed,base){
       if(!forceWord)ch.lines.forEach(o=>wordLineSet.add(o.i));
       let ref='',body=ch.lines;if(!/^\d{1,3} /.test(body[0].t.trim())){ref=body[0].t.trim();body=body.slice(1);}
       // 절 단위로 묶어서, 한 절이 두 화면에 걸치지 않게
-      const body2=[];body.forEach((o,k)=>{if(k>0&&o.gapBefore>0)body2.push({t:'',i:o.i,sp:true});body2.push(o);});
-      const verses=[];for(const o of body2){if(o.sp){if(verses.length)verses[verses.length-1].push(o);continue;}if(/^\d{1,3} /.test(o.t.trim())||!verses.length)verses.push([o]);else verses[verses.length-1].push(o);}
+      const body2=[];body.forEach((o,k)=>{if(k>0&&(o.gapBefore>0||(LOOK.word.verseGap&&/^\d{1,3} /.test(o.t.trim()))))body2.push({t:'',i:o.i,sp:true});body2.push(o);});
+      const verses=[];let nv=false;for(const o of body2){if(o.sp){if(verses.length)verses[verses.length-1].push(o);nv=true;continue;}if(nv||/^\d{1,3} /.test(o.t.trim())||!verses.length)verses.push([o]);else verses[verses.length-1].push(o);nv=false;}
       const max=LOOK.word.maxLines;let cur=[];
       const push=()=>{while(cur.length&&cur[cur.length-1].sp)cur.pop();while(cur.length&&cur[0].sp)cur.shift();if(cur.length)screens.push({type:'word',ed,chunk:base+ci,ref,title:ref||'성경봉독',lines:cur.map(o=>o.t.trim()),line:cur[0].i,src:cur.filter(o=>!o.sp).map(o=>o.i),cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});cur=[];};
       for(const v of verses){const real=v.filter(o=>!o.sp).length,curReal=cur.filter(o=>!o.sp).length;if(curReal&&cur.length+real>max)push();cur.push(...v);if(cur.filter(o=>!o.sp).length>=max)push();}
@@ -1731,7 +1789,7 @@ const FONTS=[
 const fontW=f=>(FONTS.find(x=>x.f===f)||FONTS[0]).w;
 const LOOK_DEF={
   song:{font:'Noto Sans KR',bgDim:15,logoPos:'off',logoSize:6,size:5,spacing:-6,lineH:1.22,posY:61,title:true,titleSize:1.6,titleGap:7,footer:'OKSU ASSEMBLIES OF GOD CHURCH',footerOn:true},
-  word:{font:'Nanum Myeongjo',refSpacing:-5,bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,box:88,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true}
+  word:{font:'Nanum Myeongjo',refSpacing:-5,bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,box:88,verseGap:false,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true}
 };
 // 배경 사진·로고 (이 브라우저에 저장)
 let MEDIA=store.get('media',{song:null,word:null,logo:null});
@@ -1758,46 +1816,46 @@ function buildLookUI(){
   tabs.querySelector('[data-copylook]').onclick=async()=>{const t='호감슬라이드 설정 '+JSON.stringify(LOOK);try{await navigator.clipboard.writeText(t);toast('설정을 복사했어요');}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('설정을 복사했어요');}catch(_){prompt('아래 글을 복사해 주세요',t);}a.remove();}};
   tabs.querySelector('[data-reset]').onclick=()=>{LOOK=JSON.parse(JSON.stringify(LOOK_DEF));saveLook();buildLookUI();};
   box.appendChild(tabs);
-  const grp=lookTab,g=document.createElement('div');g.className='lkgrid';
-  // 배경 사진 · 로고
-  const md=document.createElement('div');md.className='media';
-  const bgOn=!!MEDIA[grp],logoOn=!!MEDIA.logo;
-  const pos=[['off','넣지 않기'],['footer','아래 문구 앞'],['tl','왼쪽 위'],['tr','오른쪽 위'],['br','오른쪽 아래'],['bc','아래 가운데']];
-  md.innerHTML=`<span class="mlab">배경</span><label class="mchip" title="${bgOn?'배경 사진 바꾸기':'배경 사진 넣기 (없으면 곡별 색 배경)'}"><input type="file" accept="image/*" hidden data-up="${grp}"><span class="mth" ${bgOn?`style="background-image:url(${MEDIA[grp]})"`:''}></span>${bgOn?'바꾸기':'사진 넣기'}</label>${bgOn?'<button class="mx" data-rm="bg" title="배경 사진 지우기" aria-label="배경 사진 지우기">×</button>':''}
-    <span class="msep"></span>
-    <span class="mlab">로고</span><label class="mchip" title="${logoOn?'로고 바꾸기':'로고 넣기 (투명 PNG 권장)'}"><input type="file" accept="image/*" hidden data-up="logo"><span class="mth logo" ${logoOn?`style="background-image:url(${MEDIA.logo})"`:''}></span>${logoOn?'바꾸기':'로고 넣기'}</label>${logoOn?`<button class="mx" data-rm="logo" title="로고 지우기" aria-label="로고 지우기">×</button><select data-logopos aria-label="로고 위치">${pos.map(([v,n])=>`<option value="${v}" ${LOOK[grp].logoPos===v?'selected':''}>${n}</option>`).join('')}</select>`:''}`;
-  md.querySelectorAll('[data-up]').forEach(inp=>inp.onchange=async e=>{const f=e.target.files[0];if(!f)return;const k=inp.dataset.up;
-    try{MEDIA[k]=await readImage(f,k==='logo'?640:1920,k==='logo'?'image/png':'image/jpeg');if(k==='logo'&&LOOK[grp].logoPos==='off'){LOOK.song.logoPos=LOOK.song.logoPos==='off'?'footer':LOOK.song.logoPos;LOOK.word.logoPos=LOOK.word.logoPos==='off'?'footer':LOOK.word.logoPos;store.set('look',LOOK);}
-      saveMedia();buildLookUI();renderShots();}catch(err){toast(err.message);}});
-  md.querySelector('[data-rm=bg]')?.addEventListener('click',()=>{MEDIA[grp]=null;saveMedia();buildLookUI();renderShots();});
-  md.querySelector('[data-rm=logo]')?.addEventListener('click',()=>{MEDIA.logo=null;saveMedia();buildLookUI();renderShots();});
-  if(md.querySelector('[data-logopos]'))md.querySelector('[data-logopos]').onchange=e=>{LOOK[grp].logoPos=e.target.value;saveLook();};
-  box.appendChild(md);
-  // 글꼴
-  const fr=document.createElement('label');fr.className='lk';
-  fr.innerHTML=`<span>글꼴</span><select data-font>${FONTS.map(o=>`<option value="${o.f}" ${LOOK[grp].font===o.f?'selected':''}>${o.n}</option>`).join('')}</select>`;
-  fr.querySelector('select').onchange=e=>{LOOK[grp].font=e.target.value;store.set('look',LOOK);loadFont(e.target.value).then(()=>{renderShots();lookChanged();});};
-  g.appendChild(fr);
-  // 숫자 항목: 슬라이더 + 직접 입력(위아래 화살표)
-  LOOK_CTRLS.filter(c=>c[0]===grp).forEach(([gk,k,label,min,max,step,unit])=>{
-    const r=document.createElement('div');r.className='lk';
-    const id=`lk_${gk}_${k}`;
+  const grp=lookTab,L=LOOK[grp];
+  // 종류별 묶음: 글자 → 배치 → 배경 → 아래 문구 → 로고
+  const sec=(title)=>{const d=document.createElement('section');d.className='lksec';d.innerHTML=`<h5>${title}</h5>`;const g=document.createElement('div');g.className='lkgrid';d.appendChild(g);box.appendChild(d);return g;};
+  const slider=(g,k)=>{const c=LOOK_CTRLS.find(x=>x[0]===grp&&x[1]===k);if(!c)return;const[gk,,label,min,max,step,unit]=c;
+    const r=document.createElement('div');r.className='lk';const id=`lk_${gk}_${k}`;
     r.innerHTML=`<label for="${id}">${label}</label><div class="lkrow"><input type="range" min="${min}" max="${max}" step="${step}" value="${LOOK[gk][k]}" aria-label="${label}"><span class="num"><input type="number" id="${id}" min="${min}" max="${max}" step="${step}" value="${LOOK[gk][k]}">${unit?`<em>${unit}</em>`:''}</span></div>`;
     const rg=r.querySelector('input[type=range]'),nb=r.querySelector('input[type=number]');
     const set=(v,from)=>{v=Math.min(max,Math.max(min,+v));if(isNaN(v))return;LOOK[gk][k]=v;if(from!==rg)rg.value=v;if(from!==nb)nb.value=+v.toFixed(3);saveLook();};
-    rg.oninput=()=>set(rg.value,rg);
-    nb.oninput=()=>{if(nb.value!==''&&!isNaN(+nb.value))set(nb.value,nb);};
-    nb.onchange=()=>set(nb.value===''?LOOK[gk][k]:nb.value,null);
-    g.appendChild(r);
-  });
-  // 글자 항목
-  const t=document.createElement('div');t.className='lktx';
-  if(grp==='song')t.innerHTML=`<label class="ck"><input type="checkbox" data-k="title"> 제목 보이기</label><label class="ck"><input type="checkbox" data-k="footerOn"> 아래 문구</label><input type="text" data-k="footer" placeholder="아래 문구" aria-label="아래 문구">`;
-  else t.innerHTML=`<input type="text" data-k="head" placeholder="머리글" aria-label="머리글"><input type="text" data-k="sub" placeholder="작은 머리글" aria-label="작은 머리글"><label class="ck"><input type="checkbox" data-k="footerOn"> 아래 문구</label><input type="text" data-k="footer" placeholder="아래 문구" aria-label="아래 문구">`;
-  t.querySelectorAll('[data-k]').forEach(el=>{const k=el.dataset.k;
-    if(el.type==='checkbox'){el.checked=!!LOOK[grp][k];el.onchange=()=>{LOOK[grp][k]=el.checked;saveLook();};}
-    else{el.value=LOOK[grp][k];el.oninput=()=>{LOOK[grp][k]=el.value;saveLook();};}});
-  g.appendChild(t);box.appendChild(g);
+    rg.oninput=()=>set(rg.value,rg);nb.oninput=()=>{if(nb.value!==''&&!isNaN(+nb.value))set(nb.value,nb);};nb.onchange=()=>set(nb.value===''?LOOK[gk][k]:nb.value,null);
+    g.appendChild(r);};
+  const check=(g,k,label)=>{const l=document.createElement('label');l.className='ck lkwide';l.innerHTML=`<input type="checkbox"><span>${label}</span>`;const i=l.querySelector('input');i.checked=!!L[k];i.onchange=()=>{L[k]=i.checked;saveLook();if(k==='verseGap')renderVerse();};g.appendChild(l);};
+  const text=(g,k,ph)=>{const w=document.createElement('label');w.className='lk lkwide';w.innerHTML=`<span>${ph}</span>`;const i=document.createElement('input');i.type='text';i.className='lktext';i.placeholder=ph;i.value=L[k]||'';i.oninput=()=>{L[k]=i.value;saveLook();};w.appendChild(i);g.appendChild(w);};
+  const upload=(g,k,isLogo)=>{const on=!!MEDIA[k],w=document.createElement('div');w.className='media lkwide';
+    w.innerHTML=`<label class="mchip"><input type="file" accept="image/*" hidden><span class="mth${isLogo?' logo':''}" ${on?`style="background-image:url(${MEDIA[k]})"`:''}></span>${on?(isLogo?'로고 바꾸기':'사진 바꾸기'):(isLogo?'로고 넣기':'사진 넣기')}</label>${on?`<button class="mx" title="지우기" aria-label="${isLogo?'로고':'배경 사진'} 지우기">×</button>`:`<span class="mhint">${isLogo?'투명 PNG가 좋아요':'없으면 곡마다 색 배경'}</span>`}`;
+    w.querySelector('input').onchange=async e=>{const f=e.target.files[0];if(!f)return;
+      try{MEDIA[k]=await readImage(f,isLogo?640:1920,isLogo?'image/png':'image/jpeg');if(isLogo&&L.logoPos==='off'){LOOK.song.logoPos=LOOK.song.logoPos==='off'?'footer':LOOK.song.logoPos;LOOK.word.logoPos=LOOK.word.logoPos==='off'?'footer':LOOK.word.logoPos;store.set('look',LOOK);}
+        saveMedia();buildLookUI();renderShots();}catch(err){toast(err.message);}};
+    w.querySelector('.mx')?.addEventListener('click',()=>{MEDIA[k]=null;saveMedia();buildLookUI();renderShots();});g.appendChild(w);};
+  // 글자
+  let g=sec('글자');
+  const fr=document.createElement('label');fr.className='lk';
+  fr.innerHTML=`<span>글꼴</span><select data-font>${FONTS.map(o=>`<option value="${o.f}" ${L.font===o.f?'selected':''}>${o.n}</option>`).join('')}</select>`;
+  fr.querySelector('select').onchange=e=>{L.font=e.target.value;store.set('look',LOOK);loadFont(e.target.value).then(()=>{renderShots();lookChanged();});};
+  g.appendChild(fr);
+  if(grp==='song'){['size','spacing','lineH'].forEach(k=>slider(g,k));}
+  else{['size','spacing','lineH','refSpacing'].forEach(k=>slider(g,k));}
+  // 배치
+  g=sec('배치');
+  if(grp==='song'){check(g,'title','제목 보이기');['posY','titleSize','titleGap'].forEach(k=>slider(g,k));}
+  else{check(g,'verseGap','절마다 한 줄 띄우기');['maxLines','box'].forEach(k=>slider(g,k));text(g,'head','머리글');text(g,'sub','작은 머리글');}
+  // 배경
+  g=sec('배경');upload(g,grp,false);slider(g,'bgDim');
+  // 아래 문구
+  g=sec('아래 문구');check(g,'footerOn','아래 문구 보이기');text(g,'footer','아래 문구');
+  // 로고
+  g=sec('로고');upload(g,'logo',true);
+  if(MEDIA.logo){const pos=[['off','넣지 않기'],['footer','아래 문구 앞'],['tl','왼쪽 위'],['tr','오른쪽 위'],['br','오른쪽 아래'],['bc','아래 가운데']];
+    const r=document.createElement('label');r.className='lk';r.innerHTML=`<span>로고 위치</span><select aria-label="로고 위치">${pos.map(([v,n])=>`<option value="${v}" ${L.logoPos===v?'selected':''}>${n}</option>`).join('')}</select>`;
+    r.querySelector('select').onchange=e=>{L.logoPos=e.target.value;saveLook();};g.appendChild(r);}
+  slider(g,'logoSize');
 }
 function saveLook(){store.set('look',LOOK);renderShots();lookChanged();}
 
@@ -1855,7 +1913,7 @@ function drawScreen(cv,sc,songIdx,opt={}){
 // 말씀 화면은 모든 장이 같은 글자 크기가 되도록, 가장 많이 줄여야 하는 화면에 맞춰요
 let _wk={key:'',k:1};
 function wordK(x,W,H,fs,sp,availW,availH,L){
-  const key=[W,fs,sp,availW,availH,L.lineH,$('wordText').value,$('outText').value].join('|');if(_wk.key===key)return _wk.k;
+  const key=[W,fs,sp,availW,availH,L.lineH,L.maxLines,L.verseGap,$('wordText').value,$('outText').value].join('|');if(_wk.key===key)return _wk.k;
   let k=1;for(const s of parseScreens()){if(s.type!=='word')continue;
     const mw=Math.max(1,...s.lines.map(l=>spacedW(x,l,sp)));k=Math.min(k,availW/mw,availH/(fs*L.lineH*Math.max(1,s.lines.length)));}
   _wk={key,k};return k;
@@ -2223,14 +2281,15 @@ ${ex}`,{modelTier:'default'});
 /* ======================== 5. 말씀 자막 ======================== */
 let BSET={max:32,title:'',nums:true,heads:true,auto:true,gap:false,...store.get('bset2',{})};
 function fillBible(){
-  $('bAuto').checked=!!BSET.auto;$('vGap').checked=!!BSET.gap;if(BSET.auto)BSET.max=autoWordMax();
+  if(store.get('look',{})?.word?.verseGap===undefined&&BSET.gap){LOOK.word.verseGap=true;store.set('look',LOOK);}
+  $('bAuto').checked=!!BSET.auto;if(BSET.auto)BSET.max=autoWordMax();
   $('bMax').value=BSET.max;$('bMaxOut').textContent=BSET.max+'자';syncAuto();
   $('bTitle').value=BSET.title;$('vNums').checked=BSET.nums;$('vHeads').checked=BSET.heads;
 }
 function syncAuto(){['bMax','bMaxDn','bMaxUp'].forEach(id=>$(id).disabled=!!BSET.auto);}
 function readBible(){
   const auto=$('bAuto').checked;
-  BSET={max:auto?autoWordMax():+$('bMax').value,title:$('bTitle').value.trim(),nums:$('vNums').checked,heads:$('vHeads').checked,auto,gap:$('vGap').checked};
+  BSET={max:auto?autoWordMax():+$('bMax').value,title:$('bTitle').value.trim(),nums:$('vNums').checked,heads:$('vHeads').checked,auto};
   $('bMax').value=BSET.max;store.set('bset2',BSET);$('bMaxOut').textContent=BSET.max+'자';syncAuto();renderVerse();
 }
 // 붙여 넣은 본문 → [{n:절번호, t:본문, head:소제목여부}]
@@ -2277,14 +2336,14 @@ function verseResult(){
   if(!vs.length)return{text:'',lines:0};
   const out=[];
   for(const v of vs){if(v.gap){if(out.length&&out[out.length-1]!=='')out.push('');continue;}
-    if(BSET.gap&&v.n&&out.length&&out[out.length-1]!=='')out.push('');
+    if(LOOK.word.verseGap&&!BSET.nums&&v.n&&out.length&&out[out.length-1]!=='')out.push('');
     out.push(...splitLine((BSET.nums&&v.n?v.n+' ':'')+v.t,BSET.max));}
   while(out.length&&out[out.length-1]==='')out.pop();
   return{text:(BSET.title?BSET.title+'\n':'')+out.join('\n'),lines:out.filter(Boolean).length};
 }
 function renderVerse(){const r=verseResult();$('verseOut').textContent=r.text||'붙여 넣은 본문이 여기에 정리돼요.';$('verseCount').textContent=r.lines?`${r.lines}줄`:'';}
 $('verseIn').addEventListener('input',renderVerse);
-['bMax','bTitle','vNums','vHeads','bAuto','vGap'].forEach(id=>$(id).addEventListener('input',readBible));
+['bMax','bTitle','vNums','vHeads','bAuto'].forEach(id=>$(id).addEventListener('input',readBible));
 $('bMaxDn').onclick=()=>{$('bMax').value=Math.max(10,+$('bMax').value-1);readBible();};
 $('bMaxUp').onclick=()=>{$('bMax').value=Math.min(60,+$('bMax').value+1);readBible();};
 $('verseCopy').onclick=()=>{const r=verseResult().text;if(r)copy(r);else toast('본문을 먼저 붙여 넣어 주세요');};
