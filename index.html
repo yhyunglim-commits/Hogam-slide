@@ -617,14 +617,81 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
 .oav.more{background:#e5e9ee;color:var(--text2);font-size:12px}
 .oav:hover,.oav:focus-visible{z-index:5;transform:translateY(-2px)}
 .oav[data-tip]:hover::before,.oav[data-tip]:focus-visible::before{content:attr(data-tip);position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1f2933;color:#fff;font-size:12px;font-weight:500;white-space:nowrap;padding:5px 9px;border-radius:7px;z-index:30;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+
+/* ===== 아이콘 버튼: 모든 칸 오른쪽 위, 같은 순서(특수 → 복사 → 비우기 → 접기) ===== */
+.acts.tools{gap:4px}
+.tbtn{position:relative;width:36px;height:36px;border-radius:50%;border:1px solid transparent;background:transparent;color:var(--text2);display:inline-grid;place-items:center;cursor:pointer;padding:0;flex:none;text-decoration:none;transition:background .12s,color .12s}
+.tbtn svg{width:19px;height:19px}
+.tbtn:hover,.tbtn:focus-visible{background:var(--sunken);color:var(--text);outline:none}
+.tbtn:disabled{opacity:.45;cursor:default}
+.tbtn .spin{width:16px;height:16px}
+.tbtn[data-fold] svg{transition:transform .18s}
+.folded .tbtn[data-fold] svg{transform:rotate(180deg)}
+[data-tip]:not(.oav):hover::after,[data-tip]:not(.oav):focus-visible::after{content:attr(data-tip);position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1f2933;color:#fff;font-size:12px;font-weight:500;line-height:1.2;white-space:nowrap;padding:6px 9px;border-radius:7px;z-index:40;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.ph2 .acts.tools .tbtn:last-child[data-tip]:hover::after{left:auto;right:0;transform:none}
+/* 체크박스와 글자 줄 맞춤 */
+label.ck{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--text2);cursor:pointer;line-height:1;user-select:none}
+label.ck input,label.opts input,.opts label input{margin:0;width:16px;height:16px;flex:none;accent-color:var(--pri)}
+label.opts{gap:7px;align-items:center}
+.opts label{gap:7px}
+/* 접기: 아래 가운데 */
+.foldpill{display:flex;align-items:center;gap:4px;margin:0 auto 12px;height:26px;padding:0 12px 0 9px;border-radius:13px;border:1px solid var(--line);background:#fff;color:var(--text3);font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px -4px rgba(16,24,40,.2);transition:color .12s,border-color .12s}
+.foldpill svg{width:14px;height:14px;transition:transform .18s}
+.foldpill:hover{color:var(--text);border-color:var(--line2)}
+.folded .foldpill svg{transform:rotate(180deg)}
+.folded .foldbody{display:none}
+.folded .foldpill{margin-top:4px}
+#resPanel.folded,#wordPanel.folded{align-self:start}
+#resPanel .ph2,#wordPanel .ph2{border-bottom:0}
+/* 슬라이드 고르기 체크박스 */
+.shotck{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(3,26,23,.45);cursor:pointer;z-index:3;opacity:.85;transition:opacity .12s,background .12s;border:0;box-shadow:none;pointer-events:auto}
+.shotck input{width:17px;height:17px;margin:0;accent-color:var(--pri);cursor:pointer}
+.shotw:hover .shotck,.selecting .shotck{opacity:1}
+.shotw.sel .shotck{background:#fff}
+.shotw.sel .shot{box-shadow:0 0 0 3px var(--pri),0 6px 16px -10px rgba(3,26,23,.35)}
+.selecting .shot{cursor:zoom-in}
+.selbar{display:inline-flex;align-items:center;gap:10px;margin-right:6px}
+.selbar label.ck{height:34px;padding:0 4px}
+/* 옆 메뉴 접기 */
+.rfold{display:inline-flex;align-items:center;gap:4px;border:0;background:none;padding:2px 4px 2px 0;font:inherit;color:inherit;cursor:pointer;border-radius:6px}
+.rfold svg{width:13px;height:13px;transition:transform .15s}
+.rfold:hover{color:var(--text)}
+.railsec.closed .rfold svg{transform:rotate(-90deg)}
+.railsec.closed>:not(h4){display:none!important}
+/* 접속 중: 초록 불 깜빡깜빡 */
+.oav::after{content:'';position:absolute;right:-2px;bottom:-2px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #fff;animation:blink 1.6s ease-in-out infinite}
+.oav.more::after{display:none}
+.oav.same{box-shadow:0 0 0 2px #22c55e,0 1px 3px rgba(0,0,0,.15)}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.6)}50%{opacity:.35;box-shadow:0 0 0 4px rgba(34,197,94,0)}}
+@media (prefers-reduced-motion:reduce){.oav::after{animation:none}}
+/* 제목 옆 연필 */
+.pen{width:30px;height:30px;border:0;background:transparent;border-radius:8px;display:grid;place-items:center;color:var(--text3);cursor:pointer;flex:none;margin-left:-6px;padding:0}
+.pen svg{width:17px;height:17px}
+.pen:hover{background:rgba(255,255,255,.6);color:var(--text)}
+/* 찬양 화면 / 말씀 화면 토글 색 */
+.seg2 button[data-g]{display:inline-flex;align-items:center;gap:6px}
+.seg2 button[data-g]::before{content:'';width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.9}
+.seg2 button[data-g=song]{color:var(--pri-ink,#0f5f52)}
+.seg2 button[data-g=word]{color:var(--amber,#b45309)}
+.seg2 button[data-g=song][aria-selected=true]{background:var(--pri);color:#fff}
+.seg2 button[data-g=word][aria-selected=true]{background:var(--amber,#d97706);color:#fff}
+.seg2 button[data-g][aria-selected=true]::before{background:#fff}
+/* 끌어서 순서 바꾸기 */
+body.sorting,body.sorting *{user-select:none!important;cursor:grabbing!important}
+.song.dragging,.chipw.dragging{position:relative;z-index:20;transition:none!important;box-shadow:0 14px 32px -8px rgba(16,24,40,.35);outline:1.5px solid var(--pri);scale:1.02}
+.song.dragging{border-radius:16px;background:#fff}
+.chipw{cursor:grab;border-radius:14px}
+.chipw.dragging{border-radius:14px}
+.grip{cursor:grab;touch-action:none}
+#songCopy{touch-action:pan-y}
 </style>
 </head>
 <body>
 <div class="shell">
   <aside class="rail" id="rail">
     <div class="brand"><div class="mk" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="13" rx="2.5"/><path d="M7.5 10h9M9 13.5h6"/></svg></div><div><b>호감슬라이드</b><small>예배 자막과 슬라이드</small></div></div>
-    <div class="railsec"><h4>예배 기록</h4><ul class="rlist" id="histList"></ul></div>
-    <div class="railsec"><h4>곡 보관함 <span id="libCount"></span></h4>
+    <div class="railsec" data-sec="hist"><h4><button class="rfold" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>예배 기록</button></h4><ul class="rlist" id="histList"></ul></div>
+    <div class="railsec" data-sec="lib"><h4><button class="rfold" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>곡 보관함</button> <span id="libCount"></span></h4>
       <input type="search" class="libsearch" id="libSearch" placeholder="곡 이름 찾기" aria-label="보관함에서 곡 찾기">
       <ul class="rlist" id="libList"></ul></div>
     <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
@@ -636,7 +703,7 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
     <header class="doc">
       <div class="r1">
         <button class="btn ghost ibtn mtop" id="menuBtn" aria-label="기록과 보관함 열기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-        <input class="title" id="docTitle" aria-label="예배 이름">
+        <input class="title" id="docTitle" aria-label="예배 이름"><button class="pen" id="titlePen" type="button" aria-label="예배 이름 고치기" title="예배 이름 고치기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>
         <span class="saved" id="savedAt"></span>
         <div class="onbar" id="onlineBar" aria-label="지금 접속 중인 팀원"></div>
         <div class="steps" id="steps"></div>
@@ -646,28 +713,27 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
     <div class="split">
       <section class="panel" id="colSong">
         <div class="ph2"><span class="pico c1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></span><h2>찬양</h2><span class="meta" id="songMeta"></span>
-          <div class="acts"><button class="btn sm ghost" id="addTextSong">가사 붙여 넣기</button><button class="btn sm ghost" id="clearSongs">목록 비우기</button></div></div>
+          <div class="acts tools"><button class="tbtn" id="addTextSong" data-tip="가사 붙여 넣기" aria-label="가사 붙여 넣기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="4" rx="1.2"/><path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="M9 12h6M9 16h4"/></svg></button><button class="tbtn" id="clearSongs" data-tip="비우기" aria-label="비우기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button></div></div>
         <div class="pb">
           <label class="drop" id="drop">
             <input type="file" id="bulkIn" accept="image/*,application/pdf" multiple hidden>
             <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg></span>
-            <span><strong>악보 올리기</strong><span>사진·PDF 여러 개를 한 번에. 올리면 바로 가사를 읽어요.</span></span>
+            <span><strong>악보 올리기</strong><span>사진·PDF</span></span>
           </label>
-          <div class="libpick"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><input type="search" id="libQuick" placeholder="보관함에서 곡 찾아 추가 (다시 읽지 않아도 돼요)" autocomplete="off" aria-label="보관함에서 곡 추가"><div class="libdrop hidden" id="libDrop"></div></div>
+          <div class="libpick"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><input type="search" id="libQuick" placeholder="보관함에서 곡 추가" autocomplete="off" aria-label="보관함에서 곡 추가"><div class="libdrop hidden" id="libDrop"></div></div>
           <ol class="setlist" id="setlist"></ol>
-          <div id="emptySet" class="empty">이번 주 콘티 순서대로 악보를 올리거나 보관함에서 곡을 추가하세요.<br>왼쪽 손잡이를 끌어 순서를 바꿀 수 있어요.</div>
+          <div id="emptySet" class="empty">콘티 순서대로 악보를 올려 주세요.</div>
           <div class="status" id="convStatus"></div>
         </div>
         <div class="pf">
-          <label class="opts"><input type="checkbox" id="optExpand" checked> 후렴·반복 펼치기</label>
-          <label class="opts"><input type="checkbox" id="optAuto" checked> 올리면 바로 읽기</label>
-          <button class="btn pri" id="convertBtn" style="margin-left:auto" disabled>가사 읽기</button>
+          <label class="ck"><input type="checkbox" id="optExpand" checked><span>후렴·반복 펼치기</span></label>
+          <button class="btn pri" id="convertBtn" style="margin-left:auto" disabled>찬양 자막에 넣기</button>
         </div>
       </section>
 
       <section class="panel" id="colWord">
         <div class="ph2"><span class="pico c2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg></span><h2>말씀</h2><span class="meta" id="verseCount"></span>
-          <div class="acts"><a class="btn sm" href="https://www.godpia.com/read/reading.asp" target="_blank" rel="noopener">갓피아성경 열기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9"/><path d="M19 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1h5"/></svg></a></div></div>
+          <div class="acts tools"><a class="tbtn" href="https://www.godpia.com/read/reading.asp" target="_blank" rel="noopener" data-tip="갓피아성경 열기" aria-label="갓피아성경 열기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9"/><path d="M19 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1h5"/></svg></a><button class="tbtn" id="verseCopy" data-tip="복사" aria-label="복사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button><button class="tbtn" id="verseClear" data-tip="비우기" aria-label="비우기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button></div></div>
         <div class="pb">
           <div class="wgrid">
             <div>
@@ -686,15 +752,15 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
             </div>
           </div>
         </div>
-        <div class="pf"><button class="btn" id="verseClear">비우기</button><button class="btn" id="verseCopy">복사</button><button class="btn pri" id="verseToEdit" style="margin-left:auto">말씀 자막에 넣기</button></div>
+        <div class="pf"><button class="btn pri" id="verseToEdit" style="margin-left:auto">말씀 자막에 넣기</button></div>
       </section>
     </div>
 
     <div class="resgrid" id="resultSec">
     <section class="panel" id="resPanel">
-      <div class="ph2"><button class="fold" id="foldRes" aria-expanded="true" aria-controls="resBody"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg><span class="pico c3" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span><h2>찬양 자막</h2></button><span class="meta" id="outCount"></span>
-        <div class="acts"><button class="btn" id="songClear">비우기</button><button class="btn" id="checkBtn">맞춤법 검사</button><button class="btn pri" id="copyAll">찬양 복사</button></div></div>
-      <div id="resBody">
+      <div class="ph2"><span class="pico c3" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span><h2>찬양 자막</h2><span class="meta" id="outCount"></span>
+        <div class="acts tools"><button class="tbtn" id="checkBtn" data-tip="맞춤법 검사" aria-label="맞춤법 검사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l4-11 4 11M5.5 12h5"/><path d="M13 17l3 3 5-6"/></svg></button><button class="tbtn" id="copyAll" data-tip="복사" aria-label="복사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button><button class="tbtn" id="songClear" data-tip="비우기" aria-label="비우기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button><button class="tbtn" id="foldRes" data-tip="접기" aria-label="접기" data-fold="resPanel" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></button></div></div>
+      <div id="resBody" class="foldbody">
       <div class="rbar">
         <label for="outFmt">양식</label><select id="outFmt"></select>
         <span class="div"></span>
@@ -712,20 +778,22 @@ details.look[open] #lookCtl{max-height:none;overflow:visible}
       <div class="edcol">
         <div class="songcopy" id="songCopy"></div>
         <div class="fixbar hidden" id="fixbar" aria-live="polite"></div>
-        <div class="edscroll" id="edScroll"><div class="hl"><div class="back" id="hlBack" aria-hidden="true"></div><div class="gut" id="hlNums"></div><textarea id="outText" spellcheck="false" placeholder="가사를 읽으면 여기에 모여요. 바로 고칠 수 있어요."></textarea></div></div>
+        <div class="edscroll" id="edScroll"><div class="hl"><div class="back" id="hlBack" aria-hidden="true"></div><div class="gut" id="hlNums"></div><textarea id="outText" spellcheck="false" placeholder="‘찬양 자막에 넣기’를 누르면 여기에 들어와요."></textarea></div></div>
       </div>
       </div>
+      <button class="foldpill" data-fold="resPanel" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg><span>접기</span></button>
     </section>
 
     <section class="panel" id="wordPanel">
       <div class="ph2"><span class="pico c2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg></span><h2>말씀 자막</h2><span class="meta" id="wordCount"></span>
-        <div class="acts"><button class="btn" id="wordClear">비우기</button><button class="btn pri" id="wordCopy">말씀 복사</button></div></div>
-      <div class="edcol"><textarea id="wordText" spellcheck="false" placeholder="위 말씀 칸에서 ‘말씀 자막에 넣기’를 누르면 여기에 들어와요. 바로 고칠 수 있어요."></textarea></div>
+        <div class="acts tools"><button class="tbtn" id="wordCopy" data-tip="복사" aria-label="복사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button><button class="tbtn" id="wordClear" data-tip="비우기" aria-label="비우기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button><button class="tbtn" id="foldWord" data-tip="접기" aria-label="접기" data-fold="wordPanel" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></button></div></div>
+      <div class="foldbody" id="wordBody"><div class="edcol"><textarea id="wordText" spellcheck="false" placeholder="‘말씀 자막에 넣기’를 누르면 여기에 들어와요."></textarea></div></div>
+      <button class="foldpill" data-fold="wordPanel" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg><span>접기</span></button>
     </section>
 
     <section class="panel shots-panel" id="slidePanel">
       <div class="ph2"><span class="pico c4" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span><h2>슬라이드 미리보기</h2><span class="meta" id="shotCount"></span>
-        <div class="acts"><span class="selbar" id="selBar"><button class="btn" id="selMode">선택</button><button class="btn hidden" id="selAll">전체 선택</button><button class="btn danger hidden" id="selDel" disabled>삭제</button></span><button class="btn" id="dlShots">이미지 내려받기</button><button class="btn pri" id="dlPptx">PowerPoint로 내보내기</button></div></div>
+        <div class="acts"><span class="selbar" id="selBar"><label class="ck"><input type="checkbox" id="selAllCk"><span id="selAllTx">전체 선택</span></label><button class="btn danger hidden" id="selDel">삭제</button></span><button class="btn" id="dlShots">이미지 내려받기</button><button class="btn pri" id="dlPptx">PowerPoint로 내보내기</button></div></div>
       <div class="shotbody">
       <div class="shots-top">
         <details class="look" open><summary>슬라이드 설정</summary><div id="lookCtl"></div><button type="button" class="lkfold" id="lkFold" aria-label="슬라이드 설정 접기" title="접기"><span></span></button></details>
@@ -977,7 +1045,7 @@ const SAMPLE=[
 const ANCH={songs:'colSong',word:'colWord',result:'resultSec'};
 function route(){
   setTimeout(autosize,0);const h=location.hash.slice(1);
-  if(h==='result'&&$('resultSec').classList.contains('closed'))$('foldRes').click();
+  if(h==='result')setFold('resPanel',true);
   if(ANCH[h])setTimeout(()=>{$(ANCH[h]).scrollIntoView({behavior:'auto'});},0);
   closeRail();
 }
@@ -991,7 +1059,18 @@ addEventListener('scroll',()=>requestAnimationFrame(spy),{passive:true});
 // 위쪽 고정 머리글 높이만큼 아래에 붙도록
 const setDocH=()=>{const d=document.querySelector('.doc');if(d)document.documentElement.style.setProperty('--doch',d.offsetHeight+'px');};
 addEventListener('resize',setDocH);setTimeout(setDocH,0);new ResizeObserver(setDocH).observe(document.querySelector('.doc'));
-$('foldRes').onclick=()=>{const sec=$('resultSec'),open=sec.classList.toggle('closed')===false;$('foldRes').setAttribute('aria-expanded',open);if(open){autosize();renderShots();}};
+// 찬양 자막·말씀 자막 접기 (위 오른쪽 버튼과 아래 가운데 버튼이 같은 일을 해요)
+function setFold(id,open){const pn=$(id);if(!pn)return;pn.classList.toggle('folded',!open);
+  pn.querySelectorAll('[data-fold]').forEach(b=>{b.setAttribute('aria-expanded',open);if(b.classList.contains('tbtn')){b.dataset.tip=open?'접기':'펼치기';b.setAttribute('aria-label',b.dataset.tip);}const t=b.querySelector('span');if(t)t.textContent=open?'접기':'펼치기';});
+  const st=store.get('folds',{});st[id]=!open;store.set('folds',st);if(open){autosize();if(typeof autosizeWord==='function')autosizeWord();renderShots();}}
+document.querySelectorAll('[data-fold]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.fold;setFold(id,$(id).classList.contains('folded'));}));
+{const st=store.get('folds',{});['resPanel','wordPanel'].forEach(id=>{if(st[id])setFold(id,false);});}
+// 옆 메뉴(예배 기록·곡 보관함) 접기
+document.querySelectorAll('.railsec[data-sec] .rfold').forEach(b=>{const sec=b.closest('.railsec'),k='rail_'+sec.dataset.sec;
+  const apply=open=>{sec.classList.toggle('closed',!open);b.setAttribute('aria-expanded',open);};apply(!store.get(k,false));
+  b.onclick=()=>{const open=sec.classList.contains('closed');apply(open);store.set(k,!open);};});
+// 예배 이름 옆 연필
+$('titlePen').onclick=()=>{const t=$('docTitle');t.focus();t.select();};
 const closeRail=()=>{$('rail').classList.remove('open');$('scrim').classList.remove('on');};
 $('menuBtn').onclick=()=>{$('rail').classList.add('open');$('scrim').classList.add('on');};
 $('scrim').onclick=closeRail;
@@ -1050,10 +1129,10 @@ async function addSongFiles(files){
   const list=[...files].sort((a,b)=>a.name.localeCompare(b.name,'ko',{numeric:true}));
   for(const f of list){try{const pages=await fileToPages(f);if(pages.length)songs.push(newSong({pages,fileName:f.name}));}catch(e){$('convStatus').className='status err';$('convStatus').textContent=f.name+': '+(e.message||e);}}
   renderSongs();
-  if($('optAuto').checked&&sample&&!busy)$('convertBtn').click();
+  if(sample&&!busy)readSongs();
 }
 $('addTextSong').onclick=()=>{songs.push(newSong({mode:'text'}));location.hash='songs';renderSongs();setTimeout(()=>{const t=document.querySelectorAll('.song textarea');t[t.length-1]?.focus();},50);};
-$('clearSongs').onclick=()=>{songs.forEach(s=>s.pages.forEach(p=>URL.revokeObjectURL(p.url)));songs=[];renderSongs();};
+$('clearSongs').onclick=()=>{if(!songs.length)return;const before=songs;songs=[];renderSongs();toastUndo('찬양 목록을 비웠어요',()=>{songs=before;renderSongs();});};
 
 const GRIP='<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>';
 function renderSongs(){
@@ -1093,7 +1172,7 @@ function renderSongs(){
       const a=b.dataset.a;
       if(a==='merge'){songs[i-1].pages.push(...s.pages);songs[i-1].status='idle';songs.splice(i,1);renderSongs();orderChanged();return;}
       if(a==='del'){s.pages.forEach(p=>URL.revokeObjectURL(p.url));songs.splice(i,1);renderSongs();orderChanged();return;}
-      if(a==='retry'){if(busy)return;busy=true;updateConvertBtn();await convertOne(s,FMT,$('optExpand').checked);busy=false;updateConvertBtn();orderChanged(true);}
+      if(a==='retry'){if(busy)return;busy=true;updateConvertBtn();await convertOne(s,FMT,$('optExpand').checked);if(s.status==='done')saveToLib(s);busy=false;updateConvertBtn();renderSongs();orderChanged();}
     });
     setupDrag(li,li.querySelector('.grip'),i);
     ol.appendChild(li);
@@ -1101,25 +1180,44 @@ function renderSongs(){
   $('songMeta').textContent=songs.length?`${songs.length}곡`:'';
   updateConvertBtn();renderSteps();
 }
-// ---- 끌어서 순서 바꾸기 (마우스·터치 모두) ----
-function setupDrag(li,grip,i){
-  // DOM을 옮기면 포인터 캡처가 풀리므로 window에서 받아요
-  const move=e=>{
-    const ol=$('setlist'),y=e.clientY;
-    let before=null;for(const it of ol.children){if(it===li)continue;const r=it.getBoundingClientRect();if(y<r.top+r.height/2){before=it;break;}}
-    if(li.nextSibling!==before&&li!==before)ol.insertBefore(li,before);
-    if(y<70)scrollBy(0,-14);else if(y>innerHeight-90)scrollBy(0,14);
-  };
-  const end=()=>{
-    removeEventListener('pointermove',move);removeEventListener('pointerup',end);removeEventListener('pointercancel',end);
-    li.classList.remove('dragging');
-    const order=[...$('setlist').children].map(x=>+x.dataset.id),before=songs.map(s=>s.id).join();
-    songs=order.map(id=>songs.find(s=>s.id===id));renderSongs();if(before!==order.join())orderChanged();
-  };
-  grip.addEventListener('pointerdown',e=>{
-    if(busy||e.button>0)return;e.preventDefault();li.classList.add('dragging');
-    addEventListener('pointermove',move);addEventListener('pointerup',end);addEventListener('pointercancel',end);
+// ---- 끌어서 순서 바꾸기 (마우스·터치 모두) — 끄는 동안 다른 칸이 부드럽게 비켜 줘요 ----
+function sortable(box,{item,handle,axis='y',onEnd,threshold=4}){
+  // 끌고 난 직후의 클릭(복사 등)은 무시해요
+  box.addEventListener('click',ev=>{if(Date.now()-(box._noclick||0)<350){ev.stopPropagation();ev.preventDefault();}},true);
+  box.addEventListener('pointerdown',e=>{
+    if(e.button>0||busy)return;
+    const h=e.target.closest(handle||item);if(!h||!box.contains(h))return;
+    const el=h.closest(item);if(!el||el.parentElement!==box)return;
+    if(!handle&&e.target.closest('input,textarea,select,[data-nodrag]'))return;
+    const sx=e.clientX,sy=e.clientY,r0=el.getBoundingClientRect(),gx=sx-r0.left,gy=sy-r0.top,start=[...box.children].filter(x=>x.matches(item));
+    let on=false,px=sx,py=sy,raf=0;
+    const sibs=()=>[...box.children].filter(x=>x.matches(item)&&x!==el);
+    const place=()=>{el.style.transform='';const r=el.getBoundingClientRect();el.style.transform=`translate(${axis==='y'?0:px-gx-r.left}px,${py-gy-r.top}px)`;};
+    const flip=fn=>{const els=sibs(),m=new Map(els.map(x=>{const t=x.style.transform;x.style.transform='';const r=x.getBoundingClientRect();x.style.transform=t;return[x,r];}));fn();
+      els.forEach(x=>{const a=m.get(x);x.style.transition='none';x.style.transform='';const b2=x.getBoundingClientRect(),dx=a.left-b2.left,dy=a.top-b2.top;
+        if(dx||dy){x.style.transform=`translate(${dx}px,${dy}px)`;x.getBoundingClientRect();x.style.transition='transform .22s cubic-bezier(.2,.8,.2,1)';x.style.transform='';}else x.style.transition='';});};
+    const target=()=>{for(const x of sibs()){const t=x.style.transform;x.style.transform='';const r=x.getBoundingClientRect();x.style.transform=t;
+        if(axis==='y'?py<r.top+r.height/2:(py<r.top||(py<=r.bottom&&px<r.left+r.width/2)))return x;}return null;};
+    const move=ev=>{px=ev.clientX;py=ev.clientY;
+      if(!on){if(Math.hypot(px-sx,py-sy)<threshold)return;on=true;el.classList.add('dragging');document.body.classList.add('sorting');}
+      ev.preventDefault();const t=target();if(el.nextElementSibling!==t&&el!==t)flip(()=>box.insertBefore(el,t));place();
+      cancelAnimationFrame(raf);if(axis==='y'){const auto=()=>{const d=py<80?-12:py>innerHeight-80?12:0;if(d&&on){scrollBy(0,d);place();raf=requestAnimationFrame(auto);}};auto();}};
+    const end=()=>{removeEventListener('pointermove',move);removeEventListener('pointerup',end);removeEventListener('pointercancel',end);cancelAnimationFrame(raf);
+      if(!on)return;document.body.classList.remove('sorting');
+      // 끝나면 제자리로 쏙 들어가요
+      el.style.transition='transform .2s cubic-bezier(.2,.8,.2,1)';el.style.transform='';
+      const order=[...box.children].filter(x=>x.matches(item)).map(x=>start.indexOf(x));
+      box._noclick=Date.now();
+      setTimeout(()=>{el.classList.remove('dragging');el.style.transition='';[...box.children].forEach(x=>{x.style.transition='';x.style.transform='';});
+        if(order.some((v,i)=>v!==i))onEnd(order);},210);};
+    addEventListener('pointermove',move,{passive:false});addEventListener('pointerup',end);addEventListener('pointercancel',end);
+    if(handle)e.preventDefault();
   });
+}
+// 찬양 목록: 손잡이를 끌어요
+sortable($('setlist'),{item:'li.song',handle:'.grip',onEnd:order=>{songs=order.map(i=>songs[i]);renderSongs();orderChanged();}});
+// 키보드(위·아래 화살표)로도 옮길 수 있어요
+function setupDrag(li,grip,i){
   grip.addEventListener('keydown',e=>{
     const d=e.key==='ArrowUp'?-1:e.key==='ArrowDown'?1:0;if(!d||busy)return;e.preventDefault();
     const j=i+d;if(j<0||j>=songs.length)return;[songs[i],songs[j]]=[songs[j],songs[i]];renderSongs();orderChanged();
@@ -1127,11 +1225,11 @@ function setupDrag(li,grip,i){
   });
 }
 // 결과는 항상 지금 목록 순서를 따라요
-function orderChanged(force){
+function orderChanged(send){
   const done=songs.filter(s=>s.result&&(s.status==='done'||s.mode==='lib'));
   if(!done.length&&!results.length)return;
   results=done.map(s=>s.result);store.set('results',results);
-  const t=$('outText').value.trim();
+  const t=$('outText').value.trim();if(!send&&!t)return;
   if(!t||!dirty){setOutput(allText(results,FMT),true);return;}
   setOutput(mergeOutput(results),true);dirty=true;store.set('dirty',true);
 }
@@ -1169,7 +1267,7 @@ function pendingSongs(){return songs.filter(s=>s.mode!=='lib'&&(s.mode==='score'
 function updateConvertBtn(){
   const ok=pendingSongs();
   const b=$('convertBtn');b.disabled=!ok.length||busy;
-  b.innerHTML=busy?'<span class="spin"></span> 읽는 중':ok.length?`${ok.length}곡 가사 읽기`:'가사 읽기';
+  b.disabled=busy||(!ok.length&&!songs.some(s=>s.result));b.innerHTML=busy?'<span class="spin"></span> 읽는 중':'찬양 자막에 넣기';
   const scoreNoAI=!sample&&songs.some(s=>s.mode==='score');
   if(scoreNoAI){$('convStatus').className='status err';$('convStatus').textContent='이 화면에서는 악보를 읽을 수 없어요. claude.ai에 로그인한 상태로 열거나, ‘가사 붙여 넣기’를 써 주세요.';}
   renderSteps();
@@ -1257,19 +1355,27 @@ async function convertOne(s,f,expand){
   }catch(e){s.status='err';s.msg=convErr(e);}
   renderSongs();
 }
-$('convertBtn').onclick=async()=>{
+// 악보를 올리면 바로 읽어 두고, '찬양 자막에 넣기'를 누르면 찬양 자막에 넣어요
+async function readSongs(){
   if(busy)return;
   const todo=pendingSongs();if(!todo.length)return;
   busy=true;updateConvertBtn();const st=$('convStatus');st.className='status';
   const f=FMT,expand=$('optExpand').checked;let n=0;
   // 두 곡씩 동시에 읽어요 (무료 사용량 한도 안에서)
-  const q=[...todo],show=()=>{st.textContent=`${todo.length}곡 중 ${n}곡 끝남 — 동시에 읽고 있어요`;};show();
-  const worker=async()=>{while(q.length){const s=q.shift();await convertOne(s,f,expand);n++;show();if(s.status==='done')saveToLib(s);orderChanged(true);}};
+  const q=[...todo],show=()=>{st.textContent=`${todo.length}곡 중 ${n}곡 읽음`;};show();
+  const worker=async()=>{while(q.length){const s=q.shift();await convertOne(s,f,expand);n++;show();if(s.status==='done')saveToLib(s);renderSongs();}};
   await Promise.all(Array.from({length:Math.min(2,todo.length)},worker));
   busy=false;updateConvertBtn();
   const failed=songs.filter(s=>s.status==='err').length,ok=songs.filter(s=>s.result).length;
   st.className=failed?'status err':'status';
-  st.textContent=failed?`${failed}곡을 읽지 못했어요. 해당 곡의 ‘다시 시도’를 눌러 주세요.`:ok?`${ok}곡 준비됐어요. 아래 자막 결과에서 확인하세요.`:'';
+  st.textContent=failed?`${failed}곡을 읽지 못했어요. 그 곡의 ‘다시 시도’를 눌러 주세요.`:ok?`${ok}곡 다 읽었어요. ‘찬양 자막에 넣기’를 눌러 주세요.`:'';
+}
+$('convertBtn').onclick=async()=>{
+  if(busy)return;
+  if(pendingSongs().length)await readSongs();
+  if(!songs.some(s=>s.result)){toast('넣을 곡이 없어요');return;}
+  orderChanged(true);$('convStatus').textContent='';setFold('resPanel',true);
+  toast('찬양 자막에 넣었어요');setTimeout(()=>$('resPanel').scrollIntoView({behavior:'smooth',block:'start'}),60);
 };
 
 /* ======================== 2. 검사·복사 ======================== */
@@ -1406,11 +1512,23 @@ function refreshOutMeta(){autosize();if(typeof autosizeWord==='function')autosiz
   if(ch.length>1)ch.forEach((c,i)=>{const w=document.createElement('span');w.className='chipw';
     const name=esc((c.split('\n')[0]||'').replace(/^\d+\.\s*/,'').slice(0,14));
     w.innerHTML=`<button class="chip" data-c><b>${i+1}</b> ${name} 복사</button><button class="chipx" data-x aria-label="${i+1}번 ${name} 결과에서 지우기">×</button>`;
-    w.querySelector('[data-c]').onclick=()=>copy(c);
+    w.title='끌어서 순서를 바꿀 수 있어요';w.querySelector('[data-c]').onclick=()=>copy(c);
     w.querySelector('[data-x]').onclick=()=>removeChunk(i);box.appendChild(w);});
   setTimeout(setEdMax,0);
   const lines=$('outText').value.split('\n').length;$('outCount').textContent=$('outText').value.trim()?`${ch.length}곡 · ${lines}줄`:'';
 }
+function reorderChunks(order){
+  const ch=songChunks();if(order.length!==ch.length)return;
+  let out=order.map(i=>ch[i]);if(FMT.numberSongs&&FMT.titleMode==='song')out=out.map((c,i)=>c.replace(/^\d+\.\s*/,`${i+1}. `));
+  // 찬양 목록 순서도 같이 맞춰요
+  const norm=x=>String(x||'').replace(/^\d+\.\s*/,'').replace(/\s+/g,'');
+  const titles=out.map(c=>norm((c.split('\n').find(l=>l.trim())||'')));const used=new Set(),ns=[];
+  titles.forEach(t=>{const s=songs.find(x=>!used.has(x)&&x.result&&norm(x.result.title||x.title)===t);if(s){used.add(s);ns.push(s);}});
+  songs=[...ns,...songs.filter(x=>!used.has(x))];
+  const ta=$('outText');ta.value=out.join(gapStr());ta.dispatchEvent(new Event('input',{bubbles:true}));
+  results=songs.filter(s=>s.result&&(s.status==='done'||s.mode==='lib')).map(s=>s.result);store.set('results',results);renderSongs();toast('순서를 바꿨어요');
+}
+sortable($('songCopy'),{item:'.chipw',axis:'xy',onEnd:reorderChunks});
 function removeChunk(i){
   const ch=songChunks();if(i<0||i>=ch.length)return;
   if(!dirty&&results.length===ch.length){results.splice(i,1);store.set('results',results);
@@ -1489,16 +1607,16 @@ ${list.map((x,i)=>`${i}) 줄: "${ls[x.line]}"\n   "${x.before}" → "${x.after}"
 $('checkBtn').onclick=async()=>{
   const text=$('outText').value;if(!text.trim()){toast('먼저 자막 텍스트를 넣어 주세요');return;}
   issues=lint();curIssue=0;checkMsg='';
-  const b=$('checkBtn');
+  const b=$('checkBtn'),ic=b.innerHTML;
   if(sample){
-    b.disabled=true;b.innerHTML='<span class="spin"></span> 검사 중';
+    b.disabled=true;b.innerHTML='<span class="spin"></span>';
     checkMsg='working';renderFixbar(false);
     try{const ai=await aiCheck(text);
       const seen=new Set(issues.map(x=>x.line+'|'+x.before));
       issues=[...ai.filter(x=>!seen.has(x.line+'|'+x.before)),...issues].sort((a,b)=>a.line-b.line);
       checkMsg='';
     }catch(e){checkMsg='맞춤법 검사를 하지 못했어요: '+aiErr(e);}
-    finally{b.disabled=false;b.textContent='맞춤법·오타 검사';}
+    finally{b.disabled=false;b.innerHTML=ic;}
   }else checkMsg='nosample';
   curIssue=0;checked=true;renderFixbar(true);renderSteps();
 };
@@ -1540,7 +1658,7 @@ function applyFix(x){
 // 페이지를 움직여 그 줄을 보여줘요
 function scrollEditorTo(el){
   if(!el)return;
-  if($('resultSec').classList.contains('closed'))$('foldRes').click();
+  setFold('resPanel',true);
   const top=el.getBoundingClientRect().top+scrollY,doch=document.querySelector('.doc')?.offsetHeight||104;
   scrollTo({top:Math.max(0,top-doch-(innerHeight-doch)/3),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
 }
@@ -1811,8 +1929,10 @@ function renderShots(){
         const del=document.createElement('button');del.className='shotx';del.type='button';del.title='이 슬라이드 지우기';del.setAttribute('aria-label',`${n}번째 슬라이드 지우기`);del.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
         del.onclick=e=>{e.stopPropagation();deleteScreen(s);};
         if(s.type==='song'&&(s.lines.some(l=>width(l)>FMT.maxChars+.5)||s.lines.length>FMT.lines))bt.classList.add('over');
-        const idx=n-1,k=shotKey(s);wrap.dataset.k=k;const ck=document.createElement('span');ck.className='shotck';ck.setAttribute('aria-hidden','true');
-        bt.onclick=()=>{if(selMode){selKeys.has(k)?selKeys.delete(k):selKeys.add(k);renderSelBar();return;}openSlide(idx);};wrap.appendChild(bt);wrap.appendChild(del);wrap.appendChild(ck);grid.appendChild(wrap);});
+        const idx=n-1,k=shotKey(s);wrap.dataset.k=k;
+        const ck=document.createElement('label');ck.className='shotck';ck.title='고르기';ck.innerHTML=`<input type="checkbox" aria-label="${n}번째 슬라이드 고르기">`;
+        ck.querySelector('input').onchange=e=>{e.target.checked?selKeys.add(k):selKeys.delete(k);renderSelBar();};
+        bt.onclick=()=>openSlide(idx);wrap.appendChild(bt);wrap.appendChild(ck);grid.appendChild(wrap);});
       box.appendChild(grid);
     });
     renderSelBar();
@@ -1856,22 +1976,33 @@ function deleteScreens(list){
 }
 function deleteScreen(sc){deleteScreens([sc]);}
 // ---- 선택 · 전체 선택 · 삭제
-let selMode=false;const selKeys=new Set();
+const selKeys=new Set();
 const shotKey=s=>s.ed+':'+s.line;
 function allShots(){return songGroups().flatMap(g=>g.items);}
 function renderSelBar(){
   const all=allShots(),keys=new Set(all.map(shotKey));[...selKeys].forEach(k=>{if(!keys.has(k))selKeys.delete(k);});
-  const n=selKeys.size;
-  $('selMode').textContent=selMode?'선택 끝내기':'선택';$('selMode').disabled=!all.length&&!selMode;
-  $('selAll').classList.toggle('hidden',!selMode);$('selDel').classList.toggle('hidden',!selMode);
-  $('selAll').textContent=all.length&&n===all.length?'선택 해제':'전체 선택';
-  $('selDel').disabled=!n;$('selDel').textContent=n?`삭제 ${n}장`:'삭제';
-  $('shots').classList.toggle('selecting',selMode);
-  $('shots').querySelectorAll('.shotw').forEach(w=>w.classList.toggle('sel',selKeys.has(w.dataset.k)));
+  const n=selKeys.size,ca=$('selAllCk');
+  ca.checked=!!all.length&&n===all.length;ca.indeterminate=n>0&&n<all.length;ca.disabled=!all.length;
+  $('selAllTx').textContent=n?`${n}장 고름`:'전체 선택';
+  $('selDel').classList.toggle('hidden',!n);$('selDel').textContent=`삭제`;
+  $('dlShots').textContent=n?`고른 ${n}장 이미지`:'이미지 내려받기';$('dlPptx').textContent=n?`고른 ${n}장 PowerPoint`:'PowerPoint로 내보내기';
+  $('shots').classList.toggle('selecting',n>0);
+  $('shots').querySelectorAll('.shotw').forEach(w=>{const on=selKeys.has(w.dataset.k);w.classList.toggle('sel',on);const i=w.querySelector('.shotck input');if(i)i.checked=on;});
 }
-$('selMode').onclick=()=>{selMode=!selMode;if(!selMode)selKeys.clear();renderSelBar();};
-$('selAll').onclick=()=>{const all=allShots();if(selKeys.size===all.length)selKeys.clear();else all.forEach(s=>selKeys.add(shotKey(s)));renderSelBar();};
-$('selDel').onclick=()=>{const list=allShots().filter(s=>selKeys.has(shotKey(s)));if(!list.length)return;deleteScreens(list);selMode=false;renderSelBar();};
+$('selAllCk').onchange=()=>{const all=allShots();if($('selAllCk').checked)all.forEach(s=>selKeys.add(shotKey(s)));else selKeys.clear();renderSelBar();};
+$('selDel').onclick=()=>{const list=allShots().filter(s=>selKeys.has(shotKey(s)));if(!list.length)return;deleteScreens(list);renderSelBar();};
+// 내보낼 화면: 고른 게 있으면 고른 것만
+function exportGroups(){const g=songGroups();if(!selKeys.size)return g;
+  return g.map(x=>({...x,items:x.items.filter(s=>selKeys.has(shotKey(s)))})).filter(x=>x.items.length);}
+// 파일 이름: 말씀만 → '에베소서 2장 10절 말씀', 찬양만 → '11월 22일 찬양', 둘 다 → '11월 22일 자막'
+function exportName(groups){
+  const t=$('docTitle').value||'',m=t.match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/),d=new Date();
+  const date=m?`${+m[1]}월 ${+m[2]}일`:(sundayName().match(/\d{1,2}월 \d{1,2}일/)||[`${d.getMonth()+1}월 ${d.getDate()}일`])[0];
+  const hasW=groups.some(g=>g.type==='word'),hasS=groups.some(g=>g.type==='song');
+  let name;if(hasW&&!hasS){const refs=[...new Set(groups.map(g=>g.items[0].ref||'').filter(Boolean))];name=(refs.length?refs.join(', '):date)+' 말씀';}
+  else if(hasS&&!hasW)name=`${date} 찬양`;else name=`${date} 자막`;
+  return name.replace(/[\\/:*?"<>|]+/g,'').trim();
+}
 function toastUndo(m,fn,label='되돌리기',ms=5000){const t=$('toast');t.innerHTML='';const sp=document.createElement('span');sp.textContent=m;const b=document.createElement('button');b.className='tundo';b.textContent=label;
   b.onclick=()=>{fn();t.classList.remove('on','act');};t.append(sp,b);t.classList.add('on','act');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on','act'),ms);}
 /* ---- 화면 크게 보기 ---- */
@@ -1889,7 +2020,7 @@ addEventListener('keydown',e=>{if(!$('slidebox').classList.contains('on'))return
 let downloads=null;
 (async()=>{try{downloads=await window.claude?.use?.('downloads');}catch(e){}})();
 $('dlShots').onclick=async()=>{
-  const b=$('dlShots'),groups=songGroups();if(!groups.length)return;
+  const b=$('dlShots'),groups=exportGroups();if(!groups.length)return;
   b.disabled=true;const t=b.textContent;b.textContent='만드는 중…';
   try{
     if(!window.JSZip)await loadScript(['https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js']);
@@ -1898,7 +2029,7 @@ $('dlShots').onclick=async()=>{
       const cv=document.createElement('canvas');cv.width=1920;cv.height=1080;drawScreen(cv,s,g.songIdx||0);
       const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
       zip.file(`${String(n).padStart(2,'0')}_${(g.title||'화면').replace(/[\\/:*?"<>|\s]+/g,'').slice(0,20)}.png`,blob);}
-    const name=`${($('docTitle').value||'예배자막').replace(/[\\/:*?"<>|]+/g,'')}_슬라이드.zip`;
+    const name=`${exportName(groups)}.zip`;
     const zblob=await zip.generateAsync({type:'blob'});
     if(downloads)await downloads.save({filename:name,data:zblob});
     else{const u=URL.createObjectURL(zblob),aEl=document.createElement('a');aEl.href=u;aEl.download=name;document.body.appendChild(aEl);aEl.click();aEl.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);} // 내 컴퓨터에서 열었을 때
@@ -1913,11 +2044,11 @@ async function saveBlob(name,blob){
   else{const u=URL.createObjectURL(blob),aEl=document.createElement('a');aEl.href=u;aEl.download=name;document.body.appendChild(aEl);aEl.click();aEl.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);}
 }
 $('dlPptx').onclick=async()=>{
-  const b=$('dlPptx'),groups=songGroups();if(!groups.length)return;
+  const b=$('dlPptx'),groups=exportGroups();if(!groups.length)return;
   b.disabled=true;const t=b.textContent;b.textContent='만드는 중…';
   try{
     if(!window.PptxGenJS)await loadScript(['https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js','https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js']);
-    const pptx=new PptxGenJS();pptx.layout='LAYOUT_WIDE';pptx.title=$('docTitle').value||'예배 자막';
+    const pptx=new PptxGenJS();pptx.layout='LAYOUT_WIDE';pptx.title=exportName(groups);
     const W=1920,H=1080,IN=13.333/W,PT=0.5; // 1920px 화면 기준: 1px = 0.5pt
     let n=0;
     for(const g of groups)for(const s of g.items){n++;
@@ -1935,7 +2066,7 @@ $('dlPptx').onclick=async()=>{
           {x:0,w:13.333,y:(lay.footer.y-H*.02)*IN,h:H*.04*IN,align:'center',valign:'middle',fontFace:'Noto Sans KR',fontSize:W*.0125*PT,color:'F2F2F2',charSpacing:W*.0125*.62*PT,margin:0});}
     }
     const blob=await pptx.write({outputType:'blob'});
-    await saveBlob(`${($('docTitle').value||'예배자막').replace(/[\\/:*?"<>|]+/g,'')}.pptx`,blob);
+    await saveBlob(`${exportName(groups)}.pptx`,blob);
     toast(`${n}장짜리 파워포인트를 만들었어요`);exported=true;renderSteps();
   }catch(e){toast(e?.code==='declined'||e?.code==='cancelled'?'내보내기를 취소했어요':'만들지 못했어요: '+(e?.message||e));}
   finally{b.disabled=false;b.textContent=t;}

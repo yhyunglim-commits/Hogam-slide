@@ -130,6 +130,18 @@ select public.reset_password('김목자', '새암호1234');
 
 **팀원을 내보낼 때**: **Authentication › Users**에서 그 사람(`u…@hogamslide.app`)을 찾아 **Delete user** 하세요. 팀원 목록에서도 함께 빠져요.
 
+**팀원 이름을 바꿀 때**: 로그인할 때 쓰는 이름이라 두 곳을 함께 바꿔야 해요. SQL Editor에서 `옛이름`, `새이름`만 고쳐 실행하세요.
+
+```sql
+update auth.users
+   set email = 'u' || encode(convert_to('새이름','UTF8'),'hex') || '@hogamslide.app',
+       raw_user_meta_data = coalesce(raw_user_meta_data,'{}'::jsonb) || jsonb_build_object('name','새이름')
+ where id = (select user_id from public.members where name = '옛이름');
+update public.members set name = '새이름' where name = '옛이름';
+```
+
+**팀원 목록 보기**: Table Editor › `members` 표에 이름과 들어온 날짜가 있어요.
+
 **팀 암호를 바꿀 때**: Edge Functions › Secrets에서 `TEAM_CODE`를 바꾸세요. 이미 들어온 팀원은 그대로 쓸 수 있어요.
 
 **화면을 고쳐서 다시 올릴 때**: GitHub 저장소에서 `index.html`을 새 파일로 다시 올리면, 1~2분 뒤 주소에 반영돼요.
