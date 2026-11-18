@@ -83,6 +83,25 @@ create table if not exists public.ai_usage (
 );
 create index if not exists ai_usage_user_at on public.ai_usage (user_id, at desc);
 
+-- ───────────── 3단계 추가 (2026-11) ─────────────
+-- 팀이 함께 쓰는 설정: 슬라이드 모양(look), 곡 색(songColors), 자막 양식(fmt), 말씀 설정(bset),
+-- 저장한 양식(mine), 배경 사진·로고(media.song / media.word / media.logo)
+create table if not exists public.team_settings (
+  key             text primary key,
+  value           jsonb,
+  updated_by_name text,
+  updated_at      timestamptz not null default now()
+);
+create or replace function public.stamp_setting() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  new.updated_by_name := public.my_name();
+  new.updated_at := now();
+  return new;
+end $$;
+drop trigger if exists team_settings_stamp on public.team_settings;
+create trigger team_settings_stamp before insert or update on public.team_settings for each row execute function public.stamp_setting();
+
 -- 누가 고쳤는지는 서버가 직접 적어요 (화면에서 이름을 꾸며 넣을 수 없게)
 create or replace function public.stamp_editor() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -207,6 +226,10 @@ alter table public.edit_log enable row level security;
 -- 이 두 표는 서버 기능(service_role)만 써요. 규칙을 하나도 두지 않아서 화면에서는 읽지도 쓰지도 못해요.
 alter table public.signup_attempts enable row level security;
 alter table public.ai_usage        enable row level security;
+alter table public.team_settings   enable row level security;
+
+drop policy if exists "팀원은 팀 설정을 써요" on public.team_settings;
+create policy "팀원은 팀 설정을 써요" on public.team_settings for all using (public.is_member()) with check (public.is_member());
 
 drop policy if exists "팀원은 팀원 목록을 봐요" on public.members;
 create policy "팀원은 팀원 목록을 봐요" on public.members for select using (public.is_member());
@@ -225,6 +248,7 @@ do $$ begin
   begin alter publication supabase_realtime add table public.songs;    exception when duplicate_object then null; end;
   begin alter publication supabase_realtime add table public.services; exception when duplicate_object then null; end;
   begin alter publication supabase_realtime add table public.edit_log; exception when duplicate_object then null; end;
+  begin alter publication supabase_realtime add table public.team_settings; exception when duplicate_object then null; end;
 end $$;
 
 -- ───────────── 잠들지 않게 깨우는 신호 (GitHub가 사흘마다 불러요) ─────────────
@@ -253,6 +277,7 @@ grant select, insert, update, delete on public.members, public.songs, public.ser
 grant select, insert, update, delete on public.songs, public.services to authenticated;
 grant select on public.edit_log to authenticated;
 grant select, insert, delete on public.signup_attempts, public.ai_usage to service_role;
+grant select, insert, update, delete on public.team_settings to authenticated, service_role;
 grant usage, select on all sequences in schema public to authenticated, service_role;
 revoke execute on function public.save_service(text, int, text, text, jsonb, text, text, boolean) from public, anon;
 revoke execute on function public.restore_from_log(bigint) from public, anon;
