@@ -67,7 +67,9 @@ Supabase 왼쪽 메뉴 **Edge Functions**에서 하는 일이에요.
 | `TEAM_CODE` | 정해 둔 팀 암호 |
 | `GEMINI_API_KEY` | 3단계에서 복사한 키 |
 
-> 선택: 다른 Gemini 모델을 쓰고 싶으면 `GEMINI_MODEL`을 추가해요. 비워 두면 `gemini-2.5-flash`를 써요.
+> **선택 · Claude로 읽기(유료):** `ANTHROPIC_API_KEY`에 Claude API 키(https://platform.claude.com)를 넣으면 Claude가 먼저 읽고, 안 될 때만 Gemini가 대신해요. 기본 모델은 `claude-sonnet-5-5`이고, `CLAUDE_MODEL`에 `claude-haiku-5-5`를 넣으면 더 싸고 빨라요.
+
+> 선택: 다른 Gemini 모델을 쓰고 싶으면 `GEMINI_MODEL`을 추가해요. 비워 두면 `gemini-3.8-flash`를 써요.
 
 ## 5단계 · config.js 채우기
 

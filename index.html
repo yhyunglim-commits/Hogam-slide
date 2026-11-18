@@ -912,7 +912,7 @@ async function sample(prompt,opts={}){
 }
 const ready=Promise.resolve();
 setTimeout(()=>{updateConvertBtn();loadMine();loadShared();},0);
-function aiErr(e){return e?.code==='not_granted'?'Claude 사용을 허용해야 쓸 수 있어요.':e?.code==='rate_limited'?'요청이 많아요. 1~2분 뒤 다시 눌러 주세요.':(e?.message||String(e));}
+function aiErr(e){return e?.message||String(e);}
 function parseJSON(t){if(!t)return null;t=t.replace(/```(?:json)?/g,'');const a=Math.min(...['{','['].map(c=>{const i=t.indexOf(c);return i<0?1e9:i;}));
   const b=Math.max(t.lastIndexOf('}'),t.lastIndexOf(']'));if(a>=1e9||b<0)return null;try{return JSON.parse(t.slice(a,b+1));}catch(e){return null;}}
 async function askJSON(prompt,opts={}){const r=await sample(prompt,{modelTier:'complex',...opts});const v=parseJSON(r.text);if(v==null)throw{message:'답을 읽지 못했어요. 다시 눌러 주세요.'};return v;}
@@ -1094,9 +1094,8 @@ async function smaller(blob,max){return new Promise(res=>{const img=new Image(),
   const c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(res,'image/jpeg',.82);};img.onerror=()=>{URL.revokeObjectURL(u);res(blob);};img.src=u;});}
 function convErr(e){
   const c=e?.code;
-  if(c==='not_granted')return'Claude 사용이 허용되지 않았어요. 다시 시도를 누르고 나오는 허용 창에서 허용해 주세요.';
-  if(c==='rate_limited')return'요청이 몰렸어요. 1분쯤 뒤에 다시 시도를 눌러 주세요.';
-  return(e?.message||String(e))+(c?` (${c})`:'');
+  if(c==='not_granted')return e?.message||'다시 로그인해 주세요.';
+  return e?.message||String(e);
 }
 async function convertOne(s,f,expand){
   s.status='work';s.msg='';s.notes=[];renderSongs();
@@ -1138,10 +1137,10 @@ $('convertBtn').onclick=async()=>{
   const todo=pendingSongs();if(!todo.length)return;
   busy=true;updateConvertBtn();const st=$('convStatus');st.className='status';
   const f=FMT,expand=$('optExpand').checked;let n=0;
-  // 세 곡씩 동시에 읽어요 (무료 사용량 한도 안에서 가장 빠르게)
+  // 두 곡씩 동시에 읽어요 (무료 사용량 한도 안에서)
   const q=[...todo],show=()=>{st.textContent=`${todo.length}곡 중 ${n}곡 끝남 — 동시에 읽고 있어요`;};show();
   const worker=async()=>{while(q.length){const s=q.shift();await convertOne(s,f,expand);n++;show();if(s.status==='done')saveToLib(s);orderChanged(true);}};
-  await Promise.all(Array.from({length:Math.min(3,todo.length)},worker));
+  await Promise.all(Array.from({length:Math.min(2,todo.length)},worker));
   busy=false;updateConvertBtn();
   const failed=songs.filter(s=>s.status==='err').length,ok=songs.filter(s=>s.result).length;
   st.className=failed?'status err':'status';
@@ -1412,8 +1411,8 @@ const FONTS=[
  {f:'Do Hyeon',n:'도현',w:400},{f:'Jua',n:'주아',w:400},{f:'Black Han Sans',n:'검은고딕',w:400}];
 const fontW=f=>(FONTS.find(x=>x.f===f)||FONTS[0]).w;
 const LOOK_DEF={
-  song:{font:'Noto Sans KR',bgDim:15,logoPos:'off',logoSize:6,size:5,spacing:0,lineH:1.32,posY:62,title:true,titleSize:1.9,titleGap:7,footer:'OKSU ASSEMBLIES OF GOD CHURCH',footerOn:true},
-  word:{font:'Gowun Batang',bgDim:25,logoPos:'off',logoSize:6,size:2.6,spacing:0,lineH:1.42,maxLines:4,box:88,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true}
+  song:{font:'Noto Sans KR',bgDim:15,logoPos:'off',logoSize:6,size:5,spacing:-6,lineH:1.22,posY:61,title:true,titleSize:1.6,titleGap:7,footer:'OKSU ASSEMBLIES OF GOD CHURCH',footerOn:true},
+  word:{font:'Nanum Myeongjo',bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,box:88,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true}
 };
 // 배경 사진·로고 (이 브라우저에 저장)
 let MEDIA=store.get('media',{song:null,word:null,logo:null});

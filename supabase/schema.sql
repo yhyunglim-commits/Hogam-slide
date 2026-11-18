@@ -161,3 +161,14 @@ begin
 end $$;
 revoke execute on function public.reset_password(text, text) from public, anon, authenticated;
 revoke execute on function public.my_name() from anon;
+
+-- ───────────── 서버와 화면이 표를 쓸 수 있게 허락 ─────────────
+-- (2026년 5월 이후 만든 Supabase 프로젝트는 표를 자동으로 열어 주지 않아서, 직접 허락해야 해요)
+grant usage on schema public to anon, authenticated, service_role;
+grant select on public.members to authenticated;
+grant select, insert, update, delete on public.members, public.songs, public.services, public.edit_log to service_role;
+grant select, insert, update, delete on public.songs, public.services to authenticated;
+grant select on public.edit_log to authenticated;
+grant usage, select on all sequences in schema public to authenticated, service_role;
+grant execute on function public.is_member(), public.my_name() to authenticated, service_role;
+grant execute on function public.ping() to anon, authenticated;
