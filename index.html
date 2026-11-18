@@ -906,7 +906,7 @@ async function sample(prompt,opts={}){
   const images=[];
   for(const b0 of (opts.images||[])){let x=b0;if(x.size>1.5e6)x=await smaller(x,1600);images.push({mime:x.type||'image/jpeg',data:await blobToB64(x)});}
   const {data,error}=await sb.functions.invoke('ai',{body:{prompt,images,tier:opts.modelTier}});
-  if(error){let msg='AI에 연결하지 못했어요. 잠시 뒤 다시 해 주세요.',code;try{const j=await error.context.json();msg=j.error||msg;code=j.code;}catch(e){}throw{message:msg,code};}
+  if(error){let code;try{code=(await error.context.clone().json()).code;}catch(e){}throw{message:await fnErrMsg(error,'ai'),code};}
   if(data?.error)throw{message:data.error,code:data.code};
   return{text:data?.text||''};
 }
@@ -2063,6 +2063,15 @@ function pushSession(c){
 }
 async function removeSession(id){if(!sb||!me)return;clearTimeout(pushT[id]);const {error}=await sb.from('services').delete().eq('id',id);if(error)netErr(error);}
 
+
+async function fnErrMsg(error,fn){
+  const st=error?.context?.status;let j=null;try{j=await error.context.clone().json();}catch(_){}
+  if(j&&j.error)return j.error;
+  if(st===404)return `서버에 ‘${fn}’ 기능이 없어요. Supabase › Edge Functions에 이름을 ‘${fn}’으로 올렸는지 확인해 주세요 (404)`;
+  if(st===401||st===403)return `‘${fn}’ 기능의 Verify JWT(JWT 확인)를 꺼 주세요 (${st})`;
+  if(st)return `‘${fn}’ 기능이 오류를 냈어요 (${st}${j&&(j.msg||j.message)?': '+(j.msg||j.message):''})`;
+  return `‘${fn}’ 기능에 연결하지 못했어요. Edge Functions에 올라가 있는지 확인해 주세요`;
+}
 let gMode='in';
 function setGateMode(m){gMode=m;document.querySelectorAll('.gtabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.m===m));
   document.querySelector('.gup').classList.toggle('hidden',m!=='up');$('gGo').textContent=m==='up'?'팀에 들어가기':'들어가기';
@@ -2082,7 +2091,7 @@ $('gateForm').onsubmit=async e=>{
   try{
     if(gMode==='up'){
       const {data,error}=await sb.functions.invoke('signup',{body:{name,password:pw,code}});
-      if(error){let m='등록하지 못했어요. 잠시 뒤 다시 해 주세요';try{m=(await error.context.json()).error||m;}catch(_){}throw new Error(m);}
+      if(error){throw new Error(await fnErrMsg(error,'signup'));}
       if(data?.error)throw new Error(data.error);
     }
     const {data,error}=await sb.auth.signInWithPassword({email:nameToEmail(name),password:pw});
