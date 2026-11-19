@@ -907,7 +907,7 @@ header.doc::before{content:'';position:absolute;left:0;right:0;top:0;bottom:-36p
   --amber:#FF9500; --amber-soft:#FFF3E0; --blue:#007AFF; --blue-soft:#E8F2FF; --violet:#AF52DE; --violet-soft:#F6ECFC;
   --ok:#1E9E4A; --ok-soft:#E3F6E9; --bad:#E5352B; --bad-soft:#FDECEB; --bad-line:#F6C7C4;
   --warn:#C77700; --warn-soft:#FFF4E0; --warn-line:#FFDFA8; --warn-ink:#7A4A00;
-  --ink:#1D1D1F; --stage:#1C1C1E; --stage2:#2C2C2E;
+  --ink:#1D1D1F; --stage:#ECECF0; --stage2:#E3E3E8; --stage-ink:#4B4B50; --stage-edge:rgba(0,0,0,.1); --stage-cur:#1D1D1F;
   --hero:none; --glass:rgba(0,0,0,.05); --glass2:rgba(0,0,0,.08);
   --hair:#EDEDF0; --field2:#F2F2F5; --field3:#F2F2F5; --chip:#E8E8ED; --drop-line:#A9CBFF; --drop-h:#DDEBFF;
   --btn:#FFFFFF; --btn-h:#F6F6F8; --btn-edge:0 0 0 .5px rgba(0,0,0,.2),0 .5px 1.5px rgba(0,0,0,.1);
@@ -924,7 +924,7 @@ header.doc::before{content:'';position:absolute;left:0;right:0;top:0;bottom:-36p
   --amber:#FF9F0A; --amber-soft:#3D2C12; --blue-soft:#173252; --violet:#BF5AF2; --violet-soft:#36203F;
   --ok:#32D74B; --ok-soft:#173A20; --bad:#FF453A; --bad-soft:#3F1D1B; --bad-line:#6A2A26;
   --warn:#FF9F0A; --warn-soft:#3D2C12; --warn-line:#5E4317; --warn-ink:#FFCC80;
-  --ink:#3A3A3E; --stage:#111113; --stage2:#1C1C1E;
+  --ink:#3A3A3E; --stage:#141416; --stage2:#1C1C1E; --stage-ink:#D1D1D6; --stage-edge:rgba(255,255,255,.12); --stage-cur:#FFFFFF;
   --glass:rgba(255,255,255,.07); --glass2:rgba(255,255,255,.11);
   --hair:#333337; --field2:#323236; --field3:#38383C; --chip:#3A3A3E; --drop-line:#2D5A96; --drop-h:#1D3A5E;
   --btn:#4A4A4F; --btn-h:#55555B; --btn-edge:0 0 0 .5px rgba(0,0,0,.5),inset 0 .5px 0 rgba(255,255,255,.12);
@@ -939,7 +939,7 @@ header.doc::before{content:'';position:absolute;left:0;right:0;top:0;bottom:-36p
   --amber:#FF9F0A; --amber-soft:#3D2C12; --blue-soft:#173252; --violet:#BF5AF2; --violet-soft:#36203F;
   --ok:#32D74B; --ok-soft:#173A20; --bad:#FF453A; --bad-soft:#3F1D1B; --bad-line:#6A2A26;
   --warn:#FF9F0A; --warn-soft:#3D2C12; --warn-line:#5E4317; --warn-ink:#FFCC80;
-  --ink:#3A3A3E; --stage:#111113; --stage2:#1C1C1E;
+  --ink:#3A3A3E; --stage:#141416; --stage2:#1C1C1E; --stage-ink:#D1D1D6; --stage-edge:rgba(255,255,255,.12); --stage-cur:#FFFFFF;
   --glass:rgba(255,255,255,.07); --glass2:rgba(255,255,255,.11);
   --hair:#333337; --field2:#323236; --field3:#38383C; --chip:#3A3A3E; --drop-line:#2D5A96; --drop-h:#1D3A5E;
   --btn:#4A4A4F; --btn-h:#55555B; --btn-edge:0 0 0 .5px rgba(0,0,0,.5),inset 0 .5px 0 rgba(255,255,255,.12);
@@ -1109,11 +1109,11 @@ main{padding:0 28px 100px}
 .fixbar{border-radius:10px}
 
 /* ---- 슬라이드 미리보기: Keynote 슬라이드 탐색기처럼 어두운 판 위에 ---- */
-.shotbody .shots,.shots{background:var(--stage);border-radius:10px;margin:0 18px 18px 6px;padding:16px 18px 20px;color:#E5E5EA}
-.shead b{color:#D1D1D6;font-weight:600;font-size:12.5px}
-.shot{border-radius:4px;box-shadow:0 0 0 .5px rgba(255,255,255,.12),0 6px 16px -8px rgba(0,0,0,.8)}
-.shot:hover{transform:none;box-shadow:0 0 0 .5px rgba(255,255,255,.25),0 6px 16px -8px rgba(0,0,0,.8)}
-.shotw.cur .shot{box-shadow:0 0 0 2px #fff}
+.shotbody .shots,.shots{background:var(--stage);border:1px solid var(--hair);border-radius:10px;margin:0 18px 18px 6px;padding:16px 18px 20px;color:var(--stage-ink)}
+.shead b{color:var(--stage-ink);font-weight:600;font-size:12.5px}
+.shot{border-radius:4px;box-shadow:0 0 0 .5px var(--stage-edge),0 4px 12px -6px rgba(0,0,0,.35)}
+.shot:hover{transform:none;box-shadow:0 0 0 .5px var(--stage-edge),0 8px 18px -8px rgba(0,0,0,.45)}
+.shotw.cur .shot{box-shadow:0 0 0 2px var(--stage-cur)}
 .shotw.sel .shot,.shotw.sel.cur .shot{box-shadow:0 0 0 3px var(--pri)}
 .shotzoom{color:var(--text3)}
 .shotzoom i{font-size:13px}
@@ -1188,6 +1188,26 @@ details.look summary{font-size:13.5px;font-weight:600;color:var(--text)}
 .gcard .btn.big{height:34px;border-radius:8px;font-size:14px}
 
 @media (prefers-reduced-motion:reduce){.btn:active:not(:disabled){filter:none}}
+
+/* 곡 보관함: 새 곡 넣기 · 가사 고치기 */
+.libtools #libNew{flex:none;height:30px}
+.libtools #libNew i{font-size:14px}
+.ldnew{margin-top:4px}
+.ldnew .ldrow{display:inline-flex;flex-direction:column;vertical-align:top;margin-right:10px;width:min(360px,100%)}
+.ldnew .ldrow.sm{width:110px}
+.ldnew .ldrow .fl{margin-top:12px}
+.ldnew textarea{width:100%;box-sizing:border-box;font-size:13.5px}
+.ldnew label.ck{line-height:1.4}
+.ldedit textarea{width:100%;box-sizing:border-box;font-size:13.5px;line-height:1.7}
+.ldedit .hint{margin:0 0 8px}
+.ldprog{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+.ldprog:empty{display:none}
+.ldprog li{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;background:var(--sunken);font-size:13px}
+.ldprog .pi{display:inline-grid;place-items:center;width:18px}
+.ldprog .pi .spin{width:13px;height:13px}
+.ldprog li.ok .pi{color:var(--ok)} .ldprog li.err .pi{color:var(--bad)}
+.ldprog .pm{color:var(--text3);margin-left:auto;text-align:right}
+.ldprog li.err .pm{color:var(--bad)}
 </style>
 </head>
 <body>
@@ -1438,7 +1458,7 @@ details.look summary{font-size:13.5px;font-weight:600;color:var(--text)}
 </div>
 <div class="logbox libbox" id="libbox" role="dialog" aria-modal="true" aria-labelledby="libTitle">
   <div class="lcard libcard"><div class="lhead"><h2 id="libTitle">곡 보관함</h2><span class="meta" id="libAllMeta"></span><button class="btn ghost ibtn" id="libClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
-  <div class="libtools"><input type="search" id="libQ" placeholder="제목 · 초성(ㅎㅅㅇ) · 가사 · 찬송가 번호" aria-label="곡 찾기">
+  <div class="libtools"><button type="button" class="btn pri" id="libNew"><i class="ph ph-plus" aria-hidden="true"></i>새 곡 넣기</button><input type="search" id="libQ" placeholder="제목 · 초성(ㅎㅅㅇ) · 가사 · 찬송가 번호" aria-label="곡 찾기">
     <select id="libSort" aria-label="정렬"><option value="recent">최근 고친 순</option><option value="most">많이 부른 순</option><option value="old">오래 안 부른 순</option><option value="name">가나다순</option></select>
     <label class="ck"><input type="checkbox" id="libOk"><span>확인된 곡만</span></label></div>
   <div class="libsplit"><ul class="liblist" id="libAll"></ul><div class="libdetail" id="libDetail"></div></div></div>
@@ -2972,17 +2992,18 @@ function renderLib(){
 }
 $('libSearch').addEventListener('input',renderLib);
 // ---- 곡 보관함 창: 찾기 · 정렬 · 가사 보기 · 찬송가 번호 · 확인됨 ----
-let libSel=null;
+let libSel=null,libNew=false,libEdit=null,libBusy=false;
 function libOpts(){return{sort:$('libSort').value,onlyOk:$('libOk').checked};}
 function renderLibAll(){
   const ul=$('libAll'),list=libMatches($('libQ').value,libOpts()),all=Object.values(LIB);
   $('libAllMeta').textContent=`${all.length}곡 · 확인됨 ${all.filter(x=>x.vby).length}곡`;
-  if(!list.length){ul.innerHTML=`<li class="empty">${all.length?'찾는 곡이 없어요':'악보를 한 번 읽으면 여기에 모여요'}</li>`;return;}
-  if(!list.some(x=>x.title===libSel))libSel=list[0].title;
-  ul.innerHTML=list.map(it=>`<li><button type="button" data-t="${esc(it.title)}" class="${it.title===libSel?'on':''}">${it.thumb?`<img class="th" src="${esc(it.thumb)}" alt="">`:'<span class="th"></span>'}<span class="t"><b>${esc(it.title)}</b><span>${okBadge(it)}${it.hymn?it.hymn+'장 · ':''}${it._lyr?'가사에서 찾음 · ':''}${usedTxt(it._u)}</span></span></button></li>`).join('');
-  ul.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{libSel=b.dataset.t;ul.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderLibDetail();});
+  if(!list.length){ul.innerHTML=`<li class="empty">${all.length?'찾는 곡이 없어요':'위의 ‘새 곡 넣기’로 자주 부르는 곡을 미리 넣어 두세요'}</li>`;return;}
+  if(!libNew&&!list.some(x=>x.title===libSel))libSel=list[0].title;
+  ul.innerHTML=list.map(it=>`<li><button type="button" data-t="${esc(it.title)}" class="${!libNew&&it.title===libSel?'on':''}">${it.thumb?`<img class="th" src="${esc(it.thumb)}" alt="">`:'<span class="th"></span>'}<span class="t"><b>${esc(it.title)}</b><span>${okBadge(it)}${it.hymn?it.hymn+'장 · ':''}${it._lyr?'가사에서 찾음 · ':''}${usedTxt(it._u)}</span></span></button></li>`).join('');
+  ul.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{if(libBusy)return;libSel=b.dataset.t;libNew=false;libEdit=null;ul.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderLibDetail();});
 }
 function renderLibDetail(){
+  if(libNew)return renderLibNew();
   const box=$('libDetail'),it=LIB[libSel];
   if(!it){box.innerHTML='<div class="empty">왼쪽에서 곡을 고르면 가사와 정보가 보여요.</div>';return;}
   const u=songUsage()[it.title.replace(/\s/g,'')];
@@ -2994,9 +3015,16 @@ function renderLibDetail(){
       <dt>가사 확인</dt><dd>${it.vby?`${esc(it.vby)} · ${fmtDate(it.vat)}`:'아직 아무도 확인하지 않았어요'}</dd>
       <dt>마지막 수정</dt><dd>${it.by?esc(it.by)+' · ':''}${fmtDate(it.saved)}</dd>
     </dl>
-    <div class="row ldacts"><button class="btn pri" id="ldAdd">이번 예배에 넣기</button><button class="btn" id="ldOk">${it.vby?'확인 취소':'가사 확인했어요'}</button><span style="flex:1"></span><button class="btn danger" id="ldDel">보관함에서 지우기</button></div>
-    <div class="ldlyrics">${secs||'<div class="empty">가사가 없어요</div>'}</div>`;
+    <div class="row ldacts"><button class="btn pri" id="ldAdd">이번 예배에 넣기</button><button class="btn" id="ldEdit">가사 고치기</button><button class="btn" id="ldOk">${it.vby?'확인 취소':'가사 확인했어요'}</button><span style="flex:1"></span><button class="btn danger" id="ldDel">보관함에서 지우기</button></div>
+    ${libEdit===it.title?`<div class="ldedit"><p class="hint">[1절] [후렴]처럼 대괄호 줄로 섹션을 나누고, 빈 줄로 화면을 나눠요. 한 화면에 줄이 많으면 지금 양식(${FMT.lines}줄)에 맞춰 나눠요.</p><textarea id="ldText" rows="11"></textarea><div class="row" style="margin-top:10px"><button class="btn pri" id="ldSave">고친 가사 저장</button><button class="btn" id="ldCancel">취소</button></div></div>`:`<div class="ldlyrics">${secs||'<div class="empty">가사가 없어요</div>'}</div>`}`;
   const t=it.title;
+  $('ldEdit').onclick=()=>{libEdit=t;renderLibDetail();const ta=$('ldText');ta.value=resultToText(LIB[t].result);ta.focus();};
+  if(libEdit===t){const ta=$('ldText');if(!ta.value)ta.value=resultToText(it.result);
+    $('ldCancel').onclick=()=>{libEdit=null;renderLibDetail();};
+    $('ldSave').onclick=async()=>{const r=localConvert({title:t,text:$('ldText').value},FMT);r.title=t;
+      if(!r.sections.length){toast('가사가 비어 있어요');return;}
+      if(LIB[t].vby&&!confirm('가사를 고치면 ‘확인됨’ 표시가 풀려요. 저장할까요?'))return;
+      libEdit=null;await saveToLib({title:t,result:r,thumb:LIB[t].thumb,pages:[]});renderLibAll();renderLibDetail();toast(`‘${t}’ 가사를 고쳤어요`);};}
   $('ldAdd').onclick=()=>{addFromLib(t);};
   $('ldHymn').onchange=async e=>{const v=e.target.value?Math.max(1,Math.min(999,Math.round(+e.target.value))):null;const old=LIB[t].hymn;LIB[t].hymn=v;renderLibAll();renderLib();
     const {error}=await sb.from('songs').update({hymn:v}).eq('title',t);if(error){LIB[t].hymn=old;renderLibAll();toast(/hymn/.test(error.message||'')?'관리자가 4단계 SQL을 실행하면 쓸 수 있어요':'저장하지 못했어요');}else toast(v?`${v}장으로 적었어요`:'찬송가 번호를 지웠어요');};
@@ -3006,12 +3034,73 @@ function renderLibDetail(){
   $('ldDel').onclick=async()=>{if(!confirm(`‘${t}’을 팀 곡 보관함에서 지울까요? 편집 기록의 ‘되살리기’로 다시 살릴 수 있어요.`))return;delete LIB[t];libSel=null;renderLib();renderLibAll();renderLibDetail();
     const {error}=await sb.from('songs').delete().eq('title',t);if(error)netErr(error);};
 }
+// 곡 데이터 → 고칠 수 있는 글 ([섹션] 줄 + 빈 줄로 화면 구분)
+function resultToText(r){return(r?.sections||[]).map(s=>(s.label?`[${s.label}]\n`:'')+s.slides.map(sl=>sl.join('\n')).join('\n\n')).join('\n\n');}
+let libNewTab='text';
+function renderLibNew(){
+  const box=$('libDetail');
+  box.innerHTML=`<div class="ldhead"><h3>새 곡 넣기</h3></div>
+    <p class="hint" style="margin:6px 0 12px">자주 부르는 곡을 미리 넣어 두면, 예배 자막을 만들 때 ‘보관함에서 곡 추가’로 바로 쓸 수 있어요.</p>
+    <div class="seg2" role="tablist"><button type="button" role="tab" data-nt="text" aria-selected="${libNewTab==='text'}">가사 붙여 넣기</button><button type="button" role="tab" data-nt="score" aria-selected="${libNewTab==='score'}">악보 사진·PDF</button></div>
+    ${libNewTab==='text'?`<div class="ldnew">
+      <div class="ldrow"><label class="fl" for="nTitle">제목</label><input type="text" id="nTitle" placeholder="비우면 가사 첫 줄을 제목으로 써요"></div>
+      <div class="ldrow sm"><label class="fl" for="nHymn">찬송가 번호</label><input type="number" id="nHymn" min="1" max="999" placeholder="없음"></div>
+      <label class="fl" for="nText">가사</label>
+      <textarea id="nText" rows="12" placeholder="가사를 붙여 넣으세요. 줄바꿈은 대충이어도 괜찮아요.&#10;&#10;여러 곡을 한 번에 넣으려면 곡 사이에 === 줄을 넣고, 곡마다 첫 줄에 제목을 써 주세요."></textarea>
+      <label class="ck" style="margin-top:10px"><input type="checkbox" id="nAI" checked><span>AI로 화면 나누기 (절·후렴 이름, 반복 펼치기, 띄어쓰기 정리)</span></label>
+      <div class="row" style="margin-top:12px"><button class="btn pri" id="nGo">보관함에 넣기</button></div></div>`
+    :`<div class="ldnew"><label class="drop" id="nDrop" style="margin-top:12px"><input type="file" id="nFiles" accept="image/*,application/pdf" multiple hidden><span class="ic"><i class="ph ph-upload-simple" aria-hidden="true"></i></span><span><strong>악보 고르기</strong><span>여러 곡을 한 번에 골라도 돼요. 한 파일이 한 곡이에요.</span></span></label></div>`}
+    <ol class="ldprog" id="nProg"></ol>`;
+  box.querySelectorAll('[data-nt]').forEach(b=>b.onclick=()=>{if(libBusy)return;libNewTab=b.dataset.nt;renderLibNew();});
+  if(libNewTab==='text')$('nGo').onclick=libAddTexts;
+  else{const inp=$('nFiles'),dr=$('nDrop');inp.onchange=()=>{libAddFiles([...inp.files]);inp.value='';};
+    ['dragenter','dragover'].forEach(e=>dr.addEventListener(e,ev=>{ev.preventDefault();dr.classList.add('over');}));
+    ['dragleave','drop'].forEach(e=>dr.addEventListener(e,ev=>{ev.preventDefault();dr.classList.remove('over');}));
+    dr.addEventListener('drop',ev=>libAddFiles([...ev.dataTransfer.files]));}
+}
+function progRow(label){const li=document.createElement('li');li.innerHTML=`<span class="pi"><span class="spin"></span></span><b></b><span class="pm">읽는 중…</span>`;li.querySelector('b').textContent=label;$('nProg').appendChild(li);return(ok,msg)=>{li.className=ok?'ok':'err';li.querySelector('.pi').innerHTML=`<i class="ph ${ok?'ph-check-circle':'ph-warning-circle'}" aria-hidden="true"></i>`;li.querySelector('.pm').textContent=msg;};}
+// 곡 하나를 읽어서 보관함에 넣어요 (예배 목록에는 넣지 않아요)
+async function libAddOne({title,text,pages,hymn,ai}){
+  const s=newSong(pages?{mode:'score',pages,title:title||''}:{mode:'text',title:title||'',text});
+  if(pages||ai)await convertOne(s,FMT,$('optExpand').checked);
+  else{s.result=localConvert(s,FMT);if(!s.title&&s.result.title)s.title=s.result.title;if(s.result.sections.length)s.status='done';else{s.status='err';s.msg='가사를 찾지 못했어요';}}
+  if(s.status!=='done')return{ok:false,msg:s.msg||'읽지 못했어요',title:s.title};
+  const t=(s.title||s.result.title||'').trim();if(!t)return{ok:false,msg:'제목을 찾지 못했어요. 제목을 적어 다시 넣어 주세요'};
+  if(LIB[t]&&!confirm(`보관함에 ‘${t}’이 이미 있어요. 새로 넣은 가사로 바꿀까요?`))return{ok:false,msg:'이미 있어서 그대로 뒀어요',title:t};
+  s.title=t;await saveToLib(s);
+  if(hymn&&LIB[t]){LIB[t].hymn=hymn;await sb.from('songs').update({hymn}).eq('title',t);}
+  return{ok:true,title:t,msg:`${s.result.sections.reduce((a,x)=>a+x.slides.length,0)}화면으로 넣었어요${s.notes?.length?' · 확인할 곳 '+s.notes.length+'개':''}`};
+}
+async function libRun(jobs){
+  if(libBusy||!jobs.length)return;libBusy=true;$('nProg').innerHTML='';let okN=0;
+  const btn=$('nGo');if(btn)btn.disabled=true;
+  for(const j of jobs){const done=progRow(j.label);let r;try{r=await libAddOne(j);}catch(e){r={ok:false,msg:e?.message||String(e)};}
+    if(r.title)done.__t=r.title;done(r.ok,(r.title&&r.title!==j.label?`‘${r.title}’ · `:'')+r.msg);if(r.ok)okN++;}
+  libBusy=false;if($('nGo'))$('nGo').disabled=false;renderLibAll();renderLib();
+  toast(okN?`${okN}곡을 보관함에 넣었어요`:'넣은 곡이 없어요');
+}
+function libAddTexts(){
+  const raw=$('nText').value.trim();if(!raw){toast('가사를 붙여 넣어 주세요');return;}
+  const parts=raw.split(/\n[ \t]*={3,}[ \t]*\n/).map(x=>x.trim()).filter(Boolean),title=$('nTitle').value.trim(),hymn=+$('nHymn').value||null,ai=$('nAI').checked;
+  const jobs=parts.map((p,i)=>{let tt=parts.length===1?title:'',tx=p;
+    if(!tt){const ls=p.split('\n'),k=ls.findIndex(l=>l.trim()&&!/^\[.+\]$/.test(l.trim()));if(k>=0){tt=ls[k].trim();ls.splice(k,1);tx=ls.join('\n');}}
+    return{label:tt||`${i+1}번째 곡`,title:tt,text:tx,hymn:parts.length===1?hymn:null,ai};});
+  if(parts.length>1&&!confirm(`${parts.length}곡을 보관함에 넣을까요?${ai?` AI를 ${parts.length}번 써요.`:''}`))return;
+  libRun(jobs).then(()=>{if(jobs.length&&$('nText')){$('nText').value='';$('nTitle').value='';$('nHymn').value='';}});
+}
+async function libAddFiles(files){
+  files=files.filter(f=>/^image\//.test(f.type)||/pdf$/i.test(f.type)||/\.pdf$/i.test(f.name)).sort((a,b)=>a.name.localeCompare(b.name,'ko',{numeric:true}));
+  if(!files.length){toast('사진이나 PDF를 골라 주세요');return;}
+  const jobs=[];for(const f of files){try{const pages=await fileToPages(f);if(pages.length)jobs.push({label:f.name.replace(/\.[^.]+$/,''),pages});}catch(e){toast(f.name+': '+(e.message||e));}}
+  libRun(jobs);
+}
+$('libNew').onclick=()=>{if(libBusy)return;libNew=true;libEdit=null;renderLibAll();renderLibNew();};
 function openLib(){closeRail();$('libQ').value=$('libSearch').value;renderLibAll();renderLibDetail();$('libbox').classList.add('on');$('libQ').focus();}
 function closeLib(){$('libbox').classList.remove('on');}
 $('libOpen').onclick=e=>{e.stopPropagation();openLib();};$('libClose').onclick=closeLib;
 $('libbox').addEventListener('click',e=>{if(e.target.id==='libbox')closeLib();});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&$('libbox').classList.contains('on'))closeLib();});
-['libQ','libSort','libOk'].forEach(id=>$(id).addEventListener('input',()=>{renderLibAll();renderLibDetail();}));
+['libQ','libSort','libOk'].forEach(id=>$(id).addEventListener('input',()=>{renderLibAll();if(!libNew&&!libEdit)renderLibDetail();}));
 // 찬양 칸의 빠른 추가
 let ldI=0;
 function renderLibDrop(){
@@ -3211,7 +3300,7 @@ function subscribe(){
   chan=sb.channel('hogam-live')
   .on('postgres_changes',{event:'*',schema:'public',table:'songs'},p=>{
     if(p.eventType==='DELETE')delete LIB[p.old.title];else LIB[p.new.title]=rowToSong(p.new);
-    renderLib();if(!$('libDrop').classList.contains('hidden'))renderLibDrop();if($('libbox').classList.contains('on')){renderLibAll();renderLibDetail();}})
+    renderLib();if(!$('libDrop').classList.contains('hidden'))renderLibDrop();if($('libbox').classList.contains('on')){renderLibAll();if(!libNew&&!libEdit)renderLibDetail();}})
   .on('postgres_changes',{event:'*',schema:'public',table:'services'},p=>{
     if(p.eventType==='DELETE'){const id=p.old.id;SESS=SESS.filter(x=>x.id!==id);
       if(id===curSess)toast('다른 팀원이 이 예배 기록을 지웠어요. 지금 화면의 글은 남아 있어요');renderHist();return;}
