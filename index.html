@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/fill/style.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@400;700&family=Do+Hyeon&family=Jua&family=Black+Han+Sans&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@400;700&family=Do+Hyeon&family=Jua&family=Black+Han+Sans&family=Gothic+A1:wght@400;800&family=Sunflower:wght@500;700&family=Noto+Serif+KR:wght@400;700&family=Hahmlet:wght@400;700&family=Song+Myung&family=Dongle:wght@400;700&family=Gugi&family=Orbit&family=Nanum+Pen+Script&family=Nanum+Brush+Script&family=Gaegu:wght@400;700&family=Hi+Melody&family=Gamja+Flower&family=Poor+Story&family=Yeon+Sung&family=East+Sea+Dokdo&display=swap" rel="stylesheet">
 <style>
 
 :root{
@@ -1221,6 +1221,114 @@ details.look summary{font-size:13px;font-weight:600;color:var(--text)}
 .ldprog .pm{color:var(--text3);margin-left:auto;text-align:right}
 .ldprog li.err .pm{color:var(--bad)}
 
+
+/* 내 프로필: 로고 바로 아래 */
+.rail #meBox{margin:4px 12px 10px;padding:10px 12px;border-top:0;border-bottom:1px solid var(--line);border-radius:12px}
+@media (min-width:1101px){body:not(.railpinned) .rail:not(:hover):not(:focus-within) #meBox{margin:10px 0 6px;border-bottom:0}}
+
+/* ===== 슬라이드 설정: 미리캔버스처럼 접는 묶음 · −/+ · 스위치 ===== */
+#lookCtl details.lksec{border:0;border-top:1px solid var(--hair);padding:0;margin:0}
+#lookCtl details.lksec>summary{list-style:none;display:flex;align-items:center;gap:8px;padding:14px 2px;cursor:pointer;font-size:15px;font-weight:700;color:var(--text)}
+#lookCtl details.lksec>summary::-webkit-details-marker{display:none}
+#lookCtl details.lksec>summary>i:first-child{font-size:18px;color:var(--text3)}
+#lookCtl .lkcar{margin-left:auto;font-size:15px;color:var(--text3);transition:transform .15s}
+#lookCtl details.lksec:not([open]) .lkcar{transform:rotate(-90deg)}
+#lookCtl details.lksec>.lkgrid{padding:0 2px 16px}
+#lookCtl .lk .lkhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+#lookCtl .lk .lkhead label{font-size:13px;color:var(--text2)}
+#lookCtl .stp{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);height:32px}
+#lookCtl .stp button{width:30px;border:0;background:transparent;color:var(--text2);font-size:16px;cursor:pointer;padding:0}
+#lookCtl .stp button:hover{background:var(--sunken);color:var(--text)}
+#lookCtl .stp .num{display:flex;align-items:center;border-left:1px solid var(--line);border-right:1px solid var(--line);padding:0 6px}
+#lookCtl .stp .num input{width:46px;border:0;background:transparent;text-align:center;font:inherit;font-size:13px;padding:0;min-height:0;box-shadow:none}
+#lookCtl .stp .num em{font-style:normal;color:var(--text3);font-size:12px}
+#lookCtl .lk input[type=range]{width:100%}
+#lookCtl .lkfont select{height:44px;border-radius:12px;font-size:15px;padding:0 12px}
+#lookCtl .lksw{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;font-size:13px;color:var(--text);min-height:32px}
+#lookCtl .lksw input{position:absolute;opacity:0;width:1px!important;height:1px!important}
+#lookCtl .lksw i{width:40px;height:24px;border-radius:12px;background:var(--line2,#d1d5db);position:relative;flex:none;transition:background .15s}
+#lookCtl .lksw i::after{content:'';position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .15s}
+#lookCtl .lksw input:checked+i{background:var(--blue,#007AFF)}
+#lookCtl .lksw input:checked+i::after{transform:translateX(16px)}
+#lookCtl .lksw input:focus-visible+i{outline:2px solid var(--blue,#007AFF);outline-offset:2px}
+#lookCtl .lkcol{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--text2)}
+#lookCtl .lkcol .sw0{position:relative;display:flex;align-items:center;gap:8px;height:32px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--surface);cursor:pointer}
+#lookCtl .lkcol .sw0 input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%!important;height:100%!important}
+#lookCtl .lkcol .sw0 b{width:18px;height:18px;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+#lookCtl .lkcol .sw0 em{font-style:normal;font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums}
+#lookCtl .lkfx{border-radius:12px;background:var(--sunken);padding:4px 12px}
+#lookCtl .lkfx .lkfxb{padding:4px 0 12px}
+#lookCtl .media2{display:grid;grid-template-columns:minmax(0,1fr) 132px;gap:12px;align-items:center}
+#lookCtl .media2 .mleft{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#lookCtl .media2 .mleft label.btn{cursor:pointer}
+#lookCtl .media2 .mhint{width:100%;font-size:12px;color:var(--text3)}
+#lookCtl .mthumb{width:132px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--sunken);border:1px solid var(--line);display:grid;place-items:center}
+#lookCtl .mthumb img{width:100%;height:100%;object-fit:cover;display:block}
+#lookCtl .mthumb.logo{background:repeating-conic-gradient(#e5e7eb 0 25%,#fff 0 50%) 0 0/12px 12px}
+#lookCtl .mthumb.logo img{object-fit:contain;padding:10px}
+#lookCtl .mthumb.empty{display:flex;flex-direction:column;gap:2px;color:var(--text3);font-size:20px}
+#lookCtl .mthumb.empty small{font-size:12px}
+#lookCtl details.lksec>.lkgrid,#lookCtl .lkfxb>.lkgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+#lookCtl .stp .num{border-radius:0!important;background:transparent!important;box-shadow:none!important;height:auto!important;border-top:0!important;border-bottom:0!important}
+#lookCtl .stp .num input{border:0!important;background:transparent!important;box-shadow:none!important;width:48px!important;height:30px!important;outline:none}
+#lookCtl .lkcol{flex-direction:row;align-items:center;justify-content:space-between}
+#lookCtl .lkcol .sw0{min-width:132px}
+
+/* ===== 찬양 목록: 두 칸 카드, 끌어서 자유롭게 순서 바꾸기, 썸네일 크게 ===== */
+.setlist{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;border:0!important;background:transparent!important;overflow:visible!important;padding:0!important;margin-top:12px}
+.setlist .song{position:relative;display:grid!important;grid-template-columns:96px minmax(0,1fr)!important;gap:10px!important;padding:10px 10px 8px!important;border:1px solid var(--line)!important;border-radius:14px!important;background:var(--surface);box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.setlist .song .cover{width:96px!important;height:128px!important;grid-row:span 1}
+.setlist .song .grip{position:absolute;top:6px;right:6px;width:28px;height:28px;display:grid;place-items:center;border-radius:8px;cursor:grab;z-index:2}
+.setlist .song .grip:hover{background:var(--sunken)}
+.setlist .song .body{padding-right:26px;min-width:0}
+.setlist .song .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin:0}
+@media (max-width:760px){.setlist{grid-template-columns:minmax(0,1fr)}}
+
+/* ===== 말씀: 성경 고르기 · 글자 수는 정리된 본문 위 ===== */
+.bpick{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,.8fr) minmax(0,.8fr) auto minmax(0,.8fr);gap:6px;align-items:center}
+.bpick select{min-width:0}
+.bpick .bto{color:var(--text3);font-size:13px}
+.wset{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--sunken)}
+.wset .fl{margin-top:0}
+.wset .opts{margin-top:8px!important}
+
+/* ===== 자막 양식 창: 찬양 / 말씀 탭 ===== */
+.fmttabs{margin:0 0 14px;width:max-content}
+.fmttabs button{min-width:110px}
+
+/* ===== 접속 중인 팀원: 점 대신 테두리에 연두색 원이 깜빡여요 ===== */
+.oav::after{display:none!important}
+.oav{box-shadow:0 0 0 2px var(--surface),0 0 0 4px #84cc16;animation:onring 1.8s ease-in-out infinite}
+.oav.more{animation:none;box-shadow:0 0 0 2px var(--surface)}
+.oav.same{box-shadow:0 0 0 2px var(--surface),0 0 0 4px #65a30d}
+@keyframes onring{0%,100%{box-shadow:0 0 0 2px var(--surface),0 0 0 4px rgba(132,204,22,1)}50%{box-shadow:0 0 0 2px var(--surface),0 0 0 4px rgba(132,204,22,.25)}}
+@media (prefers-reduced-motion:reduce){.oav{animation:none}}
+.onbar{padding:4px}
+
+/* ===== 메일 보내기 창 ===== */
+.maildlg{border:0;border-radius:16px;padding:22px;width:min(460px,calc(100vw - 32px));background:var(--surface);color:var(--text);box-shadow:0 24px 60px -12px rgba(0,0,0,.35)}
+.maildlg::backdrop{background:rgba(15,23,42,.35)}
+.maildlg h2{font-size:18px;margin:0 0 6px}
+.maildlg .seg2{margin:12px 0 4px;width:100%;display:flex}.maildlg .seg2 button{flex:1}
+.maildlg .seg2 button[aria-checked=true]{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.maildlg textarea{width:100%;box-sizing:border-box}
+.maildlg .mailto{font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 14px}
+
+/* ===== 칸 아이콘: 로고처럼 토스 느낌의 입체 (위에서 비치는 빛 · 은은한 색 그림자) ===== */
+.pico{position:relative;width:30px!important;height:30px!important;border-radius:9px!important;overflow:hidden;box-shadow:0 5px 12px -5px var(--pc,rgba(0,0,0,.35)),inset 0 -2px 0 rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.35)!important}
+.pico::before{content:'';position:absolute;inset:0;background:radial-gradient(120% 80% at 25% 0%,rgba(255,255,255,.5),rgba(255,255,255,0) 55%);pointer-events:none}
+.pico i{position:relative;font-size:17px!important;filter:drop-shadow(0 1px 1px rgba(0,0,0,.2))}
+.pico.c1{background:linear-gradient(160deg,#5CA8FF,#3182F6 55%,#1B64DA)!important;--pc:rgba(49,130,246,.65)}
+.pico.c2{background:linear-gradient(160deg,#FFC566,#FF9F0A 55%,#F07C00)!important;--pc:rgba(255,159,10,.6)}
+.pico.c3{background:linear-gradient(160deg,#D49BF5,#AF52DE 55%,#8E3BC2)!important;--pc:rgba(175,82,222,.55)}
+.pico.c4{background:linear-gradient(160deg,#5B5B63,#2C2C30 55%,#151517)!important;--pc:rgba(0,0,0,.5)}
+
+[hidden]{display:none!important}
+.mebox .mt span{flex-wrap:wrap;row-gap:2px}
+.mebox .mt button{white-space:nowrap}
+.bpick{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto minmax(0,1fr)!important}
+.bpick #bBook{grid-column:1/-1}
+#lookCtl .mthumb.logo img{box-sizing:border-box}
 /* ================= 디자인 규칙 (2단계) =================
    글자 12 작은 설명 · 13 기본 · 15 칸 제목 · 18 창 제목 · 20 큰 숫자
    누르는 것 높이 32px (휴대폰 40px) · 체크박스 18px · 모서리 8 / 12 / 16 */
@@ -1257,11 +1365,11 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 <div class="shell">
   <aside class="rail" id="rail"><button class="pin" id="railPin" type="button" aria-pressed="false" aria-label="옆 메뉴 늘 펼쳐 두기" title="늘 펼쳐 두기"><i class="ph ph-push-pin" aria-hidden="true"></i></button>
     <div class="brand"><div class="mk" aria-hidden="true"><img src="brand/logo.svg" alt=""></div><div><b>호감슬라이드</b><small>예배 자막과 슬라이드</small></div></div>
+    <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="openMail">문의·응원</button><i>·</i><button type="button" id="themeBtn" title="화면 밝기 바꾸기">화면: 자동</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
     <div class="railsec" data-sec="hist"><span class="ricon" aria-hidden="true"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>예배 기록</button></h4><ul class="rlist" id="histList"></ul></div>
     <div class="railsec" data-sec="lib"><span class="ricon" aria-hidden="true"><i class="ph ph-music-notes" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>곡 보관함</button> <span class="row" style="gap:6px"><span id="libCount"></span><button type="button" class="libopen" id="libOpen">전체 보기</button></span></h4>
       <input type="search" class="libsearch" id="libSearch" placeholder="제목·초성·가사 찾기" aria-label="보관함에서 곡 찾기">
       <ul class="rlist" id="libList"></ul></div>
-    <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="themeBtn" title="화면 밝기 바꾸기">화면: 자동</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
   </aside>
   <div class="scrim" id="scrim"></div>
 
@@ -1299,7 +1407,7 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
         <div class="pf">
           <label class="ck"><input type="checkbox" id="optExpand" checked><span>후렴·반복 펼치기</span></label>
           <button type="button" class="fmtchip" id="fmtChip" title="자막 양식 바꾸기"></button>
-          <button class="btn pri" id="convertBtn" style="margin-left:auto" disabled>찬양 자막에 넣기</button>
+          <span class="row" style="margin-left:auto;gap:8px"><button class="btn hidden" id="stopRead" type="button"><i class="ph ph-stop-circle" aria-hidden="true"></i> 읽기 멈추기</button><button class="btn pri" id="convertBtn" disabled>찬양 자막에 넣기</button></span>
         </div>
       </section>
 
@@ -1309,17 +1417,26 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
         <div class="pb">
           <div class="wgrid">
             <div>
-              <label class="fl" for="bTitle" style="margin-top:0">본문</label>
-              <input type="text" id="bTitle" placeholder="예) 에베소서 2장 10절">
+              <label class="fl" for="bBook" style="margin-top:0">본문</label>
+              <div class="bpick">
+                <select id="bBook" aria-label="성경"><option value="">성경 고르기</option></select>
+                <select id="bChap" aria-label="장" disabled><option value="">장</option></select>
+                <select id="bV1" aria-label="시작 절" disabled><option value="">절</option></select>
+                <span class="bto">~</span>
+                <select id="bV2" aria-label="끝 절" disabled><option value="">절</option></select>
+              </div>
+              <input type="text" id="bTitle" placeholder="예) 에베소서 2장 10절 (위에서 고르거나 직접 써요)" style="margin-top:8px">
               <label class="fl" for="verseIn">복사한 본문</label>
               <textarea id="verseIn" rows="9" placeholder="갓피아성경에서 새번역으로 복사해 붙여 넣으세요.&#10;절 사이에 빈 줄을 넣으면 화면에서도 한 줄 띄워요."></textarea>
+            </div>
+            <div>
+              <div class="wset">
               <label class="fl" for="bMax">한 줄 글자 수 <span style="color:var(--text3);font-weight:400">· 띄어쓰기 빼고</span></label>
               <label class="opts" style="margin:2px 0 6px"><input type="checkbox" id="bAuto"> 슬라이드 설정에 맞춰 자동</label>
               <div class="stepper"><button class="btn" id="bMaxDn" aria-label="한 글자 줄이기">−</button><input type="range" id="bMax" min="10" max="60"><button class="btn" id="bMaxUp" aria-label="한 글자 늘리기">+</button><output id="bMaxOut"></output></div>
               <div class="opts" style="margin-top:12px"><label><input type="checkbox" id="vNums"> 절 번호 남기기</label><label><input type="checkbox" id="vHeads"> 소제목 빼기</label></div>
-            </div>
-            <div>
-              <label class="fl" style="margin-top:0">정리된 본문</label>
+              </div>
+              <label class="fl">정리된 본문</label>
               <pre class="prev" id="verseOut"></pre>
             </div>
           </div>
@@ -1385,7 +1502,18 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
     </div>
   </section>
 
-  <div class="fmtbox" id="fmtbox" role="dialog" aria-modal="true" aria-labelledby="fmtTitle"><div class="fmtcard">
+  <dialog class="maildlg" id="mailDlg" aria-labelledby="mailTitle">
+  <form method="dialog" id="mailForm">
+    <h2 id="mailTitle">호감에게 메일 보내기</h2>
+    <p class="lead">문의, 협업 제안, 응원과 격려 모두 반가워요. <b>보내기</b>를 누르면 이 컴퓨터의 메일 앱이 열려요.</p>
+    <div class="seg2" role="radiogroup" aria-label="메일 종류" id="mailKind"><button type="button" data-k="문의" aria-checked="true" role="radio">문의</button><button type="button" data-k="협업 제안" aria-checked="false" role="radio">협업 제안</button><button type="button" data-k="응원과 격려" aria-checked="false" role="radio">응원과 격려</button></div>
+    <label class="fl" for="mailBody">내용</label>
+    <textarea id="mailBody" rows="6" placeholder="하고 싶은 말을 편하게 적어 주세요."></textarea>
+    <p class="mailto">받는 주소 <b>hogamcommunity@gmail.com</b> <button type="button" class="btn sm ghost" id="mailCopy">주소 복사</button></p>
+    <div class="row" style="justify-content:flex-end;gap:8px"><button type="button" class="btn" id="mailCancel">닫기</button><button type="submit" class="btn pri" id="mailSend">보내기</button></div>
+  </form>
+</dialog>
+<div class="fmtbox" id="fmtbox" role="dialog" aria-modal="true" aria-labelledby="fmtTitle"><div class="fmtcard">
   <div class="fmthead"><h2 id="fmtTitle">자막 양식</h2>
     <div class="seg2" role="tablist"><button type="button" role="tab" data-ft="formats" aria-selected="true">양식 다듬기</button><button type="button" role="tab" data-ft="recommend" aria-selected="false">추천받기</button></div>
     <button class="btn ghost ibtn" id="fmtClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
@@ -1393,9 +1521,10 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
   <span class="hidden" id="curFmtName"></span><span class="hidden" id="curFmtDesc"></span>
   <section class="view on" id="v-formats">
     <p class="lead">자막을 띄우는 프로그램에 맞게 한 화면의 모양을 정해요. 바꾸면 찬양 자막과 오른쪽 미리보기가 바로 바뀌고, 팀 모두에게 같이 적용돼요.</p>
+    <div class="seg2 fmttabs" role="tablist" aria-label="자막 종류"><button type="button" role="tab" data-fk="song" aria-selected="true">찬양 자막</button><button type="button" role="tab" data-fk="word" aria-selected="false">말씀 자막</button></div>
     <div class="fgrid">
       <div class="panel">
-        <h2 class="fsec top">찬양 자막</h2>
+        <div id="fmtSong">
         <label class="fl" for="fName">양식 이름</label>
         <input type="text" id="fName">
         <label class="fl">화면마다 맨 윗줄</label>
@@ -1429,21 +1558,30 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
         </div>
         <label class="fl" for="fNote">AI에게 줄 추가 요청 (선택)</label>
         <textarea id="fNote" rows="2" placeholder="예) 영어 가사는 빼 주세요 / 반복구는 (x2)로 표시"></textarea>
-        <h2 class="fsec">말씀 자막</h2>
+        </div>
+        <div id="fmtWord" hidden>
         <div class="two">
           <div><label class="fl" for="fWAuto">한 줄 글자 수 정하기</label>
             <select id="fWAuto"><option value="1">슬라이드 설정에 맞춰 자동</option><option value="0">직접 정하기</option></select></div>
           <div><label class="fl" for="fWMax">한 줄 최대 글자 (띄어쓰기 빼고)</label>
             <input type="number" id="fWMax" min="10" max="60"></div>
         </div>
-        <div class="row" style="margin-top:14px">
+        <div class="opts" style="margin-top:14px"><label><input type="checkbox" id="fWNums"> 절 번호 남기기</label><label><input type="checkbox" id="fWHeads"> 소제목 빼기</label></div>
+        <p class="lead" style="margin-top:12px">말씀 화면의 글꼴·색·상자는 슬라이드 미리보기 옆 ‘슬라이드 설정 › 말씀 화면’에서 바꿔요.</p>
+        </div>
+        <div class="row" id="fmtSongSave" style="margin-top:14px">
           <button class="btn pri" id="saveMine">팀 양식으로 저장</button>
                   </div>
         <div class="status" id="fmtStatus"></div>
       </div>
       <div>
+        <div id="fmtSongRight">
         <div class="panel"><h2>미리보기</h2><p class="lead">예시 두 곡을 지금 양식으로 만든 모습이에요.</p><pre class="prev" id="fmtPreview"></pre></div>
         <div class="panel"><h2>팀 양식</h2><ul class="mine" id="mineList"></ul></div>
+        </div>
+        <div id="fmtWordRight" hidden>
+        <div class="panel"><h2>미리보기</h2><p class="lead">예시 본문을 지금 말씀 설정으로 정리한 모습이에요.</p><pre class="prev" id="wordFmtPreview"></pre></div>
+        </div>
       </div>
     </div>
   </section>
@@ -1909,7 +2047,7 @@ function sortable(box,{item,handle,axis='y',onEnd,threshold=4}){
   });
 }
 // 찬양 목록: 손잡이를 끌어요
-sortable($('setlist'),{item:'li.song',handle:'.grip',onEnd:order=>{songs=order.map(i=>songs[i]);renderSongs();orderChanged();}});
+sortable($('setlist'),{item:'li.song',handle:'.grip',axis:'xy',onEnd:order=>{songs=order.map(i=>songs[i]);renderSongs();orderChanged();}});
 // 키보드(위·아래 화살표)로도 옮길 수 있어요
 function setupDrag(li,grip,i){
   grip.addEventListener('keydown',e=>{
@@ -1964,6 +2102,7 @@ function updateConvertBtn(){
   const ok=pendingSongs();
   const b=$('convertBtn');b.disabled=!ok.length||busy;
   b.disabled=busy||(!ok.length&&!songs.some(s=>s.result));b.innerHTML=busy?'<span class="spin"></span> 읽는 중':'찬양 자막에 넣기';
+  $('stopRead').classList.toggle('hidden',!busy);
   renderSteps();
 }
 
@@ -2056,16 +2195,27 @@ async function readSongs(){
   const f=FMT,expand=$('optExpand').checked;let n=0;
   // 두 곡씩 동시에 읽어요 (무료 사용량 한도 안에서)
   const q=[...todo],show=()=>{st.textContent=`${todo.length}곡 중 ${n}곡 읽음`;};show();
-  const worker=async()=>{while(q.length){const s=q.shift();await convertOne(s,f,expand);n++;show();if(s.status==='done')saveToLib(s,{auto:true});renderSongs();}};
+  const gen=++readGen;readQ=q;
+  const worker=async()=>{while(q.length&&gen===readGen){const s=q.shift();s._gen=gen;await convertOne(s,f,expand);
+    if(gen!==readGen){if(s._gen===gen){s.status='idle';s.result=null;s.msg='';}renderSongs();return;} // 멈춘 뒤 도착한 답은 버려요
+    n++;show();if(s.status==='done')saveToLib(s,{auto:true});renderSongs();}};
   await Promise.all(Array.from({length:Math.min(2,todo.length)},worker));
+  if(gen!==readGen)return;
   busy=false;updateConvertBtn();
   const failed=songs.filter(s=>s.status==='err').length,ok=songs.filter(s=>s.result).length;
   st.className=failed?'status err':'status';
   st.textContent=failed?`${failed}곡을 읽지 못했어요. 그 곡의 ‘다시 시도’를 눌러 주세요.`:ok?`${ok}곡 다 읽었어요. ‘찬양 자막에 넣기’를 눌러 주세요.`:'';
 }
+// 읽기 멈추기: 남은 곡은 읽지 않고, 읽던 곡은 '읽기 전'으로 돌려요
+let readGen=0,readQ=null;
+$('stopRead').onclick=()=>{if(!busy)return;readGen++;if(readQ)readQ.length=0;
+  songs.forEach(s=>{if(s.status==='work'){s.status='idle';s.result=null;s.msg='';}});
+  busy=false;updateConvertBtn();renderSongs();
+  const st=$('convStatus');st.className='status';st.textContent='읽기를 멈췄어요. ‘찬양 자막에 넣기’를 누르면 남은 곡부터 다시 읽어요.';
+  toast('악보 읽기를 멈췄어요');};
 $('convertBtn').onclick=async()=>{
   if(busy)return;
-  if(pendingSongs().length)await readSongs();
+  if(pendingSongs().length){const g=readGen;await readSongs();if(readGen!==g+1||busy)return;}
   if(!songs.some(s=>s.result)){toast('넣을 곡이 없어요');return;}
   orderChanged(true);$('convStatus').textContent='';setFold('resPanel',true);
   toast('찬양 자막에 넣었어요');setTimeout(()=>$('resPanel').scrollIntoView({behavior:'smooth',block:'start'}),60);
@@ -2424,13 +2574,15 @@ const PALS=[
 ];
 const AUTO_SONG=['sky','dawn','teal','sunset','rose','night','slate'];
 const FONTS=[
- {f:'Noto Sans KR',n:'본고딕',w:700},{f:'Nanum Gothic',n:'나눔고딕',w:800},{f:'IBM Plex Sans KR',n:'IBM 플렉스',w:700},
- {f:'Gowun Dodum',n:'고운돋움',w:400},{f:'Gowun Batang',n:'고운바탕',w:700},{f:'Nanum Myeongjo',n:'나눔명조',w:800},
- {f:'Do Hyeon',n:'도현',w:400},{f:'Jua',n:'주아',w:400},{f:'Black Han Sans',n:'검은고딕',w:400}];
+ {f:'Noto Sans KR',n:'본고딕',w:700,g:'고딕'},{f:'Pretendard Variable',n:'프리텐다드',w:800,g:'고딕'},{f:'Nanum Gothic',n:'나눔고딕',w:800,g:'고딕'},{f:'IBM Plex Sans KR',n:'IBM 플렉스',w:700,g:'고딕'},
+ {f:'Gothic A1',n:'고딕 A1',w:800,g:'고딕'},{f:'Sunflower',n:'해바라기',w:700,g:'고딕'},{f:'Gowun Dodum',n:'고운돋움',w:400,g:'고딕'},
+ {f:'Noto Serif KR',n:'본명조',w:700,g:'명조'},{f:'Nanum Myeongjo',n:'나눔명조',w:800,g:'명조'},{f:'Gowun Batang',n:'고운바탕',w:700,g:'명조'},{f:'Hahmlet',n:'함렛',w:700,g:'명조'},{f:'Song Myung',n:'송명',w:400,g:'명조'},
+ {f:'Do Hyeon',n:'도현',w:400,g:'제목'},{f:'Jua',n:'주아',w:400,g:'제목'},{f:'Black Han Sans',n:'검은고딕',w:400,g:'제목'},{f:'Dongle',n:'동글',w:700,g:'제목'},{f:'Gugi',n:'구기',w:400,g:'제목'},{f:'Orbit',n:'오르빗',w:400,g:'제목'},
+ {f:'Nanum Pen Script',n:'나눔손글씨 펜',w:400,g:'손글씨'},{f:'Nanum Brush Script',n:'나눔손글씨 붓',w:400,g:'손글씨'},{f:'Gaegu',n:'개구',w:700,g:'손글씨'},{f:'Hi Melody',n:'하이멜로디',w:400,g:'손글씨'},{f:'Gamja Flower',n:'감자꽃',w:400,g:'손글씨'},{f:'Poor Story',n:'푸어스토리',w:400,g:'손글씨'},{f:'Yeon Sung',n:'연성',w:400,g:'손글씨'},{f:'East Sea Dokdo',n:'동해독도',w:400,g:'손글씨'}];
 const fontW=f=>(FONTS.find(x=>x.f===f)||FONTS[0]).w;
 const LOOK_DEF={
-  song:{font:'Noto Sans KR',bgDim:15,logoPos:'off',logoSize:6,size:5,spacing:-6,lineH:1.22,posY:61,title:true,titleSize:1.6,titleGap:7,footer:'OKSU ASSEMBLIES OF GOD CHURCH',footerOn:true},
-  word:{font:'Nanum Myeongjo',refSpacing:-5,bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,box:88,verseGap:false,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true}
+  song:{font:'Noto Sans KR',bgDim:15,logoPos:'off',logoSize:6,size:5,spacing:-6,lineH:1.22,posY:61,title:true,titleSize:1.6,titleGap:7,footer:'OKSU ASSEMBLIES OF GOD CHURCH',footerOn:true,color:'#ffffff',shadowOn:true,shadowAmt:18,strokeOn:false,strokeColor:'#000000',strokeW:4},
+  word:{font:'Nanum Myeongjo',refSpacing:-5,bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,box:88,verseGap:false,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true,color:'#1d1d1d',shadowOn:false,shadowAmt:18,strokeOn:false,strokeColor:'#ffffff',strokeW:4}
 };
 // 배경 사진·로고 (이 브라우저에 저장)
 let MEDIA=store.get('media',{song:null,word:null,logo:null});
@@ -2446,10 +2598,11 @@ let LOOK=(()=>{const v=store.get('look',{});return{song:{...LOOK_DEF.song,...(v.
 let songColors=store.get('songColors',{}); // 제목 → 팔레트 id
 const LOOK_CTRLS=[
  ['song','size','가사 크기',3,7,.1,''],['song','spacing','가사 자간',-8,20,1,'%'],['song','lineH','가사 줄간격',1,2,.02,''],['song','posY','가사 높이',40,80,1,'%'],['song','titleSize','제목 크기',1,3.5,.1,''],['song','titleGap','제목·가사 간격',2,20,.5,'%'],
- ['word','size','본문 크기',1.8,4,.05,''],['word','spacing','본문 자간',-8,20,1,'%'],['word','refSpacing','제목 자간',-12,20,1,'%'],['word','lineH','본문 줄간격',1,2.2,.02,''],['word','maxLines','화면당 줄',2,8,1,'줄'],['word','box','상자 진하기',40,100,1,'%'],['song','bgDim','사진 어둡게',0,80,1,'%'],['word','bgDim','사진 어둡게',0,80,1,'%'],['song','logoSize','로고 크기',2,20,.5,'%'],['word','logoSize','로고 크기',2,20,.5,'%'],
+ ['word','size','본문 크기',1.8,4,.05,''],['word','spacing','본문 자간',-8,20,1,'%'],['word','refSpacing','제목 자간',-12,20,1,'%'],['word','lineH','본문 줄간격',1,2.2,.02,''],['word','maxLines','화면당 줄',2,8,1,'줄'],['word','box','상자 진하기',40,100,1,'%'],['song','bgDim','사진 어둡게',0,80,1,'%'],['word','bgDim','사진 어둡게',0,80,1,'%'],['song','logoSize','로고 크기',2,20,.5,'%'],['word','logoSize','로고 크기',2,20,.5,'%'],['song','shadowAmt','그림자 진하기',0,80,1,'%'],['word','shadowAmt','그림자 진하기',0,80,1,'%'],['song','strokeW','외곽선 두께',1,15,.5,'%'],['word','strokeW','외곽선 두께',1,15,.5,'%'],
 ];
 let lookTab=store.get('lookTab','song');
 function lookChanged(){if(BSET.auto){const m=autoWordMax();if(m!==BSET.max){BSET.max=m;store.set('bset2',BSET);$('bMax').value=m;$('bMaxOut').textContent=m+'자';renderVerse();syncWordCtl();rewrapWord();}}}
+let lkOpen=store.get('lkOpen',{});
 function buildLookUI(){
   const box=$('lookCtl');box.innerHTML='';
   const tabs=document.createElement('div');tabs.className='lktabs';
@@ -2459,45 +2612,63 @@ function buildLookUI(){
   tabs.querySelector('[data-reset]').onclick=()=>{LOOK=JSON.parse(JSON.stringify(LOOK_DEF));saveLook();buildLookUI();};
   box.appendChild(tabs);
   const grp=lookTab,L=LOOK[grp];
-  // 종류별 묶음: 글자 → 배치 → 배경 → 아래 문구 → 로고
-  const sec=(title)=>{const d=document.createElement('section');d.className='lksec';d.innerHTML=`<h5>${title}</h5>`;const g=document.createElement('div');g.className='lkgrid';d.appendChild(g);box.appendChild(d);return g;};
-  const slider=(g,k)=>{const c=LOOK_CTRLS.find(x=>x[0]===grp&&x[1]===k);if(!c)return;const[gk,,label,min,max,step,unit]=c;
-    const r=document.createElement('div');r.className='lk';const id=`lk_${gk}_${k}`;
-    r.innerHTML=`<label for="${id}">${label}</label><div class="lkrow"><input type="range" min="${min}" max="${max}" step="${step}" value="${LOOK[gk][k]}" aria-label="${label}"><span class="num"><input type="number" id="${id}" min="${min}" max="${max}" step="${step}" value="${LOOK[gk][k]}">${unit?`<em>${unit}</em>`:''}</span></div>`;
-    const rg=r.querySelector('input[type=range]'),nb=r.querySelector('input[type=number]');
-    const set=(v,from)=>{v=Math.min(max,Math.max(min,+v));if(isNaN(v))return;LOOK[gk][k]=v;if(from!==rg)rg.value=v;if(from!==nb)nb.value=+v.toFixed(3);saveLook();};
+  // 묶음은 접었다 펼 수 있어요 (열림 상태는 기억해요)
+  const sec=(key,title,icon)=>{const d=document.createElement('details');d.className='lksec';d.open=lkOpen[key]!==false;
+    d.innerHTML=`<summary><i class="ph ${icon}" aria-hidden="true"></i><span>${title}</span><i class="ph ph-caret-down lkcar" aria-hidden="true"></i></summary>`;
+    d.ontoggle=()=>{lkOpen[key]=d.open;store.set('lkOpen',lkOpen);};
+    const g=document.createElement('div');g.className='lkgrid';d.appendChild(g);box.appendChild(d);return g;};
+  // − 값 + 와 끌어서 고르는 막대
+  const slider=(g,k,wide)=>{const c=LOOK_CTRLS.find(x=>x[0]===grp&&x[1]===k);if(!c)return;const[gk,,label,min,max,step,unit]=c;
+    const r=document.createElement('div');r.className='lk'+(wide?' lkwide':'');const id=`lk_${gk}_${k}`;
+    r.innerHTML=`<div class="lkhead"><label for="${id}">${label}</label><span class="stp"><button type="button" aria-label="${label} 줄이기">−</button><span class="num"><input type="number" id="${id}" min="${min}" max="${max}" step="${step}" value="${LOOK[gk][k]}">${unit?`<em>${unit}</em>`:''}</span><button type="button" aria-label="${label} 늘리기">+</button></span></div><input type="range" min="${min}" max="${max}" step="${step}" value="${LOOK[gk][k]}" aria-label="${label}">`;
+    const rg=r.querySelector('input[type=range]'),nb=r.querySelector('input[type=number]'),[dn,up]=r.querySelectorAll('.stp button');
+    const set=(v,from)=>{v=Math.min(max,Math.max(min,+v));if(isNaN(v))return;v=+(Math.round(v/step)*step).toFixed(3);LOOK[gk][k]=v;if(from!==rg)rg.value=v;if(from!==nb)nb.value=v;saveLook();};
     rg.oninput=()=>set(rg.value,rg);nb.oninput=()=>{if(nb.value!==''&&!isNaN(+nb.value))set(nb.value,nb);};nb.onchange=()=>set(nb.value===''?LOOK[gk][k]:nb.value,null);
-    g.appendChild(r);};
-  const check=(g,k,label)=>{const l=document.createElement('label');l.className='ck lkwide';l.innerHTML=`<input type="checkbox"><span>${label}</span>`;const i=l.querySelector('input');i.checked=!!L[k];i.onchange=()=>{L[k]=i.checked;saveLook();if(k==='verseGap')renderVerse();};g.appendChild(l);};
+    dn.onclick=()=>set(LOOK[gk][k]-step,null);up.onclick=()=>set(LOOK[gk][k]+step,null);
+    g.appendChild(r);return r;};
+  // 켜고 끄는 스위치
+  const sw=(g,k,label,after)=>{const l=document.createElement('label');l.className='lksw lkwide';l.innerHTML=`<span>${label}</span><input type="checkbox" role="switch"><i aria-hidden="true"></i>`;const i=l.querySelector('input');i.checked=!!L[k];
+    i.onchange=()=>{L[k]=i.checked;saveLook();if(k==='verseGap')renderVerse();if(after)after(i.checked);};g.appendChild(l);return l;};
+  const color=(g,k,label)=>{const l=document.createElement('label');l.className='lkcol';l.innerHTML=`<span>${label}</span><span class="sw0"><input type="color" value="${L[k]}" aria-label="${label}"><b style="background:${L[k]}"></b><em>${String(L[k]).toUpperCase()}</em></span>`;
+    const i=l.querySelector('input'),b=l.querySelector('b'),em=l.querySelector('em');i.oninput=()=>{L[k]=i.value;b.style.background=i.value;em.textContent=i.value.toUpperCase();saveLook();};g.appendChild(l);return l;};
+  // 켜면 아래에 자세한 설정이 펼쳐지는 줄 (외곽선 · 그림자)
+  const fx=(g,k,label,build)=>{const w=document.createElement('div');w.className='lkfx lkwide';g.appendChild(w);
+    const head=sw(w,k,label,on=>{body.hidden=!on;});const body=document.createElement('div');body.className='lkfxb';body.hidden=!L[k];w.appendChild(body);build(body);};
   const text=(g,k,ph)=>{const w=document.createElement('label');w.className='lk lkwide';w.innerHTML=`<span>${ph}</span>`;const i=document.createElement('input');i.type='text';i.className='lktext';i.placeholder=ph;i.value=L[k]||'';i.oninput=()=>{L[k]=i.value;saveLook();};w.appendChild(i);g.appendChild(w);};
-  const upload=(g,k,isLogo)=>{const on=!!MEDIA[k],w=document.createElement('div');w.className='media lkwide';
-    w.innerHTML=`<label class="mchip"><input type="file" accept="image/*" hidden><span class="mth${isLogo?' logo':''}" ${on?`style="background-image:url(${MEDIA[k]})"`:''}></span>${on?(isLogo?'로고 바꾸기':'사진 바꾸기'):(isLogo?'로고 넣기':'사진 넣기')}</label>${on?`<button class="mx" title="지우기" aria-label="${isLogo?'로고':'배경 사진'} 지우기">×</button>`:`<span class="mhint">${isLogo?'투명 PNG가 좋아요':'없으면 곡마다 색 배경'}</span>`}`;
+  // 사진·로고: 왼쪽은 버튼, 오른쪽은 썸네일
+  const upload=(g,k,isLogo)=>{const on=!!MEDIA[k],w=document.createElement('div');w.className='media2 lkwide';
+    w.innerHTML=`<div class="mleft"><label class="btn sm"><input type="file" accept="image/*" hidden><i class="ph ph-upload-simple" aria-hidden="true"></i> ${on?(isLogo?'로고 바꾸기':'사진 바꾸기'):(isLogo?'로고 넣기':'사진 넣기')}</label>${on?`<button class="btn sm ghost mx" type="button">지우기</button>`:''}<span class="mhint">${isLogo?'배경이 비치는 투명 PNG가 좋아요':'없으면 곡마다 색 배경'}</span></div>
+      <div class="mthumb${isLogo?' logo':''}${on?'':' empty'}">${on?`<img src="${MEDIA[k]}" alt="${isLogo?'로고':'배경 사진'} 미리보기">`:`<i class="ph ${isLogo?'ph-seal':'ph-image'}" aria-hidden="true"></i><small>${isLogo?'로고 없음':'사진 없음'}</small>`}</div>`;
     w.querySelector('input').onchange=async e=>{const f=e.target.files[0];if(!f)return;
       try{MEDIA[k]=await readImage(f,isLogo?640:1920,isLogo?'image/png':'image/jpeg');if(isLogo&&L.logoPos==='off'){LOOK.song.logoPos=LOOK.song.logoPos==='off'?'footer':LOOK.song.logoPos;LOOK.word.logoPos=LOOK.word.logoPos==='off'?'footer':LOOK.word.logoPos;store.set('look',LOOK);teamSet('look');}
         saveMedia(k);buildLookUI();renderShots();}catch(err){toast(err.message);}};
     w.querySelector('.mx')?.addEventListener('click',()=>{MEDIA[k]=null;saveMedia(k);buildLookUI();renderShots();});g.appendChild(w);};
-  // 글자
-  let g=sec('글자');
-  const fr=document.createElement('label');fr.className='lk';
-  fr.innerHTML=`<span>글꼴</span><select data-font>${FONTS.map(o=>`<option value="${o.f}" ${L.font===o.f?'selected':''}>${o.n}</option>`).join('')}</select>`;
-  fr.querySelector('select').onchange=e=>{L.font=e.target.value;store.set('look',LOOK);teamSet('look');loadFont(e.target.value).then(()=>{renderShots();lookChanged();});};
+  // 텍스트
+  let g=sec('text','텍스트','ph-text-aa');
+  const fr=document.createElement('label');fr.className='lk lkwide lkfont';
+  const groups=[...new Set(FONTS.map(o=>o.g))];
+  fr.innerHTML=`<span>글꼴</span><select data-font>${groups.map(gg=>`<optgroup label="${gg}">${FONTS.filter(o=>o.g===gg).map(o=>`<option value="${o.f}" ${L.font===o.f?'selected':''} style="font-family:'${o.f}'">${o.n}</option>`).join('')}</optgroup>`).join('')}</select>`;
+  const fsel=fr.querySelector('select');fsel.style.fontFamily=`'${L.font}', 'Noto Sans KR', sans-serif`;
+  fsel.onchange=e=>{L.font=e.target.value;fsel.style.fontFamily=`'${L.font}', 'Noto Sans KR', sans-serif`;store.set('look',LOOK);teamSet('look');loadFont(e.target.value).then(()=>{renderShots();lookChanged();});};
   g.appendChild(fr);
-  if(grp==='song'){['size','spacing','lineH'].forEach(k=>slider(g,k));}
-  else{['size','spacing','lineH','refSpacing'].forEach(k=>slider(g,k));}
+  slider(g,'size',true);
+  color(g,'color',grp==='song'?'가사 색':'본문 색');
+  slider(g,'spacing');slider(g,'lineH');if(grp==='word')slider(g,'refSpacing');
+  fx(g,'strokeOn','외곽선',b=>{const gg=document.createElement('div');gg.className='lkgrid';b.appendChild(gg);color(gg,'strokeColor','외곽선 색');slider(gg,'strokeW');});
+  fx(g,'shadowOn','그림자',b=>{const gg=document.createElement('div');gg.className='lkgrid';b.appendChild(gg);slider(gg,'shadowAmt',true);});
   // 배치
-  g=sec('배치');
-  if(grp==='song'){check(g,'title','제목 보이기');['posY','titleSize','titleGap'].forEach(k=>slider(g,k));}
-  else{check(g,'verseGap','절마다 한 줄 띄우기');['maxLines','box'].forEach(k=>slider(g,k));text(g,'head','머리글');text(g,'sub','작은 머리글');}
-  // 배경
-  g=sec('배경');upload(g,grp,false);slider(g,'bgDim');
-  // 아래 문구
-  g=sec('아래 문구');check(g,'footerOn','아래 문구 보이기');text(g,'footer','아래 문구');
+  g=sec('layout','배치','ph-layout');
+  if(grp==='song'){sw(g,'title','제목 보이기');['posY','titleSize','titleGap'].forEach(k=>slider(g,k));}
+  else{sw(g,'verseGap','절마다 한 줄 띄우기');['maxLines','box'].forEach(k=>slider(g,k));text(g,'head','머리글');text(g,'sub','작은 머리글');}
+  // 배경 (로고보다 위)
+  g=sec('bg','배경','ph-image');upload(g,grp,false);if(MEDIA[grp])slider(g,'bgDim',true);
   // 로고
-  g=sec('로고');upload(g,'logo',true);
+  g=sec('logo','로고','ph-seal');upload(g,'logo',true);
   if(MEDIA.logo){const pos=[['off','넣지 않기'],['footer','아래 문구 앞'],['tl','왼쪽 위'],['tr','오른쪽 위'],['br','오른쪽 아래'],['bc','아래 가운데']];
     const r=document.createElement('label');r.className='lk';r.innerHTML=`<span>로고 위치</span><select aria-label="로고 위치">${pos.map(([v,n])=>`<option value="${v}" ${L.logoPos===v?'selected':''}>${n}</option>`).join('')}</select>`;
-    r.querySelector('select').onchange=e=>{L.logoPos=e.target.value;saveLook();};g.appendChild(r);}
-  slider(g,'logoSize');
+    r.querySelector('select').onchange=e=>{L.logoPos=e.target.value;saveLook();};g.appendChild(r);slider(g,'logoSize');}
+  // 아래 문구
+  g=sec('footer','아래 문구','ph-text-align-center');sw(g,'footerOn','아래 문구 보이기');text(g,'footer','아래 문구');
 }
 function saveLook(){store.set('look',LOOK);teamSet('look');renderShots();lookChanged();}
 
@@ -2517,9 +2688,9 @@ function drawBg(x,W,H,pal){
     const rg=x.createRadialGradient(cx*W,cy*H,0,cx*W,cy*H,r*W);rg.addColorStop(0,col);rg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=rg;x.fillRect(0,0,W,H);});
 }
 function spacedW(x,t,sp){let w=0;for(const ch of t)w+=x.measureText(ch).width;return w+sp*Math.max(0,[...t].length-1);}
-function drawSpaced(x,t,X,Y,sp,align){
+function drawSpaced(x,t,X,Y,sp,align,stroke){
   const w=spacedW(x,t,sp);let cx=align==='center'?X-w/2:X;x.textAlign='left';
-  for(const ch of t){x.fillText(ch,cx,Y);cx+=x.measureText(ch).width+sp;}return w;
+  for(const ch of t){if(stroke)x.strokeText(ch,cx,Y);else x.fillText(ch,cx,Y);cx+=x.measureText(ch).width+sp;}return w;
 }
 function drawFooter(x,W,H,text,y){
   const words=text.trim().split(/\s+/);if(!words[0])return;
@@ -2545,7 +2716,9 @@ function drawScreen(cv,sc,songIdx,opt={}){
   const lay=slideLayout(x,W,H,sc);if(lay.box){x.fillStyle=lay.box.fill;x.fillRect(lay.box.x,lay.box.y,lay.box.w,lay.box.h);}
   if(opt.noText)return lay;
   for(const t of lay.texts){x.font=`${t.weight} ${t.size}px ${t.css}`;x.fillStyle=t.color;
-    if(t.shadow){x.shadowColor='rgba(0,0,0,.18)';x.shadowBlur=t.size*.15;x.shadowOffsetY=t.size*.04;}
+    if(t.shadow){x.shadowColor=`rgba(0,0,0,${(t.shAmt??18)/100})`;x.shadowBlur=t.size*.15;x.shadowOffsetY=t.size*.04;}
+    if(t.stroke){x.lineJoin='round';x.miterLimit=2;x.strokeStyle=t.stroke.c;x.lineWidth=t.size*t.stroke.w/100*2;
+      t.lines.forEach((l,i)=>drawSpaced(x,l,t.ax,t.y0+t.lh*(i+.5),t.sp,t.align,true));x.shadowColor='transparent';}
     t.lines.forEach((l,i)=>drawSpaced(x,l,t.ax,t.y0+t.lh*(i+.5),t.sp,t.align));x.shadowColor='transparent';}
   if(lay.footer)drawFooter(x,W,H,lay.footer.text,lay.footer.y);
   return lay;
@@ -2575,7 +2748,7 @@ function slideLayout(x,W,H,sc){
     const maxW=Math.max(1,...sc.lines.map(l=>spacedW(x,l,sp)));if(maxW>W*.9){fs*=W*.9/maxW;sp=fs*L.spacing/100;}
     const lh=fs*L.lineH,blockH=lh*sc.lines.length,y0=H*L.posY/100-blockH/2;
     if(L.title&&sc.title){const ts=W*L.titleSize/100;texts.push({kind:'title',lines:[sc.title],size:ts,weight:SW>=700?500:400,family:L.font,css:SF,color:'rgba(255,255,255,.9)',hex:'E9EDF2',alpha:.9,sp:ts*.12,align:'center',ax:W/2,y0:y0-H*L.titleGap/100-ts*.6,lh:ts*1.2});}
-    texts.push({kind:'lyrics',lines:sc.lines,size:fs,weight:SW,family:L.font,css:SF,color:'#fff',hex:'FFFFFF',alpha:1,sp,align:'center',ax:W/2,y0,lh,shadow:true});
+    texts.push({kind:'lyrics',lines:sc.lines,size:fs,weight:SW,family:L.font,css:SF,color:L.color||'#fff',hex:(c=>String(c||'#ffffff').replace('#','').toUpperCase())(L.color),alpha:1,sp,align:'center',ax:W/2,y0,lh,shadow:L.shadowOn!==false,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null});
     if(L.footerOn)footer={text:L.footer,y:H*.935};
   }else{
     const L=LOOK.word,WF=`"${L.font}", "Noto Sans KR", serif`,WWt=fontW(L.font);
@@ -2587,7 +2760,7 @@ function slideLayout(x,W,H,sc){
     const pad=W*.032,availW=bw-pad*2,availH=bh-pad*1.6;
     const k=wordK(x,W,H,fs,sp,availW,availH,L);
     if(k<1){fs*=k;sp=fs*L.spacing/100;}
-    texts.push({kind:'body',lines:sc.lines,size:fs,weight:WWt,family:L.font,css:WF,color:'#1d1d1d',hex:'1D1D1D',alpha:1,sp,align:'left',ax:bx+pad,y0:by+pad*.9,lh:fs*L.lineH,boxW:availW});
+    texts.push({kind:'body',lines:sc.lines,size:fs,weight:WWt,family:L.font,css:WF,color:L.color||'#1d1d1d',hex:(c=>String(c||'#ffffff').replace('#','').toUpperCase())(L.color||'#1d1d1d'),alpha:1,sp,align:'left',ax:bx+pad,y0:by+pad*.9,lh:fs*L.lineH,boxW:availW,shadow:!!L.shadowOn,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null});
     if(L.footerOn)footer={text:L.footer,y:H*.89};
   }
   return{texts,box,footer};
@@ -2761,6 +2934,8 @@ $('dlPptx').onclick=async()=>{
       for(const tx of lay.texts){
         const bold=tx.weight>=600,boxH=tx.lh*tx.lines.length,opts={fontFace:tx.family,fontSize:Math.max(6,tx.size*PT),bold,color:tx.hex,charSpacing:tx.sp*PT,margin:0,valign:'middle',
           lineSpacingMultiple:+(tx.lh/tx.size).toFixed(2)};
+        if(tx.shadow)opts.shadow={type:'outer',angle:90,blur:Math.max(1,Math.round(tx.size*.15*PT)),offset:Math.max(1,+(tx.size*.04*PT).toFixed(1)),color:'000000',opacity:(tx.shAmt??18)/100};
+        if(tx.stroke)opts.outline={size:+(tx.size*tx.stroke.w/100*PT).toFixed(1),color:String(tx.stroke.c).replace('#','').toUpperCase()};
         if(tx.align==='center')sl.addText(tx.lines.join('\n'),{...opts,align:'center',x:0.3,w:13.333-0.6,y:tx.y0*IN,h:Math.max(boxH,tx.size*1.2)*IN});
         else sl.addText(tx.lines.join('\n'),{...opts,align:'left',valign:'top',x:tx.ax*IN,w:(tx.boxW||W-tx.ax-W*.04)*IN,y:tx.y0*IN,h:Math.max(boxH,tx.size*1.2)*IN});
       }
@@ -2824,7 +2999,7 @@ function renderFmtPreview(){$('fmtPreview').textContent=allText(SAMPLE,FMT);}
 // 자막 양식 창: 양식 다듬기 / 추천받기
 function fmtTab(t){document.querySelectorAll('[data-ft]').forEach(b=>b.setAttribute('aria-selected',b.dataset.ft===t));
   $('v-formats').classList.toggle('on',t==='formats');$('v-recommend').classList.toggle('on',t==='recommend');}
-function openFmt(t='formats'){fillForm();renderFmtPreview();renderPresets();renderMine();fmtTab(t);$('fmtbox').classList.add('on');$('fmtClose').focus();}
+function openFmt(t='formats'){if(typeof fmtKindTab==='function')fmtKindTab('song');fillForm();renderFmtPreview();renderPresets();renderMine();fmtTab(t);$('fmtbox').classList.add('on');$('fmtClose').focus();}
 function closeFmt(){$('fmtbox').classList.remove('on');renderOutFmt();}
 document.querySelectorAll('[data-ft]').forEach(b=>b.onclick=()=>fmtTab(b.dataset.ft));
 $('openFmt').onclick=()=>openFmt('formats');$('fmtClose').onclick=closeFmt;
@@ -2991,17 +3166,54 @@ function rewrapWord(){
 // 말씀 글자 수는 말씀 칸, 말씀 자막 상자 위, 자막 양식 창 어디서 바꿔도 같은 값이에요
 function syncWordCtl(){
   $('wMax').value=BSET.max;$('fWMax').value=BSET.max;$('wAuto').checked=!!BSET.auto;$('fWAuto').value=BSET.auto?'1':'0';
-  $('wMax').disabled=$('fWMax').disabled=!!BSET.auto;renderFmtChip();
+  $('wMax').disabled=$('fWMax').disabled=!!BSET.auto;renderFmtChip();if(typeof renderWordFmtPreview==='function')renderWordFmtPreview();
 }
 function setWordMax(max,auto){$('bAuto').checked=auto;if(!auto)$('bMax').value=Math.min(60,Math.max(10,max||BSET.max));readBible();}
 $('wMax').addEventListener('change',e=>setWordMax(+e.target.value,false));
 $('fWMax').addEventListener('change',e=>setWordMax(+e.target.value,false));
 $('wAuto').addEventListener('change',e=>setWordMax(BSET.max,e.target.checked));
 $('fWAuto').addEventListener('change',e=>setWordMax(BSET.max,e.target.value==='1'));
-$('openFmtW').onclick=()=>openFmt('formats');
+$('openFmtW').onclick=()=>{openFmt('formats');fmtKindTab('word');};
+// 자막 양식 창: 찬양 자막 / 말씀 자막 탭
+const WORD_SAMPLE='16 하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니 이는 그를 믿는 자마다 멸망하지 않고 영생을 얻게 하려 하심이라\n17 하나님이 그 아들을 세상에 보내신 것은 세상을 심판하려 하심이 아니요 그로 말미암아 세상이 구원을 받게 하려 하심이라';
+function renderWordFmtPreview(){const el=$('wordFmtPreview');if(el)el.textContent=verseResult(WORD_SAMPLE,'요한복음 3장 16-17절').text;
+  if($('fWNums')){$('fWNums').checked=!!BSET.nums;$('fWHeads').checked=!!BSET.heads;}}
+let fmtKind='song';
+function fmtKindTab(k){fmtKind=k;document.querySelectorAll('[data-fk]').forEach(b=>b.setAttribute('aria-selected',b.dataset.fk===k));
+  ['fmtSong','fmtSongRight','fmtSongSave'].forEach(id=>$(id).hidden=k!=='song');['fmtWord','fmtWordRight'].forEach(id=>$(id).hidden=k!=='word');
+  if(k==='word')renderWordFmtPreview();}
+document.querySelectorAll('[data-fk]').forEach(b=>b.onclick=()=>fmtKindTab(b.dataset.fk));
+$('fWNums').onchange=e=>{$('vNums').checked=e.target.checked;readBible();};
+$('fWHeads').onchange=e=>{$('vHeads').checked=e.target.checked;readBible();};
+
+
+// ---- 성경 고르기: 책 → 장 → 절 ~ 절 을 고르면 본문 이름을 만들어요 ----
+const BIBLE=[['창세기',50],['출애굽기',40],['레위기',27],['민수기',36],['신명기',34],['여호수아',24],['사사기',21],['룻기',4],['사무엘상',31],['사무엘하',24],['열왕기상',22],['열왕기하',25],['역대상',29],['역대하',36],['에스라',10],['느헤미야',13],['에스더',10],['욥기',42],['시편',150],['잠언',31],['전도서',12],['아가',8],['이사야',66],['예레미야',52],['예레미야애가',5],['에스겔',48],['다니엘',12],['호세아',14],['요엘',3],['아모스',9],['오바댜',1],['요나',4],['미가',7],['나훔',3],['하박국',3],['스바냐',3],['학개',2],['스가랴',14],['말라기',4],
+ ['마태복음',28],['마가복음',16],['누가복음',24],['요한복음',21],['사도행전',28],['로마서',16],['고린도전서',16],['고린도후서',13],['갈라디아서',6],['에베소서',6],['빌립보서',4],['골로새서',4],['데살로니가전서',5],['데살로니가후서',3],['디모데전서',6],['디모데후서',4],['디도서',3],['빌레몬서',1],['히브리서',13],['야고보서',5],['베드로전서',5],['베드로후서',3],['요한일서',5],['요한이서',1],['요한삼서',1],['유다서',1],['요한계시록',22]];
+(()=>{const bk=$('bBook'),ch=$('bChap'),v1=$('bV1'),v2=$('bV2'),opt=(n,ph)=>`<option value="">${ph}</option>`+Array.from({length:n},(_,i)=>`<option>${i+1}</option>`).join('');
+  bk.innerHTML='<option value="">성경 고르기</option><optgroup label="구약">'+BIBLE.slice(0,39).map(([n])=>`<option>${n}</option>`).join('')+'</optgroup><optgroup label="신약">'+BIBLE.slice(39).map(([n])=>`<option>${n}</option>`).join('')+'</optgroup>';
+  const maxV=()=>bk.value==='시편'&&ch.value==='119'?176:80;
+  const compose=()=>{if(!bk.value||!ch.value)return;let t=`${bk.value} ${ch.value}장`;
+    if(v1.value){t+=` ${v1.value}`;if(v2.value&&+v2.value>+v1.value)t+=`-${v2.value}`;t+='절';}
+    $('bTitle').value=t;readBible();};
+  bk.onchange=()=>{const b=BIBLE.find(x=>x[0]===bk.value);ch.innerHTML=opt(b?b[1]:0,'장');ch.disabled=!b;v1.innerHTML=opt(0,'절');v2.innerHTML=opt(0,'절');v1.disabled=v2.disabled=true;if(b&&b[1]===1){ch.value='1';ch.onchange();}else compose();};
+  ch.onchange=()=>{v1.innerHTML=opt(ch.value?maxV():0,'절');v2.innerHTML=opt(ch.value?maxV():0,'절');v1.disabled=v2.disabled=!ch.value;compose();};
+  v1.onchange=()=>{if(v2.value&&+v2.value<+v1.value)v2.value='';compose();};v2.onchange=compose;})();
 fillBible();
 
 /* ======================== 시작 ======================== */
+/* ---- 호감에게 메일 보내기 (문의 · 협업 · 응원과 격려) ---- */
+const HOGAM_MAIL='hogamcommunity@gmail.com';let mailKind='문의';
+$('openMail').onclick=()=>{$('mailDlg').showModal();$('mailBody').focus();};
+$('mailCancel').onclick=()=>$('mailDlg').close();
+document.querySelectorAll('#mailKind [data-k]').forEach(b=>b.onclick=()=>{mailKind=b.dataset.k;document.querySelectorAll('#mailKind [data-k]').forEach(x=>x.setAttribute('aria-checked',x===b));});
+$('mailCopy').onclick=()=>copy(HOGAM_MAIL);
+$('mailForm').onsubmit=e=>{e.preventDefault();const body=$('mailBody').value.trim();
+  if(!body){toast('내용을 먼저 적어 주세요');$('mailBody').focus();return;}
+  const subj=`[호감슬라이드] ${mailKind}${me?.name?' · '+me.name:''}`;
+  location.href=`mailto:${HOGAM_MAIL}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+  $('mailDlg').close();toast('메일 앱을 열었어요. 거기서 ‘보내기’를 눌러 주세요');};
+
 /* ======================== 예배 기록 · 곡 보관함 · 진행 단계 ======================== */
 let exported=false,checked=false;
 function sundayName(d=new Date()){const x=new Date(d);x.setDate(x.getDate()+((7-x.getDay())%7));return`${x.getMonth()+1}월 ${x.getDate()}일 주일예배`;}
@@ -3394,17 +3606,24 @@ function startPresence(){if(pres||!sb||!me)return;
   pres=sb.channel('hogam-online',{config:{presence:{key:me.id+':'+TAB}}});
   pres.on('presence',{event:'sync'},renderOnline).subscribe(st=>{if(st==='SUBSCRIBED')trackMe();});
   addEventListener('beforeunload',()=>{try{pres.untrack();}catch(e){}});}
-function trackMe(){if(pres&&me)pres.track({name:me.name,sess:curSess,at:Date.now()}).catch(()=>{});}
+function trackMe(){if(pres&&me)pres.track({name:me.name,sess:curSess,at:Date.now(),doing:myDoing}).catch(()=>{});}
+// 지금 무엇을 하고 있는지 (마지막으로 손댄 곳) — 팀원 얼굴에 마우스를 올리면 보여요
+let myDoing='',_doT;
+const DOING=[['#outText,#resPanel','찬양 자막 고치는 중'],['#wordText,#wordPanel','말씀 자막 고치는 중'],['#colWord','말씀 넣는 중'],['#colSong','찬양 준비 중'],['#lookCtl','슬라이드 설정 바꾸는 중'],['#slidePanel','슬라이드 보는 중'],['#fmtbox','자막 양식 바꾸는 중'],['#libbox,.rail [data-sec=lib]','곡 보관함 보는 중']];
+function noteDoing(e){const t=e.target;if(!t||!t.closest)return;const hit=DOING.find(([sel])=>t.closest(sel));if(!hit||hit[1]===myDoing)return;
+  myDoing=hit[1];clearTimeout(_doT);_doT=setTimeout(trackMe,800);}
+['focusin','pointerdown'].forEach(ev=>document.addEventListener(ev,noteDoing,true));
 const AVC=['#0f766e','#2563eb','#7c3aed','#db2777','#ea580c','#0891b2','#65a30d','#9333ea'];
 function avColor(n){let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))>>>0;return AVC[h%AVC.length];}
 function renderOnline(){
   const bar=$('onlineBar');if(!bar)return;const st=pres?pres.presenceState():{},by={};
-  Object.values(st).flat().forEach(p=>{if(!p||!p.name)return;const o=by[p.name]||(by[p.name]={name:p.name,sess:[]});if(p.sess&&!o.sess.includes(p.sess))o.sess.push(p.sess);});
+  Object.values(st).flat().forEach(p=>{if(!p||!p.name)return;const o=by[p.name]||(by[p.name]={name:p.name,sess:[],at:0});if(p.sess&&!o.sess.includes(p.sess))o.sess.push(p.sess);if(p.doing&&(p.at||0)>=o.at){o.doing=p.doing;o.at=p.at||0;}});
   const list=Object.values(by).sort((a,b)=>(b.name===me?.name)-(a.name===me?.name)||a.name.localeCompare(b.name,'ko'));
   if(!list.length){bar.innerHTML='';return;}
   const MAX=6,shown=list.slice(0,MAX),rest=list.slice(MAX);
   const tip=o=>{const same=o.sess.includes(curSess),nm=SESS.find(x=>x.id===o.sess[0])?.name;
-    return o.name+(o.name===me?.name?' (나)':'')+' · '+(same?'이 예배 자막을 보는 중':nm?`‘${nm}’ 보는 중`:'접속 중');};
+    const where=same?'이 예배':nm?`‘${nm}’`:'';
+    return o.name+(o.name===me?.name?' (나)':'')+' · '+(o.doing?(where?where+'에서 ':'')+o.doing:same?'이 예배 자막을 보는 중':nm?`‘${nm}’ 보는 중`:'접속 중');};
   bar.innerHTML=shown.map((o,i)=>`<span class="oav${o.sess.includes(curSess)?' same':''}" tabindex="0" style="background:${avColor(o.name)};z-index:${10-i}" data-tip="${esc(tip(o))}" aria-label="${esc(tip(o))}">${esc(o.name.slice(0,1))}</span>`).join('')
     +(rest.length?`<span class="oav more" tabindex="0" data-tip="${esc(rest.map(o=>o.name).join(', '))}" aria-label="${esc(rest.map(o=>o.name).join(', '))}">+${rest.length}</span>`:'');
 }
