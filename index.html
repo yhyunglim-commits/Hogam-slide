@@ -2985,7 +2985,7 @@ function buildLookUI(){
     h.onclick=()=>{const o=g.hidden;g.hidden=!o;h.classList.toggle('open',o);h.setAttribute('aria-expanded',o);lkOpen[key]=o;store.set('lkOpen',lkOpen);if(o)h.scrollIntoView({block:'nearest'});};
     box.appendChild(h);box.appendChild(g);heads.push(h);return g;};
   // − 값 + 와 끌어서 고르는 막대
-  const slider=(g,k,wide)=>{const c=LOOK_CTRLS.find(x=>x[0]===cg&&x[1]===k);if(!c)return;const[gk,,label,min,max,step,unit]=c;const L=k==='maxLines'?LOOK[grp]:L0;
+  const slider=(g,k,wide,lab)=>{const c=LOOK_CTRLS.find(x=>x[0]===cg&&x[1]===k);if(!c)return;const[gk,,lab0,min,max,step,unit]=c,label=lab||lab0;const L=k==='maxLines'?LOOK[grp]:L0;
     const r=document.createElement('div');r.className='lk'+(wide?' lkwide':'');const id=`lk_${gk}_${k}`;
     r.innerHTML=`<div class="lkhead"><label for="${id}">${label}${k==='maxLines'&&scope==='slide'?' <em class="lkn">모든 슬라이드</em>':''}</label><span class="stp"><button type="button" aria-label="${label} 줄이기">−</button><span class="num"><input type="number" id="${id}" min="${min}" max="${max}" step="${step}" value="${L[k]}">${unit?`<em>${unit}</em>`:''}</span><button type="button" aria-label="${label} 늘리기">+</button></span></div><input type="range" min="${min}" max="${max}" step="${step}" value="${L[k]}" aria-label="${label}">`;
     const rg=r.querySelector('input[type=range]'),nb=r.querySelector('input[type=number]'),[dn,up]=r.querySelectorAll('.stp button');
@@ -3016,7 +3016,7 @@ function buildLookUI(){
   const capSec=()=>{const gg=sec('cap','인용 구절 보여 주기','ph-quotes');{const r=document.createElement('div');r.className='lk lkwide';r.innerHTML=`<span>인용 구절 모양 <em class="lkn">모든 인용</em></span><div class="seg2" role="radiogroup" aria-label="인용 구절 모양"><button type="button" role="radio" data-q2="body">본문처럼</button><button type="button" role="radio" data-q2="caption">자막 박스</button></div>`;
     r.querySelectorAll('[data-q2]').forEach(b=>{b.setAttribute('aria-checked',(LOOK.quote.quoteStyle||'body')===b.dataset.q2);b.onclick=()=>{LOOK.quote.quoteStyle=b.dataset.q2;saveLook();syncQStyle();renderWTabs();buildLookUI();};});gg.appendChild(r);}
     if(LOOK.quote.quoteStyle!=='caption')return;
-    {const p=document.createElement('p');p.className='lkhint lkwide';p.textContent='자막 박스는 배경이 비치게 나가요. 그래서 배경 사진·로고·아래 문구·머리글은 쓰지 않아요.';gg.appendChild(p);}color(gg,'capHex','띠 색');slider(gg,'capAlpha',true);slider(gg,'capSize',true);slider(gg,'capBottom',true);text(gg,'capRight','띠 위 오른쪽 문구 (설교 제목)');};
+    {const p=document.createElement('p');p.className='lkhint lkwide';p.textContent='자막 박스는 배경이 비치게 나가요. 그래서 배경 사진·로고·아래 문구·머리글은 쓰지 않아요.';gg.appendChild(p);}color(gg,'capHex','띠 색');slider(gg,'capAlpha',true);slider(gg,'capBottom',true);text(gg,'capRight','띠 위 오른쪽 문구 (설교 제목)');};
   if(capFirst)capSec();
   // 텍스트
   const isW0=grp!=='song';let g=sec('text','텍스트','ph-text-aa');
@@ -3026,7 +3026,7 @@ function buildLookUI(){
   const fsel=fr.querySelector('select');fsel.style.fontFamily=`'${L.font}', 'Noto Sans KR', sans-serif`;
   fsel.onchange=e=>{L.font=e.target.value;fsel.style.fontFamily=`'${L.font}', 'Noto Sans KR', sans-serif`;loadFont(e.target.value).then(()=>saveLook());};
   g.appendChild(fr);
-  if(!cap)slider(g,'size',true);
+  if(cap)slider(g,'capSize',true,'본문 크기');else slider(g,'size',true);
   // 한 줄 글자 수 (찬양: 자막 양식 · 크게 보기에서 '이 슬라이드만'이면 그 곡만 / 말씀: 말씀 한 줄 글자 수)
   {const isW=grp!=='song',songIdx=grp==='song'&&scope==='slide'&&slideKey?results.findIndex(r=>r&&(r.title||'').trim()===slideKey.split(':').slice(1,-1).join(':').trim()):-1;
    const wHead=isW&&scope==='slide'&&slideKey?slideKey.split(':').slice(1,-1).join(':').trim():'';
