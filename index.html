@@ -2874,7 +2874,8 @@ function parseText(text,ed,base){
       const verses=[];let nv=false;for(const o of body2){if(o.sp){if(verses.length)verses[verses.length-1].push(o);nv=true;continue;}if(nv||/^\d{1,3} /.test(o.t.trim())||!verses.length)verses.push([o]);else verses[verses.length-1].push(o);nv=false;}
       const max=(ed==='quote'?LOOK.quote:LOOK.word).maxLines;let cur=[];
       const push=()=>{while(cur.length&&cur[cur.length-1].sp)cur.pop();while(cur.length&&cur[0].sp)cur.shift();if(cur.length)screens.push({type:'word',ed,chunk:base+ci,ref,title:ref||'성경봉독',lines:cur.map(o=>o.t.trim()),line:cur[0].i,src:cur.filter(o=>!o.sp).map(o=>o.i),cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});cur=[];};
-      for(const v of verses){const real=v.filter(o=>!o.sp).length,curReal=cur.filter(o=>!o.sp).length;if(curReal&&cur.length+real>max)push();cur.push(...v);if(cur.filter(o=>!o.sp).length>=max)push();}
+      for(const v0 of verses){const parts=[];if(v0.filter(o=>!o.sp).length>max){for(let i=0;i<v0.length;i+=max)parts.push(v0.slice(i,i+max));}else parts.push(v0);
+       for(const v of parts){const real=v.filter(o=>!o.sp).length,curReal=cur.filter(o=>!o.sp).length;if(curReal&&cur.length+real>max)push();cur.push(...v);if(cur.filter(o=>!o.sp).length>=max)push();}}
       push();
       return;
     }
@@ -2961,6 +2962,7 @@ function buildLookUI(){
   let L=LOOK[grp];
   if(scope==='slide'){const ov=SLIDE_OV[slideKey]||(SLIDE_OV[slideKey]={});
     L=new Proxy(ov,{get:(t,k)=>k in t?t[k]:LOOK[grp][k],set:(t,k,v)=>{t[k]=v;return true;}});}
+  const L0=L;
   if(slideKey){const own=SLIDE_OV[slideKey]&&Object.keys(SLIDE_OV[slideKey]).length;const sc=document.createElement('div');sc.className='lkscope';
     sc.innerHTML=`<div class="seg2" role="radiogroup" aria-label="바꿀 범위"><button type="button" role="radio" data-sc="slide" aria-checked="${scope==='slide'}">이 슬라이드만</button><button type="button" role="radio" data-sc="all" aria-checked="${scope==='all'}">모든 ${grp==='song'?'찬양':grp==='quote'?'인용':'말씀'} 슬라이드</button></div>${scope==='slide'?`<p>${own?'이 슬라이드에만 따로 바꾼 설정이 있어요.':'여기서 바꾸면 이 슬라이드에만 적용돼요.'} 배경 사진·로고 파일은 모든 슬라이드가 같이 써요.</p>${own?'<button type="button" class="btn sm ghost" data-ovclear>이 슬라이드만 바꾼 것 지우기</button>':''}`:''}`;
     sc.querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{lookScope=b.dataset.sc;buildLookUI();});
@@ -2983,9 +2985,9 @@ function buildLookUI(){
     h.onclick=()=>{const o=g.hidden;g.hidden=!o;h.classList.toggle('open',o);h.setAttribute('aria-expanded',o);lkOpen[key]=o;store.set('lkOpen',lkOpen);if(o)h.scrollIntoView({block:'nearest'});};
     box.appendChild(h);box.appendChild(g);heads.push(h);return g;};
   // − 값 + 와 끌어서 고르는 막대
-  const slider=(g,k,wide)=>{const c=LOOK_CTRLS.find(x=>x[0]===cg&&x[1]===k);if(!c)return;const[gk,,label,min,max,step,unit]=c;
+  const slider=(g,k,wide)=>{const c=LOOK_CTRLS.find(x=>x[0]===cg&&x[1]===k);if(!c)return;const[gk,,label,min,max,step,unit]=c;const L=k==='maxLines'?LOOK[grp]:L0;
     const r=document.createElement('div');r.className='lk'+(wide?' lkwide':'');const id=`lk_${gk}_${k}`;
-    r.innerHTML=`<div class="lkhead"><label for="${id}">${label}</label><span class="stp"><button type="button" aria-label="${label} 줄이기">−</button><span class="num"><input type="number" id="${id}" min="${min}" max="${max}" step="${step}" value="${L[k]}">${unit?`<em>${unit}</em>`:''}</span><button type="button" aria-label="${label} 늘리기">+</button></span></div><input type="range" min="${min}" max="${max}" step="${step}" value="${L[k]}" aria-label="${label}">`;
+    r.innerHTML=`<div class="lkhead"><label for="${id}">${label}${k==='maxLines'&&scope==='slide'?' <em class="lkn">모든 슬라이드</em>':''}</label><span class="stp"><button type="button" aria-label="${label} 줄이기">−</button><span class="num"><input type="number" id="${id}" min="${min}" max="${max}" step="${step}" value="${L[k]}">${unit?`<em>${unit}</em>`:''}</span><button type="button" aria-label="${label} 늘리기">+</button></span></div><input type="range" min="${min}" max="${max}" step="${step}" value="${L[k]}" aria-label="${label}">`;
     const rg=r.querySelector('input[type=range]'),nb=r.querySelector('input[type=number]'),[dn,up]=r.querySelectorAll('.stp button');
     const set=(v,from)=>{v=Math.min(max,Math.max(min,+v));if(isNaN(v))return;v=+(Math.round(v/step)*step).toFixed(3);L[k]=v;if(from!==rg)rg.value=v;if(from!==nb)nb.value=v;saveLook();};
     rg.oninput=()=>set(rg.value,rg);nb.oninput=()=>{if(nb.value!==''&&!isNaN(+nb.value))set(nb.value,nb);};nb.onchange=()=>set(nb.value===''?L[k]:nb.value,null);
@@ -3115,14 +3117,19 @@ function isCaption(sc){return sc&&sc.ed==='quote'&&LOOK.quote.quoteStyle==='capt
 function drawCaption(x,W,H,sc){
   // 참고: 화면 아래를 가로지르는 청록 반투명 띠 · 왼쪽 흰 막대 · 띠 위 왼쪽 구절 이름, 오른쪽 설교 제목 · “ ” 안의 구절, **강조**는 노랑
   x.clearRect(0,0,W,H);const L=LOOK.word,WF=`"${L.font}", "Noto Sans KR", serif`,wt=fontW(L.font);
-  const fs=W*(L.capSize||2.5)/100,lh=fs*1.6,padX=W*.065,padY=fs*.95;
-  x.font=`${wt} ${fs}px ${WF}`;const raw=(sc.lines||[]).join(' ').replace(/(^|\s)\d{1,3}\s+(?=\S)/g,'$1').trim();
-  const maxC=Math.max(12,Math.floor((W-padX*2)/(fs*1.02))-2),lines=splitLine(raw,maxC);
+  // 입력한 줄바꿈 그대로: 긴 줄이 있으면 글자를 줄여 맞추고(최대 55%까지), 그래도 넘칠 때만 접어요
+  const padX=W*.065,avail=W-padX*2;let fs=W*(L.capSize||2.5)/100;
+  let lines=(sc.lines||[]).map(l=>l.replace(/(^|\s)\d{1,3}\s+(?=\S)/g,'$1').trim()).filter(Boolean);if(!lines.length)lines.push('');
+  const dec=(l,i,n)=>(i===0?'“ ':'')+l+(i===n-1?' ”':''),lw=()=>lines.map((l,i)=>spacedW(x,dec(l,i,lines.length),fs*(L.spacing||0)/100));
+  x.font=`${wt} ${fs}px ${WF}`;const mw=Math.max(...lw());
+  if(mw>avail){fs*=Math.max(.55,avail/mw)*.995;x.font=`${wt} ${fs}px ${WF}`;const maxC=Math.max(12,Math.floor(avail/(fs*1.02))-2),ws=lw();
+    lines=lines.flatMap((l,i)=>ws[i]>avail?splitLine(l,maxC):[l]);}
+  const lh=fs*1.6,padY=fs*.95;
   const bh=padY*2+lh*Math.max(1,lines.length),by=H-H*(L.capBottom??3)/100-bh;
   const hx=String(L.capHex||'#0E6874').replace('#',''),cn=parseInt(hx.length===3?hx.replace(/./g,'$&$&'):hx,16);
   x.fillStyle=`rgba(${cn>>16},${cn>>8&255},${cn&255},${(L.capAlpha??84)/100})`;x.fillRect(0,by,W,bh);
   x.fillStyle='rgba(255,255,255,.96)';x.fillRect(W*.03,by,Math.max(2,W*.0045),bh);
-  const ls=fs*.8;x.textBaseline='middle';x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=ls*.25;
+  const ls=W*(L.capSize||2.5)/100*.8;x.textBaseline='middle';x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=ls*.25;
   x.font=`500 ${ls}px "Noto Sans KR", sans-serif`;x.fillStyle='#fff';drawSpaced(x,sc.ref||'',padX,by-ls*.85,ls*.02,'left');
   if(L.capRight){const sp=ls*.22,w=spacedW(x,L.capRight,sp);drawSpaced(x,L.capRight,W-W*.03-w,by-ls*.85,sp,'left');}
   x.shadowColor='transparent';x.font=`${wt} ${fs}px ${WF}`;
