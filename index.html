@@ -1537,6 +1537,33 @@ details.look>summary{position:sticky;top:0;z-index:23;background:var(--surface)}
 .gtabs .gtall{flex:none!important;width:auto!important;padding:0 14px!important}
 #lookCtl .lktabs .seg2 button[aria-selected=true]::before{background:#fff!important}
 #lookCtl .lktabs .seg2 button[data-g=word][aria-selected=true]{background:#FF9F0A!important;box-shadow:0 2px 6px -2px rgba(255,159,10,.7)!important}
+
+/* 말씀 자막 줄: − 값 + · 구분 · 또렷한 토글 */
+#wordPanel .rbar{align-items:center}
+.stp2{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);height:32px}
+.stp2 button{width:30px;border:0;background:transparent;color:var(--text2);font-size:16px;cursor:pointer;padding:0}
+.stp2 button:hover:not(:disabled){background:var(--sunken);color:var(--text)}
+.stp2 input{width:44px!important;border:0!important;border-left:1px solid var(--line)!important;border-right:1px solid var(--line)!important;border-radius:0!important;text-align:center;background:transparent!important;box-shadow:none!important;min-height:0!important;height:100%!important;padding:0!important;-moz-appearance:textfield;appearance:textfield}
+.stp2 input::-webkit-inner-spin-button,.stp2 input::-webkit-outer-spin-button,#outMax::-webkit-inner-spin-button,#outMax::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.rbar .qstyle{display:inline-flex!important;align-items:center;gap:8px;padding-left:12px;margin-left:4px;border-left:1px solid var(--line)}
+.rbar .qstyle>label{font-size:13px;color:var(--text2);white-space:nowrap}
+.rbar .qstyle .seg2{display:inline-flex;align-items:center;height:32px;padding:2px}
+.rbar .qstyle .seg2 button{height:28px;min-height:28px!important}
+.rbar .qstyle .seg2 button[aria-checked=true]{background:var(--blue,#007AFF)!important;color:#fff!important;font-weight:700;box-shadow:0 2px 6px -2px rgba(0,122,255,.6)!important}
+.rbar .qstyle .seg2 button[aria-checked=false]{opacity:.75}
+/* 노란 테두리 뜻 */
+.shot{position:relative}
+.shot .overtag{position:absolute;right:6px;bottom:6px;background:#fbbf24;color:#3b2a00;font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;pointer-events:none}
+/* 크게 보기: 글자 고치기 */
+.sbsel .sbtag{position:absolute;left:-1px;top:-30px;display:flex;align-items:center;gap:6px;pointer-events:auto}
+.sbsel .sbtag b{background:var(--blue,#007AFF);color:#fff;font-size:12px;font-weight:600;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.sbsel .sbedit{border:0;background:#fff;color:#111;font:inherit;font-size:12px;font-weight:700;padding:3px 9px;border-radius:6px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.sbsel>span:not(.sbtag){display:none}
+.sbsel .sbtag{background:transparent!important;padding:0!important}
+.sbed{position:fixed;z-index:80;background:var(--surface);color:var(--text);border-radius:12px;padding:10px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.sbed textarea{width:100%;box-sizing:border-box;font-size:16px;line-height:1.6;padding:8px 10px;border:1px solid var(--line2);border-radius:8px;resize:vertical}
+.sbed .row{display:flex;align-items:center;gap:6px;margin-top:8px;justify-content:flex-end}
+.sbed .hint{margin-right:auto;font-size:12px;color:var(--text3)}
 /* ================= 디자인 규칙 (2단계) =================
    글자 12 작은 설명 · 13 기본 · 15 칸 제목 · 18 창 제목 · 20 큰 숫자
    누르는 것 높이 32px (휴대폰 40px) · 체크박스 18px · 모서리 8 / 12 / 16 */
@@ -1698,8 +1725,8 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 </div>
       <div class="foldbody" id="wordBody">
       <div class="rbar">
-        <span class="grp"><label for="wMax">한 줄</label><input type="number" id="wMax" min="10" max="60"><label for="wMax">자</label></span>
-        <label class="ck"><input type="checkbox" id="wAuto"><span>슬라이드에 맞춰 자동</span></label>
+        <span class="grp wchars"><label for="wMax">한 줄</label><span class="stp2"><button type="button" id="wMaxDn" aria-label="한 글자 줄이기">−</button><input type="number" id="wMax" min="10" max="60"><button type="button" id="wMaxUp" aria-label="한 글자 늘리기">+</button></span><label for="wMax">자</label></span>
+        <label class="ck" title="끄면 이 탭만 따로 글자 수를 정해요"><input type="checkbox" id="wAuto"><span>슬라이드에 맞춰 자동</span></label>
         <span class="div"></span><button type="button" class="btn sm" id="openFmtW">양식 설정</button>
         <span class="grp qstyle"><label>인용 구절</label><span class="seg2" role="radiogroup" aria-label="인용 구절 디자인"><button type="button" role="radio" data-qs="body">본문 디자인</button><button type="button" role="radio" data-qs="caption">자막 박스</button></span></span>
         <span class="acts tools rbtools"><button class="tbtn" id="wordCopy" data-tip="복사" aria-label="말씀 자막 복사"><i class="ph ph-copy" aria-hidden="true"></i></button><button class="tbtn danger" id="wordClear" data-tip="비우기" aria-label="비우기"><i class="ph ph-trash" aria-hidden="true"></i></button></span>
@@ -1855,7 +1882,7 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
   </main>
 </div>
 <div id="lightbox" role="dialog" aria-label="악보 크게 보기"><img alt=""><div class="lbbar"><button id="lbPrev">이전 쪽</button><span id="lbNum"></span><button id="lbNext">다음 쪽</button><button id="lbClose">닫기</button></div></div>
-<div id="slidebox" role="dialog" aria-label="화면 크게 보기"><aside class="sbset" id="sbSet" aria-label="슬라이드 설정"></aside><div class="sbsel" id="sbSel" hidden aria-hidden="true"><span></span></div><canvas width="1920" height="1080"></canvas>
+<div id="slidebox" role="dialog" aria-label="화면 크게 보기"><aside class="sbset" id="sbSet" aria-label="슬라이드 설정"></aside><div class="sbsel" id="sbSel" hidden><span class="sbtag"><b></b><button type="button" class="sbedit" hidden>✎ 글자 고치기</button></span></div><div class="sbed" id="sbEd" hidden><textarea aria-label="글자 고치기"></textarea><div class="row"><span class="hint">Ctrl+Enter 저장 · Esc 취소</span><button type="button" class="btn sm" data-x>취소</button><button type="button" class="btn sm pri" data-ok>저장</button></div></div><canvas width="1920" height="1080"></canvas>
   <div class="lbbar"><button id="sbPrev">이전 화면</button><span id="sbNum"></span><button id="sbNext">다음 화면</button><button id="sbGo">글에서 보기</button><button id="sbClose">닫기</button></div></div>
 <div class="tip" id="tip" role="tooltip"></div>
 <div class="gate on" id="gate">
@@ -2784,11 +2811,11 @@ function parseText(text,ed,base){
     let songTitle='';
     blocks.forEach((bl,bi)=>{
       let lines=bl.map(o=>o.t.trim()).filter(t=>!(f.endMark&&t===f.endMark)).map(t=>f.endMark&&t.endsWith(f.endMark)?t.slice(0,-f.endMark.length).trim():t);
-      let title='';
-      if(f.titleMode!=='none'&&(f.titleWhere==='every'||bi===0)&&lines.length>1){title=lines[0];lines=lines.slice(1);}
-      if(f.labels&&lines.length>1){const re=new RegExp('^'+f.labelStyle.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace('\\{label\\}','(.{1,8})').replace('{label}','(.{1,8})')+'$');if(re.test(lines[0]))lines=lines.slice(1);}
+      let title='',bl2=bl.filter(o=>!(f.endMark&&o.t.trim()===f.endMark));
+      if(f.titleMode!=='none'&&(f.titleWhere==='every'||bi===0)&&lines.length>1){title=lines[0];lines=lines.slice(1);bl2=bl2.slice(1);}
+      if(f.labels&&lines.length>1){const re=new RegExp('^'+f.labelStyle.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace('\\{label\\}','(.{1,8})').replace('{label}','(.{1,8})')+'$');if(re.test(lines[0])){lines=lines.slice(1);bl2=bl2.slice(1);}}
       if(title)songTitle=title.replace(/^\d+\.\s*/,'');
-      screens.push({type:'song',ed,chunk:base+ci,title:f.titleMode==='none'?'':(title?title.replace(/^\d+\.\s*/,''):songTitle),lines,line:bl[0].i,src:bl.map(o=>o.i),keep:(bi===0&&title&&blocks.length>1&&f.titleWhere!=='every')?bl[0].i:-1,cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});
+      screens.push({type:'song',ed,chunk:base+ci,title:f.titleMode==='none'?'':(title?title.replace(/^\d+\.\s*/,''):songTitle),lines,line:bl[0].i,src:bl.map(o=>o.i),lsrc:bl2.map(o=>o.i),keep:(bi===0&&title&&blocks.length>1&&f.titleWhere!=='every')?bl[0].i:-1,cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});
     });
   });
   return screens;
@@ -2906,12 +2933,13 @@ function buildLookUI(){
   slider(g,'size',true);
   // 한 줄 글자 수 (찬양: 자막 양식 · 크게 보기에서 '이 슬라이드만'이면 그 곡만 / 말씀: 말씀 한 줄 글자 수)
   {const songIdx=grp==='song'&&scope==='slide'&&slideKey?results.findIndex(r=>r&&(r.title||'').trim()===slideKey.split(':').slice(1,-1).join(':').trim()):-1;
-   const cur=()=>grp==='song'?(songIdx>=0?ffmt(results[songIdx],FMT).maxChars:FMT.maxChars):BSET.max,[mn,mx]=grp==='song'?[6,30]:[10,60];
+   const wHead=grp==='word'&&scope==='slide'&&slideKey?slideKey.split(':').slice(1,-1).join(':').trim():'';
+   const cur=()=>grp==='song'?(songIdx>=0?ffmt(results[songIdx],FMT).maxChars:FMT.maxChars):(wHead?maxFor(wHead):BSET.max),[mn,mx]=grp==='song'?[6,30]:[10,60];
    const r=document.createElement('div');r.className='lk lkwide';
-   r.innerHTML=`<div class="lkhead"><label for="lkChars">한 줄 글자 수${grp==='song'?(songIdx>=0?' <em class="lkn">이 곡만</em>':''):(BSET.auto?' <em class="lkn">자동</em>':'')}</label><span class="stp"><button type="button" aria-label="한 글자 줄이기">−</button><span class="num"><input type="number" id="lkChars" min="${mn}" max="${mx}" value="${cur()}"><em>자</em></span><button type="button" aria-label="한 글자 늘리기">+</button></span></div><p class="lkhint">띄어쓰기 빼고 셉니다. 바꾸면 자막 줄도 다시 나눠요.</p>`;
+   r.innerHTML=`<div class="lkhead"><label for="lkChars">한 줄 글자 수${grp==='song'?(songIdx>=0?' <em class="lkn">이 곡만</em>':''):(wHead?' <em class="lkn">이 본문만</em>':BSET.auto?' <em class="lkn">자동</em>':'')}</label><span class="stp"><button type="button" aria-label="한 글자 줄이기">−</button><span class="num"><input type="number" id="lkChars" min="${mn}" max="${mx}" value="${cur()}"><em>자</em></span><button type="button" aria-label="한 글자 늘리기">+</button></span></div><p class="lkhint">띄어쓰기 빼고 셉니다. 바꾸면 자막 줄도 다시 나눠요.</p>`;
    const nb=r.querySelector('input'),[dn,up]=r.querySelectorAll('.stp button');
    const set=v=>{v=Math.min(mx,Math.max(mn,Math.round(+v)));if(isNaN(v))return;nb.value=v;
-     if(grp==='word'){setWordMax(v,false);}
+     if(grp==='word'){if(wHead){WOV[wHead]={max:v};store.set('wordOv',WOV);rewrapWord(wHead);renderWCharCtl();}else setWordMax(v,false);}
      else if(songIdx>=0){const rr=results[songIdx],f=ffmt(rr,FMT);rr.fmtOv={lines:f.lines,maxChars:v};store.set('results',results);const c2=songChunks();if(c2.length===results.length){c2[songIdx]=songText(rr,FMT,songIdx);const ta=$('outText');ta.value=c2.join(gapStr());ta.dispatchEvent(new Event('input',{bubbles:true}));}renderSongFmt();}
      else{useFormat({...FMT,maxChars:v});if(!$('regenBanner').classList.contains('hidden')){setOutput(allText(results,FMT),true);}}
      setTimeout(()=>{if($('slidebox').classList.contains('on')){sbList=songGroups().flatMap(g=>g.items.map(s=>({s,si:g.songIdx||0})));drawSlide();}},250);};
@@ -3106,16 +3134,18 @@ function renderShots(){
         const wrap=document.createElement('div');wrap.className='shotw';
         const del=document.createElement('button');del.className='shotx';del.type='button';del.title='이 슬라이드 지우기';del.setAttribute('aria-label',`${n}번째 슬라이드 지우기`);del.innerHTML='<i class="ph ph-x" aria-hidden="true"></i>';
         del.onclick=e=>{e.stopPropagation();deleteScreen(s);};
-        if(s.type==='song'&&(s.lines.some(l=>width(l)>FMT.maxChars+.5)||s.lines.length>FMT.lines))bt.classList.add('over');
+        const sf=s.type==='song'?ffmt(results.find(r=>r&&(r.title||'').trim()===(g.title||'').trim()),FMT):null;
+        const tooLong=sf&&s.lines.some(l=>width(l)>sf.maxChars+.5),tooMany=sf&&s.lines.length>sf.lines;
+        if(tooLong||tooMany){bt.classList.add('over');bt.dataset.over=tooLong?`한 줄이 ${sf.maxChars}자를 넘어요`:`한 화면이 ${sf.lines}줄을 넘어요`;}
         if(isCaption(s))bt.classList.add('alpha');
         const idx=n-1,k=shotKey(s);wrap.dataset.k=k;
         const ck=document.createElement('label');ck.className='shotck';ck.title='고르기';ck.innerHTML=`<input type="checkbox" aria-label="${n}번째 슬라이드 고르기">`;
         ck.querySelector('input').onchange=e=>{e.target.checked?selKeys.add(k):selKeys.delete(k);renderSelBar();};
         if(k===curShot)wrap.classList.add('cur');
         bt.onclick=e=>{const again=curShot===k;curShot=k;$('shots').querySelectorAll('.shotw.cur').forEach(x=>x.classList.remove('cur'));wrap.classList.add('cur');
-          if(lookTab!==s.type){lookTab=s.type;store.set('lookTab',lookTab);buildLookUI();}
+          lookTab=s.type;store.set('lookTab',lookTab);lookSlideKey=s.ovKey||null;lookScope='slide';buildLookUI();
           if(e.detail===0&&again)openSlide(idx);};
-        bt.ondblclick=()=>openSlide(idx);bt.title='누르면 이 화면 설정, 두 번 누르면 크게 보기';wrap.appendChild(bt);wrap.appendChild(ck);grid.appendChild(wrap);});
+        bt.ondblclick=()=>openSlide(idx);bt.title=(bt.dataset.over?'⚠ '+bt.dataset.over+' · ':'')+'누르면 이 슬라이드 설정, 두 번 누르면 크게 보기';if(bt.dataset.over)bt.insertAdjacentHTML('beforeend',`<span class="overtag">${bt.dataset.over}</span>`);wrap.appendChild(bt);wrap.appendChild(ck);grid.appendChild(wrap);});
       gw.appendChild(grid);
     });
     renderSelBar();
@@ -3182,7 +3212,7 @@ function renderWTabs(){const box=$('wTabs');if(!box)return;const it=wItems();
   const ed=$('wEd'),cur=it.find(x=>x.k===wTab.k&&x.i===wTab.i);
   if(document.activeElement!==ed||!cur)ed.value=cur?cur.c:'';ed.disabled=!cur;
   $('qCapOpts').hidden=!(cur&&cur.k==='q'&&LOOK.word.quoteStyle==='caption');if(document.activeElement!==$('qRight'))$('qRight').value=LOOK.word.capRight||'';
-  autosizeWEd();}
+  autosizeWEd();if(typeof renderWCharCtl==='function')renderWCharCtl();}
 function autosizeWEd(){const t=$('wEd');if(!t||!t.offsetParent)return;t.style.height='auto';t.style.height=Math.max(t.scrollHeight+2,160)+'px';}
 $('wEd').addEventListener('input',()=>{const k=wTab.k,ch=chunksOf(k);if(!ch.length)return;ch[wTab.i]=$('wEd').value.replace(/\s+$/,'');
   _wSync=true;const m=wMaster(k);m.value=ch.join(gapStr());m.dispatchEvent(new Event('input',{bubbles:true}));_wSync=false;autosizeWEd();});
@@ -3195,6 +3225,14 @@ function gotoWordLine(n){gotoInWEd('w',n);}
 function gotoQuoteLine(n){gotoInWEd('q',n);}
 function renderWordChips(){}function renderQuoteChips(){}
 
+
+/* ---- 말씀 자막 칸: 고른 탭의 한 줄 글자 수 (자동이 기본, 끄면 이 탭만 따로) ---- */
+function curWHead(){const it=wItems().find(x=>x.k===wTab.k&&x.i===wTab.i);return it?it.c.split('\n')[0].trim():'';}
+function renderWCharCtl(){const h=curWHead();$('wMax').value=h?maxFor(h):BSET.max;$('wAuto').checked=!(h&&WOV[h]);$('wMax').disabled=$('wMaxDn').disabled=$('wMaxUp').disabled=!h;$('wAuto').disabled=!h;}
+function setTabMax(v){const h=curWHead();if(!h)return;v=Math.min(60,Math.max(10,Math.round(+v)||maxFor(h)));WOV[h]={max:v};store.set('wordOv',WOV);rewrapWord(h);renderWCharCtl();}
+$('wMaxDn').onclick=()=>setTabMax(maxFor(curWHead())-1);$('wMaxUp').onclick=()=>setTabMax(maxFor(curWHead())+1);
+$('wMax').addEventListener('change',e=>setTabMax(e.target.value));
+$('wAuto').addEventListener('change',e=>{const h=curWHead();if(!h)return;if(e.target.checked){delete WOV[h];store.set('wordOv',WOV);rewrapWord(h);toast('이 탭을 슬라이드에 맞춘 자동 글자 수로 돌렸어요');}else{WOV[h]={max:maxFor(h)};store.set('wordOv',WOV);toast('이 탭만 따로 글자 수를 정할 수 있어요');}renderWCharCtl();});
 /* ---- 인용 구절 넣는 칸: 1, 2, 3 … ---- */
 let qSlots=store.get('qSlots',[{title:'',raw:''}]);if(!qSlots.length)qSlots=[{title:'',raw:''}];
 const saveSlots=()=>store.set('qSlots',qSlots);
@@ -3236,8 +3274,8 @@ let shotSel=store.get('shotSel','all');
 function renderGroupTabs(groups,total){const bar=$('gtabs');if(!bar)return;
   if(shotSel!=='all'&&!groups.some(g=>gKey(g)===shotSel))shotSel=groups[0]?gKey(groups[0]):'all';
   bar.innerHTML=`<button type="button" class="gtall${shotSel==='all'?' on':''}" id="gtAll" role="tab" aria-selected="${shotSel==='all'}">전체 <em>${total||0}</em></button>`+groups.map(g=>`<span class="gtw${gKey(g)===shotSel?' on':''}" data-k="${gKey(g)}"><button type="button" class="gtab" role="tab" aria-selected="${gKey(g)===shotSel}" title="눌러서 보기 · 끌어서 순서 바꾸기"><i class="stag ${kindOf(g)}">${tagOf(g,groups)}</i><span>${esc(g.title)}</span><em>${g.items.length}</em></button><button type="button" class="gtx" aria-label="${esc(g.title)} 지우기" title="이 ${kindOf(g)==='s'?'곡':'구절'} 지우기">×</button></span>`).join('');
-  $('gtAll').onclick=()=>{shotSel='all';store.set('shotSel','all');renderShots();};
-  bar.querySelectorAll('.gtw').forEach((w,i)=>{const g=groups[i];w.querySelector('.gtab').onclick=()=>{shotSel=gKey(g);store.set('shotSel',shotSel);renderShots();};
+  $('gtAll').onclick=()=>{shotSel='all';store.set('shotSel','all');lookSlideKey=null;buildLookUI();renderShots();};
+  bar.querySelectorAll('.gtw').forEach((w,i)=>{const g=groups[i];w.querySelector('.gtab').onclick=()=>{shotSel=gKey(g);store.set('shotSel',shotSel);lookSlideKey=null;lookTab=g.type==='word'?'word':'song';store.set('lookTab',lookTab);buildLookUI();renderShots();};
     w.querySelector('.gtx').onclick=e=>{e.stopPropagation();const k=kindOf(g);
       if(k==='s')removeChunk(g.chunk);else if(k==='w')removeTextChunk('wordText',g.chunk-10000,'설교 본문');else removeQuoteChunk(g.chunk-20000);};});}
 
@@ -3367,7 +3405,7 @@ let sbLay=null,sbSelK=null;
 function placeSbSel(){const el=$('sbSel'),cv=$('slidebox').querySelector('canvas');const r=sbSelK&&sbLay&&(sbLay.regions||[]).find(x=>x.k===sbSelK);
   if(!r||!$('slidebox').classList.contains('on')){el.hidden=true;return;}const b=cv.getBoundingClientRect(),k=b.width/cv.width,pad=6;
   el.hidden=false;el.style.left=(b.left+r.x*k-pad)+'px';el.style.top=(b.top+r.y*k-pad)+'px';el.style.width=(r.w*k+pad*2)+'px';el.style.height=(r.h*k+pad*2)+'px';
-  el.querySelector('span').textContent=(REG[r.k]||['',''])[1];}
+  el.querySelector('.sbtag b').textContent=(REG[r.k]||['',''])[1];el.querySelector('.sbedit').hidden=!EDITABLE.includes(r.k);}
 function focusLookSection(key){const h=$('lookCtl').querySelector(`.lkh[data-k="${key}"]`);if(!h)return;const body=h.nextElementSibling;if(body&&body.hidden)h.click();
   setTimeout(()=>{body?.scrollIntoView({behavior:'smooth',block:'center'});body?.classList.add('flash');setTimeout(()=>body?.classList.remove('flash'),1400);},30);}
 $('slidebox').querySelector('canvas').addEventListener('click',e=>{if(!sbLay)return;const cv=e.currentTarget,b=cv.getBoundingClientRect(),k=cv.width/b.width,px=(e.clientX-b.left)*k,py=(e.clientY-b.top)*k;
@@ -3376,14 +3414,38 @@ $('slidebox').querySelector('canvas').addEventListener('click',e=>{if(!sbLay)ret
 $('slidebox').querySelector('canvas').addEventListener('mousemove',e=>{if(!sbLay)return;const cv=e.currentTarget,b=cv.getBoundingClientRect(),k=cv.width/b.width,px=(e.clientX-b.left)*k,py=(e.clientY-b.top)*k;
   cv.style.cursor=(sbLay.regions||[]).some(r=>px>=r.x-8&&px<=r.x+r.w+8&&py>=r.y-8&&py<=r.y+r.h+8)?'pointer':'default';});
 addEventListener('resize',placeSbSel);
+const EDITABLE=['lyrics','body','cap','ref','capref','head','sub','footer','capright'];
+const HFK={head:'head',sub:'sub',footer:'footer',capright:'capRight'};
+function edMaster(sc){return $(sc.ed==='song'?'outText':sc.ed==='quote'?'quoteText':'wordText');}
+function editTextOf(k,sc){const grp=sc.type==='song'?'song':'word';if(HFK[k])return LOOK[grp][HFK[k]]||'';
+  if(k==='ref'||k==='capref')return edMaster(sc).value.split('\n')[sc.cs]||'';return(sc.lines||[]).join('\n');}
+function openTextEdit(){const o=sbList[sbI],r=sbSelK&&sbLay&&(sbLay.regions||[]).find(x=>x.k===sbSelK);if(!o||!r||!EDITABLE.includes(r.k))return;
+  const ed=$('sbEd'),cv=$('slidebox').querySelector('canvas'),b=cv.getBoundingClientRect(),k=b.width/cv.width,ta=ed.querySelector('textarea');
+  ta.value=editTextOf(r.k,o.s);ta.rows=Math.min(8,Math.max(2,ta.value.split('\n').length+1));ed.hidden=false;
+  const w=Math.max(360,r.w*k+24);ed.style.width=w+'px';ed.style.left=Math.max(8,Math.min(innerWidth-w-8,b.left+r.x*k-12))+'px';ed.style.top=Math.max(8,Math.min(innerHeight-200,b.top+(r.y+r.h)*k+10))+'px';
+  ed.dataset.k=r.k;ta.focus();ta.select();}
+function saveTextEdit(){const ed=$('sbEd'),o=sbList[sbI],k=ed.dataset.k,v=ed.querySelector('textarea').value;ed.hidden=true;if(!o)return;const sc=o.s,grp=sc.type==='song'?'song':'word';
+  if(HFK[k]){LOOK[grp][HFK[k]]=v.replace(/\n+/g,' ').trim();saveLook();toast('모든 슬라이드에 바꿨어요');}
+  else{const ta=edMaster(sc),ls=ta.value.split('\n');
+    if(k==='ref'||k==='capref'){ls[sc.cs]=v.replace(/\n+/g,' ').trim();}
+    else{const idx=[...(sc.lsrc||sc.src||[])].sort((a,b)=>a-b);if(!idx.length)return;const em=sc.type==='song'&&FMT.endMark&&FMT.endPos!=='newline'&&ls[idx[idx.length-1]].trimEnd().endsWith(FMT.endMark);
+      const nl=v.split('\n').map(x=>x.trim()).filter(Boolean);if(!nl.length)return;if(em)nl[nl.length-1]+=FMT.endMark;
+      for(let i=idx.length-1;i>=0;i--)ls.splice(idx[i],1);ls.splice(idx[0],0,...nl);}
+    ta.value=ls.join('\n');ta.dispatchEvent(new Event('input',{bubbles:true}));toast('글자를 고쳤어요');}
+  setTimeout(()=>{const key=o.s.ovKey;sbList=songGroups().flatMap(g=>g.items.map(s=>({s,si:g.songIdx||0})));const j=sbList.findIndex(x=>x.s.ovKey===key);if(j>=0)sbI=j;sbI=Math.min(sbI,sbList.length-1);drawSlide();},300);}
+$('sbSel').querySelector('.sbedit').onclick=openTextEdit;
+$('sbEd').querySelector('[data-ok]').onclick=saveTextEdit;$('sbEd').querySelector('[data-x]').onclick=()=>{$('sbEd').hidden=true;};
+$('sbEd').querySelector('textarea').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveTextEdit();}if(e.key==='Escape'){e.stopPropagation();$('sbEd').hidden=true;}});
+$('slidebox').querySelector('canvas').addEventListener('dblclick',()=>{if(sbSelK)openTextEdit();});
+
 const lookEl=document.querySelector('details.look'),lookHome=lookEl.parentElement;
 function openSlide(i){sbList=songGroups().flatMap(g=>g.items.map(s=>({s,si:g.songIdx||0})));sbI=i;
   $('sbSet').appendChild(lookEl);lookScope='slide';syncLookToSlide();lookEl.open=true;drawSlide();$('slidebox').classList.add('on','withset');$('sbClose').focus();}
 function drawSlide(){const o=sbList[sbI];if(!o)return;sbLay=drawScreen($('slidebox').querySelector('canvas'),o.s,o.si);setTimeout(placeSbSel,0);
   $('sbNum').textContent=`${sbI+1} / ${sbList.length}`;$('sbPrev').disabled=sbI===0;$('sbNext').disabled=sbI>=sbList.length-1;}
-const closeSlide=()=>{$('slidebox').classList.remove('on','withset');sbSelK=null;$('sbSel').hidden=true;lookHome.appendChild(lookEl);lookSlideKey=null;buildLookUI();};
+const closeSlide=()=>{$('slidebox').classList.remove('on','withset');sbSelK=null;$('sbSel').hidden=true;$('sbEd').hidden=true;lookHome.appendChild(lookEl);lookSlideKey=null;buildLookUI();};
 function syncLookToSlide(){const o=sbList[sbI];if(!o)return;lookSlideKey=o.s.ovKey||null;lookTab=o.s.type;store.set('lookTab',lookTab);buildLookUI();}
-$('sbPrev').onclick=()=>{if(sbI>0){sbI--;sbSelK=null;drawSlide();syncLookToSlide();}};$('sbNext').onclick=()=>{if(sbI<sbList.length-1){sbI++;sbSelK=null;drawSlide();syncLookToSlide();}};
+$('sbPrev').onclick=()=>{if(sbI>0){sbI--;sbSelK=null;$('sbEd').hidden=true;drawSlide();syncLookToSlide();}};$('sbNext').onclick=()=>{if(sbI<sbList.length-1){sbI++;sbSelK=null;$('sbEd').hidden=true;drawSlide();syncLookToSlide();}};
 $('sbClose').onclick=closeSlide;$('sbGo').onclick=()=>{const o=sbList[sbI];closeSlide();if(o)(o.s.ed==='quote'?gotoQuoteLine(o.s.line):o.s.ed==='word'?gotoWordLine(o.s.line):gotoLine(o.s.line));};
 $('slidebox').addEventListener('click',e=>{if(e.target.id==='slidebox')closeSlide();});
 addEventListener('keydown',e=>{if(!$('slidebox').classList.contains('on'))return;
@@ -3568,6 +3630,7 @@ ${ex}`,{modelTier:'default'});
 
 /* ======================== 5. 말씀 자막 ======================== */
 let BSET={max:32,title:'',nums:true,heads:true,auto:true,gap:false,...store.get('bset2',{})};
+if(!store.get('bsetAuto2',false)){BSET.auto=true;store.set('bset2',BSET);store.set('bsetAuto2',true);}
 function fillBible(){
   if(store.get('look',{})?.word?.verseGap===undefined&&BSET.gap){LOOK.word.verseGap=true;store.set('look',LOOK);}
   $('bAuto').checked=!!BSET.auto;if(BSET.auto)BSET.max=autoWordMax();
@@ -3620,13 +3683,13 @@ function cleanVerses(raw){
   while(res.length&&res[0].gap)res.shift();while(res.length&&res[res.length-1].gap)res.pop();
   return res;
 }
-function verseResult(raw=$('verseIn').value,title=BSET.title){
+function verseResult(raw=$('verseIn').value,title=BSET.title,max=BSET.max){
   const vs=cleanVerses(raw).filter(v=>!(BSET.heads&&v.head));
   if(!vs.length)return{text:'',lines:0};
   const out=[];
   for(const v of vs){if(v.gap){if(out.length&&out[out.length-1]!=='')out.push('');continue;}
     if(LOOK.word.verseGap&&!BSET.nums&&v.n&&out.length&&out[out.length-1]!=='')out.push('');
-    out.push(...splitLine((BSET.nums&&v.n?v.n+' ':'')+v.t,BSET.max));}
+    out.push(...splitLine((BSET.nums&&v.n?v.n+' ':'')+v.t,max));}
   while(out.length&&out[out.length-1]==='')out.pop();
   return{text:(title?title+'\n':'')+out.join('\n'),lines:out.filter(Boolean).length};
 }
@@ -3646,25 +3709,27 @@ $('verseToEdit').onclick=()=>{const r=verseResult().text,nq=insertQuotes();if(!r
 let WSRC=store.get('wordSrc',{});
 function rememberWord(gen,raw,title){const k=gen.split('\n')[0].trim();delete WSRC[k];WSRC[k]={raw,title,gen};
   const ks=Object.keys(WSRC);while(ks.length>30)delete WSRC[ks.shift()];store.set('wordSrc',WSRC);}
-function rewrapWord(){
-  const ta=$('wordText'),ch=wordChunks();if(!ch.length)return;let changed=0,kept=0;
-  const clean=x=>x.replace(/[ \t]+$/gm,'').trim();
-  const out=ch.map(c=>{const s=WSRC[c.split('\n')[0].trim()];if(!s)return c;
-    if(clean(c)!==clean(s.gen)){kept++;return c;}
-    const r=verseResult(s.raw,s.title).text;if(!r||clean(r)===clean(c))return c;
-    changed++;rememberWord(r,s.raw,s.title);return r;});
-  if(changed){ta.value=out.join(gapStr());ta.dispatchEvent(new Event('input',{bubbles:true}));}
-  if(changed||kept)toast(kept?`말씀 자막을 다시 나눴어요. 직접 고친 본문 ${kept}곳은 그대로 뒀어요`:'말씀 자막을 지금 글자 수로 다시 나눴어요');
+// 지금 글을 다시 나눠요: 첫 줄(본문 이름)은 그대로, 절 번호나 빈 줄에서 새 단락
+function reflowChunk(c,max){const ls=c.split('\n'),out=[];let cur=[];const flush=()=>{if(cur.length){out.push(...splitLine(cur.join(' '),max));cur=[];}};
+  for(const l of ls.slice(1)){const t=l.trim();if(!t){flush();if(out.length&&out[out.length-1]!=='')out.push('');continue;}if(/^\d{1,3}\s/.test(t))flush();cur.push(t);}
+  flush();while(out.length&&out[out.length-1]==='')out.pop();return[ls[0],...out].join('\n');}
+let WOV=store.get('wordOv',{}); // 본문 이름(첫 줄) → 이 탭만의 한 줄 글자 수
+const maxFor=h=>(WOV[h]&&WOV[h].max)||BSET.max;
+function rewrapWord(only){let changed=0;const clean=x=>x.replace(/[ \t]+$/gm,'').trim();
+  for(const id of ['wordText','quoteText']){const ta=$(id),t=ta.value.trim();if(!t)continue;const ch=t.split(gapRe()).filter(x=>x.trim());let ch2=0;
+    const out=ch.map(c=>{const h=c.split('\n')[0].trim();if(only&&h!==only)return c;const max=maxFor(h),s=WSRC[h];
+      const fresh=s&&clean(c)===clean(s.gen),r=fresh?verseResult(s.raw,s.title,max).text:reflowChunk(c,max);
+      if(!r||clean(r)===clean(c))return c;ch2++;if(fresh)rememberWord(r,s.raw,s.title);return r;});
+    if(ch2){changed+=ch2;ta.value=out.join(gapStr());ta.dispatchEvent(new Event('input',{bubbles:true}));}}
+  if(changed)toast('말씀 자막을 지금 글자 수로 다시 나눴어요');
 }
 // 말씀 글자 수는 말씀 칸, 말씀 자막 상자 위, 자막 양식 창 어디서 바꿔도 같은 값이에요
 function syncWordCtl(){
-  $('wMax').value=BSET.max;$('fWMax').value=BSET.max;$('wAuto').checked=!!BSET.auto;$('fWAuto').value=BSET.auto?'1':'0';
-  $('wMax').disabled=$('fWMax').disabled=!!BSET.auto;renderFmtChip();if(typeof renderWordFmtPreview==='function')renderWordFmtPreview();
+  $('fWMax').value=BSET.max;$('fWAuto').value=BSET.auto?'1':'0';
+  $('fWMax').disabled=!!BSET.auto;if(typeof renderWCharCtl==='function')renderWCharCtl();renderFmtChip();if(typeof renderWordFmtPreview==='function')renderWordFmtPreview();
 }
 function setWordMax(max,auto){$('bAuto').checked=auto;if(!auto)$('bMax').value=Math.min(60,Math.max(10,max||BSET.max));readBible();}
-$('wMax').addEventListener('change',e=>setWordMax(+e.target.value,false));
 $('fWMax').addEventListener('change',e=>setWordMax(+e.target.value,false));
-$('wAuto').addEventListener('change',e=>setWordMax(BSET.max,e.target.checked));
 $('fWAuto').addEventListener('change',e=>setWordMax(BSET.max,e.target.value==='1'));
 $('openFmtW').onclick=()=>{openFmt('formats');fmtKindTab('word');};
 // 자막 양식 창: 찬양 자막 / 말씀 자막 탭
