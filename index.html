@@ -1622,6 +1622,17 @@ details.look>summary .lkundo:disabled{opacity:.35;cursor:default}
 /* 설교 본문 칸이 좁아지면(옆 메뉴 고정 등) 성경 이름 칸을 한 줄 전체로 */
 .wgrid4 .wc.a{container-type:inline-size}
 @container (max-width:340px){.wc.a .bpick{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto minmax(0,1fr)!important}.wc.a .bpick #bBook{grid-column:1/-1!important}}
+
+/* 호감슬라이드 ↔ HOGAM SLIDE 번갈아 보여 주기 */
+.brandtx{display:inline-grid;vertical-align:middle}
+.brandtx>span{grid-area:1/1;white-space:nowrap;animation:brSwap 10s ease-in-out infinite}
+.brandtx>span+span{animation-delay:-5s;letter-spacing:.06em;font-weight:800}
+@keyframes brSwap{0%,44%{opacity:1;transform:none}50%{opacity:0;transform:translateY(-6px)}94%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.brandtx>span{animation:none}.brandtx>span+span{display:none}}
+/* 프로필 동그라미 톱니바퀴 */
+.rail .megear{display:none!important}
+header.doc #meBox .megear{display:grid;place-items:center;position:absolute;right:-3px;bottom:-3px;width:17px;height:17px;border-radius:50%;background:var(--surface);color:var(--text2);box-shadow:0 0 0 1px var(--line),0 1px 3px rgba(0,0,0,.15);font-size:11px;cursor:pointer}
+header.doc #meBox .megear:hover{color:var(--blue,#007AFF)}
 /* ================= 디자인 규칙 (2단계) =================
    글자 12 작은 설명 · 13 기본 · 15 칸 제목 · 18 창 제목 · 20 큰 숫자
    누르는 것 높이 32px (휴대폰 40px) · 체크박스 18px · 모서리 8 / 12 / 16 */
@@ -1657,8 +1668,8 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 <body>
 <div class="shell">
   <aside class="rail" id="rail"><button class="pin" id="railPin" type="button" aria-pressed="false" aria-label="옆 메뉴 늘 펼쳐 두기" title="늘 펼쳐 두기"><i class="ph ph-push-pin" aria-hidden="true"></i></button>
-    <div class="brand"><div class="mk" aria-hidden="true"><img src="brand/logo.svg" alt=""></div><div><b>호감슬라이드</b></div></div>
-    <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="themeBtn" title="화면 밝기 바꾸기">화면: 자동</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
+    <div class="brand"><div class="mk" aria-hidden="true"><img src="brand/logo.svg" alt=""></div><div><b class="brandtx"><span>호감슬라이드</span><span lang="en" aria-hidden="true">HOGAM SLIDE</span></b></div></div>
+    <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><span class="megear" aria-hidden="true"><i class="ph-fill ph-gear-six"></i></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="themeBtn" title="화면 밝기 바꾸기">화면: 자동</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
     <div class="railsec" data-sec="hist"><span class="ricon" aria-hidden="true"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>예배 기록</button></h4><ul class="rlist" id="histList"></ul></div>
     <div class="railsec" data-sec="lib"><span class="ricon" aria-hidden="true"><i class="ph ph-music-notes" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>곡 보관함</button> <span class="row" style="gap:6px"><span id="libCount"></span><button type="button" class="libopen" id="libOpen">전체 보기</button></span></h4>
       <span class="libsw"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input type="search" class="libsearch" id="libSearch" placeholder="제목·초성·가사 찾기" aria-label="보관함에서 곡 찾기"></span>
@@ -3125,7 +3136,7 @@ let SLIDE_OV=store.get('slideOv',{});
  const place=()=>{if(mq.matches){hd.prepend(br);hd.append(me);}else{meHome.insertBefore(me,meNext);meHome.insertBefore(br,me);me.classList.remove('open');}setDocH();};
  mq.addEventListener('change',place);place();
  av.setAttribute('role','button');av.tabIndex=0;av.setAttribute('aria-label','내 계정 메뉴');av.removeAttribute('aria-hidden');
- const tog=e=>{if(!mq.matches)return;e.stopPropagation();me.classList.toggle('open');};av.addEventListener('click',tog);av.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(e);}if(e.key==='Escape')me.classList.remove('open');});
+ const tog=e=>{if(!mq.matches)return;e.stopPropagation();me.classList.toggle('open');};av.addEventListener('click',tog);me.querySelector('.megear').addEventListener('click',tog);av.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(e);}if(e.key==='Escape')me.classList.remove('open');});
  document.addEventListener('click',e=>{if(!me.contains(e.target))me.classList.remove('open');});}
 setTimeout(()=>{lookPrev=lookSnap();},0);
 $('lkUndo').onclick=e=>{e.preventDefault();e.stopPropagation();undoLook();};
