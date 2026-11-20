@@ -1291,9 +1291,9 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
             <span class="ic"><i class="ph ph-upload-simple" aria-hidden="true"></i></span>
             <span><strong>악보 올리기</strong><span>사진·PDF</span></span>
           </label>
-          <div class="libpick"><span><i class="ph ph-magnifying-glass" aria-hidden="true"></i></span><input type="search" id="libQuick" placeholder="보관함에서 곡 추가 (제목·초성·찬송가 번호)" autocomplete="off" aria-label="보관함에서 곡 추가"><div class="libdrop hidden" id="libDrop"></div></div>
+          <div class="libpick"><span><i class="ph ph-magnifying-glass" aria-hidden="true"></i></span><input type="search" id="libQuick" placeholder="보관함에서 곡 찾아 넣기 (제목·초성·찬송가 번호)" autocomplete="off" aria-label="보관함에서 곡 찾아 넣기"><div class="libdrop hidden" id="libDrop"></div></div>
           <ol class="setlist" id="setlist"></ol>
-          <div id="emptySet" class="empty">콘티 순서대로 악보를 올려 주세요.</div>
+          <div id="emptySet" class="empty">콘티 순서대로 악보를 올리거나, 위 칸에서 보관함 곡을 찾아 넣어 주세요.</div>
           <div class="status" id="convStatus"></div>
         </div>
         <div class="pf">
@@ -1371,7 +1371,7 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 
     <section class="panel shots-panel" id="slidePanel">
       <div class="ph2"><span class="pico c4" aria-hidden="true"><i class="ph-fill ph-presentation" aria-hidden="true"></i></span><h2>슬라이드 미리보기</h2><span class="meta" id="shotCount"></span>
-        <div class="acts"><span class="selbar" id="selBar"><label class="ck"><input type="checkbox" id="selAllCk"><span id="selAllTx">전체 선택</span></label><button class="btn danger hidden" id="selDel">삭제</button></span><button class="btn" id="dlShots">이미지 내려받기</button><button class="btn pri" id="dlPptx">PowerPoint로 내보내기</button></div></div>
+        <div class="acts"><span class="selbar" id="selBar"><label class="ck"><input type="checkbox" id="selAllCk"><span id="selAllTx">전체 선택</span></label><button class="btn danger hidden" id="selDel">고른 화면 지우기</button></span><button class="btn" id="dlShots">이미지 내려받기</button><button class="btn pri" id="dlPptx">PowerPoint로 내보내기</button></div></div>
       <div class="shotbody">
       <div class="shots-top">
         <details class="look" open><summary>슬라이드 설정</summary><div id="lookCtl"></div><button type="button" class="lkfold" id="lkFold" aria-label="슬라이드 설정 접기" title="접기"><span></span></button></details>
@@ -1785,7 +1785,7 @@ setTimeout(()=>{updateConvertBtn();renderMine();},0);
 function aiErr(e){return e?.message||String(e);}
 function parseJSON(t){if(!t)return null;t=t.replace(/```(?:json)?/g,'');const a=Math.min(...['{','['].map(c=>{const i=t.indexOf(c);return i<0?1e9:i;}));
   const b=Math.max(t.lastIndexOf('}'),t.lastIndexOf(']'));if(a>=1e9||b<0)return null;try{return JSON.parse(t.slice(a,b+1));}catch(e){return null;}}
-async function askJSON(prompt,opts={}){const r=await sample(prompt,{modelTier:'complex',...opts});const v=parseJSON(r.text);if(v==null)throw{message:'답을 읽지 못했어요. 다시 눌러 주세요.'};return v;}
+async function askJSON(prompt,opts={}){const r=await sample(prompt,{modelTier:'complex',...opts});const v=parseJSON(r.text);if(v==null)throw{message:'AI 답을 읽지 못했어요. 한 번 더 눌러 주세요.'};return v;}
 
 /* ======================== 1. 악보 변환 ======================== */
 let songs=[];let seq=1;
@@ -2100,7 +2100,7 @@ $('songClear').onclick=()=>{const ta=$('outText'),before=ta.value;if(!before.tri
   toastUndo('찬양 자막을 비웠어요',()=>{ta.value=before;ta.dispatchEvent(new Event('input',{bubbles:true}));});};
 $('verseClear').onclick=()=>{const t=$('bTitle'),v=$('verseIn'),b={t:t.value,v:v.value};if(!b.t.trim()&&!b.v.trim())return;
   t.value='';v.value='';v.dispatchEvent(new Event('input',{bubbles:true}));t.dispatchEvent(new Event('input',{bubbles:true}));
-  toastUndo('말씀 입력을 비웠어요',()=>{t.value=b.t;v.value=b.v;v.dispatchEvent(new Event('input',{bubbles:true}));t.dispatchEvent(new Event('input',{bubbles:true}));});};
+  toastUndo('말씀 칸을 비웠어요',()=>{t.value=b.t;v.value=b.v;v.dispatchEvent(new Event('input',{bubbles:true}));t.dispatchEvent(new Event('input',{bubbles:true}));});};
 $('wordCopy').onclick=()=>{const t=$('wordText').value.trim();if(t)copy(t);else toast('말씀 자막이 비어 있어요');};
 $('wordClear').onclick=()=>{const ta=$('wordText'),before=ta.value;if(!before.trim())return;ta.value='';ta.dispatchEvent(new Event('input',{bubbles:true}));toastUndo('말씀 자막을 비웠어요',()=>{ta.value=before;ta.dispatchEvent(new Event('input',{bubbles:true}));});};
 function gotoWordLine(n){const ta=$('wordText'),ls=ta.value.split('\n');if(n<0||n>=ls.length)return;
@@ -2210,7 +2210,7 @@ function refreshOutMeta(){autosize();if(typeof autosizeWord==='function')autosiz
   const ch=songChunks(),box=$('songCopy');box.innerHTML='';
   if(ch.length>1)ch.forEach((c,i)=>{const w=document.createElement('span');w.className='chipw';
     const name=esc((c.split('\n')[0]||'').replace(/^\d+\.\s*/,'').slice(0,14));
-    w.innerHTML=`<button class="chip" data-c><b>${i+1}</b> ${name} 복사</button><button class="chipx" data-x aria-label="${i+1}번 ${name} 결과에서 지우기">×</button>`;
+    w.innerHTML=`<button class="chip" data-c aria-label="${i+1}번 ${name} 자막 복사" title="이 곡 자막만 복사"><b>${i+1}</b> ${name} <i class="ph ph-copy" aria-hidden="true"></i></button><button class="chipx" data-x aria-label="${i+1}번 ${name} 결과에서 지우기">×</button>`;
     w.title='끌어서 순서를 바꿀 수 있어요';w.querySelector('[data-c]').onclick=()=>copy(c);
     w.querySelector('[data-x]').onclick=()=>removeChunk(i);box.appendChild(w);});
   setTimeout(setEdMax,0);
@@ -2304,7 +2304,7 @@ ${list.map((x,i)=>`${i}) 줄: "${ls[x.line]}"\n   "${x.before}" → "${x.after}"
   return list.map((x,i)=>{const y=keep.get(i);return y?{...x,kind:'sp',after:y.after?String(y.after):x.after}:null;}).filter(x=>x&&x.after!==x.before);
 }
 $('checkBtn').onclick=async()=>{
-  const text=$('outText').value;if(!text.trim()){toast('먼저 자막 텍스트를 넣어 주세요');return;}
+  const text=$('outText').value;if(!text.trim()){toast('찬양 자막이 비어 있어요. ‘찬양 자막에 넣기’를 먼저 눌러 주세요');return;}
   issues=lint();curIssue=0;checkMsg='';
   const b=$('checkBtn'),ic=b.innerHTML;
   {
@@ -2737,7 +2737,7 @@ $('dlShots').onclick=async()=>{
     const name=`${exportName(groups)}.zip`;
     const zblob=await zip.generateAsync({type:'blob'});
     await saveBlob(name,zblob);
-    toast(`${n}장을 내려받았어요`);exported=true;renderSteps();
+    toast(`이미지 ${n}장을 내려받았어요`);exported=true;renderSteps();
   }catch(e){toast(e?.code==='declined'||e?.code==='cancelled'?'내려받기를 취소했어요':'내려받지 못했어요: '+(e?.message||e));}
   finally{b.disabled=false;b.textContent=t;}
 };
@@ -2770,7 +2770,7 @@ $('dlPptx').onclick=async()=>{
     }
     const blob=await pptx.write({outputType:'blob'});
     await saveBlob(`${exportName(groups)}.pptx`,blob);
-    toast(`${n}장짜리 파워포인트를 만들었어요`);exported=true;renderSteps();
+    toast(`PowerPoint로 내보냈어요 (${n}장)`);exported=true;renderSteps();
   }catch(e){toast(e?.code==='declined'||e?.code==='cancelled'?'내보내기를 취소했어요':'만들지 못했어요: '+(e?.message||e));}
   finally{b.disabled=false;b.textContent=t;}
 };
@@ -3105,7 +3105,7 @@ const usedTxt=u=>u&&u.n?`${u.n}번 · ${fmtDate(u.last)}`:'아직 안 부름';
 const okBadge=it=>it.vby?`<i class="okb" title="${esc(it.vby)} 확인">확인됨</i>`:'';
 function addFromLib(t){const it=LIB[t];if(!it)return;
   songs.push(newSong({mode:'lib',title:it.title,result:JSON.parse(JSON.stringify(it.result)),thumb:it.thumb,status:'done'}));
-  renderSongs();orderChanged();toast(`‘${it.title}’을 추가했어요`);}
+  renderSongs();orderChanged();toast(`‘${it.title}’ 곡을 찬양 목록에 넣었어요`);}
 function renderLib(){
   const ul=$('libList'),list=libMatches($('libSearch').value);ul.innerHTML='';
   $('libCount').textContent=Object.keys(LIB).length?Object.keys(LIB).length+'곡':'';
@@ -3263,11 +3263,11 @@ function renderSteps(){
   const cur=st.findIndex(x=>!x.done&&x.k!=='word');
   let act;
   if(busy)act={t:'가사 읽는 중…',dis:true};
-  else if(pend)act={t:`${pend}곡 가사 읽기`,f:()=>$('convertBtn').click()};
-  else if(errs)act={t:`실패한 ${errs}곡 다시 읽기`,f:()=>{songs.filter(s=>s.status==='err').forEach(s=>s.status='idle');renderSongs();$('convertBtn').click();}};
-  else if(!checked&&$('outText').value.trim())act={t:'맞춤법 검사',f:()=>{location.hash='result';$('checkBtn').click();}};
-  else if(open)act={t:`고칠 곳 ${open}개 보기`,f:()=>{location.hash='result';renderFixbar(true);}};
-  else if(combinedText())act={t:'전체 복사',f:()=>copy(combinedText())};
+  else if(pend)act={t:`다음: ${pend}곡 가사 읽기`,f:()=>$('convertBtn').click()};
+  else if(errs)act={t:`다음: 실패한 ${errs}곡 다시 읽기`,f:()=>{songs.filter(s=>s.status==='err').forEach(s=>s.status='idle');renderSongs();$('convertBtn').click();}};
+  else if(!checked&&$('outText').value.trim())act={t:'다음: 맞춤법 검사',f:()=>{location.hash='result';$('checkBtn').click();}};
+  else if(open)act={t:`다음: 고칠 곳 ${open}개 보기`,f:()=>{location.hash='result';renderFixbar(true);}};
+  else if(combinedText())act={t:'다음: 전체 복사',f:()=>copy(combinedText())};
   box.innerHTML=(act?`<button class="btn sm nextact" id="nextAct" ${act.dis?'disabled':''}>${act.t}</button>`:'')+
     `<button class="btn sm pri nextact newsess${act?' two':''}" id="newSess"><i class="ph ph-plus" aria-hidden="true"></i>새 예배 자막 만들기</button>`;
   if(act&&act.f)$('nextAct').onclick=act.f;
@@ -3378,7 +3378,7 @@ async function afterLogin(u){
   const {data:m,error}=await sb.from('members').select('name').eq('user_id',u.id).maybeSingle();
   if(error){showGate();$('gErr').textContent='서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요';return;}
   if(!m){await sb.auth.signOut();showGate();$('gErr').textContent='팀원 등록이 안 된 계정이에요. 관리자에게 물어봐 주세요';return;}
-  me={id:u.id,name:m.name};$('meName').textContent=me.name;$('meAv').textContent=me.name.slice(0,1);
+  me={id:u.id,name:m.name};$('meName').textContent=me.name;$('meAv').textContent=me.name.slice(0,1);$('meAv').title=`내 계정 · ${me.name}`;
   hideGate();await bootRemote();
 }
 $('logout').onclick=async()=>{if(!confirm('나갈까요? 다음에 이름과 개인 암호로 다시 들어오면 돼요.'))return;saveSession();await flushSessions();await sb?.auth.signOut();me=null;location.reload();};
