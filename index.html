@@ -1634,6 +1634,13 @@ details.look>summary .lkundo:disabled{opacity:.35;cursor:default}
 header.doc #meBox .megear{display:grid;place-items:center;position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border-radius:50%;background:var(--surface);color:var(--text2);box-shadow:0 0 0 .5px var(--line);font-size:9px;line-height:1;cursor:pointer}
 header.doc #meBox .megear:hover{color:var(--blue,#007AFF)}
 header.doc #meBox .megear i{font-size:9px!important;line-height:1}
+/* 인용 칸이 하나뿐이거나 줄 끝에 홀로 남으면 가로 전체를 써요 (오른쪽이 비지 않게) */
+#qSlots>.qslot:last-child:nth-child(odd){grid-column:1/-1}
+.qslot{container-type:inline-size}
+@container (min-width:520px){
+  #qSlots .bpick{grid-template-columns:minmax(0,1.6fr) minmax(64px,.8fr) minmax(64px,.8fr) auto minmax(64px,.8fr)!important}
+  #qSlots .bpick select:first-child{grid-column:auto!important}
+}
 /* ================= 디자인 규칙 (2단계) =================
    글자 12 작은 설명 · 13 기본 · 15 칸 제목 · 18 창 제목 · 20 큰 숫자
    누르는 것 높이 32px (휴대폰 40px) · 체크박스 18px · 모서리 8 / 12 / 16 */
