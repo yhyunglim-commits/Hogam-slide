@@ -1645,6 +1645,8 @@ header.doc #meBox .megear i{font-size:9px!important;line-height:1}
 /* 따로 설정된 슬라이드 표시 */
 .shot .ovbadge{position:absolute;right:6px;top:6px;z-index:2;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:#FFB020;color:#3a2600;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 #lookCtl .lkscope .ovwarn{color:#B26A00;display:flex;gap:6px;align-items:flex-start}
+
+#lookCtl .capfit{width:100%;justify-content:center;margin:4px 0 6px}
 /* ================= 디자인 규칙 (2단계) =================
    글자 12 작은 설명 · 13 기본 · 15 칸 제목 · 18 창 제목 · 20 큰 숫자
    누르는 것 높이 32px (휴대폰 40px) · 체크박스 18px · 모서리 8 / 12 / 16 */
@@ -2947,7 +2949,9 @@ const LOOK_CTRLS=[
  ['word','size','본문 크기',1.8,4,.05,''],['word','spacing','본문 자간',-30,60,1,'%'],['word','capLineH','본문 줄간격',1,2.6,.02,''],['word','refSpacing','제목 자간',-30,60,1,'%'],['word','lineH','본문 줄간격',1,2.2,.02,''],['word','maxLines','화면당 줄',2,8,1,'줄'],['word','box','상자 진하기',40,100,1,'%'],['song','bgDim','사진 어둡게',0,80,1,'%'],['word','bgDim','사진 어둡게',0,80,1,'%'],['song','logoSize','로고 크기',2,20,.5,'%'],['word','logoSize','로고 크기',2,20,.5,'%'],['song','shadowAmt','그림자 진하기',0,80,1,'%'],['word','shadowAmt','그림자 진하기',0,80,1,'%'],['song','strokeW','외곽선 두께',1,15,.5,'%'],['word','strokeW','외곽선 두께',1,15,.5,'%'],['word','capSize','자막 글자 크기',1.5,4,.05,''],['word','capAlpha','띠 진하기',30,100,1,'%'],['word','capBottom','띠 아래 여백',0,20,.5,'%'],
 ];
 let lookTab=store.get('lookTab','song');
-function lookChanged(){if(BSET.auto){const m=autoWordMax();if(m!==BSET.max){BSET.max=m;store.set('bset2',BSET);$('bMax').value=m;$('bMaxOut').textContent=m+'자';renderVerse();syncWordCtl();rewrapWord();}}}
+let capLast=0;
+function lookChanged(){try{if(capAuto()){const m=capAutoMax();if(m!==capLast){const first=!capLast;capLast=m;if(!first)rewrapWord();}}else capLast=0;}catch(e){}
+  if(BSET.auto){const m=autoWordMax();if(m!==BSET.max){BSET.max=m;store.set('bset2',BSET);$('bMax').value=m;$('bMaxOut').textContent=m+'자';renderVerse();syncWordCtl();rewrapWord();}}}
 let lkOpen=store.get('lkOpen',{}),lookSlideKey=null,lookScope='all';
 // 슬라이드 설정의 큰 항목 머리줄: 스크롤하면 위에 차곡차곡 쌓여요
 function stackLookHeads(heads){const look=document.querySelector('details.look');if(!look)return;
@@ -3020,6 +3024,10 @@ function buildLookUI(){
   const capSec=()=>{const gg=sec('cap','인용 구절 보여 주기','ph-quotes');{const r=document.createElement('div');r.className='lk lkwide';r.innerHTML=`<span>인용 구절 모양 <em class="lkn">모든 인용</em></span><div class="seg2" role="radiogroup" aria-label="인용 구절 모양"><button type="button" role="radio" data-q2="body">본문처럼</button><button type="button" role="radio" data-q2="caption">자막 박스</button></div>`;
     r.querySelectorAll('[data-q2]').forEach(b=>{b.setAttribute('aria-checked',(LOOK.quote.quoteStyle||'body')===b.dataset.q2);b.onclick=()=>{LOOK.quote.quoteStyle=b.dataset.q2;saveLook();syncQStyle();renderWTabs();buildLookUI();};});gg.appendChild(r);}
     if(LOOK.quote.quoteStyle!=='caption')return;
+    {const b=document.createElement('button');b.type='button';b.className='btn sm pri lkwide capfit';b.innerHTML='<i class="ph ph-magic-wand" aria-hidden="true"></i> 자동 최적으로 맞추기';
+      b.title='모든 인용 구절을 띠 한 줄에 꼭 맞는 글자 수로 다시 나누고, 슬라이드마다 따로 바꾼 설정을 지워요';
+      b.onclick=()=>{const heads=$('quoteText').value.split(gapRe()).map(c=>c.split('\n')[0].trim()).filter(Boolean);heads.forEach(h=>delete WOV[h]);store.set('wordOv',WOV);QMAX=0;store.set('quoteMax',0);
+        for(const k in SLIDE_OV)if(k.startsWith('q:'))delete SLIDE_OV[k];saveLook();capLast=capAutoMax();rewrapWord();renderWCharCtl();buildLookUI();toast(`인용 구절을 한 줄 ${capLast}자로 맞췄어요 · ⤺ 로 되돌릴 수 있어요`);};gg.appendChild(b);}
     {const p=document.createElement('p');p.className='lkhint lkwide';p.textContent='자막 박스는 배경이 비치게 나가요. 그래서 배경 사진·로고·아래 문구·머리글은 쓰지 않아요.';gg.appendChild(p);}color(gg,'capHex','띠 색');slider(gg,'capAlpha',true);slider(gg,'capBottom',true);text(gg,'capRight','띠 위 오른쪽 문구 (설교 제목)');};
   if(capFirst)capSec();
   // 텍스트
@@ -3034,9 +3042,9 @@ function buildLookUI(){
   // 한 줄 글자 수 (찬양: 자막 양식 · 크게 보기에서 '이 슬라이드만'이면 그 곡만 / 말씀: 말씀 한 줄 글자 수)
   {const isW=grp!=='song',songIdx=grp==='song'&&scope==='slide'&&slideKey?results.findIndex(r=>r&&(r.title||'').trim()===slideKey.split(':').slice(1,-1).join(':').trim()):-1;
    const wHead=isW&&scope==='slide'&&slideKey?slideKey.split(':').slice(1,-1).join(':').trim():'';
-   const cur=()=>grp==='song'?(songIdx>=0?ffmt(results[songIdx],FMT).maxChars:FMT.maxChars):(wHead?maxFor(wHead):grp==='quote'?(QMAX||BSET.max):BSET.max),[mn,mx]=grp==='song'?[6,30]:[10,60];
+   const cur=()=>grp==='song'?(songIdx>=0?ffmt(results[songIdx],FMT).maxChars:FMT.maxChars):(wHead?maxFor(wHead):grp==='quote'?(QMAX||(capAuto()?capAutoMax():BSET.max)):BSET.max),[mn,mx]=grp==='song'?[6,30]:[10,60];
    const r=document.createElement('div');r.className='lk lkwide';
-   r.innerHTML=`<div class="lkhead"><label for="lkChars">한 줄 글자 수${grp==='song'?(songIdx>=0?' <em class="lkn">이 곡만</em>':''):(wHead?` <em class="lkn">${grp==='quote'?'이 인용만':'이 본문만'}</em>`:grp==='quote'?(QMAX?' <em class="lkn">모든 인용</em>':' <em class="lkn">본문과 같이</em>'):BSET.auto?' <em class="lkn">자동</em>':'')}</label><span class="stp"><button type="button" aria-label="한 글자 줄이기">−</button><span class="num"><input type="number" id="lkChars" min="${mn}" max="${mx}" value="${cur()}"><em>자</em></span><button type="button" aria-label="한 글자 늘리기">+</button></span></div><p class="lkhint">띄어쓰기 빼고 셉니다. 바꾸면 자막 줄도 다시 나눠요.</p>`;
+   r.innerHTML=`<div class="lkhead"><label for="lkChars">한 줄 글자 수${grp==='song'?(songIdx>=0?' <em class="lkn">이 곡만</em>':''):(wHead?` <em class="lkn">${grp==='quote'?'이 인용만':'이 본문만'}</em>`:grp==='quote'?(QMAX?' <em class="lkn">모든 인용</em>':capAuto()?' <em class="lkn">자동</em>':' <em class="lkn">본문과 같이</em>'):BSET.auto?' <em class="lkn">자동</em>':'')}</label><span class="stp"><button type="button" aria-label="한 글자 줄이기">−</button><span class="num"><input type="number" id="lkChars" min="${mn}" max="${mx}" value="${cur()}"><em>자</em></span><button type="button" aria-label="한 글자 늘리기">+</button></span></div><p class="lkhint">띄어쓰기 빼고 셉니다. 바꾸면 자막 줄도 다시 나눠요.</p>`;
    const nb=r.querySelector('input'),[dn,up]=r.querySelectorAll('.stp button');
    const set=v=>{v=Math.min(mx,Math.max(mn,Math.round(+v)));if(isNaN(v))return;nb.value=v;
      holdScroll();if(isW){if(wHead){WOV[wHead]={max:v};store.set('wordOv',WOV);rewrapWord(wHead);renderWCharCtl();}else if(grp==='quote'){QMAX=v;store.set('quoteMax',QMAX);rewrapWord();renderWCharCtl();}else setWordMax(v,false);}
@@ -3863,7 +3871,12 @@ function reflowChunk(c,max){const ls=c.split('\n'),out=[];let cur=[];const flush
 let WOV=store.get('wordOv',{}); // 본문 이름(첫 줄) → 이 탭만의 한 줄 글자 수
 let QMAX=store.get('quoteMax',0);
 const isQHead=h=>$('quoteText').value.split(gapRe()).some(c=>c.split('\n')[0].trim()===h);
-const maxFor=h=>(WOV[h]&&WOV[h].max)||(QMAX&&isQHead(h)?QMAX:0)||BSET.max;
+function capAutoMax(){const L=LOOK.quote,W=1920,c=capAutoMax.c||(capAutoMax.c=document.createElement('canvas').getContext('2d'));
+  const fs=W*(L.capSize||2.5)/100,sp=fs*(L.spacing||0)/100;c.font=`${fontW(L.font)} ${fs}px "${L.font}", "Noto Sans KR", serif`;
+  const sample='그들은열매를따고난올리브나무처럼될것이다';const per=c.measureText(sample).width/[...sample].length+sp,sw=c.measureText(' ').width+sp;
+  const avail=W*(1-.13)-c.measureText('“  ”').width;return Math.max(10,Math.min(60,Math.floor(avail/(per+sw*.28)*.96)));}
+const capAuto=()=>LOOK.quote.quoteStyle==='caption'&&!QMAX;
+const maxFor=h=>(WOV[h]&&WOV[h].max)||(isQHead(h)?(QMAX||(LOOK.quote.quoteStyle==='caption'?capAutoMax():0)):0)||BSET.max;
 function rewrapWord(only){let changed=0;const clean=x=>x.replace(/[ \t]+$/gm,'').trim();
   for(const id of ['wordText','quoteText']){const ta=$(id),t=ta.value.trim();if(!t)continue;const ch=t.split(gapRe()).filter(x=>x.trim());let ch2=0;
     const out=ch.map(c=>{const h=c.split('\n')[0].trim();if(only&&h!==only)return c;const max=maxFor(h),s=WSRC[h];
