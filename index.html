@@ -7,7 +7,9 @@
 <script src="config.js"></script>
 <script>try{var th=JSON.parse(localStorage.getItem("cj_theme")||"\"auto\"");if(th==="dark"||th==="light")document.documentElement.dataset.theme=th;}catch(e){}</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
-<link rel="icon" type="image/svg+xml" href="brand/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="brand/favicon-64.png">
+<link rel="icon" type="image/svg+xml" href="brand/logo.svg">
 <link rel="apple-touch-icon" href="brand/apple-touch-icon.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/regular/style.css">
@@ -1602,6 +1604,12 @@ details.look>summary .lkundo:disabled{opacity:.35;cursor:default}
 .lkblank .bgsw .pick{display:grid;place-items:center;background:var(--surface);color:var(--text2);position:relative;overflow:hidden}
 .lkblank .bgsw .pick input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .lkblank .bgsw .on{border-color:var(--blue,#007AFF);box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--blue,#007AFF)}
+
+/* 스크롤하면 예배 제목 상자를 얇게 */
+body.hdrmini header.doc{min-height:0!important}
+/* 옆 메뉴 로고·이름 조금 더 크게 */
+@media (min-width:1101px){.rail .brand .mk{width:38px!important;height:38px!important}.rail .brand b{font-size:19px!important;font-weight:700}}
+.brand .mk{width:34px;height:34px}.brand b{font-size:18px}
 /* ================= 디자인 규칙 (2단계) =================
    글자 12 작은 설명 · 13 기본 · 15 칸 제목 · 18 창 제목 · 20 큰 숫자
    누르는 것 높이 32px (휴대폰 40px) · 체크박스 18px · 모서리 8 / 12 / 16 */
@@ -1637,7 +1645,7 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 <body>
 <div class="shell">
   <aside class="rail" id="rail"><button class="pin" id="railPin" type="button" aria-pressed="false" aria-label="옆 메뉴 늘 펼쳐 두기" title="늘 펼쳐 두기"><i class="ph ph-push-pin" aria-hidden="true"></i></button>
-    <div class="brand"><div class="mk" aria-hidden="true"><img src="brand/logo.svg" alt=""></div><div><b>호감슬라이드</b><small>예배 자막과 슬라이드</small></div></div>
+    <div class="brand"><div class="mk" aria-hidden="true"><img src="brand/logo.svg" alt=""></div><div><b>호감슬라이드</b></div></div>
     <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="themeBtn" title="화면 밝기 바꾸기">화면: 자동</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
     <div class="railsec" data-sec="hist"><span class="ricon" aria-hidden="true"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>예배 기록</button></h4><ul class="rlist" id="histList"></ul></div>
     <div class="railsec" data-sec="lib"><span class="ricon" aria-hidden="true"><i class="ph ph-music-notes" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>곡 보관함</button> <span class="row" style="gap:6px"><span id="libCount"></span><button type="button" class="libopen" id="libOpen">전체 보기</button></span></h4>
@@ -3101,7 +3109,10 @@ function drawCaption(x,W,H,sc){
 }
 let SLIDE_OV=store.get('slideOv',{});
 {const me=$('meBox'),fit=()=>{const b=me.offsetParent?Math.round(me.getBoundingClientRect().bottom+(document.querySelector('.rail')?.scrollTop||0)):0;if(b>40&&innerWidth>1100)document.documentElement.style.setProperty('--hdrH',b+'px');else document.documentElement.style.removeProperty('--hdrH');};
- if(window.ResizeObserver)new ResizeObserver(fit).observe(me);addEventListener('resize',fit);setTimeout(fit,0);setTimeout(fit,800);}
+ if(window.ResizeObserver)new ResizeObserver(fit).observe(me);addEventListener('resize',fit);setTimeout(fit,0);setTimeout(fit,800);
+ const hd=document.querySelector('header.doc'),mini=()=>{const on=scrollY>8&&innerWidth>1100&&!!document.documentElement.style.getPropertyValue('--hdrH');if(on===document.body.classList.contains('hdrmini'))return;
+  if(on){const nx=hd.nextElementSibling,y=()=>nx?nx.getBoundingClientRect().top+scrollY:0,y0=y();document.body.classList.add('hdrmini');hd.style.marginBottom='0px';const m=y0-y();hd.style.marginBottom=Math.max(0,m)+'px';const r=y0-y();if(Math.abs(r)>.5)hd.style.marginBottom=Math.max(0,m+r)+'px';}else{document.body.classList.remove('hdrmini');hd.style.marginBottom='';}};
+ addEventListener('scroll',mini,{passive:true});addEventListener('resize',mini);}
 setTimeout(()=>{lookPrev=lookSnap();},0);
 $('lkUndo').onclick=e=>{e.preventDefault();e.stopPropagation();undoLook();};
 function tabOf(sc){return!sc||sc.type==='song'?'song':sc.ed==='quote'?'quote':'word';}
