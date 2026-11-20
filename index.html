@@ -1581,14 +1581,6 @@ details.look>summary .lkundo:disabled{opacity:.35;cursor:default}
 #lookCtl .seg2 [data-q2]{flex:1}
 #lookCtl .seg2 [data-q2][aria-checked=true]{background:var(--blue,#007AFF);color:#fff;font-weight:700}
 /* 옆 메뉴 로고 칸 아래 선 = 위 예배 제목 상자 아래 선 (한 줄로 이어지게) */
-@media (min-width:1101px){
-  /* 옆 메뉴를 접든 펴든 프로필 칸 아래 선 높이가 같게 */
-  .rail .brand{height:64px;box-sizing:border-box;padding-top:0!important;padding-bottom:0!important;align-items:center}
-  .rail #meBox{box-sizing:border-box;min-height:62px;margin-top:4px!important;margin-bottom:10px!important;border-bottom:1px solid var(--line)!important}
-  body:not(.railpinned) .rail:not(:hover):not(:focus-within) #meBox{border-bottom-color:transparent!important}
-  /* 예배 제목 상자 아래 선을 프로필 칸 아래 선에 맞춰요 (높이는 화면에서 재서 넣어요) */
-  header.doc{min-height:var(--hdrH,auto);box-sizing:border-box;display:flex;flex-direction:column;justify-content:center}
-}
 
 /* 빈 화면 더하기 칸 */
 .sgrid .shotadd{aspect-ratio:16/9;border:1.5px dashed var(--line2,var(--line));border-radius:10px;background:transparent;color:var(--text3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;font:inherit;font-size:13px;transition:border-color .15s,color .15s,background .15s}
@@ -1605,11 +1597,31 @@ details.look>summary .lkundo:disabled{opacity:.35;cursor:default}
 .lkblank .bgsw .pick input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .lkblank .bgsw .on{border-color:var(--blue,#007AFF);box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--blue,#007AFF)}
 
-/* 스크롤하면 예배 제목 상자를 얇게 */
-body.hdrmini header.doc{min-height:0!important}
 /* 옆 메뉴 로고·이름 조금 더 크게 */
 @media (min-width:1101px){.rail .brand .mk{width:38px!important;height:38px!important}.rail .brand b{font-size:19px!important;font-weight:700}}
 .brand .mk{width:34px;height:34px}.brand b{font-size:18px}
+
+/* ===== 맨 위 한 줄 바 (미리캔버스 참고) ===== */
+@media (min-width:1101px){
+  :root{--barH:60px}
+  .shell{padding-top:var(--barH)}
+  body:not(:has(#v-home.on)) .shell{padding-top:0}
+  .rail{top:var(--barH)!important;height:calc(100vh - var(--barH))!important}
+  header.doc{position:fixed!important;top:0;left:0;right:0;height:var(--barH);min-height:0!important;margin:0!important;padding:0 18px 0 0!important;z-index:70;display:flex;align-items:center;gap:14px;box-sizing:border-box;border-bottom:1px solid var(--line)!important;background:var(--bar)!important}
+  header.doc .r1{flex:1;min-width:0}
+  header.doc .brand{flex:none;height:100%;padding:0 10px 0 18px!important;margin:0;display:flex;align-items:center;gap:10px}
+  header.doc .brand .mk{width:34px!important;height:34px!important}
+  header.doc .brand b{font-size:19px;font-weight:700;white-space:nowrap;color:var(--text)}
+  header.doc .brand::after{content:'';width:1px;height:22px;background:var(--line);margin-left:14px}
+  header.doc #meBox{position:relative;flex:none;margin:0!important;padding:0!important;border:0!important;background:none!important;min-height:0!important}
+  header.doc #meBox .av{cursor:pointer;width:36px;height:36px;border-radius:50%;transition:box-shadow .15s}
+  header.doc #meBox .av:hover,header.doc #meBox.open .av{box-shadow:0 0 0 3px rgba(0,122,255,.25)}
+  header.doc #meBox .mt{display:none!important;position:absolute;right:0;top:calc(100% + 10px);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:0 12px 32px -12px rgba(16,24,40,.35);min-width:230px;gap:6px;z-index:80}
+  header.doc #meBox.open .mt{display:flex!important}
+}
+/* 설교 본문 칸이 좁아지면(옆 메뉴 고정 등) 성경 이름 칸을 한 줄 전체로 */
+.wgrid4 .wc.a{container-type:inline-size}
+@container (max-width:340px){.wc.a .bpick{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto minmax(0,1fr)!important}.wc.a .bpick #bBook{grid-column:1/-1!important}}
 /* ================= 디자인 규칙 (2단계) =================
    글자 12 작은 설명 · 13 기본 · 15 칸 제목 · 18 창 제목 · 20 큰 숫자
    누르는 것 높이 32px (휴대폰 40px) · 체크박스 18px · 모서리 8 / 12 / 16 */
@@ -3108,11 +3120,13 @@ function drawCaption(x,W,H,sc){
   return{texts:[],box:null,footer:null,caption:true,regions:R};
 }
 let SLIDE_OV=store.get('slideOv',{});
-{const me=$('meBox'),fit=()=>{const b=me.offsetParent?Math.round(me.getBoundingClientRect().bottom+(document.querySelector('.rail')?.scrollTop||0)):0;if(b>40&&innerWidth>1100)document.documentElement.style.setProperty('--hdrH',b+'px');else document.documentElement.style.removeProperty('--hdrH');};
- if(window.ResizeObserver)new ResizeObserver(fit).observe(me);addEventListener('resize',fit);setTimeout(fit,0);setTimeout(fit,800);
- const hd=document.querySelector('header.doc'),mini=()=>{const on=scrollY>8&&innerWidth>1100&&!!document.documentElement.style.getPropertyValue('--hdrH');if(on===document.body.classList.contains('hdrmini'))return;
-  if(on){const nx=hd.nextElementSibling,y=()=>nx?nx.getBoundingClientRect().top+scrollY:0,y0=y();document.body.classList.add('hdrmini');hd.style.marginBottom='0px';const m=y0-y();hd.style.marginBottom=Math.max(0,m)+'px';const r=y0-y();if(Math.abs(r)>.5)hd.style.marginBottom=Math.max(0,m+r)+'px';}else{document.body.classList.remove('hdrmini');hd.style.marginBottom='';}};
- addEventListener('scroll',mini,{passive:true});addEventListener('resize',mini);}
+// 넓은 화면: 미리캔버스처럼 맨 위 한 줄 바 (왼쪽 로고, 오른쪽 프로필 동그라미) · 좁은 화면은 옆 메뉴 안으로 돌려놔요
+{const hd=document.querySelector('header.doc'),br=document.querySelector('.rail .brand'),me=$('meBox'),meHome=me.parentElement,meNext=me.nextSibling,mq=matchMedia('(min-width:1101px)'),av=me.querySelector('.av');
+ const place=()=>{if(mq.matches){hd.prepend(br);hd.append(me);}else{meHome.insertBefore(me,meNext);meHome.insertBefore(br,me);me.classList.remove('open');}setDocH();};
+ mq.addEventListener('change',place);place();
+ av.setAttribute('role','button');av.tabIndex=0;av.setAttribute('aria-label','내 계정 메뉴');av.removeAttribute('aria-hidden');
+ const tog=e=>{if(!mq.matches)return;e.stopPropagation();me.classList.toggle('open');};av.addEventListener('click',tog);av.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(e);}if(e.key==='Escape')me.classList.remove('open');});
+ document.addEventListener('click',e=>{if(!me.contains(e.target))me.classList.remove('open');});}
 setTimeout(()=>{lookPrev=lookSnap();},0);
 $('lkUndo').onclick=e=>{e.preventDefault();e.stopPropagation();undoLook();};
 function tabOf(sc){return!sc||sc.type==='song'?'song':sc.ed==='quote'?'quote':'word';}
