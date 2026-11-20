@@ -3006,7 +3006,7 @@ function buildLookUI(){
   const sw=(g,k,label,after)=>{const l=document.createElement('label');l.className='lksw lkwide';l.innerHTML=`<span>${label}${allTag(k)}</span><input type="checkbox" role="switch"><i aria-hidden="true"></i>`;const i=l.querySelector('input');i.checked=!!T(k)[k];
     i.onchange=()=>{T(k)[k]=i.checked;saveLook();if(k==='verseGap')renderVerse();if(after)after(i.checked);};g.appendChild(l);return l;};
   const color=(g,k,label)=>{const l=document.createElement('label');l.className='lkcol';l.innerHTML=`<span>${label}</span><span class="sw0"><input type="color" value="${L[k]}" aria-label="${label}"><b style="background:${L[k]}"></b><em>${String(L[k]).toUpperCase()}</em></span>`;
-    const i=l.querySelector('input'),b=l.querySelector('b'),em=l.querySelector('em');i.oninput=()=>{L[k]=i.value;b.style.background=i.value;em.textContent=i.value.toUpperCase();saveLook();};g.appendChild(l);return l;};
+    const i=l.querySelector('input'),b=l.querySelector('b'),em=l.querySelector('em');i.oninput=()=>{if(k==='capHex'&&scope!=='slide'){let ch=0;for(const s0 of parseScreens())if(s0.ed==='quote'&&songColors['📖'+s0.ref]){delete songColors['📖'+s0.ref];ch=1;}if(ch){store.set('songColors',songColors);teamSet('songColors');}}L[k]=i.value;b.style.background=i.value;em.textContent=i.value.toUpperCase();saveLook();};g.appendChild(l);return l;};
   // 켜면 아래에 자세한 설정이 펼쳐지는 줄 (외곽선 · 그림자)
   const fx=(g,k,label,build)=>{const w=document.createElement('div');w.className='lkfx lkwide';g.appendChild(w);
     const head=sw(w,k,label,on=>{body.hidden=!on;});const body=document.createElement('div');body.className='lkfxb';body.hidden=!L[k];w.appendChild(body);build(body);};
@@ -3141,7 +3141,8 @@ function drawCaption(x,W,H,sc){
     lines=lines.flatMap((l,i)=>ws[i]>avail?splitLine(l,maxC):[l]);}
   const lh=fs*(L.capLineH||1.6),padY=fs*.95;
   const bh=padY*2+lh*Math.max(1,lines.length),by=H-H*(L.capBottom??3)/100-bh;
-  const hx=String(L.capHex||'#0E6874').replace('#',''),cn=parseInt(hx.length===3?hx.replace(/./g,'$&$&'):hx,16);
+  const gc=songColors['📖'+(sc.ref||'')],pc=gc?(gc[0]==='#'?gc:(palById(gc)||{c:[]}).c[0]):null,oc=(SLIDE_OV[sc.ovKey]||{}).capHex;
+  const hx=String(oc||pc||L.capHex||'#0E6874').replace('#',''),cn=parseInt(hx.length===3?hx.replace(/./g,'$&$&'):hx,16);
   x.fillStyle=`rgba(${cn>>16},${cn>>8&255},${cn&255},${(L.capAlpha??84)/100})`;x.fillRect(0,by,W,bh);
   x.fillStyle='rgba(255,255,255,.96)';x.fillRect(W*.03,by,Math.max(2,W*.0045),bh);
   const ls=W*(L.capSize||2.5)/100*.8;x.textBaseline='middle';x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=ls*.25;
