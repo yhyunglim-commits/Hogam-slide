@@ -1578,6 +1578,8 @@ details.look>summary .lkundo:disabled{opacity:.35;cursor:default}
 /* 인용 구절 모양: 고른 쪽 또렷하게 */
 #lookCtl .seg2 [data-q2]{flex:1}
 #lookCtl .seg2 [data-q2][aria-checked=true]{background:var(--blue,#007AFF);color:#fff;font-weight:700}
+/* 옆 메뉴 로고 칸 아래 선 = 위 예배 제목 상자 아래 선 (한 줄로 이어지게) */
+@media (min-width:1101px){.rail .brand{height:var(--doch,57px);box-sizing:border-box;padding-top:0!important;padding-bottom:0!important;border-bottom:1px solid var(--line);align-items:center}}
 /* ================= 디자인 규칙 (2단계) =================
    글자 12 작은 설명 · 13 기본 · 15 칸 제목 · 18 창 제목 · 20 큰 숫자
    누르는 것 높이 32px (휴대폰 40px) · 체크박스 18px · 모서리 8 / 12 / 16 */
@@ -3065,6 +3067,7 @@ function drawCaption(x,W,H,sc){
   return{texts:[],box:null,footer:null,caption:true,regions:R};
 }
 let SLIDE_OV=store.get('slideOv',{});
+{const d=document.querySelector('header.doc');const fit=()=>document.documentElement.style.setProperty('--doch',d.offsetHeight+'px');if(window.ResizeObserver)new ResizeObserver(fit).observe(d);fit();}
 setTimeout(()=>{lookPrev=lookSnap();},0);
 $('lkUndo').onclick=e=>{e.preventDefault();e.stopPropagation();undoLook();};
 function tabOf(sc){return!sc||sc.type==='song'?'song':sc.ed==='quote'?'quote':'word';}
