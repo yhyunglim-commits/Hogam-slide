@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <title>호감슬라이드</title>
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5CA8FF"/>
+      <stop offset=".55" stop-color="#3182F6"/>
+      <stop offset="1" stop-color="#1B64DA"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".42"/>
+      <stop offset=".45" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="foot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4C97FA"/>
+      <stop offset="1" stop-color="#1A5BD0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="100" cy="76" r="78" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFBEA"/>
+      <stop offset=".14" stop-color="#FFF4CC" stop-opacity=".9"/>
+      <stop offset=".45" stop-color="#FFE7A3" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#FFE7A3" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="7"/></filter>
+    <clipPath id="screen">
+      <path d="M16 58C16 44 24 37 39 37H161C176 37 184 44 184 58L186 125C186 141 177 149 160 149H40C23 149 14 141 14 125Z"/>
+    </clipPath>
+    <mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="200">
+      <rect width="200" height="200" fill="#fff"/>
+      <rect x="96.5" y="0" width="7" height="200" rx="3.5" fill="#000"/>
+      <rect x="0" y="72.5" width="200" height="7" rx="3.5" fill="#000"/>
+    </mask>
+  </defs>
+  <!-- 바닥 그림자 -->
+  <ellipse cx="100" cy="160" rx="70" ry="10" fill="#1B64DA" opacity=".28" filter="url(#soft)"/>
+  <!-- 받침 -->
+  <rect x="70" y="158" width="60" height="11" rx="5.5" fill="url(#foot)"/>
+  <rect x="74" y="159.5" width="52" height="3" rx="1.5" fill="#fff" opacity=".35"/>
+  <!-- 화면 -->
+  <g mask="url(#cut)">
+    <g clip-path="url(#screen)">
+      <rect width="200" height="200" fill="url(#body)"/>
+      <circle cx="100" cy="76" r="78" fill="url(#glow)"/>
+      <rect width="200" height="96" fill="url(#shine)"/>
+    </g>
+  </g>
+</svg>
