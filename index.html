@@ -1579,7 +1579,29 @@ details.look>summary .lkundo:disabled{opacity:.35;cursor:default}
 #lookCtl .seg2 [data-q2]{flex:1}
 #lookCtl .seg2 [data-q2][aria-checked=true]{background:var(--blue,#007AFF);color:#fff;font-weight:700}
 /* 옆 메뉴 로고 칸 아래 선 = 위 예배 제목 상자 아래 선 (한 줄로 이어지게) */
-@media (min-width:1101px){.rail .brand{height:var(--doch,57px);box-sizing:border-box;padding-top:0!important;padding-bottom:0!important;border-bottom:1px solid var(--line);align-items:center}}
+@media (min-width:1101px){
+  /* 옆 메뉴를 접든 펴든 프로필 칸 아래 선 높이가 같게 */
+  .rail .brand{height:64px;box-sizing:border-box;padding-top:0!important;padding-bottom:0!important;align-items:center}
+  .rail #meBox{box-sizing:border-box;min-height:62px;margin-top:4px!important;margin-bottom:10px!important;border-bottom:1px solid var(--line)!important}
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) #meBox{border-bottom-color:transparent!important}
+  /* 예배 제목 상자 아래 선을 프로필 칸 아래 선에 맞춰요 (높이는 화면에서 재서 넣어요) */
+  header.doc{min-height:var(--hdrH,auto);box-sizing:border-box;display:flex;flex-direction:column;justify-content:center}
+}
+
+/* 빈 화면 더하기 칸 */
+.sgrid .shotadd{aspect-ratio:16/9;border:1.5px dashed var(--line2,var(--line));border-radius:10px;background:transparent;color:var(--text3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;font:inherit;font-size:13px;transition:border-color .15s,color .15s,background .15s}
+.sgrid .shotadd i{font-size:26px}
+.sgrid .shotadd:hover{border-color:var(--blue,#007AFF);color:var(--blue,#007AFF);background:rgba(0,122,255,.06)}
+/* 빈 화면 배경 고르기 */
+.lkblank{padding:12px 4px}
+.lkblank h5{margin:0 0 4px;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--text)}
+.lkblank .bgsw{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+.lkblank .bgsw button,.lkblank .bgsw .pick{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;box-shadow:0 0 0 1px var(--line)}
+.lkblank .bgsw .txt{width:auto;border-radius:15px;padding:0 12px;background:var(--surface);color:var(--text);font:inherit;font-size:12px}
+.lkblank .bgsw .blk{background:#000}
+.lkblank .bgsw .pick{display:grid;place-items:center;background:var(--surface);color:var(--text2);position:relative;overflow:hidden}
+.lkblank .bgsw .pick input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.lkblank .bgsw .on{border-color:var(--blue,#007AFF);box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--blue,#007AFF)}
 /* ================= 디자인 규칙 (2단계) =================
    글자 12 작은 설명 · 13 기본 · 15 칸 제목 · 18 창 제목 · 20 큰 숫자
    누르는 것 높이 32px (휴대폰 40px) · 체크박스 18px · 모서리 8 / 12 / 16 */
@@ -2662,7 +2684,7 @@ function removeChunk(i){
   toast(`${i+1}번을 결과에서 지웠어요`);
 }
 async function copy(t){try{await navigator.clipboard.writeText(t);toast('복사했어요');if(t===$('outText').value||t===combinedText()){exported=true;renderSteps();}}catch(e){toast('복사가 막혔어요. 글을 길게 눌러 직접 복사해 주세요');}}
-$('copyAll').onclick=()=>copy($('outText').value);
+$('copyAll').onclick=()=>copy($('outText').value.split('\n').map(l=>l.startsWith(BLANK_MARK)?l.slice(BLANK_MARK.length):l).join('\n'));
 
 let issues=[],curIssue=0,checkMsg='';
 // ---- 기계 검사: 길이·빈칸·같은 줄의 표기 차이
@@ -2794,6 +2816,7 @@ function gotoLine(n){showSongTabForLine(n);
 /* ---- 화면 미리보기: 자막 결과 글을 화면 단위로 나눠 그려요 ---- */
 let wordLineSet=new Set();
 function parseScreens(){wordLineSet=new Set();return[...parseText($('outText').value,'song',0),...parseText($('wordText').value,'word',10000),...parseText($('quoteText').value,'quote',20000)];}
+const BLANK_MARK='[빈 화면]';
 function parseText(text,ed,base){
   const ls=String(text||'').split('\n'),f=FMT,screens=[],forceWord=ed==='word'||ed==='quote';
   // 곡/본문 단위로 자르기 (빈 줄 songGap개 이상)
@@ -2827,6 +2850,7 @@ function parseText(text,ed,base){
     let songTitle='';
     blocks.forEach((bl,bi)=>{
       let lines=bl.map(o=>o.t.trim()).filter(t=>!(f.endMark&&t===f.endMark)).map(t=>f.endMark&&t.endsWith(f.endMark)?t.slice(0,-f.endMark.length).trim():t);
+      if(lines.length===1&&lines[0]===BLANK_MARK){screens.push({type:'song',ed,chunk:base+ci,title:songTitle,blank:true,lines:[],line:bl[0].i,src:bl.map(o=>o.i),lsrc:[],keep:-1,cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});return;}
       let title='',bl2=bl.filter(o=>!(f.endMark&&o.t.trim()===f.endMark));
       if(f.titleMode!=='none'&&(f.titleWhere==='every'||bi===0)&&lines.length>1){title=lines[0];lines=lines.slice(1);bl2=bl2.slice(1);}
       if(f.labels&&lines.length>1){const re=new RegExp('^'+f.labelStyle.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace('\\{label\\}','(.{1,8})').replace('{label}','(.{1,8})')+'$');if(re.test(lines[0])){lines=lines.slice(1);bl2=bl2.slice(1);}}
@@ -2903,6 +2927,15 @@ function buildLookUI(){
     sc.querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{lookScope=b.dataset.sc;buildLookUI();});
     sc.querySelector('[data-ovclear]')?.addEventListener('click',()=>{delete SLIDE_OV[slideKey];saveLook();buildLookUI();toast('이 슬라이드를 모든 슬라이드 설정으로 돌렸어요');});
     box.appendChild(sc);}
+  // 빈 화면: 배경만 골라요
+  const blankSc=slideKey&&scope==='slide'&&grp==='song'?songGroups().flatMap(g=>g.items).find(s=>s.ovKey===slideKey&&s.blank):null;
+  if(blankSc){const ov=SLIDE_OV[slideKey]||{},cur=ov.bg||'';const w=document.createElement('div');w.className='lkblank';
+    w.innerHTML=`<h5><i class="ph ph-rectangle" aria-hidden="true"></i> 빈 화면 배경</h5><p class="lkhint">글자 없이 배경만 나오는 화면이에요. 지우려면 미리보기에서 × 를 누르세요.</p>
+      <div class="bgsw"><button type="button" data-bg="" class="txt${!cur?' on':''}">곡 배경 그대로</button><button type="button" data-bg="black" class="blk${cur==='black'?' on':''}" title="검정" aria-label="검정"></button>${PALS.map(p=>`<button type="button" data-bg="${p.id}" title="${p.name}" aria-label="${p.name}" class="${cur===p.id?'on':''}" style="background:linear-gradient(135deg,${p.c[0]},${p.c[2]})"></button>`).join('')}<label class="pick${cur[0]==='#'?' on':''}" title="색 직접 고르기"><input type="color" value="${cur[0]==='#'?cur:'#335577'}" aria-label="빈 화면 색 직접 고르기"><i class="ph ph-eyedropper" aria-hidden="true"></i></label></div>`;
+    const setBg=v=>{const o=SLIDE_OV[slideKey]||(SLIDE_OV[slideKey]={});if(v)o.bg=v;else delete o.bg;saveLook();};
+    w.querySelectorAll('[data-bg]').forEach(b=>b.onclick=()=>{setBg(b.dataset.bg);buildLookUI();});
+    const ci=w.querySelector('input[type=color]');ci.oninput=()=>setBg(ci.value);ci.onchange=()=>buildLookUI();
+    box.appendChild(w);return;}
   // 묶음은 접었다 펼 수 있어요 (열림 상태는 기억해요)
   const heads=[];
   const sec=(key,title,icon)=>{const open=lkOpen[key]!==false,h=document.createElement('button');h.type='button';h.className='lkh'+(open?' open':'');h.dataset.k=key;h.setAttribute('aria-expanded',open);
@@ -3067,7 +3100,8 @@ function drawCaption(x,W,H,sc){
   return{texts:[],box:null,footer:null,caption:true,regions:R};
 }
 let SLIDE_OV=store.get('slideOv',{});
-{const d=document.querySelector('header.doc');const fit=()=>document.documentElement.style.setProperty('--doch',d.offsetHeight+'px');if(window.ResizeObserver)new ResizeObserver(fit).observe(d);fit();}
+{const me=$('meBox'),fit=()=>{const b=me.offsetParent?Math.round(me.getBoundingClientRect().bottom+(document.querySelector('.rail')?.scrollTop||0)):0;if(b>40&&innerWidth>1100)document.documentElement.style.setProperty('--hdrH',b+'px');else document.documentElement.style.removeProperty('--hdrH');};
+ if(window.ResizeObserver)new ResizeObserver(fit).observe(me);addEventListener('resize',fit);setTimeout(fit,0);setTimeout(fit,800);}
 setTimeout(()=>{lookPrev=lookSnap();},0);
 $('lkUndo').onclick=e=>{e.preventDefault();e.stopPropagation();undoLook();};
 function tabOf(sc){return!sc||sc.type==='song'?'song':sc.ed==='quote'?'quote':'word';}
@@ -3081,6 +3115,9 @@ function drawScreen(cv,sc,songIdx,opt={}){return withLook(sc,()=>drawScreen0(cv,
 function drawScreen0(cv,sc,songIdx,opt={}){
   const W=cv.width,H=cv.height,x=cv.getContext('2d');x.textBaseline='middle';
   if(isCaption(sc))return drawCaption(x,W,H,sc);
+  if(sc.blank){const ob=(SLIDE_OV[sc.ovKey]||{}).bg,ph=mediaImg('song');
+    if(ob==='black'){x.fillStyle='#000';x.fillRect(0,0,W,H);}else if(ob)drawBg(x,W,H,palById(ob)||palOf(sc,songIdx));else if(ph)drawPhoto(x,W,H,ph,LOOK.song.bgDim);else drawBg(x,W,H,palOf(sc,songIdx));
+    return{texts:[],box:null,footer:null,regions:[]};}
   const grp=sc.type==='song'?'song':'word',photo=mediaImg(sc.ed==='quote'&&MEDIA.quote?'quote':grp),logo=mediaImg('logo');
   if(photo)drawPhoto(x,W,H,photo,LOOK[grp].bgDim);else drawBg(x,W,H,palOf(sc,songIdx));
   const lb=logoBox(x,W,H,LOOK[grp],grp==='song'?H*.935:H*.89,logo);if(lb)x.drawImage(logo,lb.x,lb.y,lb.w,lb.h);
@@ -3191,6 +3228,7 @@ function renderShots(){
           lookTab=tabOf(s);store.set('lookTab',lookTab);lookSlideKey=s.ovKey||null;lookScope='slide';buildLookUI();
           if(e.detail===0&&again)openSlide(idx);};
         bt.ondblclick=()=>openSlide(idx);bt.title=(bt.dataset.over?'⚠ '+bt.dataset.over+' · ':'')+'누르면 이 슬라이드 설정, 두 번 누르면 크게 보기';if(bt.dataset.over)bt.insertAdjacentHTML('beforeend',`<span class="overtag">${bt.dataset.over}</span>`);wrap.appendChild(bt);wrap.appendChild(ck);grid.appendChild(wrap);});
+      if(g.type==='song'){const add=document.createElement('button');add.type='button';add.className='shotadd';add.title='이 곡 끝에 글자 없는 빈 화면 넣기';add.innerHTML='<i class="ph ph-plus" aria-hidden="true"></i><span>빈 화면</span>';add.onclick=()=>insertBlank(g);grid.appendChild(add);}
       gw.appendChild(grid);
     });
     renderSelBar();
@@ -3387,6 +3425,12 @@ function killLines(sc,ls,others){
   }
   return kill;
 }
+// 곡 끝에 빈 화면 넣기: 자막 글에는 [빈 화면] 한 줄로 들어가요 (복사할 땐 빈 줄로)
+function insertBlank(g){const last=g.items[g.items.length-1];if(!last)return;const ta=$('outText'),ls=ta.value.split('\n'),at=last.ce+1;
+  const add=FMT.endMark?(FMT.endPos==='newline'?[BLANK_MARK,FMT.endMark]:[BLANK_MARK+FMT.endMark]):[...Array(Math.max(1,FMT.slideGap||0)).fill(''),BLANK_MARK];
+  ls.splice(at,0,...add);ta.value=ls.join('\n');ta.dispatchEvent(new Event('input',{bubbles:true}));
+  setTimeout(()=>{const ng=songGroups().find(x=>x.chunk===g.chunk),nb=ng&&ng.items.filter(s=>s.blank).pop();renderShots();
+    if(nb){lookTab='song';store.set('lookTab',lookTab);lookSlideKey=nb.ovKey;lookScope='slide';buildLookUI();}toast('빈 화면을 넣었어요 · 왼쪽 슬라이드 설정에서 배경을 고를 수 있어요');},250);}
 function deleteScreens(list){
   if(!list.length)return;
   const tas={song:$('outText'),word:$('wordText'),quote:$('quoteText')},before={song:tas.song.value,word:tas.word.value,quote:tas.quote.value};
