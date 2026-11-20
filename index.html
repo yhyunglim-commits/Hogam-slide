@@ -1499,6 +1499,15 @@ details.look>summary{position:sticky;top:0;z-index:23;background:var(--surface)}
 .qaddbtn i{font-size:18px}
 .qaddbtn:hover{background:rgba(0,122,255,.12)}
 .qaddbtn:focus-visible{outline:2px solid var(--blue,#007AFF);outline-offset:2px}
+
+/* 크게 보기: 고른 항목의 범위 (얇은 실선) */
+.sbsel{position:fixed;border:1.5px solid #fff;border-radius:6px;box-shadow:0 0 0 1px rgba(0,122,255,.9),0 0 0 4px rgba(0,122,255,.25);pointer-events:none;z-index:70}
+.sbsel span{position:absolute;left:-1px;top:-24px;background:var(--blue,#007AFF);color:#fff;font-size:12px;font-weight:600;padding:2px 8px;border-radius:6px;white-space:nowrap}
+#lookCtl .lkbody.flash{animation:lkflash 1.4s ease}
+@keyframes lkflash{0%,40%{background:rgba(0,122,255,.10)}100%{background:transparent}}
+@media (prefers-reduced-motion:reduce){#lookCtl .lkbody.flash{animation:none}}
+#slidebox.withset .sbset{padding-top:0!important}
+#slidebox .sbset details.look>summary{padding-top:14px}
 /* ================= 디자인 규칙 (2단계) =================
    글자 12 작은 설명 · 13 기본 · 15 칸 제목 · 18 창 제목 · 20 큰 숫자
    누르는 것 높이 32px (휴대폰 40px) · 체크박스 18px · 모서리 8 / 12 / 16 */
@@ -1816,7 +1825,7 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
   </main>
 </div>
 <div id="lightbox" role="dialog" aria-label="악보 크게 보기"><img alt=""><div class="lbbar"><button id="lbPrev">이전 쪽</button><span id="lbNum"></span><button id="lbNext">다음 쪽</button><button id="lbClose">닫기</button></div></div>
-<div id="slidebox" role="dialog" aria-label="화면 크게 보기"><aside class="sbset" id="sbSet" aria-label="슬라이드 설정"></aside><canvas width="1920" height="1080"></canvas>
+<div id="slidebox" role="dialog" aria-label="화면 크게 보기"><aside class="sbset" id="sbSet" aria-label="슬라이드 설정"></aside><div class="sbsel" id="sbSel" hidden aria-hidden="true"><span></span></div><canvas width="1920" height="1080"></canvas>
   <div class="lbbar"><button id="sbPrev">이전 화면</button><span id="sbNum"></span><button id="sbNext">다음 화면</button><button id="sbGo">글에서 보기</button><button id="sbClose">닫기</button></div></div>
 <div class="tip" id="tip" role="tooltip"></div>
 <div class="gate on" id="gate">
@@ -2820,7 +2829,7 @@ function buildLookUI(){
     box.appendChild(sc);}
   // 묶음은 접었다 펼 수 있어요 (열림 상태는 기억해요)
   const heads=[];
-  const sec=(key,title,icon)=>{const open=lkOpen[key]!==false,h=document.createElement('button');h.type='button';h.className='lkh'+(open?' open':'');h.setAttribute('aria-expanded',open);
+  const sec=(key,title,icon)=>{const open=lkOpen[key]!==false,h=document.createElement('button');h.type='button';h.className='lkh'+(open?' open':'');h.dataset.k=key;h.setAttribute('aria-expanded',open);
     h.innerHTML=`<i class="ph ${icon}" aria-hidden="true"></i><span>${title}</span><i class="ph ph-caret-down lkcar" aria-hidden="true"></i>`;
     const g=document.createElement('div');g.className='lkgrid lkbody';g.hidden=!open;
     h.onclick=()=>{const o=g.hidden;g.hidden=!o;h.classList.toggle('open',o);h.setAttribute('aria-expanded',o);lkOpen[key]=o;store.set('lkOpen',lkOpen);if(o)h.scrollIntoView({block:'nearest'});};
@@ -2835,14 +2844,15 @@ function buildLookUI(){
     dn.onclick=()=>set(L[k]-step,null);up.onclick=()=>set(L[k]+step,null);
     g.appendChild(r);return r;};
   // 켜고 끄는 스위치
-  const sw=(g,k,label,after)=>{const l=document.createElement('label');l.className='lksw lkwide';l.innerHTML=`<span>${label}</span><input type="checkbox" role="switch"><i aria-hidden="true"></i>`;const i=l.querySelector('input');i.checked=!!L[k];
-    i.onchange=()=>{L[k]=i.checked;saveLook();if(k==='verseGap')renderVerse();if(after)after(i.checked);};g.appendChild(l);return l;};
+  const HF=['head','sub','footer','footerOn','capRight'],T=k=>HF.includes(k)?LOOK[grp]:L,allTag=k=>scope==='slide'&&HF.includes(k)?' <em class="lkn">모든 슬라이드</em>':'';
+  const sw=(g,k,label,after)=>{const l=document.createElement('label');l.className='lksw lkwide';l.innerHTML=`<span>${label}${allTag(k)}</span><input type="checkbox" role="switch"><i aria-hidden="true"></i>`;const i=l.querySelector('input');i.checked=!!T(k)[k];
+    i.onchange=()=>{T(k)[k]=i.checked;saveLook();if(k==='verseGap')renderVerse();if(after)after(i.checked);};g.appendChild(l);return l;};
   const color=(g,k,label)=>{const l=document.createElement('label');l.className='lkcol';l.innerHTML=`<span>${label}</span><span class="sw0"><input type="color" value="${L[k]}" aria-label="${label}"><b style="background:${L[k]}"></b><em>${String(L[k]).toUpperCase()}</em></span>`;
     const i=l.querySelector('input'),b=l.querySelector('b'),em=l.querySelector('em');i.oninput=()=>{L[k]=i.value;b.style.background=i.value;em.textContent=i.value.toUpperCase();saveLook();};g.appendChild(l);return l;};
   // 켜면 아래에 자세한 설정이 펼쳐지는 줄 (외곽선 · 그림자)
   const fx=(g,k,label,build)=>{const w=document.createElement('div');w.className='lkfx lkwide';g.appendChild(w);
     const head=sw(w,k,label,on=>{body.hidden=!on;});const body=document.createElement('div');body.className='lkfxb';body.hidden=!L[k];w.appendChild(body);build(body);};
-  const text=(g,k,ph)=>{const w=document.createElement('label');w.className='lk lkwide';w.innerHTML=`<span>${ph}</span>`;const i=document.createElement('input');i.type='text';i.className='lktext';i.placeholder=ph;i.value=L[k]||'';i.oninput=()=>{L[k]=i.value;saveLook();};w.appendChild(i);g.appendChild(w);};
+  const text=(g,k,ph)=>{const w=document.createElement('label');w.className='lk lkwide';w.innerHTML=`<span>${ph}${allTag(k)}</span>`;const i=document.createElement('input');i.type='text';i.className='lktext';i.placeholder=ph;i.value=T(k)[k]||'';i.oninput=()=>{T(k)[k]=i.value;saveLook();};w.appendChild(i);g.appendChild(w);};
   // 사진·로고: 왼쪽은 버튼, 오른쪽은 썸네일
   const upload=(g,k,isLogo)=>{const on=!!MEDIA[k],w=document.createElement('div');w.className='media2 lkwide';
     w.innerHTML=`<div class="mleft"><label class="btn sm"><input type="file" accept="image/*" hidden><i class="ph ph-upload-simple" aria-hidden="true"></i> ${on?(isLogo?'로고 바꾸기':'사진 바꾸기'):(isLogo?'로고 넣기':'사진 넣기')}</label>${on?`<button class="btn sm ghost mx" type="button">지우기</button>`:''}<span class="mhint">${isLogo?'배경이 비치는 투명 PNG가 좋아요':'없으면 곡마다 색 배경'}</span></div>
@@ -2954,7 +2964,10 @@ function drawCaption(x,W,H,sc){
   let hi=false;const sp=fs*(L.spacing||0)/100;
   lines.forEach((l,i)=>{let t=(i===0?'“ ':'')+l+(i===lines.length-1?' ”':''),cx=padX;const y=by+padY+lh*(i+.5);
     t.split('**').forEach((seg,k)=>{if(k>0)hi=!hi;if(!seg)return;x.fillStyle=hi?'#FFE58A':'#fff';cx+=drawSpaced(x,seg,cx,y,sp,'left')+sp;});});
-  return{texts:[],box:null,footer:null,caption:true};
+  const R=[{k:'cap',x:0,y:by,w:W,h:bh}];x.font=`500 ${ls}px "Noto Sans KR", sans-serif`;
+  R.push({k:'capref',x:padX,y:by-ls*1.5,w:spacedW(x,sc.ref||'',ls*.02),h:ls*1.3});
+  if(L.capRight){const w=spacedW(x,L.capRight,ls*.22);R.push({k:'capright',x:W-W*.03-w,y:by-ls*1.5,w,h:ls*1.3});}
+  return{texts:[],box:null,footer:null,caption:true,regions:R};
 }
 let SLIDE_OV=store.get('slideOv',{});
 function drawScreen(cv,sc,songIdx,opt={}){
@@ -2976,6 +2989,7 @@ function drawScreen0(cv,sc,songIdx,opt={}){
       t.lines.forEach((l,i)=>drawSpaced(x,l,t.ax,t.y0+t.lh*(i+.5),t.sp,t.align,true));x.shadowColor='transparent';}
     t.lines.forEach((l,i)=>drawSpaced(x,l,t.ax,t.y0+t.lh*(i+.5),t.sp,t.align));x.shadowColor='transparent';}
   if(lay.footer)drawFooter(x,W,H,lay.footer.text,lay.footer.y);
+  lay.regions=layRegions(x,W,H,lay,lb);
   return lay;
 }
 // 미리보기·이미지·파워포인트가 함께 쓰는 배치 계산
@@ -3310,14 +3324,36 @@ function toastUndo(m,fn,label='되돌리기',ms=5000){const t=$('toast');t.inner
   b.onclick=()=>{fn();t.classList.remove('on','act');};t.append(sp,b);t.classList.add('on','act');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on','act'),ms);}
 /* ---- 화면 크게 보기 ---- */
 let sbList=[],sbI=0;
+
+/* ---- 크게 보기: 항목을 누르면 얇은 실선으로 범위를 보이고, 그 항목의 슬라이드 설정을 열어요 ---- */
+function layRegions(x,W,H,lay,lb){const R=[];
+  for(const t of lay.texts){x.font=`${t.weight} ${t.size}px ${t.css}`;const w=Math.max(1,...t.lines.map(l=>spacedW(x,l,t.sp)));R.push({k:t.kind,x:t.align==='center'?t.ax-w/2:t.ax,y:t.y0,w,h:t.lh*t.lines.length});}
+  if(lay.box)R.push({k:'box',x:lay.box.x,y:lay.box.y,w:lay.box.w,h:lay.box.h});
+  if(lay.footer){const fs=W*.0125,fw=footerWidth(x,W,lay.footer.text);if(fw)R.push({k:'footer',x:W/2-fw/2,y:lay.footer.y-fs,w:fw,h:fs*2});}
+  if(lb)R.push({k:'logo',x:lb.x,y:lb.y,w:lb.w,h:lb.h});return R;}
+const REG={lyrics:['text','가사'],title:['layout','곡 제목'],footer:['footer','아래 문구 · 모든 슬라이드'],head:['layout','머리글 · 모든 슬라이드'],sub:['layout','작은 머리글 · 모든 슬라이드'],
+  ref:['text','본문 제목'],body:['text','본문'],box:['layout','본문 상자'],logo:['logo','로고'],cap:['cap','자막 띠'],capref:['cap','구절 이름'],capright:['cap','띠 위 오른쪽 문구 · 모든 슬라이드']};
+let sbLay=null,sbSelK=null;
+function placeSbSel(){const el=$('sbSel'),cv=$('slidebox').querySelector('canvas');const r=sbSelK&&sbLay&&(sbLay.regions||[]).find(x=>x.k===sbSelK);
+  if(!r||!$('slidebox').classList.contains('on')){el.hidden=true;return;}const b=cv.getBoundingClientRect(),k=b.width/cv.width,pad=6;
+  el.hidden=false;el.style.left=(b.left+r.x*k-pad)+'px';el.style.top=(b.top+r.y*k-pad)+'px';el.style.width=(r.w*k+pad*2)+'px';el.style.height=(r.h*k+pad*2)+'px';
+  el.querySelector('span').textContent=(REG[r.k]||['',''])[1];}
+function focusLookSection(key){const h=$('lookCtl').querySelector(`.lkh[data-k="${key}"]`);if(!h)return;const body=h.nextElementSibling;if(body&&body.hidden)h.click();
+  setTimeout(()=>{body?.scrollIntoView({behavior:'smooth',block:'center'});body?.classList.add('flash');setTimeout(()=>body?.classList.remove('flash'),1400);},30);}
+$('slidebox').querySelector('canvas').addEventListener('click',e=>{if(!sbLay)return;const cv=e.currentTarget,b=cv.getBoundingClientRect(),k=cv.width/b.width,px=(e.clientX-b.left)*k,py=(e.clientY-b.top)*k;
+  const hits=(sbLay.regions||[]).filter(r=>px>=r.x-8&&px<=r.x+r.w+8&&py>=r.y-8&&py<=r.y+r.h+8).sort((a,b)=>a.w*a.h-b.w*b.h);
+  sbSelK=hits[0]?.k||null;placeSbSel();if(sbSelK&&REG[sbSelK])focusLookSection(REG[sbSelK][0]);});
+$('slidebox').querySelector('canvas').addEventListener('mousemove',e=>{if(!sbLay)return;const cv=e.currentTarget,b=cv.getBoundingClientRect(),k=cv.width/b.width,px=(e.clientX-b.left)*k,py=(e.clientY-b.top)*k;
+  cv.style.cursor=(sbLay.regions||[]).some(r=>px>=r.x-8&&px<=r.x+r.w+8&&py>=r.y-8&&py<=r.y+r.h+8)?'pointer':'default';});
+addEventListener('resize',placeSbSel);
 const lookEl=document.querySelector('details.look'),lookHome=lookEl.parentElement;
 function openSlide(i){sbList=songGroups().flatMap(g=>g.items.map(s=>({s,si:g.songIdx||0})));sbI=i;
   $('sbSet').appendChild(lookEl);lookScope='slide';syncLookToSlide();lookEl.open=true;drawSlide();$('slidebox').classList.add('on','withset');$('sbClose').focus();}
-function drawSlide(){const o=sbList[sbI];if(!o)return;drawScreen($('slidebox').querySelector('canvas'),o.s,o.si);
+function drawSlide(){const o=sbList[sbI];if(!o)return;sbLay=drawScreen($('slidebox').querySelector('canvas'),o.s,o.si);setTimeout(placeSbSel,0);
   $('sbNum').textContent=`${sbI+1} / ${sbList.length}`;$('sbPrev').disabled=sbI===0;$('sbNext').disabled=sbI>=sbList.length-1;}
-const closeSlide=()=>{$('slidebox').classList.remove('on','withset');lookHome.appendChild(lookEl);lookSlideKey=null;buildLookUI();};
+const closeSlide=()=>{$('slidebox').classList.remove('on','withset');sbSelK=null;$('sbSel').hidden=true;lookHome.appendChild(lookEl);lookSlideKey=null;buildLookUI();};
 function syncLookToSlide(){const o=sbList[sbI];if(!o)return;lookSlideKey=o.s.ovKey||null;lookTab=o.s.type;store.set('lookTab',lookTab);buildLookUI();}
-$('sbPrev').onclick=()=>{if(sbI>0){sbI--;drawSlide();syncLookToSlide();}};$('sbNext').onclick=()=>{if(sbI<sbList.length-1){sbI++;drawSlide();syncLookToSlide();}};
+$('sbPrev').onclick=()=>{if(sbI>0){sbI--;sbSelK=null;drawSlide();syncLookToSlide();}};$('sbNext').onclick=()=>{if(sbI<sbList.length-1){sbI++;sbSelK=null;drawSlide();syncLookToSlide();}};
 $('sbClose').onclick=closeSlide;$('sbGo').onclick=()=>{const o=sbList[sbI];closeSlide();if(o)(o.s.ed==='quote'?gotoQuoteLine(o.s.line):o.s.ed==='word'?gotoWordLine(o.s.line):gotoLine(o.s.line));};
 $('slidebox').addEventListener('click',e=>{if(e.target.id==='slidebox')closeSlide();});
 addEventListener('keydown',e=>{if(!$('slidebox').classList.contains('on'))return;
