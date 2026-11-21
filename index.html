@@ -1563,10 +1563,8 @@ details.look>summary{position:sticky;top:0;z-index:23;background:var(--surface)}
 .sbsel .sbedit{border:0;background:#fff;color:#111;font:inherit;font-size:12px;font-weight:700;padding:3px 9px;border-radius:6px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .sbsel>span:not(.sbtag){display:none}
 .sbsel .sbtag{background:transparent!important;padding:0!important}
-.sbed{position:fixed;z-index:80;background:var(--surface);color:var(--text);border-radius:12px;padding:10px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
-.sbed textarea{width:100%;box-sizing:border-box;font-size:16px;line-height:1.6;padding:8px 10px;border:1px solid var(--line2);border-radius:8px;resize:vertical}
-.sbed .row{display:flex;align-items:center;gap:6px;margin-top:8px;justify-content:flex-end}
-.sbed .hint{margin-right:auto;font-size:12px;color:var(--text3)}
+.sbinl{position:fixed;z-index:80;margin:0;padding:0;border:0;outline:2px dashed rgba(255,255,255,.85);outline-offset:6px;background:rgba(0,0,0,.08);resize:none;overflow:hidden;white-space:pre-wrap;box-sizing:content-box;caret-color:#fff}
+.sbinl.dark{outline-color:rgba(0,0,0,.6);caret-color:#111}
 
 /* 되돌리기 ⤺ */
 details.look>summary .lkundo{margin-left:8px;width:26px;height:26px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text);font-size:14px;line-height:1;cursor:pointer;display:inline-grid;place-items:center;vertical-align:middle}
@@ -2379,7 +2377,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
   </main>
 </div>
 <div id="lightbox" role="dialog" aria-label="악보 크게 보기"><img alt=""><div class="lbbar"><button id="lbPrev">이전 쪽</button><span id="lbNum"></span><button id="lbNext">다음 쪽</button><button id="lbClose">닫기</button></div></div>
-<div id="slidebox" role="dialog" aria-label="화면 크게 보기"><aside class="sbset" id="sbSet" aria-label="슬라이드 설정"></aside><div class="sbsel" id="sbSel" hidden><span class="sbtag"><b></b><button type="button" class="sbedit" hidden>✎ 글자 고치기</button></span></div><div class="sbed" id="sbEd" hidden><textarea aria-label="글자 고치기"></textarea><div class="row"><span class="hint">Ctrl+Enter 저장 · Esc 취소</span><button type="button" class="btn sm" data-x>취소</button><button type="button" class="btn sm pri" data-ok>저장</button></div></div><canvas width="1920" height="1080"></canvas>
+<div id="slidebox" role="dialog" aria-label="화면 크게 보기"><aside class="sbset" id="sbSet" aria-label="슬라이드 설정"></aside><div class="sbsel" id="sbSel" hidden><span class="sbtag"><b></b></span></div><textarea class="sbinl" id="sbInl" hidden spellcheck="false" aria-label="글자 고치기 (다른 곳을 누르면 저장 · Esc 취소)"></textarea><canvas width="1920" height="1080"></canvas>
   <div class="lbbar"><button id="sbPrev">이전 화면</button><span id="sbNum"></span><button id="sbNext">다음 화면</button><button id="sbGo">글에서 보기</button><button id="sbClose">닫기</button></div></div>
 <div class="tip" id="tip" role="tooltip"></div>
 <div class="gate on" id="gate">
@@ -3469,6 +3467,8 @@ function buildLookUI(){
   box.appendChild(tabs);
   const grp=LOOK[lookTab]?lookTab:'song',slideKey=lookSlideKey,scope=slideKey?lookScope:'all',cg=grp==='quote'?'word':grp;
   let L=LOOK[grp];
+  const OVP={song:'s:',word:'w:',quote:'q:',info:'i:'}[grp];
+  if(scope!=='slide'){const base=L;L=new Proxy(base,{set:(t,k,v)=>{t[k]=v;if(typeof k==='string'&&!/^o[xy]_/.test(k))for(const ok in SLIDE_OV)if(ok.startsWith(OVP)&&k in SLIDE_OV[ok])delete SLIDE_OV[ok][k];return true;}});}
   if(scope==='slide'){const ov=SLIDE_OV[slideKey]||(SLIDE_OV[slideKey]={});
     L=new Proxy(ov,{get:(t,k)=>k in t?t[k]:LOOK[grp][k],set:(t,k,v)=>{t[k]=v;return true;}});}
   const L0=L;
@@ -3683,7 +3683,7 @@ function logoBox(x,W,H,L,footY,img){
 function isCaption(sc){return sc&&sc.ed==='quote'&&LOOK.quote.quoteStyle==='caption';}
 // 참고 구절 · 자막 박스: 배경 없이(투명) 아래쪽에 상자만 그려요
 const CAPMW=new Map(); // 참고 구절마다 가장 긴 줄 너비 (같은 구절은 같은 글자 크기로)
-function drawCaption(x,W,H,sc){
+function drawCaption(x,W,H,sc,opt={}){
   // 참고: 화면 아래를 가로지르는 청록 반투명 띠 · 왼쪽 흰 막대 · 띠 위 왼쪽 구절 이름, 오른쪽 설교 제목 · “ ” 안의 구절, **강조**는 노랑
   x.clearRect(0,0,W,H);const L=LOOK.word,WF=`"${L.font}", "Noto Sans KR", serif`,wt=lookW(L);
   // 입력한 줄바꿈 그대로: 긴 줄이 있으면 글자를 줄여 맞추고(최대 55%까지), 그래도 넘칠 때만 접어요
@@ -3702,12 +3702,12 @@ function drawCaption(x,W,H,sc){
   x.fillStyle=`rgba(${cn>>16},${cn>>8&255},${cn&255},${(L.capAlpha??84)/100})`;x.fillRect(0,by,W,bh);
   x.fillStyle='rgba(255,255,255,.96)';x.fillRect(W*.03,by,Math.max(2,W*.0045),bh);
   const ls=W*(L.capSize||2.5)/100*.8;x.textBaseline='middle';x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=ls*.25;
-  x.font=`500 ${ls}px "Noto Sans KR", sans-serif`;x.fillStyle='#fff';drawSpaced(x,sc.ref||'',padX,by-ls*.85,ls*.02,'left');
-  if(L.capRight){const sp=ls*.22,w=spacedW(x,L.capRight,sp);drawSpaced(x,L.capRight,W-W*.03-w,by-ls*.85,sp,'left');}
+  x.font=`500 ${ls}px "Noto Sans KR", sans-serif`;x.fillStyle='#fff';if(opt.hide!=='capref')drawSpaced(x,sc.ref||'',padX,by-ls*.85,ls*.02,'left');
+  if(L.capRight&&opt.hide!=='capright'){const sp=ls*.22,w=spacedW(x,L.capRight,sp);drawSpaced(x,L.capRight,W-W*.03-w,by-ls*.85,sp,'left');}
   x.shadowColor='transparent';x.font=`${wt} ${fs}px ${WF}`;
   let hi=false;const sp=fs*(L.spacing||0)/100,tc=L.capColor||'#ffffff';
   if(L.shadowOn){x.shadowColor=`rgba(0,0,0,${(L.shadowAmt??18)/100})`;x.shadowBlur=fs*.15;x.shadowOffsetY=fs*.04;}
-  lines.forEach((l,i)=>{let t=(i===0?'“ ':'')+l+(i===lines.length-1?' ”':''),cx=padX;const y=by+padY+lh*(i+.5);
+  if(opt.hide!=='cap')lines.forEach((l,i)=>{let t=(i===0?'“ ':'')+l+(i===lines.length-1?' ”':''),cx=padX;const y=by+padY+lh*(i+.5);
     t.split('**').forEach((seg,k)=>{if(k>0)hi=!hi;if(!seg)return;
       if(L.strokeOn){x.lineJoin='round';x.miterLimit=2;x.strokeStyle=L.strokeColor;x.lineWidth=fs*L.strokeW/100*2;drawSpaced(x,seg,cx,y,sp,'left',true);}
       x.fillStyle=hi?'#FFE58A':tc;cx+=drawSpaced(x,seg,cx,y,sp,'left')+sp;});});
@@ -3738,7 +3738,7 @@ function drawScreen(cv,sc,songIdx,opt={}){return withLook(sc,()=>drawScreen0(cv,
 function drawScreen0(cv,sc,songIdx,opt={}){
   const W=cv.width,H=cv.height,x=cv.getContext('2d');x.textBaseline='middle';
   if(sc.type==='info')return drawInfo(x,W,H,sc,opt);
-  if(isCaption(sc))return drawCaption(x,W,H,sc);
+  if(isCaption(sc))return drawCaption(x,W,H,sc,opt);
   if(sc.blank){const ob=(SLIDE_OV[sc.ovKey]||{}).bg,ph=mediaImg('song');
     if(ob==='black'){x.fillStyle='#000';x.fillRect(0,0,W,H);}else if(ob)drawBg(x,W,H,palById(ob)||palOf(sc,songIdx));else if(ph)drawPhoto(x,W,H,ph,LOOK.song.bgDim);else drawBg(x,W,H,palOf(sc,songIdx));
     return{texts:[],box:null,footer:null,regions:[]};}
@@ -3747,12 +3747,12 @@ function drawScreen0(cv,sc,songIdx,opt={}){
   const lb=logoBox(x,W,H,LOOK[grp],grp==='song'?H*.935:H*.89,logo);if(lb)x.drawImage(logo,lb.x,lb.y,lb.w,lb.h);
   const lay=slideLayout(x,W,H,sc);if(lay.box){x.fillStyle=lay.box.fill;x.fillRect(lay.box.x,lay.box.y,lay.box.w,lay.box.h);}
   if(opt.noText)return lay;
-  for(const t of lay.texts){x.font=`${t.weight} ${t.size}px ${t.css}`;x.fillStyle=t.color;
+  for(const t of lay.texts){if(t.kind===opt.hide)continue;x.font=`${t.weight} ${t.size}px ${t.css}`;x.fillStyle=t.color;
     if(t.shadow){x.shadowColor=`rgba(0,0,0,${(t.shAmt??18)/100})`;x.shadowBlur=t.size*.15;x.shadowOffsetY=t.size*.04;}
     if(t.stroke){x.lineJoin='round';x.miterLimit=2;x.strokeStyle=t.stroke.c;x.lineWidth=t.size*t.stroke.w/100*2;
       t.lines.forEach((l,i)=>drawSpaced(x,l,t.ax,t.y0+t.lh*(i+.5),t.sp,t.align,true));x.shadowColor='transparent';}
     t.lines.forEach((l,i)=>drawSpaced(x,l,t.ax,t.y0+t.lh*(i+.5),t.sp,t.align));x.shadowColor='transparent';}
-  if(lay.footer)drawFooter(x,W,H,lay.footer.text,lay.footer.y,lay.footer.dx||0);
+  if(lay.footer&&opt.hide!=='footer')drawFooter(x,W,H,lay.footer.text,lay.footer.y,lay.footer.dx||0);
   lay.regions=layRegions(x,W,H,lay,lb);
   return lay;
 }
@@ -3786,8 +3786,9 @@ function slideLayout(x,W,H,sc){
     {const[a,b]=OFF(L,'sub',W,H);texts.push({kind:'sub',lines:[L.sub],size:W*.0135,weight:400,family:'Noto Sans KR',css:'"Noto Sans KR", sans-serif',color:'rgba(255,255,255,.85)',hex:'E3E6EA',alpha:.85,sp:W*.0135*.18,align:'left',ax:W*.065+a,y0:H*.305-W*.0135*.6+b,lh:W*.0135*1.2});}
     {const[a,b]=OFF(L,'ref',W,H),rs=W*lv(L,'rSize','word')/100,rf=lv(L,'rFont','word'),rc=lv(L,'rColor','word');texts.push({kind:'ref',lines:[sc.ref||''],size:rs,weight:lv(L,'rWeight','word'),family:rf,css:`"${rf}", "Noto Sans KR", serif`,color:rc,hex:String(rc).replace('#','').toUpperCase(),alpha:1,sp:rs*(L.refSpacing||0)/100,align:'left',ax:W*.262+a,y0:H*.255-rs*.6+b,lh:rs*1.2});}
     const fs=W*L.size/100,sp=fs*L.spacing/100,pad=W*.032,bw=W*.719,availW=bw-pad*2; // 글자 크기는 정한 그대로
-    const body=wrapTo(sc.lines.map(l=>l.replace(/\*\*/g,'')),`${WWt} ${fs}px ${WF}`,sp,availW),need=fs*L.lineH*body.length+pad*1.8;
-    const[bxo,byo]=OFF(L,'box',W,H),bx=W*.228+bxo,bh=Math.max(H*.49,need),by=Math.max(H*.04,Math.min(H*.315,H*.95-bh))+byo;box={x:bx,y:by,w:bw,h:bh,fill:`rgba(236,236,238,${L.box/100})`,alpha:L.box/100};
+    const body=wrapTo(sc.lines.map(l=>l.replace(/\*\*/g,'')),`${WWt} ${fs}px ${WF}`,sp,availW);
+    // 상자는 크기·자리 고정 (글자가 커져도 안 움직여요)
+    const[bxo,byo]=OFF(L,'box',W,H),bx=W*.228+bxo,bh=H*.49,by=H*.315+byo;box={x:bx,y:by,w:bw,h:bh,fill:`rgba(236,236,238,${L.box/100})`,alpha:L.box/100};
     texts.push({kind:'body',lines:body,size:fs,weight:WWt,family:L.font,css:WF,color:L.color||'#1d1d1d',hex:(c=>String(c||'#ffffff').replace('#','').toUpperCase())(L.color||'#1d1d1d'),alpha:1,sp,align:L.align||'left',ax:L.align==='center'?bx+bw/2:L.align==='right'?bx+bw-pad:bx+pad,y0:by+pad*.9,lh:fs*L.lineH,boxW:availW,shadow:!!L.shadowOn,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null});
     if(L.footerOn){const[fx,fy]=OFF(L,'footer',W,H);footer={text:L.footer,y:H*.89+fy,dx:fx};}
   }
@@ -4126,7 +4127,7 @@ function drawInfoCap(x,W,H,sc,opt){
     if(segs.length){const w=run(segs,bs,P,0,0,0,false);rect(X0,b2y,w+padX*2,b2h,P);run(segs,bs,pInk,X0+padX,b2y+b2h/2,0);}
     R.push({k:'cbox',x:X0,y:b1y,w:b1w,h:BOT-b1y});
   }else{
-    const f=infoCapF(L,W),lh=f.fs*Math.max(1.2,L.lineH-.1),pad=W*.035,ls=sc.lines||[],page=sc.pages>1?`  ${sc.page+1}/${sc.pages}`:'';
+    const f=infoCapF(L,W),lh=f.fs*Math.max(1.2,L.lineH-.1),pad=W*.035,ls=sc.lines||[],page=''; // 쪽 번호는 안 붙여요
     if(it.k==='ad'){const hh=H*.078,bh=Math.max(H*.2,lh*Math.max(1,ls.length)+f.fs*2.4),by=BOT-bh,hy=by-hh,hs=cs*1.15;
       rect(X0,hy,X1-X0,hh,P);rect(X0,by,X1-X0,bh,M);
       T(['# '+(String(it.title||'').trim()||'광고')+page],hs,BW,L.font,TF,pInk,X0+W*.015,hy+hh/2,hs*1.25,'left',hs*L.spacing/100*.5,X1-X0);
@@ -4176,7 +4177,7 @@ function drawInfo(x,W,H,sc,opt){
     if(L.tag1||L.tag2){const th=H*.048,ts=H*.022,tp=W*.012,right=b.x+b.w;
       [[L.tag2,L.band2Color,b.y-th,500,ts*.16],[L.tag1,L.bandColor,b.y-th*(L.tag2?2:1),700,0]].forEach(([t,c,top,wt,tsp])=>{if(!t)return;x.font=`${wt} ${ts}px ${SANS}`;const tw=spacedW(x,t,tsp)+tp*2;
         rect(right-tw,top,tw,th,c);T({kind:'itag',lines:[t],size:ts,weight:wt,family:'Noto Sans KR',css:SANS,color:'#ffffff',sp:tsp,align:'center',ax:right-tw/2,y0:top+th/2-ts*.6,lh:ts*1.2,boxW:tw});});}
-    const hs=W*.026,head=(it.title||'')+(sc.pages>1?`  ${sc.page+1}/${sc.pages}`:'');
+    const hs=W*.026,head=it.title||'';
     if(head.trim())T({kind:'ihead',lines:[head],size:hs,weight:TW,family:L.font,css:TF,color:lv(L,'boxTitle','info'),sp:hs*L.spacing/100,align:'left',ax:b.x+pad,y0:b.y+pad*.8,lh:hs*1.2,boxW:b.w-pad*2});
     T({kind:'ibody',lines:sc.lines,size:f.fs,weight:lv(L,'weight2','info'),family:L.font2,css:`"${L.font2}", "Noto Sans KR", serif`,color:L.boxText,sp:f.sp,align:'left',ax:b.x+pad,y0:b.y+pad*.8+(head.trim()?hs*1.2+H*.03:0),lh:f.fs*L.lineH,boxW:b.w-pad*2});
     footY=Math.min(H*.95,b.y+b.h+H*.055);
@@ -4185,11 +4186,11 @@ function drawInfo(x,W,H,sc,opt){
   const lb=logoBox(x,W,H,L,footY,logo);if(lb)x.drawImage(logo,lb.x,lb.y,lb.w,lb.h);
   const lay={texts,box:null,footer};
   if(opt.noText)return lay;
-  for(const t of texts){x.font=`${t.weight} ${t.size}px ${t.css}`;x.fillStyle=t.color;
+  for(const t of texts){if(opt&&t.kind===opt.hide)continue;x.font=`${t.weight} ${t.size}px ${t.css}`;x.fillStyle=t.color;
     if(t.shadow){x.shadowColor=`rgba(0,0,0,${(t.shAmt??18)/100})`;x.shadowBlur=t.size*.15;x.shadowOffsetY=t.size*.04;}
     if(t.stroke){x.lineJoin='round';x.miterLimit=2;x.strokeStyle=t.stroke.c;x.lineWidth=t.size*t.stroke.w/100*2;t.lines.forEach((l,i)=>drawSpaced(x,l,t.ax,t.y0+t.lh*(i+.5),t.sp,t.align,true));x.shadowColor='transparent';}
     t.lines.forEach((l,i)=>drawSpaced(x,l,t.ax,t.y0+t.lh*(i+.5),t.sp,t.align));x.shadowColor='transparent';}
-  if(footer)drawFooter(x,W,H,footer.text,footer.y,footer.dx||0);
+  if(footer&&!(opt&&opt.hide==='footer'))drawFooter(x,W,H,footer.text,footer.y,footer.dx||0);
   lay.regions=layRegions(x,W,H,lay,lb);
   if(it.k==='ad'||it.k==='text'){const b=infoBoxR(W,H,L);lay.regions.push({k:'box',x:b.x,y:b.y,w:b.w,h:b.h});}
   return lay;
@@ -4508,26 +4509,45 @@ let sbLay=null,sbSelK=null;
 function placeSbSel(){const el=$('sbSel'),cv=$('slidebox').querySelector('canvas');const r=sbSelK&&sbLay&&(sbLay.regions||[]).find(x=>x.k===sbSelK);
   if(!r||!$('slidebox').classList.contains('on')){el.hidden=true;return;}const b=cv.getBoundingClientRect(),k=b.width/cv.width,pad=6;
   el.hidden=false;el.style.left=(b.left+r.x*k-pad)+'px';el.style.top=(b.top+r.y*k-pad)+'px';el.style.width=(r.w*k+pad*2)+'px';el.style.height=(r.h*k+pad*2)+'px';
-  el.querySelector('.sbtag b').textContent=(REG[r.k]||['',''])[1];el.querySelector('.sbedit').hidden=!EDITABLE.includes(r.k);}
+  el.querySelector('.sbtag b').textContent=(REG[r.k]||['',''])[1];}
 function focusLookSection(key){const rg=$('lookCtl').querySelector(`.rg[data-k="${key}"]`);if(!rg)return;const body=rg;
   setTimeout(()=>{body?.scrollIntoView({behavior:'smooth',block:'center'});body?.classList.add('flash');setTimeout(()=>body?.classList.remove('flash'),1400);},30);}
 $('slidebox').querySelector('canvas').addEventListener('click',e=>{if(!sbLay)return;const cv=e.currentTarget,b=cv.getBoundingClientRect(),k=cv.width/b.width,px=(e.clientX-b.left)*k,py=(e.clientY-b.top)*k;
   const hits=(sbLay.regions||[]).filter(r=>px>=r.x-8&&px<=r.x+r.w+8&&py>=r.y-8&&py<=r.y+r.h+8).sort((a,b)=>a.w*a.h-b.w*b.h);
-  sbSelK=hits[0]?.k||null;placeSbSel();const el=sbSelK&&REGEL[sbSelK];if(el){lookElem[lookTab]=el;buildLookUI();focusLookSection('tel');}else if(sbSelK&&REG[sbSelK])focusLookSection(REG[sbSelK][0]);});
+  if(cv._moved)return;sbSelK=hits[0]?.k||null;placeSbSel();const el=sbSelK&&REGEL[sbSelK];if(el){lookElem[lookTab]=el;buildLookUI();}else if(sbSelK&&REG[sbSelK])focusLookSection(REG[sbSelK][0]);
+  if(sbSelK&&EDITABLE.includes(sbSelK))startInline(sbSelK);});
 $('slidebox').querySelector('canvas').addEventListener('mousemove',e=>{if(!sbLay)return;const cv=e.currentTarget,b=cv.getBoundingClientRect(),k=cv.width/b.width,px=(e.clientX-b.left)*k,py=(e.clientY-b.top)*k;
   cv.style.cursor=(sbLay.regions||[]).some(r=>px>=r.x-8&&px<=r.x+r.w+8&&py>=r.y-8&&py<=r.y+r.h+8)?'pointer':'default';});
 addEventListener('resize',placeSbSel);
-const EDITABLE=['lyrics','body','cap','ref','capref','head','sub','footer','capright'];
+const EDITABLE=['lyrics','body','cap','ref','capref','head','sub','footer','capright','ititle','ihead','inotice','inote'];
+const ONE_LINE=['ref','capref','head','sub','footer','capright','ititle','ihead']; // Enter로 바로 저장
 const HFK={head:'head',sub:'sub',footer:'footer',capright:'capRight'};
 function edMaster(sc){return $(sc.ed==='song'?'outText':sc.ed==='quote'?'quoteText':'wordText');}
-function editTextOf(k,sc){const grp=sc.type==='song'?'song':k==='capright'?'quote':'word';if(HFK[k])return LOOK[grp][HFK[k]]||'';
+function editTextOf(k,sc){if(sc.type==='info'){const it=sc.item;return(k==='inotice'?it.body:k==='inote'?it.note:it.title)||'';}const grp=sc.type==='song'?'song':k==='capright'?'quote':'word';if(HFK[k])return LOOK[grp][HFK[k]]||'';
   if(k==='ref'||k==='capref')return edMaster(sc).value.split('\n')[sc.cs]||'';return(sc.lines||[]).join('\n');}
-function openTextEdit(){const o=sbList[sbI],r=sbSelK&&sbLay&&(sbLay.regions||[]).find(x=>x.k===sbSelK);if(!o||!r||!EDITABLE.includes(r.k))return;
-  const ed=$('sbEd'),cv=$('slidebox').querySelector('canvas'),b=cv.getBoundingClientRect(),k=b.width/cv.width,ta=ed.querySelector('textarea');
-  ta.value=editTextOf(r.k,o.s);ta.rows=Math.min(8,Math.max(2,ta.value.split('\n').length+1));ed.hidden=false;
-  const w=Math.max(360,r.w*k+24);ed.style.width=w+'px';ed.style.left=Math.max(8,Math.min(innerWidth-w-8,b.left+r.x*k-12))+'px';ed.style.top=Math.max(8,Math.min(innerHeight-200,b.top+(r.y+r.h)*k+10))+'px';
-  ed.dataset.k=r.k;ta.focus();ta.select();}
-function saveTextEdit(){const ed=$('sbEd'),o=sbList[sbI],k=ed.dataset.k,v=ed.querySelector('textarea').value;ed.hidden=true;if(!o)return;const sc=o.s,grp=sc.type==='song'?'song':k==='capright'?'quote':'word';
+// 크게 보기: 누른 글자 위에 같은 글꼴·크기·색의 입력칸을 겹쳐서, 그 자리에서 고쳐요 (고치는 동안 캔버스에선 그 글자만 빼고 그려요)
+let sbEditK=null;
+function startInline(k){const o=sbList[sbI];if(!o||!EDITABLE.includes(k)||!sbLay)return;const sc=o.s;
+  const cv=$('slidebox').querySelector('canvas'),b=cv.getBoundingClientRect(),z=b.width/cv.width,W=cv.width,ta=$('sbInl');
+  const r=(sbLay.regions||[]).find(x=>x.k===k);if(!r)return;const t=(sbLay.texts||[]).find(x=>x.kind===k);
+  sbEditK=k;sbLay=drawScreen(cv,sc,o.si,{hide:k});$('sbSel').hidden=true;
+  let st;
+  if(t){const bw=t.boxW||r.w,lx=t.align==='center'?t.ax-bw/2:t.align==='right'?t.ax-bw:t.ax;st={x:lx,y:t.y0,w:bw,font:`${t.weight} ${t.size*z}px ${t.css}`,lh:t.lh*z,sp:t.sp*z,color:t.color,al:t.align,sh:t.shadow};}
+  else if(k==='footer')st={x:W*.05,y:r.y,w:W*.9,font:`700 ${W*.0125*z}px "Noto Sans KR", sans-serif`,lh:r.h*z,sp:W*.0125*.62*z,color:'#fff',al:'center'};
+  else{const Lq=LOOK.quote,cs=W*(Lq.capSize||2.5)/100,ls=cs*.8;st=k==='cap'?{x:W*.065,y:r.y+cs*.95,w:W*.87,font:`${lookW(Lq)} ${cs*z}px "${Lq.font}", "Noto Sans KR", serif`,lh:cs*(Lq.capLineH||1.6)*z,sp:0,color:Lq.capColor||'#fff',al:'left'}
+    :{x:r.x,y:r.y,w:Math.max(r.w,W*.3),font:`500 ${ls*z}px "Noto Sans KR", sans-serif`,lh:r.h*z,sp:0,color:'#fff',al:k==='capright'?'right':'left'};if(k==='capright')st.x=r.x+r.w-st.w;}
+  Object.assign(ta.style,{left:(b.left+st.x*z)+'px',top:(b.top+st.y*z)+'px',width:(st.w*z)+'px',font:st.font,lineHeight:st.lh+'px',letterSpacing:st.sp+'px',color:st.color,textAlign:st.al,textShadow:st.sh?'0 2px 6px rgba(0,0,0,.35)':'none'});
+  const c=String(st.color).replace('#','');ta.classList.toggle('dark',c.length>=6&&parseInt(c.slice(0,2),16)*.3+parseInt(c.slice(2,4),16)*.59+parseInt(c.slice(4,6),16)*.11<128);
+  ta.value=editTextOf(k,sc);ta.dataset.orig=ta.value;ta.hidden=false;const fit=()=>{ta.style.height='0px';ta.style.height=ta.scrollHeight+'px';};fit();ta.oninput=fit;
+  ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}
+function endInline(save){const ta=$('sbInl');if(ta.hidden)return;ta.hidden=true;const k=sbEditK;sbEditK=null;
+  if(save&&ta.value!==ta.dataset.orig)saveTextEdit(k,ta.value);else drawSlide();}
+$('sbInl').addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){e.preventDefault();endInline(false);}
+  else if(e.key==='Enter'&&!e.isComposing&&(e.metaKey||e.ctrlKey||ONE_LINE.includes(sbEditK))){e.preventDefault();endInline(true);}});
+$('sbInl').addEventListener('blur',()=>endInline(true));
+function saveTextEdit(k,v){const o=sbList[sbI];if(!o)return;const sc=o.s;
+  if(sc.type==='info'){const it=sc.item;if(k==='inotice')it.body=v;else if(k==='inote')it.note=v;else it.title=v.replace(/\n+/g,' ').trim();saveInfo();toast('글자를 고쳤어요');setTimeout(drawSlide,60);return;}
+  const grp=sc.type==='song'?'song':k==='capright'?'quote':'word';
   if(HFK[k]){LOOK[grp][HFK[k]]=v.replace(/\n+/g,' ').trim();saveLook();toast('모든 슬라이드에 바꿨어요');}
   else{const ta=edMaster(sc),ls=ta.value.split('\n');
     if(k==='ref'||k==='capref'){ls[sc.cs]=v.replace(/\n+/g,' ').trim();}
@@ -4536,20 +4556,17 @@ function saveTextEdit(){const ed=$('sbEd'),o=sbList[sbI],k=ed.dataset.k,v=ed.que
       for(let i=idx.length-1;i>=0;i--)ls.splice(idx[i],1);ls.splice(idx[0],0,...nl);}
     ta.value=ls.join('\n');ta.dispatchEvent(new Event('input',{bubbles:true}));toast('글자를 고쳤어요');}
   setTimeout(()=>{const key=o.s.ovKey;sbList=songGroups().flatMap(g=>g.items.map(s=>({s,si:g.songIdx||0})));const j=sbList.findIndex(x=>x.s.ovKey===key);if(j>=0)sbI=j;sbI=Math.min(sbI,sbList.length-1);drawSlide();},300);}
-$('sbSel').querySelector('.sbedit').onclick=openTextEdit;
-$('sbEd').querySelector('[data-ok]').onclick=saveTextEdit;$('sbEd').querySelector('[data-x]').onclick=()=>{$('sbEd').hidden=true;};
-$('sbEd').querySelector('textarea').addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveTextEdit();}if(e.key==='Escape'){$('sbEd').hidden=true;}});
-$('slidebox').querySelector('canvas').addEventListener('dblclick',()=>{if(sbSelK)openTextEdit();});
+
 {const cv=$('slidebox').querySelector('canvas');attachMove(cv,()=>({sc:sbList[sbI]&&sbList[sbI].s,lay:sbLay}),()=>{const o=sbList[sbI];if(!o)return;sbLay=drawScreen(cv,o.s,o.si);placeSbSel();});}
 
 const lookEl=$('lookBox'),lookHome=lookEl.parentElement;
 function openSlide(i){sbList=songGroups().flatMap(g=>g.items.map(s=>({s,si:g.songIdx||0})));sbI=i;
-  $('sbSet').appendChild(lookEl);lookScope='slide';syncLookToSlide();lookEl.open=true;drawSlide();$('slidebox').classList.add('on','withset');$('sbClose').focus();}
-function drawSlide(){const o=sbList[sbI];if(!o)return;sbLay=drawScreen($('slidebox').querySelector('canvas'),o.s,o.si);setTimeout(placeSbSel,0);
+  $('sbSet').appendChild(lookEl);lookScope='all';syncLookToSlide();lookEl.open=true;drawSlide();$('slidebox').classList.add('on','withset');$('sbClose').focus();}
+function drawSlide(){const o=sbList[sbI];if(!o)return;sbLay=drawScreen($('slidebox').querySelector('canvas'),o.s,o.si,sbEditK?{hide:sbEditK}:{});setTimeout(placeSbSel,0);
   $('sbNum').textContent=`${sbI+1} / ${sbList.length}`;$('sbPrev').disabled=sbI===0;$('sbNext').disabled=sbI>=sbList.length-1;}
-const closeSlide=()=>{$('slidebox').classList.remove('on','withset');sbSelK=null;$('sbSel').hidden=true;$('sbEd').hidden=true;lookHome.appendChild(lookEl);lookSlideKey=null;buildLookUI();renderShots();};
+const closeSlide=()=>{endInline(true);$('slidebox').classList.remove('on','withset');sbSelK=null;$('sbSel').hidden=true;lookHome.appendChild(lookEl);lookSlideKey=null;buildLookUI();renderShots();};
 function syncLookToSlide(){const o=sbList[sbI];if(!o)return;lookSlideKey=o.s.ovKey||null;lookTab=tabOf(o.s);store.set('lookTab',lookTab);buildLookUI();}
-$('sbPrev').onclick=()=>{if(sbI>0){sbI--;sbSelK=null;$('sbEd').hidden=true;drawSlide();syncLookToSlide();}};$('sbNext').onclick=()=>{if(sbI<sbList.length-1){sbI++;sbSelK=null;$('sbEd').hidden=true;drawSlide();syncLookToSlide();}};
+$('sbPrev').onclick=()=>{if(sbI>0){endInline(true);sbI--;sbSelK=null;drawSlide();syncLookToSlide();}};$('sbNext').onclick=()=>{if(sbI<sbList.length-1){endInline(true);sbI++;sbSelK=null;drawSlide();syncLookToSlide();}};
 $('sbClose').onclick=closeSlide;$('sbGo').onclick=()=>{const o=sbList[sbI];closeSlide();if(o&&o.s.type==='info'){infoSel=o.s.chunk-IBASE;setPage('info');renderInfoAll();return;}if(o){setPage(o.s.ed==='song'?'song':'word');setTimeout(()=>(o.s.ed==='quote'?gotoQuoteLine(o.s.line):o.s.ed==='word'?gotoWordLine(o.s.line):gotoLine(o.s.line)),40);}};
 $('slidebox').addEventListener('click',e=>{if(e.target.id==='slidebox')closeSlide();});
 addEventListener('keydown',e=>{if(!$('slidebox').classList.contains('on'))return;if(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable]')&&e.key!=='Escape')return;
