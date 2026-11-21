@@ -1376,6 +1376,7 @@ details.look summary{font-size:13px;font-weight:600;color:var(--text)}
 .gtw.on{border-color:var(--blue,#007AFF);box-shadow:0 0 0 1px var(--blue,#007AFF)}
 .gtab{display:flex;align-items:center;gap:6px;height:100%;border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--text);padding:0 4px 0 8px;cursor:grab;white-space:nowrap;max-width:240px}
 .gtab span{overflow:hidden;text-overflow:ellipsis}
+.stag.i{background:rgba(52,199,89,.18);color:#1E8E3E}
 .gtab .stag,.sgroup .stag{font-style:normal;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;flex:none}
 .stag.s{background:rgba(175,82,222,.16);color:#9B45C9}
 .stag.w{background:rgba(255,159,10,.2);color:#B86400}
@@ -1757,15 +1758,45 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 #sbSet .rg.noQ .rgh{flex-direction:row}
 #sbSet #lookBox .rgp,#sbSet #lookBox .rgp[hidden]{position:static;display:grid;width:auto;max-height:none;overflow:visible;border:0;box-shadow:none;padding:0;background:transparent}
 #sbSet .rg.flash{animation:none;background:var(--blue-soft,#e6eeff);border-radius:10px}
+/* 순서·광고 탭 */
+.iadd{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 14px}
+.iadd button{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font:inherit}
+.iadd button:hover{background:var(--sunken)}
+.iadd i{grid-row:1/span 2;font-size:22px;color:#1E8E3E}
+.iadd b{font-size:15px}.iadd small{font-size:12px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+@media (max-width:480px){.ptabs button>i{display:none}.ptabs button{padding:0 4px}}
+.ilist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ilist li{display:flex;align-items:center;gap:8px;padding:9px 10px 9px 12px;border-radius:12px;background:var(--sunken);cursor:pointer}
+.ilist li.sel{box-shadow:0 0 0 2px var(--blue,#007AFF)}
+.ilist .stag{font-style:normal}
+.ilist .it{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.ilist .in{font-size:12px;color:var(--text3);flex:none}
+.ilist .ix{flex:none;border:0;background:transparent;color:var(--text3);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px;border-radius:6px}
+.ilist .ix:hover{color:#E5484D;background:var(--surface)}
+#colInfo .qhint{margin:0 0 12px;font-size:13px;color:var(--text3)}
+#infoPanel .ied{padding:4px 20px 20px;display:flex;flex-direction:column;gap:12px}
+.ied .fld{display:flex;flex-direction:column;gap:6px}
+.ied .fld>span{font-size:13px;font-weight:600;color:var(--text2)}
+.ied .fld input,.ied .fld textarea{width:100%;box-sizing:border-box}
+.ied .fld textarea{min-height:90px;resize:vertical;line-height:1.6}
+.ied .fld textarea.big{min-height:260px}
+.ied .hint2{font-size:12.5px;color:var(--text3);margin:-4px 0 0}
+.ied .chips{display:flex;flex-wrap:wrap;gap:6px}
+.ied .chips button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}
+.ied .chips button:hover{background:var(--sunken)}
+.ied .chips .libc{display:inline-flex;align-items:center;gap:2px;padding-right:4px}
+.ied .chips .libc em{font-style:normal;color:var(--text3);padding:0 4px;border-radius:999px}
+.ied .chips .libc em:hover{color:#E5484D}
+.ied .empty{padding:30px 6px}
 /* 탭 페이지 */
 .page{margin-top:16px}
-body[data-page=song] #pgWord,body[data-page=song] #pgSlides,body[data-page=word] #pgSong,body[data-page=word] #pgSlides,body[data-page=slides] #pgSong,body[data-page=slides] #pgWord{display:none}
+body[data-page=song] #pgWord,body[data-page=song] #pgSlides,body[data-page=word] #pgSong,body[data-page=word] #pgSlides,body[data-page=slides] #pgSong,body[data-page=slides] #pgWord,body[data-page=song] #pgInfo,body[data-page=word] #pgInfo,body[data-page=slides] #pgInfo,body[data-page=info] #pgSong,body[data-page=info] #pgWord,body[data-page=info] #pgSlides{display:none}
 body:not([data-page]) .page:not(#pgSong){display:none}
 .tri{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.3fr);gap:14px;align-items:start}
 .tri>.panel{min-width:0;margin:0}
 .tri .foldpill{display:none!important}
 .tri .setlist{grid-template-columns:minmax(0,1fr)!important}
-.tri #colSong,.tri #colWord{display:flex;flex-direction:column}
+.tri #colSong,.tri #colWord,.tri #colInfo{display:flex;flex-direction:column}
 .tri .wgrid4{grid-template-columns:minmax(0,1fr)!important}
 .tri .wgrid4 .wc.c textarea,.tri .wgrid4 .wc.d .prev{height:180px;min-height:180px;max-height:180px}
 .tri #resPanel .rbar,.tri #wordPanel .rbar{flex-wrap:wrap}
@@ -1825,10 +1856,10 @@ body{font-family:var(--sans)}
 /* 찬양·말씀 탭: 세 박스 크기 고정 (박스 안에서만 스크롤) */
 @media (min-width:1281px){
   :root{--triH:max(460px,calc(100vh - var(--doch,60px) - var(--pbh,100px) - 30px))}
-  body[data-page=song] main,body[data-page=word] main{padding-bottom:14px}
+  body[data-page=song] main,body[data-page=word] main,body[data-page=info] main{padding-bottom:14px}
   .tri>.panel{height:var(--triH);display:flex;flex-direction:column;overflow:hidden}
-  .tri #colSong,.tri #colWord{overflow-y:auto;overscroll-behavior:contain}
-  .tri #colSong>.ph2,.tri #colWord>.ph2{position:sticky;top:0;z-index:3;background:var(--surface)}
+  .tri #colSong,.tri #colWord,.tri #colInfo,.tri #infoPanel{overflow-y:auto;overscroll-behavior:contain}
+  .tri #colSong>.ph2,.tri #colWord>.ph2,.tri #colInfo>.ph2,.tri #infoPanel>.ph2{position:sticky;top:0;z-index:3;background:var(--surface)}
   .tri #colSong>*,.tri #colWord>*,.tri #resPanel>.ph2,.tri #wordPanel>.ph2,.tri .pvcol>.ph2{flex-shrink:0}
   .tri #colSong>.pf,.tri #colWord>.pf{position:sticky;bottom:0;z-index:3;background:var(--surface);margin-top:auto}
   .tri #resPanel>.foldbody,.tri #wordPanel>.foldbody{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
@@ -1977,6 +2008,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
         <nav class="ptabs" id="ptabs" role="tablist" aria-label="작업 화면">
           <button type="button" role="tab" data-pg="song"><i class="ph-fill ph-music-notes" aria-hidden="true"></i><span>찬양</span></button>
           <button type="button" role="tab" data-pg="word"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i><span>말씀</span></button>
+          <button type="button" role="tab" data-pg="info"><i class="ph-fill ph-list-checks" aria-hidden="true"></i><span>순서·광고</span></button>
           <button type="button" role="tab" data-pg="slides"><i class="ph-fill ph-presentation" aria-hidden="true"></i><span>슬라이드 미리보기</span><em id="ptCount"></em></button>
           <span class="saved" id="savedAt"></span>
         </nav>
@@ -2114,6 +2146,34 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
     </section>
 
       <section class="panel pvcol" id="pvWord" aria-label="말씀 슬라이드 미리보기">
+        <div class="ph2"><span class="pico c4" aria-hidden="true"><i class="ph-fill ph-presentation" aria-hidden="true"></i></span><h2>미리보기</h2><span class="meta" data-pvmeta></span>
+          <div class="acts pvzoom"><button type="button" class="tbtn" data-pvz="-1" aria-label="미리보기 작게" data-tip="작게">−</button><button type="button" class="tbtn" data-pvz="1" aria-label="미리보기 크게" data-tip="크게">+</button></div></div>
+        <div class="pvbody" data-pvbody></div>
+      </section>
+    </div>
+
+    <div class="page tri" id="pgInfo">
+      <section class="panel" id="colInfo">
+        <div class="ph2"><span class="pico c2" aria-hidden="true"><i class="ph-fill ph-list-checks" aria-hidden="true"></i></span><h2>순서·광고</h2><span class="meta" id="infoMeta"></span></div>
+        <div class="pb">
+          <p class="qhint">찬양·말씀 말고 필요한 화면을 넣어요. 순서는 ‘슬라이드 미리보기’에서 탭을 끌어 정해요.</p>
+          <div class="iadd" id="infoAdd">
+            <button type="button" data-ia="cover"><i class="ph ph-flag-banner" aria-hidden="true"></i><b>표지</b><small>예배 제목 · 시간</small></button>
+            <button type="button" data-ia="notice"><i class="ph ph-megaphone-simple" aria-hidden="true"></i><b>안내</b><small>대표기도 · 헌금 · 축도</small></button>
+            <button type="button" data-ia="ad"><i class="ph ph-newspaper" aria-hidden="true"></i><b>광고</b><small>교회 소식</small></button>
+            <button type="button" data-ia="text"><i class="ph ph-scroll" aria-hidden="true"></i><b>고백문</b><small>사도신경 · 주기도문</small></button>
+          </div>
+          <ol class="ilist" id="infoList"></ol>
+          <div class="empty" id="infoEmpty">아직 넣은 화면이 없어요. 위에서 골라 넣어 주세요.</div>
+        </div>
+      </section>
+
+      <section class="panel" id="infoPanel">
+        <div class="ph2"><span class="pico c3" aria-hidden="true"><i class="ph-fill ph-pencil-simple-line" aria-hidden="true"></i></span><h2 id="infoEdT">글 쓰기</h2></div>
+        <div class="ied" id="infoEd"></div>
+      </section>
+
+      <section class="panel pvcol" id="pvInfo" aria-label="순서·광고 슬라이드 미리보기">
         <div class="ph2"><span class="pico c4" aria-hidden="true"><i class="ph-fill ph-presentation" aria-hidden="true"></i></span><h2>미리보기</h2><span class="meta" data-pvmeta></span>
           <div class="acts pvzoom"><button type="button" class="tbtn" data-pvz="-1" aria-label="미리보기 작게" data-tip="작게">−</button><button type="button" class="tbtn" data-pvz="1" aria-label="미리보기 크게" data-tip="크게">+</button></div></div>
         <div class="pvbody" data-pvbody></div>
@@ -2322,10 +2382,10 @@ const safeImg=u=>typeof u==='string'&&/^data:image\/(png|jpe?g|webp|gif);base64,
 /* ======================== 팀이 함께 쓰는 설정 ========================
    슬라이드 모양·곡 색·자막 양식·말씀 설정·저장한 양식·배경 사진·로고를 팀 서버(team_settings)에 두고,
    누가 바꾸면 모두의 화면에 바로 반영해요. 이 브라우저에도 같이 저장해서, 서버에 못 닿아도 마지막 설정으로 열려요. */
-const TEAM_KEYS=['look','songColors','fmt','bset','mine','media.song','media.word','media.quote','media.logo'];
+const TEAM_KEYS=['look','songColors','fmt','bset','mine','media.song','media.word','media.quote','media.logo','media.info','infoLib'];
 const TEAM={on:false,t:{},local:{},applying:false};
 function teamVal(k){
-  if(k==='look')return LOOK;if(k==='songColors')return songColors;if(k==='fmt')return FMT;if(k==='mine')return mine;
+  if(k==='look')return LOOK;if(k==='songColors')return songColors;if(k==='infoLib')return ILIB;if(k==='fmt')return FMT;if(k==='mine')return mine;
   if(k==='bset')return{max:BSET.max,nums:BSET.nums,heads:BSET.heads,auto:BSET.auto};
   if(k.startsWith('media.'))return MEDIA[k.slice(6)]||null;
 }
@@ -2340,11 +2400,12 @@ function teamApply(k,v){
   TEAM.applying=true;
   try{
     if(k==='look'&&v){LOOK=mkLook(v);store.set('look',LOOK);lookPrev=lookSnap();
-      buildLookUI();Promise.all([loadFont(LOOK.song.font),loadFont(LOOK.word.font),loadFont(LOOK.quote.font)]).then(()=>{renderShots();lookChanged();});}
+      buildLookUI();Promise.all([loadFont(LOOK.song.font),loadFont(LOOK.word.font),loadFont(LOOK.quote.font),loadFont(LOOK.info.font,lookW(LOOK.info)),loadFont(LOOK.info.font2)]).then(()=>{renderShots();lookChanged();});}
     else if(k==='songColors'){songColors=v&&typeof v==='object'?v:{};store.set('songColors',songColors);renderShots();}
     else if(k==='fmt'&&v){useFormat(v);}
     else if(k==='bset'&&v){Object.assign(BSET,{max:+v.max||BSET.max,nums:!!v.nums,heads:!!v.heads,auto:!!v.auto});store.set('bset2',BSET);fillBible();renderVerse();rewrapWord();}
     else if(k==='mine'){mine=Array.isArray(v)?v.filter(m=>m&&m.f):[];store.set('mine',mine);renderMine();}
+    else if(k==='infoLib'){ILIB=Array.isArray(v)?v.filter(o=>o&&o.title):[];store.set('infoLib',ILIB);renderInfoEd();}
     else if(k.startsWith('media.')){MEDIA[k.slice(6)]=safeImg(v);store.set('media',MEDIA);buildLookUI();renderShots();}
   }finally{TEAM.applying=false;}
 }
@@ -2373,7 +2434,7 @@ async function teamRemote(k){
   if(error||!data||Date.now()-(TEAM.local[k]||0)<3000)return;
   if(JSON.stringify(data.value)===JSON.stringify(teamVal(k)))return;
   teamApply(k,data.value);
-  if(data.updated_by_name&&data.updated_by_name!==me?.name)toast(`${data.updated_by_name}님이 팀 ${k==='fmt'||k==='mine'?'자막 양식':k==='bset'?'말씀 설정':'슬라이드 설정'}을 바꿨어요`);
+  if(data.updated_by_name&&data.updated_by_name!==me?.name)toast(`${data.updated_by_name}님이 팀 ${k==='fmt'||k==='mine'?'자막 양식':k==='bset'?'말씀 설정':k==='infoLib'?'고백문 보관함':'슬라이드 설정'}을 바꿨어요`);
 }
 
 /* ======================== 줄바꿈 엔진 ======================== */
@@ -2516,12 +2577,12 @@ const SAMPLE=[
 ];
 
 /* ======================== 라우팅 ======================== */
-const ANCH={songs:'song',word:'word',result:'song',slides:'slides'};
+const ANCH={songs:'song',word:'word',result:'song',slides:'slides',info:'info'};
 function route(){const h=location.hash.slice(1);if(ANCH[h])setPage(ANCH[h]);closeRail();}
 // 위쪽 탭: [찬양] [말씀] [슬라이드 미리보기]
-function setPage(p){if(!['song','word','slides'].includes(p))p='song';const changed=curPage!==p;curPage=p;store.set('page',p);document.body.dataset.page=p;
+function setPage(p){if(!['song','word','info','slides'].includes(p))p='song';const changed=curPage!==p;curPage=p;store.set('page',p);document.body.dataset.page=p;
   document.querySelectorAll('#ptabs [data-pg]').forEach(b=>b.setAttribute('aria-selected',b.dataset.pg===p));
-  if(changed){setRib(null);lookSlideKey=null;if(p==='song')lookTab='song';else if(p==='word')lookTab=WMODE==='q'?'quote':'word';store.set('lookTab',lookTab);buildLookUI();scrollTo(0,0);}
+  if(changed){setRib(null);lookSlideKey=null;if(p==='song')lookTab='song';else if(p==='info')lookTab='info';else if(p==='word')lookTab=WMODE==='q'?'quote':'word';store.set('lookTab',lookTab);buildLookUI();scrollTo(0,0);}
   setTimeout(()=>{autosize();autosizeWEd();applySongWindow();renderShots();},0);}
 document.querySelectorAll('#ptabs [data-pg]').forEach(b=>b.onclick=()=>{if(location.hash)history.replaceState(null,'',location.pathname+location.search);setPage(b.dataset.pg);});
 // 위쪽 고정 머리글 높이만큼 아래에 붙도록
@@ -2894,10 +2955,14 @@ const gapStr=()=>'\n'+'\n'.repeat(Math.max(1,FMT.songGap));
 const gapRe=()=>new RegExp('\\n(?:[ \\t]*\\n){'+Math.max(1,FMT.songGap)+',}');
 function isWordChunk(c){const ls=c.split('\n').map(l=>l.trim()).filter(Boolean);return ls.some(l=>/^\d{1,3} \S/.test(l))&&!(FMT.endMark&&ls.some(l=>l.includes(FMT.endMark)));}
 const QMARK='〔인용〕 ';
-function splitCombined(t){t=String(t||'');if(!t.trim())return{song:'',word:'',quote:''};
-  const ch=t.split(gapRe()).filter(x=>x.trim()),isQ=c=>c.trimStart().startsWith(QMARK.trim());
-  return{song:ch.filter(c=>!isQ(c)&&!isWordChunk(c)).join(gapStr()),word:ch.filter(c=>!isQ(c)&&isWordChunk(c)).join(gapStr()),quote:ch.filter(isQ).map(c=>c.trimStart().replace(QMARK.trim(),'').replace(/^ /,'')).join(gapStr())};}
-function combinedText(){const q=($('quoteText')?.value||'').trim();return[$('outText').value.trim(),$('wordText').value.trim(),q?q.split(gapRe()).filter(x=>x.trim()).map(c=>QMARK+c.trimStart()).join(gapStr()):''].filter(Boolean).join(gapStr());}
+// 순서·광고 항목은 저장 글에 '〔순서〕 {…}' 한 줄로 들어가요 (빈 줄이 없어서 다른 덩어리와 안 섞여요)
+const IMARK='〔순서〕 ',IBASE=30000;
+const IKIND={cover:{n:'표지',ic:'ph-flag-banner'},notice:{n:'안내',ic:'ph-megaphone-simple'},ad:{n:'광고',ic:'ph-newspaper'},text:{n:'고백문',ic:'ph-scroll'}};
+function splitCombined(t){t=String(t||'');if(!t.trim())return{song:'',word:'',quote:'',info:[]};
+  const all=t.split(gapRe()).filter(x=>x.trim()),isI=c=>c.trimStart().startsWith(IMARK.trim()),ch=all.filter(c=>!isI(c)),isQ=c=>c.trimStart().startsWith(QMARK.trim());
+  const info=all.filter(isI).map(c=>{try{const o=JSON.parse(c.trimStart().slice(IMARK.trim().length));return o&&IKIND[o.k]?o:null;}catch(e){return null;}}).filter(Boolean);
+  return{info,song:ch.filter(c=>!isQ(c)&&!isWordChunk(c)).join(gapStr()),word:ch.filter(c=>!isQ(c)&&isWordChunk(c)).join(gapStr()),quote:ch.filter(isQ).map(c=>c.trimStart().replace(QMARK.trim(),'').replace(/^ /,'')).join(gapStr())};}
+function combinedText(){const q=($('quoteText')?.value||'').trim();return[$('outText').value.trim(),$('wordText').value.trim(),q?q.split(gapRe()).filter(x=>x.trim()).map(c=>QMARK+c.trimStart()).join(gapStr()):'',...INFO.map(o=>IMARK+JSON.stringify(o))].filter(Boolean).join(gapStr());}
 function wordChunks(){const t=$('wordText').value.trim();return t?t.split(gapRe()).filter(x=>x.trim()):[];}
 function autosizeWord(){const t=$('wordText');if(!t.offsetParent)return;t.style.height='auto';t.style.height=Math.max(t.scrollHeight+2,140)+'px';}
 function refreshWordMeta(){const q=WMODE==='q',ta=$(q?'quoteText':'wordText'),n=(q?quoteChunks():wordChunks()).length,l=ta.value.trim()?ta.value.trim().split('\n').length:0;$('wordCount').textContent=n?`${q?'구절':'본문'} ${n}개 · ${l}줄`:'';autosizeWord();}
@@ -3180,7 +3245,7 @@ function gotoLine(n){showSongTabForLine(n);
 
 /* ---- 화면 미리보기: 자막 결과 글을 화면 단위로 나눠 그려요 ---- */
 let wordLineSet=new Set();
-function parseScreens(){wordLineSet=new Set();return[...parseText($('outText').value,'song',0),...parseText($('wordText').value,'word',10000),...parseText($('quoteText').value,'quote',20000)];}
+function parseScreens(){wordLineSet=new Set();return[...parseText($('outText').value,'song',0),...parseText($('wordText').value,'word',10000),...parseText($('quoteText').value,'quote',20000),...infoScreens()];}
 const BLANK_MARK='[빈 화면]';
 function parseText(text,ed,base){
   const ls=String(text||'').split('\n'),f=FMT,screens=[],forceWord=ed==='word'||ed==='quote';
@@ -3251,8 +3316,10 @@ const LOOK_DEF={
   word:{font:'Nanum Myeongjo',refSpacing:-5,bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,box:88,verseGap:false,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true,quoteStyle:'body',capRight:'',capHex:'#0E6874',capAlpha:84,capSize:2.5,capBottom:3,capLineH:1.6,capColor:'#ffffff',color:'#1d1d1d',shadowOn:false,shadowAmt:18,strokeOn:false,strokeColor:'#ffffff',strokeW:4}
 };
 LOOK_DEF.quote={...LOOK_DEF.word};
+// 순서·광고 화면 (표지·안내·광고·고백문)
+LOOK_DEF.info={font:'Noto Sans KR',weight:800,font2:'Gowun Batang',size:8.5,nSize:3.6,bSize:2.5,spacing:-4,lineH:1.6,maxLines:6,align:'center',color:'#ffffff',boxText:'#1d1d1d',box:90,bandColor:'#22455F',band2Color:'#4D7D86',tag1:'주일예배',tag2:'SUNDAY WORSHIP SERVICE',bgDim:15,logoPos:'off',logoSize:6,footer:'',footerOn:true,shadowOn:true,shadowAmt:18,strokeOn:false,strokeColor:'#000000',strokeW:4};
 // 인용 화면은 말씀 화면과 따로 설정 (예전 저장값엔 없으니 말씀 화면 값으로 시작)
-function mkLook(v){v=v||{};return{song:{...LOOK_DEF.song,...(v.song||{})},word:{...LOOK_DEF.word,...(v.word||{})},quote:{...LOOK_DEF.quote,...(v.quote||v.word||{})}};}
+function mkLook(v){v=v||{};return{song:{...LOOK_DEF.song,...(v.song||{})},word:{...LOOK_DEF.word,...(v.word||{})},quote:{...LOOK_DEF.quote,...(v.quote||v.word||{})},info:{...LOOK_DEF.info,footer:(v.song&&v.song.footer)||LOOK_DEF.song.footer,...(v.info||{})}};}
 // 배경 사진·로고 (이 브라우저에 저장)
 let MEDIA=store.get('media',{song:null,word:null,logo:null});
 const IMG={};
@@ -3264,10 +3331,12 @@ function readImage(file,max,type){return new Promise((res,rej)=>{const im=new Im
   const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext('2d');if(type==='image/jpeg'){x.fillStyle='#000';x.fillRect(0,0,c.width,c.height);}
   x.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL(type,.86));};im.onerror=()=>rej(new Error('이미지를 열 수 없어요'));im.src=u;});}
 let LOOK=mkLook(store.get('look',{}));
+let INFO=[],infoSel=0,ILIB=store.get('infoLib',[]); // 순서·광고 항목 · 고른 항목 · 고백문 보관함
 let songColors=store.get('songColors',{}); // 제목 → 팔레트 id
 const LOOK_CTRLS=[
  ['song','size','가사 크기',3,7,.1,''],['song','spacing','가사 자간',-30,60,1,'%'],['song','lineH','가사 줄간격',1,2,.02,''],['song','posY','가사 높이',40,80,1,'%'],['song','titleSize','제목 크기',1,3.5,.1,''],['song','titleGap','제목·가사 간격',2,20,.5,'%'],
  ['word','size','본문 크기',1.8,4,.05,''],['word','spacing','본문 자간',-30,60,1,'%'],['word','capLineH','본문 줄간격',1,2.6,.02,''],['word','refSpacing','제목 자간',-30,60,1,'%'],['word','lineH','본문 줄간격',1,2.2,.02,''],['word','maxLines','화면당 줄',2,8,1,'줄'],['word','box','상자 진하기',40,100,1,'%'],['song','bgDim','사진 어둡게',0,80,1,'%'],['word','bgDim','사진 어둡게',0,80,1,'%'],['song','logoSize','로고 크기',2,20,.5,'%'],['word','logoSize','로고 크기',2,20,.5,'%'],['song','shadowAmt','그림자 진하기',0,80,1,'%'],['word','shadowAmt','그림자 진하기',0,80,1,'%'],['song','strokeW','외곽선 두께',1,15,.5,'%'],['word','strokeW','외곽선 두께',1,15,.5,'%'],['word','capSize','자막 글자 크기',1.5,4,.05,''],['word','capAlpha','띠 진하기',30,100,1,'%'],['word','capBottom','띠 아래 여백',0,20,.5,'%'],
+ ['info','size','표지 제목 크기',4,14,.1,''],['info','nSize','안내 글 크기',2,7,.05,''],['info','bSize','광고 글 크기',1.4,3.5,.05,''],['info','spacing','자간',-30,60,1,'%'],['info','lineH','줄간격',1,2.4,.02,''],['info','maxLines','화면당 줄',3,12,1,'줄'],['info','box','상자 진하기',40,100,1,'%'],['info','bgDim','사진 어둡게',0,80,1,'%'],['info','logoSize','로고 크기',2,20,.5,'%'],['info','shadowAmt','그림자 진하기',0,80,1,'%'],['info','strokeW','외곽선 두께',1,15,.5,'%'],
 ];
 let lookTab=store.get('lookTab','song');
 let capLast='';
@@ -3286,9 +3355,9 @@ addEventListener('resize',()=>placeRib());addEventListener('scroll',()=>placeRib
 function buildLookUI(){
   const box=$('lookCtl');box.innerHTML='';
   const pg=typeof curPage==='string'?curPage:'slides',inBox=!!$('lookBox').closest('#sbSet');
-  const G=inBox?['song','word','quote']:pg==='song'?['song']:pg==='word'?[WMODE==='q'?'quote':'word']:['song','word','quote'];
+  const G=inBox?['song','word','quote','info']:pg==='song'?['song']:pg==='info'?['info']:pg==='word'?[WMODE==='q'?'quote':'word']:['song','word','quote','info'];
   if(!G.includes(lookTab)&&!lookSlideKey){lookTab=G[0];store.set('lookTab',lookTab);}
-  const NM=G.length>1?{song:'찬양',word:'설교 본문',quote:'참고 구절'}:{song:'찬양 화면',word:'설교 본문 화면',quote:'참고 구절 화면'};
+  const NM=G.length>1?{song:'찬양',word:'설교 본문',quote:'참고 구절',info:'순서·광고'}:{song:'찬양 화면',word:'설교 본문 화면',quote:'참고 구절 화면',info:'순서·광고 화면'};
   const tabs=document.createElement('div');tabs.className='lktabs';
   tabs.innerHTML=G.length>1?`<div class="seg2" role="tablist" aria-label="바꿀 화면">${G.map(g=>`<button role="tab" data-g="${g}">${NM[g]}</button>`).join('')}</div>`:`<span class="lkone">${NM[G[0]]}</span>`;
   tabs.querySelectorAll('[data-g]').forEach(b=>{b.setAttribute('aria-selected',b.dataset.g===lookTab);b.onclick=()=>{lookTab=b.dataset.g;store.set('lookTab',lookTab);lookSlideKey=null;buildLookUI();};});
@@ -3299,7 +3368,7 @@ function buildLookUI(){
     L=new Proxy(ov,{get:(t,k)=>k in t?t[k]:LOOK[grp][k],set:(t,k,v)=>{t[k]=v;return true;}});}
   const L0=L;
   if(slideKey){const own=SLIDE_OV[slideKey]&&Object.keys(SLIDE_OV[slideKey]).filter(k=>k!=='bg').length;const sc=document.createElement('div');sc.className='lkscope';
-    sc.innerHTML=`<div class="seg2" role="radiogroup" aria-label="바꿀 범위"><button type="button" role="radio" data-sc="slide" aria-checked="${scope==='slide'}" title="여기서 바꾸면 이 슬라이드에만 적용돼요. 배경 사진·로고 파일은 모든 슬라이드가 같이 써요.">이 슬라이드만</button><button type="button" role="radio" data-sc="all" aria-checked="${scope==='all'}">모든 ${grp==='song'?'찬양':grp==='quote'?'참고 구절':'설교 본문'} 슬라이드</button></div>${own?`<button type="button" class="btn sm" data-ovclear title="이 슬라이드만 따로 바꾼 설정을 지우고 다른 슬라이드와 똑같이 맞춰요">따로 바꾼 것 지우기</button>`:''}`;
+    sc.innerHTML=`<div class="seg2" role="radiogroup" aria-label="바꿀 범위"><button type="button" role="radio" data-sc="slide" aria-checked="${scope==='slide'}" title="여기서 바꾸면 이 슬라이드에만 적용돼요. 배경 사진·로고 파일은 모든 슬라이드가 같이 써요.">이 슬라이드만</button><button type="button" role="radio" data-sc="all" aria-checked="${scope==='all'}">모든 ${grp==='song'?'찬양':grp==='quote'?'참고 구절':grp==='info'?'순서·광고':'설교 본문'} 슬라이드</button></div>${own?`<button type="button" class="btn sm" data-ovclear title="이 슬라이드만 따로 바꾼 설정을 지우고 다른 슬라이드와 똑같이 맞춰요">따로 바꾼 것 지우기</button>`:''}`;
     sc.querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{lookScope=b.dataset.sc;buildLookUI();});
     sc.querySelector('[data-ovclear]')?.addEventListener('click',()=>{delete SLIDE_OV[slideKey];saveLook();buildLookUI();toast('이 슬라이드를 모든 슬라이드 설정으로 돌렸어요');});
     box.appendChild(sc);}
@@ -3365,8 +3434,12 @@ function buildLookUI(){
     r.querySelector('select').onchange=e=>{const v=e.target.value;if(v)L.weight=+v;else if(scope==='slide')delete SLIDE_OV[slideKey].weight;else delete L.weight;loadFont(L.font,lookW(L)).then(()=>saveLook());};s.q.appendChild(r);}
   if(cap)slider(s.q,'capSize',false,'크기');else slider(s.q,'size',false,'크기');
   if(cap)color(s.q,'capColor','색');else color(s.q,'color','색');
+  if(grp==='info'){const r=document.createElement('label');r.className='lk lkwide';
+    r.innerHTML=`<span>안내·광고 글꼴</span><select aria-label="안내·광고 글꼴">${groups.map(gg=>`<optgroup label="${gg}">${FONTS.filter(o=>o.g===gg).map(o=>`<option value="${o.f}" ${L.font2===o.f?'selected':''}>${o.n}</option>`).join('')}</optgroup>`).join('')}</select>`;
+    r.querySelector('select').onchange=e=>{L.font2=e.target.value;loadFont(L.font2).then(()=>saveLook());};s.p.appendChild(r);
+    slider(s.p,'nSize',true);slider(s.p,'bSize',true);color(s.p,'boxText','상자 안 글자 색');}
   // 한 줄 글자 수 (찬양: 자막 양식 · 크게 보기에서 '이 슬라이드만'이면 그 곡만 / 말씀: 말씀 한 줄 글자 수)
-  {const isW=grp!=='song',songIdx=grp==='song'&&scope==='slide'&&slideKey?results.findIndex(r=>r&&(r.title||'').trim()===slideKey.split(':').slice(1,-1).join(':').trim()):-1;
+  if(grp!=='info'){const isW=grp!=='song',songIdx=grp==='song'&&scope==='slide'&&slideKey?results.findIndex(r=>r&&(r.title||'').trim()===slideKey.split(':').slice(1,-1).join(':').trim()):-1;
    const wHead=isW&&scope==='slide'&&slideKey?slideKey.split(':').slice(1,-1).join(':').trim():'';
    const cur=()=>grp==='song'?(songIdx>=0?ffmt(results[songIdx],FMT).maxChars:FMT.maxChars):(wHead?maxFor(wHead):grp==='quote'?(QMAX||(capAuto()?capAutoMax():BSET.max)):BSET.max),[mn,mx]=grp==='song'?[6,30]:[10,60];
    const r=document.createElement('div');r.className='lk lkwide';
@@ -3378,7 +3451,7 @@ function buildLookUI(){
      else{useFormat({...FMT,maxChars:v});if(!$('regenBanner').classList.contains('hidden')){setOutput(allText(results,FMT),true);}}
      setTimeout(()=>{if($('slidebox').classList.contains('on')){sbList=songGroups().flatMap(g=>g.items.map(s=>({s,si:g.songIdx||0})));drawSlide();}},250);};
    nb.onchange=()=>set(nb.value);dn.onclick=()=>set(cur()-1);up.onclick=()=>set(cur()+1);s.p.appendChild(r);}
-  slider(s.p,'spacing',true);if(cap)slider(s.p,'capLineH',true);else{slider(s.p,'lineH',true);if(isW0)slider(s.p,'refSpacing',true);}
+  slider(s.p,'spacing',true);if(cap)slider(s.p,'capLineH',true);else{slider(s.p,'lineH',true);if(isW0&&grp!=='info')slider(s.p,'refSpacing',true);}
   // 정렬: 찬양은 가사·제목, 말씀은 상자 안 본문
   if(!cap){s=sec('align','정렬','ph-text-align-center');s.rg.classList.add('noP');const cur=L.align||(grp==='song'?'center':'left');
     [['left','왼쪽'],['center','가운데'],['right','오른쪽']].forEach(([v,n])=>{const b=document.createElement('button');b.type='button';b.className='albtn';b.setAttribute('aria-pressed',cur===v);b.setAttribute('aria-label',n+' 정렬');b.title=n+' 정렬';
@@ -3391,6 +3464,7 @@ function buildLookUI(){
   s=sec('layout','배치','ph-layout');
   if(grp==='song'){sw(s.q,'title','제목');['posY','titleSize','titleGap'].forEach(k=>slider(s.p,k,true));}
   else if(cap){slider(s.q,'maxLines',false,'화면당');s.rg.classList.add('noP');}
+  else if(grp==='info'){slider(s.q,'maxLines',false,'화면당');color(s.p,'bandColor','띠 색');color(s.p,'band2Color','띠 오른쪽 색');slider(s.p,'box',true);text(s.p,'tag1','머리표 윗줄 (광고·고백문)');text(s.p,'tag2','머리표 아랫줄');}
   else{slider(s.q,'maxLines',false,'화면당');sw(s.p,'verseGap','절마다 한 줄 띄우기');slider(s.p,'box',true);text(s.p,'head','머리글');text(s.p,'sub','작은 머리글');}
   {const t=scope==='slide'?SLIDE_OV[slideKey]:LOOK[grp],has=t&&Object.keys(t).some(k=>/^o[xy]_/.test(k));
     const p=document.createElement('p');p.className='lkhint lkwide';p.textContent='미리보기나 크게 보기에서 글자를 끌면 위치를 옮길 수 있어요.';s.p.appendChild(p);
@@ -3514,9 +3588,9 @@ let SLIDE_OV=store.get('slideOv',{});
  document.addEventListener('click',e=>{if(!me.contains(e.target))me.classList.remove('open');});}
 setTimeout(()=>{lookPrev=lookSnap();},0);
 $('lkUndo').onclick=e=>{e.preventDefault();e.stopPropagation();undoLook();};
-function tabOf(sc){return!sc||sc.type==='song'?'song':sc.ed==='quote'?'quote':'word';}
+function tabOf(sc){return!sc||sc.type==='song'?'song':sc.type==='info'?'info':sc.ed==='quote'?'quote':'word';}
 function withLook(sc,fn){
-  const t=tabOf(sc),grp0=t==='song'?'song':'word',ov=(sc&&sc.ovKey&&SLIDE_OV[sc.ovKey])||{};
+  const t=tabOf(sc),grp0=t==='song'||t==='info'?t:'word',ov=(sc&&sc.ovKey&&SLIDE_OV[sc.ovKey])||{};
   if(t!=='quote'&&!Object.keys(ov).length)return fn();
   const base=LOOK[grp0],src=t==='quote'?{...LOOK.quote,head:base.head,sub:base.sub,footer:base.footer,footerOn:base.footerOn}:base;
   LOOK[grp0]={...src,...ov};try{return fn();}finally{LOOK[grp0]=base;}
@@ -3524,6 +3598,7 @@ function withLook(sc,fn){
 function drawScreen(cv,sc,songIdx,opt={}){return withLook(sc,()=>drawScreen0(cv,sc,songIdx,opt));}
 function drawScreen0(cv,sc,songIdx,opt={}){
   const W=cv.width,H=cv.height,x=cv.getContext('2d');x.textBaseline='middle';
+  if(sc.type==='info')return drawInfo(x,W,H,sc,opt);
   if(isCaption(sc))return drawCaption(x,W,H,sc);
   if(sc.blank){const ob=(SLIDE_OV[sc.ovKey]||{}).bg,ph=mediaImg('song');
     if(ob==='black'){x.fillStyle='#000';x.fillRect(0,0,W,H);}else if(ob)drawBg(x,W,H,palById(ob)||palOf(sc,songIdx));else if(ph)drawPhoto(x,W,H,ph,LOOK.song.bgDim);else drawBg(x,W,H,palOf(sc,songIdx));
@@ -3590,12 +3665,12 @@ function slideLayout(x,W,H,sc){
 let shotT,fontsReady=false;
 function loadFont(f,w0){const w=w0||fontW(f);return Promise.all([w,400,500].map(x=>document.fonts.load(`${x} 40px "${f}"`,'가나다 하나님 에베소서 OKSU 0123,.'))).catch(()=>{});}
 Promise.all([400,500,700,800].map(w=>document.fonts.load(`${w} 40px "Noto Sans KR", sans-serif`,'OKSU CHURCH Bible 가나다 0123'))
-  .concat([loadFont(LOOK.song.font,lookW(LOOK.song)),loadFont(LOOK.word.font,lookW(LOOK.word)),loadFont(LOOK.quote.font,lookW(LOOK.quote))])).catch(()=>{}).then(()=>{fontsReady=true;renderShots();if(typeof lookChanged==='function')lookChanged();});
+  .concat([loadFont(LOOK.song.font,lookW(LOOK.song)),loadFont(LOOK.word.font,lookW(LOOK.word)),loadFont(LOOK.quote.font,lookW(LOOK.quote)),loadFont(LOOK.info.font,lookW(LOOK.info)),loadFont(LOOK.info.font2)])).catch(()=>{}).then(()=>{fontsReady=true;renderShots();if(typeof lookChanged==='function')lookChanged();});
 function songGroups(){
   const sc=parseScreens(),groups=[];let si=0;
-  sc.forEach(s=>{let g=groups.find(g=>g.chunk===s.chunk);if(!g){g={chunk:s.chunk,type:s.type,title:s.type==='word'?(s.ref||'성경봉독'):(s.title||`${groups.length+1}번째 곡`),items:[]};if(s.type==='song')g.songIdx=si++;groups.push(g);}
+  sc.forEach(s=>{let g=groups.find(g=>g.chunk===s.chunk);if(!g){g={chunk:s.chunk,type:s.type,title:s.type==='word'?(s.ref||'성경봉독'):s.type==='info'?s.title:(s.title||`${groups.length+1}번째 곡`),items:[]};if(s.type==='song')g.songIdx=si++;groups.push(g);}
     s.songKey=g.title;g.items.push(s);});
-  groups.forEach(g=>g.items.forEach((it,i)=>{it.ovKey=(g.type==='word'?(it.ed==='quote'?'q':'w'):'s')+':'+g.title+':'+i;}));
+  groups.forEach(g=>g.items.forEach((it,i)=>{it.ovKey=g.type==='info'?'i:'+it.iid+':'+i:(g.type==='word'?(it.ed==='quote'?'q':'w'):'s')+':'+g.title+':'+i;}));
   return applyOrder(groups);
 }
 // 따로 작업한 슬라이드 안내: [확인]을 누르면 그 설정 그대로 안내만 지워요 (설정이 또 바뀌면 다시 보여요)
@@ -3603,11 +3678,11 @@ let OV_ACK=store.get('ovAck',{});
 const ovSig=k=>{const o=SLIDE_OV[k];if(!o)return'';const c={...o};delete c.bg;return Object.keys(c).length?JSON.stringify(c):'';};
 // 곡/본문 하나(g)의 머리줄(색 동그라미)과 슬라이드들
 function shotGroupEl(g,groups,n0,{cw=480}={}){
-  const key=g.type==='word'?'📖'+g.items[0].ref:g.title;
-  const cur=songColors[key]||(g.type==='word'?'forest':AUTO_SONG[g.songIdx%AUTO_SONG.length]);
+  const key=g.type==='word'?'📖'+g.items[0].ref:g.type==='info'?'ℹ'+g.items[0].iid:g.title;
+  const cur=songColors[key]||(g.type==='word'?'forest':g.type==='info'?'slate':AUTO_SONG[g.songIdx%AUTO_SONG.length]);
   const gw=document.createElement('div');gw.className='sgroup';gw.dataset.t=g.type;
   const head=document.createElement('div');head.className='shead';
-  const isCustom=cur&&cur[0]==='#',usesPhoto=!!MEDIA[g.type==='word'?'word':'song'];
+  const isCustom=cur&&cur[0]==='#',usesPhoto=!!MEDIA[g.type==='word'?'word':g.type==='info'?'info':'song'];
   head.innerHTML=`<b></b><span class="sw">${PALS.map(p=>`<button data-p="${p.id}" title="${p.name}" aria-label="${p.name} 배경" style="background:linear-gradient(135deg,${p.c[0]},${p.c[2]})" class="${p.id===cur?'on':''}"></button>`).join('')}<label class="plus${isCustom?' on':''}" title="색 직접 고르기" ${isCustom?`style="background:${cur}"`:''}>+<input type="color" value="${isCustom?cur:'#3b6ea5'}" aria-label="배경색 직접 고르기"></label></span>`;
   if(usesPhoto)head.querySelector('.sw').outerHTML='<span class="hint" style="margin:0">배경 사진 사용 중</span>';
   head.querySelector('input[type=color]')?.addEventListener('input',e=>{songColors[key]=e.target.value;store.set('songColors',songColors);teamSet('songColors');clearTimeout(window._ct);window._ct=setTimeout(renderShots,120);});
@@ -3647,8 +3722,14 @@ function shotGroupEl(g,groups,n0,{cw=480}={}){
   if(g.type==='song'){const add=document.createElement('button');add.type='button';add.className='shotadd';add.title='이 곡 끝에 글자 없는 빈 화면 넣기';add.innerHTML='<i class="ph ph-plus" aria-hidden="true"></i><span>빈 화면</span>';add.onclick=()=>insertBlank(g);grid.appendChild(add);}
   gw.appendChild(grid);return gw;
 }
+// 한글 웹 글꼴은 글자 묶음별로 받아요: 화면에 쓰인 글자를 미리 받고, 새로 받은 게 있으면 다시 그려요
+let _glyphKey='';
+function ensureGlyphs(){const t=[$('outText').value,$('wordText').value,$('quoteText').value,...INFO.map(o=>[o.title,o.band,o.time,o.note,o.body].join('\n'))].join('\n')+Object.values(LOOK).map(L=>[L.head,L.sub,L.footer,L.tag1,L.tag2,L.capRight].join('')).join(''),
+  txt=[...new Set(t.replace(/\s/g,''))].join(''),fs=Object.values(LOOK).flatMap(L=>[[lookW(L),L.font],[400,L.font],[400,L.font2]]).filter(f=>f[1]),key=txt+'|'+fs.join(',');
+  if(!txt||key===_glyphKey)return;_glyphKey=key;
+  Promise.all(fs.map(([w,f])=>document.fonts.load(`${w} 40px "${f}"`,txt).catch(()=>[]))).then(r=>{if(r.some(a=>a&&a.length&&a.some(ff=>ff.status==='loaded')))renderShots();});}
 function renderShots(){
-  clearTimeout(shotT);shotT=setTimeout(()=>{
+  ensureGlyphs();clearTimeout(shotT);shotT=setTimeout(()=>{
     const box=$('shots'),groups=songGroups();box.innerHTML='';shownGroups=groups;
     const total=groups.reduce((a,g)=>a+g.items.length,0);renderTabCounts(total);renderGroupTabs(groups,total);
     $('shotCount').textContent=total?`${total}장`:'';$('ptCount').textContent=total||'';$('dlShots').disabled=!total;$('dlPptx').disabled=!total;
@@ -3664,21 +3745,22 @@ function renderShots(){
 // 찬양·말씀 탭 오른쪽 칸: 지금 고른 곡/본문의 슬라이드만 세로로
 let PVC=Math.min(3,Math.max(1,+store.get('pvc',1)||1));
 function pvGroup(kind,groups){
+  if(kind==='info')return groups.find(g=>g.type==='info'&&g.chunk===IBASE+infoSel);
   if(kind==='song')return groups.find(g=>kindOf(g)==='s'&&g.chunk===songTab);
   const c=(wTab.k==='q'?20000:10000)+wTab.i;return groups.find(g=>g.type==='word'&&g.chunk===c);}
 function renderPv(groups=songGroups()){
   document.documentElement.style.setProperty('--pvc',PVC);
-  const kind=curPage==='song'?'song':curPage==='word'?'word':null;if(!kind)return;
-  const col=$(kind==='song'?'pvSong':'pvWord'),body=col.querySelector('[data-pvbody]'),g=pvGroup(kind,groups);
+  const kind=curPage==='song'||curPage==='word'||curPage==='info'?curPage:null;if(!kind)return;
+  const col=$(kind==='song'?'pvSong':kind==='info'?'pvInfo':'pvWord'),body=col.querySelector('[data-pvbody]'),g=pvGroup(kind,groups);
   col.querySelectorAll('[data-pvz]').forEach(b=>b.disabled=+b.dataset.pvz<0?PVC>=3:PVC<=1);
-  if(!g){body.innerHTML=`<div class="empty">${kind==='song'?'‘찬양 자막에 넣기’를 누르면 고른 곡의 슬라이드가 여기 나와요.':(WMODE==='q'?'‘참고 구절 자막에 넣기’를 누르':'‘설교 본문 자막에 넣기’를 누르')+'면 슬라이드가 여기 나와요.'}</div>`;col.querySelector('[data-pvmeta]').textContent='';return;}
+  if(!g){body.innerHTML=`<div class="empty">${kind==='info'?'왼쪽에서 화면을 넣으면 여기에 나와요.':kind==='song'?'‘찬양 자막에 넣기’를 누르면 고른 곡의 슬라이드가 여기 나와요.':(WMODE==='q'?'‘참고 구절 자막에 넣기’를 누르':'‘설교 본문 자막에 넣기’를 누르')+'면 슬라이드가 여기 나와요.'}</div>`;col.querySelector('[data-pvmeta]').textContent='';return;}
   let n0=0;for(const x of groups){if(x===g)break;n0+=x.items.length;}
   const sc=body.scrollTop;body.innerHTML='';body.appendChild(shotGroupEl(g,groups,n0,{cw:Math.round(720/PVC)}));body.scrollTop=sc;markFollow(kind,false);
   col.querySelector('[data-pvmeta]').textContent=`${g.items.length}장`;}
 document.querySelectorAll('[data-pvz]').forEach(b=>b.onclick=()=>{PVC=Math.min(3,Math.max(1,PVC-(+b.dataset.pvz)));store.set('pvc',PVC);renderPv();});
 // 자막 따라가기: 글쓴이 커서가 있는 줄의 슬라이드로 미리보기가 저절로 가요
 const PVF={};
-function markFollow(kind,scroll=true){const col=$(kind==='song'?'pvSong':'pvWord'),body=col&&col.querySelector('[data-pvbody]');if(!body)return;
+function markFollow(kind,scroll=true){const col=$(kind==='song'?'pvSong':kind==='info'?'pvInfo':'pvWord'),body=col&&col.querySelector('[data-pvbody]');if(!body)return;
   body.querySelectorAll('.shotw.follow').forEach(x=>x.classList.remove('follow'));const el=PVF[kind]&&body.querySelector(`.shotw[data-k="${CSS.escape(PVF[kind])}"]`);if(!el)return;el.classList.add('follow');
   if(scroll){const t=el.offsetTop,h=body.clientHeight,st=body.scrollTop;if(t<st||t+el.offsetHeight>st+h)body.scrollTo({top:Math.max(0,t-10),behavior:'smooth'});}}
 function followLine(kind,ed,line){const cand=parseScreens().filter(x=>x.ed===ed&&line>=x.cs&&line<=x.ce),sc=cand.filter(x=>x.line<=line).pop()||cand[0];const k=sc?shotKey(sc):null;if(k===PVF[kind])return;PVF[kind]=k;markFollow(kind);}
@@ -3686,7 +3768,7 @@ function followLine(kind,ed,line){const cand=parseScreens().filter(x=>x.ed===ed&
 ['click','keyup'].forEach(ev=>$('wEd').addEventListener(ev,()=>{const ed=$('wEd'),k=wTab.k,m=wMaster(k),st=chunkStarts(m.value,k==='q'?'quote':'word')[wTab.i];if(st==null)return;
   followLine('word',k==='q'?'quote':'word',st+ed.value.slice(0,ed.selectionStart).split('\n').length-1);}));
 // 글자 끌어 옮기기 (리본 범위: '이 슬라이드만'이면 그 슬라이드, 아니면 같은 종류 전체)
-const MOVK={lyrics:'lyrics',title:'title',footer:'footer',head:'head',sub:'sub',ref:'ref',box:'box',body:'box'};
+const MOVK={lyrics:'lyrics',title:'title',footer:'footer',head:'head',sub:'sub',ref:'ref',box:'box',body:'box',ititle:'ititle',iband:'iband',itime:'iband',inote:'inote',inotice:'inotice',ihead:'box',ibody:'box',itag:'box'};
 function moveTarget(sc){return lookSlideKey&&lookSlideKey===sc.ovKey&&lookScope==='slide'?(SLIDE_OV[sc.ovKey]||(SLIDE_OV[sc.ovKey]={})):LOOK[tabOf(sc)];}
 function hitMovable(lay,px,py){return((lay&&lay.regions)||[]).filter(r=>MOVK[r.k]&&px>=r.x-8&&px<=r.x+r.w+8&&py>=r.y-8&&py<=r.y+r.h+8).sort((a,b)=>a.w*a.h-b.w*b.h)[0];}
 function attachMove(cv,get,redraw){
@@ -3704,6 +3786,7 @@ function attachMove(cv,get,redraw){
 }
 // 미리보기에서 곡/본문을 고르면 자막 칸도 그 탭으로
 function syncEditorsTo(g){if(!g)return;const k=kindOf(g);
+  if(k==='i'){const i=g.chunk-IBASE;if(i!==infoSel){infoSel=i;renderInfoList();renderInfoEd();}return;}
   if(k==='s'){if(songTab!==g.chunk){songTab=g.chunk;store.set('songTab',songTab);refreshOutMeta();}}
   else{const t={k:k==='q'?'q':'w',i:g.chunk-(k==='q'?20000:10000)};if(t.k!==WMODE)setWMode(t.k,true);if(t.k!==wTab.k||t.i!==wTab.i){wTab=t;store.set('wTab',wTab);renderWTabs();}}}
 
@@ -3840,11 +3923,129 @@ function renderSongFmt(){const box=$('songFmt');if(!box)return;const ch=songChun
 let shotSel=store.get('shotSel','all');
 function renderGroupTabs(groups,total){const bar=$('gtabs');if(!bar)return;
   if(shotSel!=='all'&&!groups.some(g=>gKey(g)===shotSel))shotSel=groups[0]?gKey(groups[0]):'all';
-  bar.innerHTML=`<button type="button" class="gtall${shotSel==='all'?' on':''}" id="gtAll" role="tab" aria-selected="${shotSel==='all'}">전체 <em>${total||0}</em></button>`+groups.map(g=>`<span class="gtw${gKey(g)===shotSel?' on':''}" data-k="${gKey(g)}"><button type="button" class="gtab" role="tab" aria-selected="${gKey(g)===shotSel}" title="눌러서 보기 · 끌어서 순서 바꾸기"><i class="stag ${kindOf(g)}">${tagOf(g,groups)}</i><span>${esc(g.title)}</span><em>${g.items.length}</em></button><button type="button" class="gtx" aria-label="${esc(g.title)} 지우기" title="이 ${kindOf(g)==='s'?'곡':'구절'} 지우기">×</button></span>`).join('');
+  bar.innerHTML=`<button type="button" class="gtall${shotSel==='all'?' on':''}" id="gtAll" role="tab" aria-selected="${shotSel==='all'}">전체 <em>${total||0}</em></button>`+groups.map(g=>`<span class="gtw${gKey(g)===shotSel?' on':''}" data-k="${gKey(g)}"><button type="button" class="gtab" role="tab" aria-selected="${gKey(g)===shotSel}" title="눌러서 보기 · 끌어서 순서 바꾸기"><i class="stag ${kindOf(g)}">${tagOf(g,groups)}</i><span>${esc(g.title)}</span><em>${g.items.length}</em></button><button type="button" class="gtx" aria-label="${esc(g.title)} 지우기" title="이 ${kindOf(g)==='s'?'곡':kindOf(g)==='i'?'화면':'구절'} 지우기">×</button></span>`).join('');
   $('gtAll').onclick=()=>{shotSel='all';store.set('shotSel','all');lookSlideKey=null;buildLookUI();renderShots();};
   bar.querySelectorAll('.gtw').forEach((w,i)=>{const g=groups[i];w.querySelector('.gtab').onclick=()=>{shotSel=gKey(g);store.set('shotSel',shotSel);lookSlideKey=null;lookTab=tabOf(g.items[0]);store.set('lookTab',lookTab);buildLookUI();syncEditorsTo(g);renderShots();};
     w.querySelector('.gtx').onclick=e=>{e.stopPropagation();const k=kindOf(g);
-      if(k==='s')removeChunk(g.chunk);else if(k==='w')removeTextChunk('wordText',g.chunk-10000,'설교 본문');else removeQuoteChunk(g.chunk-20000);};});}
+      if(k==='s')removeChunk(g.chunk);else if(k==='i')removeInfo(g.chunk-IBASE);else if(k==='w')removeTextChunk('wordText',g.chunk-10000,'설교 본문');else removeQuoteChunk(g.chunk-20000);};});}
+
+/* ======================== 순서·광고: 표지 · 안내 · 광고 · 고백문 ======================== */
+const INFO_PRESET=[['예배 전','예배가 곧 시작됩니다\n기도로 예배를 준비해 주세요'],['대표기도','대표기도\n○○○ 장로'],['성경봉독','성경봉독'],['봉헌','봉헌'],['축도','축도\n○○○ 목사'],['파송','이번 한 주도\n주님과 함께 승리하세요']];
+function newInfo(k){const id='i'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  if(k==='cover')return{id,k,title:'주일예배',band:'SUNDAY WORSHIP SERVICE',time:'',note:''};
+  if(k==='notice')return{id,k,body:INFO_PRESET[0][1],note:''};
+  if(k==='ad')return{id,k,title:'교회 소식',body:''};
+  return{id,k,title:'사도신경',body:''};}
+const infoName=o=>(o.k==='notice'?(o.body||'').split('\n').find(l=>l.trim()):o.title)?.trim()||IKIND[o.k].n;
+// 줄이 상자보다 길면 띄어쓰기 단위로 나눠요 (한 낱말이 너무 길면 글자 단위)
+function wrapTo(lines,font,sp,maxW){const x=wrapTo.c||(wrapTo.c=document.createElement('canvas').getContext('2d'));x.font=font;const out=[],fits=t=>spacedW(x,t,sp)<=maxW;
+  for(const raw of lines){const t=raw.trim();if(!t){out.push('');continue;}if(fits(t)){out.push(t);continue;}
+    let cur='';for(const w of t.split(/\s+/)){const nx=cur?cur+' '+w:w;if(fits(nx)){cur=nx;continue;}if(cur)out.push(cur);cur='';
+      if(fits(w)){cur=w;continue;}for(const ch of w){if(cur&&!fits(cur+ch)){out.push(cur);cur='';}cur+=ch;}}
+    if(cur)out.push(cur);}
+  return out;}
+const infoBoxR=(W,H,L)=>{const[ox,oy]=OFF(L,'box',W,H);return{x:W*.068+ox,y:H*.2+oy,w:W*.864,h:H*.64};};
+const infoBodyF=(L,W)=>{const fs=W*L.bSize/100;return{fs,sp:fs*L.spacing/100,font:`400 ${fs}px "${L.font2}", "Noto Sans KR", serif`};};
+// 항목 하나 → 슬라이드 여러 장 (광고·고백문은 빈 줄과 '화면당 줄'로 나눠요)
+function infoScreens(){const out=[],L=LOOK.info,W=1920,H=1080;
+  INFO.forEach((it,i)=>{const base={type:'info',ed:'info',ik:it.k,iid:it.id,chunk:IBASE+i,title:infoName(it),item:it,cs:0,ce:0,src:[]};
+    let pages=[[]];
+    if(it.k==='ad'||it.k==='text'){const b=infoBoxR(W,H,L),f=infoBodyF(L,W),pad=W*.035,max=Math.max(1,L.maxLines|0);pages=[];
+      for(const para of String(it.body||'').split(/\n[ \t]*\n/)){const ls=wrapTo(para.split('\n'),f.font,f.sp,b.w-pad*2).filter(l=>l!=='');
+        for(let j=0;j<ls.length;j+=max)pages.push(ls.slice(j,j+max));}
+      if(!pages.length)pages=[[]];}
+    pages.forEach((ls,j)=>out.push({...base,lines:ls,page:j,pages:pages.length,line:i*1000+j}));});
+  return out;}
+function drawInfo(x,W,H,sc,opt){
+  const L=LOOK.info,it=sc.item,photo=mediaImg('info'),logo=mediaImg('logo'),texts=[];let footer=null;
+  if(photo)drawPhoto(x,W,H,photo,L.bgDim);else drawBg(x,W,H,palById(songColors['ℹ'+sc.iid]||'slate')||PALS[0]);
+  const TF=`"${L.font}", "Noto Sans KR", sans-serif`,TW=lookW(L),BF=`"${L.font2}", "Noto Sans KR", serif`,SANS='"Noto Sans KR", sans-serif';
+  const al=L.align||'center',axAt=m=>al==='left'?W*m:al==='right'?W*(1-m):W/2,hex=c=>String(c||'#ffffff').replace('#','').toUpperCase();
+  const fx={shadow:L.shadowOn!==false,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null};
+  const T=o=>{texts.push({alpha:1,sp:0,...o,hex:hex(o.color)});};
+  const rect=(rx,ry,rw,rh,fill,a=1,r=0)=>{x.save();x.globalAlpha=a;x.fillStyle=fill;x.beginPath();if(r&&x.roundRect)x.roundRect(rx,ry,rw,rh,r);else x.rect(rx,ry,rw,rh);x.fill();x.restore();};
+  // 띠: 왼쪽 글(굵게·넓은 자간) + 오른쪽 글
+  const band=(t1,t2,c1,c2,left,top,bh,kind)=>{const bs=H*.024,bp=W*.022;x.font=`700 ${bs}px ${SANS}`;const s1=bs*.22,w1=t1?spacedW(x,t1,s1)+bp*2:0;x.font=`500 ${bs}px ${SANS}`;const w2=t2?spacedW(x,t2,bs*.04)+bp*2:0;
+    return{w:w1+w2,draw(lx){if(w1){rect(lx,top,w1,bh,c1);T({kind,lines:[t1],size:bs,weight:700,family:'Noto Sans KR',css:SANS,color:'#ffffff',sp:s1,align:'center',ax:lx+w1/2,y0:top+bh/2-bs*.6,lh:bs*1.2,boxW:w1});}
+      if(w2){rect(lx+w1,top,w2,bh,c2);T({kind:kind==='iband'?'itime':kind,lines:[t2],size:bs,weight:500,family:'Noto Sans KR',css:SANS,color:'#ffffff',sp:bs*.04,align:'center',ax:lx+w1+w2/2,y0:top+bh/2-bs*.6,lh:bs*1.2,boxW:w2});}}};};
+  let footY=H*.935;
+  if(it.k==='cover'){
+    let fs=W*L.size/100,sp=fs*L.spacing/100;x.font=`${TW} ${fs}px ${TF}`;const tw=spacedW(x,it.title||'',sp);if(tw>W*.9){fs*=W*.9/tw;sp=fs*L.spacing/100;}
+    const[ox,oy]=OFF(L,'ititle',W,H),ty=H*.4+oy,tax=axAt(.07)+ox;
+    T({kind:'ititle',lines:[it.title||''],size:fs,weight:TW,family:L.font,css:TF,color:L.color,sp,align:al,ax:tax,y0:ty-fs*.6,lh:fs*1.2,boxW:W*.9,...fx});
+    const[bx,by]=OFF(L,'iband',W,H),bh=H*.05,top=ty+fs*.58+H*.035+by,b=band(it.band||'',it.time||'',L.bandColor,L.band2Color,0,top,bh,'iband');
+    if(b.w)b.draw((al==='left'?axAt(.07):al==='right'?axAt(.07)-b.w:W/2-b.w/2)+bx);
+    const ns=W*.0135,nl=String(it.note||'').split('\n').map(l=>l.trim()).filter(Boolean);
+    if(nl.length){const[nx,ny]=OFF(L,'inote',W,H);T({kind:'inote',lines:nl,size:ns,weight:400,family:L.font2,css:BF,color:L.color,sp:0,align:al,ax:axAt(.07)+nx,y0:top+bh+H*.05+ny,lh:ns*1.9,boxW:W*.86,...fx});}
+    footY=H*.83;
+  }else if(it.k==='notice'){
+    const fs=W*L.nSize/100,sp=fs*L.spacing/100,font=`400 ${fs}px ${BF}`,ls=wrapTo(String(it.body||'').split('\n'),font,sp,W*.84),lh=fs*L.lineH;
+    const[ox,oy]=OFF(L,'inotice',W,H);
+    T({kind:'inotice',lines:ls,size:fs,weight:400,family:L.font2,css:BF,color:L.color,sp,align:al,ax:axAt(.08)+ox,y0:H*.46-lh*ls.length/2+oy,lh,boxW:W*.84,...fx});
+    const ns=W*.0125,nl=String(it.note||'').split('\n').map(l=>l.trim()).filter(Boolean);
+    if(nl.length){const[nx,ny]=OFF(L,'inote',W,H),na=al==='left'?'right':'left';T({kind:'inote',lines:nl,size:ns,weight:400,family:L.font2,css:BF,color:L.color,sp:0,align:na,ax:(na==='left'?W*.05:W*.95)+nx,y0:H*.86-ns*1.7*nl.length+ny,lh:ns*1.7,boxW:W*.4,...fx});}
+  }else{
+    const b=infoBoxR(W,H,L),pad=W*.035,f=infoBodyF(L,W);
+    rect(b.x,b.y,b.w,b.h,'#ffffff',L.box/100,H*.022);
+    if(L.tag1||L.tag2){const th=H*.048,ts=H*.022,tp=W*.012,right=b.x+b.w;
+      [[L.tag2,L.band2Color,b.y-th,500,ts*.16],[L.tag1,L.bandColor,b.y-th*(L.tag2?2:1),700,0]].forEach(([t,c,top,wt,tsp])=>{if(!t)return;x.font=`${wt} ${ts}px ${SANS}`;const tw=spacedW(x,t,tsp)+tp*2;
+        rect(right-tw,top,tw,th,c);T({kind:'itag',lines:[t],size:ts,weight:wt,family:'Noto Sans KR',css:SANS,color:'#ffffff',sp:tsp,align:'center',ax:right-tw/2,y0:top+th/2-ts*.6,lh:ts*1.2,boxW:tw});});}
+    const hs=W*.026,head=(it.title||'')+(sc.pages>1?`  ${sc.page+1}/${sc.pages}`:'');
+    if(head.trim())T({kind:'ihead',lines:[head],size:hs,weight:TW,family:L.font,css:TF,color:L.boxText,sp:hs*L.spacing/100,align:'left',ax:b.x+pad,y0:b.y+pad*.8,lh:hs*1.2,boxW:b.w-pad*2});
+    T({kind:'ibody',lines:sc.lines,size:f.fs,weight:400,family:L.font2,css:`"${L.font2}", "Noto Sans KR", serif`,color:L.boxText,sp:f.sp,align:'left',ax:b.x+pad,y0:b.y+pad*.8+(head.trim()?hs*1.2+H*.03:0),lh:f.fs*L.lineH,boxW:b.w-pad*2});
+    footY=Math.min(H*.95,b.y+b.h+H*.055);
+  }
+  if(L.footerOn&&L.footer){const[fx2,fy]=OFF(L,'footer',W,H);footer={text:L.footer,y:footY+fy,dx:fx2};}
+  const lb=logoBox(x,W,H,L,footY,logo);if(lb)x.drawImage(logo,lb.x,lb.y,lb.w,lb.h);
+  const lay={texts,box:null,footer};
+  if(opt.noText)return lay;
+  for(const t of texts){x.font=`${t.weight} ${t.size}px ${t.css}`;x.fillStyle=t.color;
+    if(t.shadow){x.shadowColor=`rgba(0,0,0,${(t.shAmt??18)/100})`;x.shadowBlur=t.size*.15;x.shadowOffsetY=t.size*.04;}
+    if(t.stroke){x.lineJoin='round';x.miterLimit=2;x.strokeStyle=t.stroke.c;x.lineWidth=t.size*t.stroke.w/100*2;t.lines.forEach((l,i)=>drawSpaced(x,l,t.ax,t.y0+t.lh*(i+.5),t.sp,t.align,true));x.shadowColor='transparent';}
+    t.lines.forEach((l,i)=>drawSpaced(x,l,t.ax,t.y0+t.lh*(i+.5),t.sp,t.align));x.shadowColor='transparent';}
+  if(footer)drawFooter(x,W,H,footer.text,footer.y,footer.dx||0);
+  lay.regions=layRegions(x,W,H,lay,lb);
+  if(it.k==='ad'||it.k==='text'){const b=infoBoxR(W,H,L);lay.regions.push({k:'box',x:b.x,y:b.y,w:b.w,h:b.h});}
+  return lay;
+}
+// 저장: 예배 기록 글에 같이 들어가요 (팀 서버로도 올라가요)
+function saveInfo(keepEd){scheduleSave();renderShots();renderInfoList();if(!keepEd)renderInfoEd();}
+// 예배 순서(탭 순서)에서 n번째 순서·광고 자리를 빼요
+function dropInfoOrder(i){const p=store.get(ordKey(),null);if(!Array.isArray(p)||i<0)return;let n=-1;const at=p.findIndex(t=>t==='i'&&++n===i);if(at>=0){p.splice(at,1);store.set(ordKey(),p);}}
+function addInfo(k){const o=newInfo(k);
+  if(k==='cover'||k==='notice'&&!INFO.length){const cur=songGroups().map(kindOf);INFO.unshift(o);infoSel=0;store.set(ordKey(),['i',...cur]);}
+  else{INFO.push(o);infoSel=INFO.length-1;}
+  saveInfo();setTimeout(()=>$('infoEd').querySelector('input,textarea')?.focus(),30);}
+function removeInfo(i){const o=INFO[i];if(!o)return;const before=JSON.stringify(INFO),ord=store.get(ordKey(),null);
+  dropInfoOrder(i);INFO.splice(i,1);infoSel=Math.min(infoSel,Math.max(0,INFO.length-1));saveInfo();
+  toastUndo(`‘${infoName(o)}’ 화면을 지웠어요`,()=>{INFO=JSON.parse(before);store.set(ordKey(),ord);saveInfo();});}
+function renderInfoList(){const box=$('infoList');if(!box)return;const sc=infoScreens();
+  box.innerHTML=INFO.map((o,i)=>`<li class="${i===infoSel?'sel':''}" data-i="${i}"><i class="stag i">${IKIND[o.k].n}</i><span class="it">${esc(infoName(o))}</span><span class="in">${sc.filter(s=>s.iid===o.id).length}장</span><button type="button" class="ix" aria-label="${esc(infoName(o))} 지우기" title="지우기">×</button></li>`).join('');
+  $('infoEmpty').hidden=!!INFO.length;$('infoMeta').textContent=INFO.length?`${INFO.length}개`:'';
+  box.querySelectorAll('li').forEach(li=>{const i=+li.dataset.i;li.onclick=()=>{if(infoSel===i)return;infoSel=i;renderInfoList();renderInfoEd();renderPv();};
+    li.querySelector('.ix').onclick=e=>{e.stopPropagation();removeInfo(i);};});}
+const IFIELDS={
+  cover:[['title','큰 제목','input','예) 주일연합예배'],['band','띠 글','input','예) SUNDAY WORSHIP SERVICE'],['time','띠 오른쪽','input','예) 1부 9시 30분   2부 11시 30분'],['note','작은 글','area','예) 말씀 한 구절 (줄마다 한 줄씩)']],
+  notice:[['body','안내 글','area','줄마다 한 줄씩 보여요'],['note','구석 작은 글','area','예) 요한복음 4:24 (비워 두면 안 보여요)']],
+  ad:[['title','광고 제목','input','예) 교회 소식'],['body','광고 내용','big','빈 줄을 넣으면 다음 장으로 넘어가요. 길면 저절로 나눠요.']],
+  text:[['title','이름','input','예) 사도신경'],['body','고백문','big','복사해 붙여 넣으세요. 빈 줄을 넣으면 다음 장으로 넘어가요.']]};
+function renderInfoEd(){const box=$('infoEd');if(!box)return;const o=INFO[infoSel];
+  if(!o){box.innerHTML='<div class="empty">왼쪽에서 넣을 화면을 골라 주세요.</div>';$('infoEdT').textContent='글 쓰기';return;}
+  $('infoEdT').textContent=IKIND[o.k].n+' 글';
+  let h='';
+  if(o.k==='notice')h+=`<div class="fld"><span>자주 쓰는 안내</span><div class="chips">${INFO_PRESET.map(([n],i)=>`<button type="button" data-pre="${i}">${n}</button>`).join('')}</div></div>`;
+  if(o.k==='text')h+=`<div class="fld"><span>보관한 고백문</span><div class="chips">${ILIB.length?ILIB.map((t,i)=>`<span class="libc"><button type="button" data-lib="${i}">${esc(t.title)}</button><em role="button" tabindex="0" data-libx="${i}" aria-label="${esc(t.title)} 보관함에서 빼기" title="보관함에서 빼기">×</em></span>`).join(''):'<p class="hint2">한 번 붙여 넣고 ‘보관’을 누르면 다음 주부터 골라 써요.</p>'}</div></div>`;
+  for(const[k,lab,t,ph]of IFIELDS[o.k])h+=`<label class="fld"><span>${lab}</span>${t==='input'?`<input type="text" data-f="${k}" placeholder="${esc(ph)}">`:`<textarea data-f="${k}" class="${t==='big'?'big':''}" placeholder="${esc(ph)}"></textarea>`}</label>`;
+  if(o.k==='text')h+=`<button type="button" class="btn sm" id="infoKeep"><i class="ph ph-bookmark-simple" aria-hidden="true"></i> 이 고백문 보관하기</button>`;
+  box.innerHTML=h;
+  box.querySelectorAll('[data-f]').forEach(el=>{el.value=o[el.dataset.f]||'';el.oninput=()=>{o[el.dataset.f]=el.value;clearTimeout(renderInfoEd.t);renderInfoEd.t=setTimeout(()=>saveInfo(true),250);};});
+  box.querySelectorAll('[data-pre]').forEach(b=>b.onclick=()=>{o.body=INFO_PRESET[+b.dataset.pre][1];saveInfo();});
+  box.querySelectorAll('[data-lib]').forEach(b=>b.onclick=()=>{const t=ILIB[+b.dataset.lib];if(!t)return;o.title=t.title;o.body=t.body;saveInfo();});
+  box.querySelectorAll('[data-libx]').forEach(b=>b.onclick=()=>{const t=ILIB[+b.dataset.libx];if(!t||!confirm(`‘${t.title}’을 보관함에서 뺄까요? 팀 모두의 보관함에서 빠져요.`))return;ILIB.splice(+b.dataset.libx,1);store.set('infoLib',ILIB);teamSet('infoLib');renderInfoEd();});
+  $('infoKeep')?.addEventListener('click',()=>{const title=(o.title||'').trim(),body=(o.body||'').trim();if(!title||!body){toast('이름과 고백문을 먼저 채워 주세요');return;}
+    const i=ILIB.findIndex(t=>t.title===title);if(i>=0)ILIB[i]={title,body};else ILIB.push({title,body});store.set('infoLib',ILIB);teamSet('infoLib');renderInfoEd();toast(`‘${title}’을 보관했어요`);});}
+function renderInfoAll(){renderInfoList();renderInfoEd();}
+document.querySelectorAll('[data-ia]').forEach(b=>b.onclick=()=>addInfo(b.dataset.ia));
 
 /* ======================== 자막 탭 · 예배 순서 · 작은 미리보기 ======================== */
 // 곡/본문마다 첫 줄 번호 (이름표를 누르면 그리로 가요)
@@ -3852,13 +4053,13 @@ function chunkStarts(text,ed){const m=[];parseText(text,ed,0).forEach(sc=>{if(m[
 function setOutTab(k){if(k==='quote'||k==='body')setWordTab(k);}
 // 예배 순서: 찬양(s)·말씀(w)이 놓이는 자리. 찬양끼리·말씀끼리의 순서는 각 자막 글의 순서를 따라요
 const ordKey=()=>'order:'+(typeof curSess!=='undefined'?curSess:'');
-const kindOf=g=>g.type!=='word'?'s':(g.items[0]?.ed==='quote'?'q':'w');
+const kindOf=g=>g.type==='info'?'i':g.type!=='word'?'s':(g.items[0]?.ed==='quote'?'q':'w');
 const gKey=g=>kindOf(g)+':'+g.chunk;
-function tagOf(g,groups){const k=kindOf(g);if(k==='w')return '설교 본문';if(k==='q')return '참고 구절';return '찬양 '+(groups.filter(x=>kindOf(x)==='s').indexOf(g)+1);}
+function tagOf(g,groups){const k=kindOf(g);if(k==='i')return IKIND[g.items[0].ik].n;if(k==='w')return '설교 본문';if(k==='q')return '참고 구절';return '찬양 '+(groups.filter(x=>kindOf(x)==='s').indexOf(g)+1);}
 function applyOrder(groups){const p=store.get(ordKey(),null);if(!Array.isArray(p))return groups;
-  const Q={s:groups.filter(g=>kindOf(g)==='s'),w:groups.filter(g=>kindOf(g)==='w'),q:groups.filter(g=>kindOf(g)==='q')},I={s:0,w:0,q:0},out=[];
+  const Q={s:groups.filter(g=>kindOf(g)==='s'),w:groups.filter(g=>kindOf(g)==='w'),q:groups.filter(g=>kindOf(g)==='q'),i:groups.filter(g=>kindOf(g)==='i')},I={s:0,w:0,q:0,i:0},out=[];
   for(const t of p){if(Q[t]&&I[t]<Q[t].length)out.push(Q[t][I[t]++]);}
-  for(const t of ['s','w','q'])while(I[t]<Q[t].length)out.push(Q[t][I[t]++]);return out;}
+  for(const t of ['s','w','q','i'])while(I[t]<Q[t].length)out.push(Q[t][I[t]++]);return out;}
 function reorderWordChunks(order){const ch=wordChunks();if(order.length!==ch.length)return;const ta=$('wordText');
   ta.value=order.map(i=>ch[i]).join(gapStr());ta.dispatchEvent(new Event('input',{bubbles:true}));toast('말씀 순서를 바꿨어요');}
 let shownGroups=[];
@@ -3868,6 +4069,7 @@ function onGroupDrag(order){const ng=order.map(i=>shownGroups[i]);if(ng.some(g=>
   if(so.some((c,i)=>c!==i)&&so.length===songChunks().length)reorderChunks(so);
   if(wo.some((c,i)=>c!==i)&&wo.length===wordChunks().length)reorderWordChunks(wo);
   if(qo.some((c,i)=>c!==i)&&qo.length===quoteChunks().length)reorderQuoteChunks(qo);
+  {const io=ng.filter(g=>kindOf(g)==='i').map(g=>g.chunk-IBASE);if(io.some((c,i)=>c!==i)&&io.length===INFO.length){const cur=INFO[infoSel];INFO=io.map(i=>INFO[i]);infoSel=Math.max(0,INFO.indexOf(cur));saveInfo(true);}}
   shownGroups=songGroups();renderShots();toast('예배 순서를 바꿨어요');}
 // 말씀 이름표
 function renderWordChips(){const box=$('wordChips');if(!box)return;const ch=wordChunks(),cs=chunkStarts($('wordText').value,'word');box.innerHTML='';
@@ -3878,7 +4080,7 @@ function renderWordChips(){const box=$('wordChips');if(!box)return;const ch=word
 const miniAt={};
 function renderMini(kind,at){if(at!=null)miniAt[kind]=at;const box=$(kind==='song'?'miniSong':'miniWord');if(!box||!box.offsetParent)return;
   const ta=$(kind==='song'?'outText':'wordText'),line=miniAt[kind]??ta.value.slice(0,ta.selectionStart||0).split('\n').length-1;
-  const groups=songGroups().filter(g=>(kind==='word')===(g.type==='word'));if(!groups.length){box.innerHTML='<p class="hint">자막이 생기면 여기서 슬라이드가 보여요.</p>';return;}
+  const groups=songGroups().filter(g=>g.type!=='info'&&(kind==='word')===(g.type==='word'));if(!groups.length){box.innerHTML='<p class="hint">자막이 생기면 여기서 슬라이드가 보여요.</p>';return;}
   const g=groups.find(g=>g.items.some(s=>line>=s.cs&&line<=s.ce))||groups[0];
   box.innerHTML=`<h6>${esc(g.title)} <em>${g.items.length}장</em></h6>`;const dpr=Math.min(2,devicePixelRatio||1);
   g.items.forEach(sc=>{const cv=document.createElement('canvas');cv.width=320*dpr;cv.height=180*dpr;drawScreen(cv,sc,g.songIdx||0);
@@ -3917,6 +4119,13 @@ function insertBlank(g){const last=g.items[g.items.length-1];if(!last)return;con
     if(nb){lookTab='song';store.set('lookTab',lookTab);lookSlideKey=nb.ovKey;lookScope='slide';buildLookUI();}toast('빈 화면을 넣었어요 · 왼쪽 슬라이드 설정에서 배경을 고를 수 있어요');},250);}
 function deleteScreens(list){
   if(!list.length)return;
+  // 순서·광고 화면: 그 항목의 모든 장을 지울 때만 항목째 지워요 (광고·고백문 일부는 글에서 지워요)
+  const inf=list.filter(o=>o.type==='info');if(inf.length){list=list.filter(o=>o.type!=='info');
+    const all=infoScreens(),gone=[...new Set(inf.map(o=>o.iid))].filter(id=>all.filter(o=>o.iid===id).every(o=>inf.some(d=>d.line===o.line)));
+    if(gone.length<new Set(inf.map(o=>o.iid)).size)toast('광고·고백문의 한 장만 지우려면 ‘순서·광고’ 탭에서 그 글을 지워 주세요');
+    if(gone.length){const before=JSON.stringify(INFO),ord=store.get(ordKey(),null);gone.forEach(id=>dropInfoOrder(INFO.findIndex(o=>o.id===id)));INFO=INFO.filter(o=>!gone.includes(o.id));infoSel=Math.min(infoSel,Math.max(0,INFO.length-1));selKeys.clear();saveInfo();
+      if(!list.length){toastUndo(gone.length>1?`화면 ${gone.length}개를 지웠어요`:'화면을 지웠어요',()=>{INFO=JSON.parse(before);store.set(ordKey(),ord);saveInfo();});return;}}
+    if(!list.length)return;}
   const tas={song:$('outText'),word:$('wordText'),quote:$('quoteText')},before={song:tas.song.value,word:tas.word.value,quote:tas.quote.value};
   // 뒤쪽 화면부터 지워야 앞쪽 화면의 줄 번호가 그대로예요
   const todo=[...list].sort((x,y)=>x.ed===y.ed?y.line-x.line:(x.ed<y.ed?-1:1));
@@ -3973,7 +4182,8 @@ function layRegions(x,W,H,lay,lb){const R=[];
   if(lay.footer){const fs=W*.0125,fw=footerWidth(x,W,lay.footer.text);if(fw)R.push({k:'footer',x:W/2-fw/2+(lay.footer.dx||0),y:lay.footer.y-fs,w:fw,h:fs*2});}
   if(lb)R.push({k:'logo',x:lb.x,y:lb.y,w:lb.w,h:lb.h});return R;}
 const REG={lyrics:['text','가사'],title:['layout','곡 제목'],footer:['footer','아래 문구 · 모든 슬라이드'],head:['layout','머리글 · 모든 슬라이드'],sub:['layout','작은 머리글 · 모든 슬라이드'],
-  ref:['text','본문 제목'],body:['text','본문'],box:['layout','본문 상자'],logo:['logo','로고'],cap:['cap','자막 띠'],capref:['cap','구절 이름'],capright:['cap','띠 위 오른쪽 문구 · 모든 슬라이드']};
+  ref:['text','본문 제목'],body:['text','본문'],box:['layout','본문 상자'],logo:['logo','로고'],cap:['cap','자막 띠'],capref:['cap','구절 이름'],capright:['cap','띠 위 오른쪽 문구 · 모든 슬라이드'],
+  ititle:['text','큰 제목'],iband:['layout','띠'],itime:['layout','띠 오른쪽'],inote:['text','작은 글'],inotice:['text','안내 글'],ihead:['text','제목'],ibody:['text','글'],itag:['layout','머리표 · 모든 슬라이드']};
 let sbLay=null,sbSelK=null;
 function placeSbSel(){const el=$('sbSel'),cv=$('slidebox').querySelector('canvas');const r=sbSelK&&sbLay&&(sbLay.regions||[]).find(x=>x.k===sbSelK);
   if(!r||!$('slidebox').classList.contains('on')){el.hidden=true;return;}const b=cv.getBoundingClientRect(),k=b.width/cv.width,pad=6;
@@ -4020,14 +4230,14 @@ function drawSlide(){const o=sbList[sbI];if(!o)return;sbLay=drawScreen($('slideb
 const closeSlide=()=>{$('slidebox').classList.remove('on','withset');sbSelK=null;$('sbSel').hidden=true;$('sbEd').hidden=true;lookHome.appendChild(lookEl);lookSlideKey=null;buildLookUI();renderShots();};
 function syncLookToSlide(){const o=sbList[sbI];if(!o)return;lookSlideKey=o.s.ovKey||null;lookTab=tabOf(o.s);store.set('lookTab',lookTab);buildLookUI();}
 $('sbPrev').onclick=()=>{if(sbI>0){sbI--;sbSelK=null;$('sbEd').hidden=true;drawSlide();syncLookToSlide();}};$('sbNext').onclick=()=>{if(sbI<sbList.length-1){sbI++;sbSelK=null;$('sbEd').hidden=true;drawSlide();syncLookToSlide();}};
-$('sbClose').onclick=closeSlide;$('sbGo').onclick=()=>{const o=sbList[sbI];closeSlide();if(o){setPage(o.s.ed==='song'?'song':'word');setTimeout(()=>(o.s.ed==='quote'?gotoQuoteLine(o.s.line):o.s.ed==='word'?gotoWordLine(o.s.line):gotoLine(o.s.line)),40);}};
+$('sbClose').onclick=closeSlide;$('sbGo').onclick=()=>{const o=sbList[sbI];closeSlide();if(o&&o.s.type==='info'){infoSel=o.s.chunk-IBASE;setPage('info');renderInfoAll();return;}if(o){setPage(o.s.ed==='song'?'song':'word');setTimeout(()=>(o.s.ed==='quote'?gotoQuoteLine(o.s.line):o.s.ed==='word'?gotoWordLine(o.s.line):gotoLine(o.s.line)),40);}};
 $('slidebox').addEventListener('click',e=>{if(e.target.id==='slidebox')closeSlide();});
 addEventListener('keydown',e=>{if(!$('slidebox').classList.contains('on'))return;if(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable]')&&e.key!=='Escape')return;
   if(e.key==='Escape')closeSlide();if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();$('sbNext').click();}if(e.key==='ArrowLeft')$('sbPrev').click();});
 /* ---- 모든 화면 내려받기 ---- */
 $('dlShots').onclick=async()=>{
   const b=$('dlShots'),groups=exportGroups();if(!groups.length)return;
-  b.disabled=true;const t=b.textContent;b.textContent='만드는 중…';
+  b.disabled=true;const t=b.innerHTML;b.querySelector('.bt').textContent='만드는 중…';
   try{
     if(!window.JSZip)await loadScript(['https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js']);
     const zip=new JSZip();let n=0;
@@ -4040,7 +4250,7 @@ $('dlShots').onclick=async()=>{
     await saveBlob(name,zblob);
     toast(`이미지 ${n}장을 내려받았어요`);exported=true;renderSteps();
   }catch(e){toast(e?.code==='declined'||e?.code==='cancelled'?'내려받기를 취소했어요':'내려받지 못했어요: '+(e?.message||e));}
-  finally{b.disabled=false;b.textContent=t;}
+  finally{b.disabled=false;b.innerHTML=t;}
 };
 
 /* ---- PowerPoint로 내보내기: 배경은 그림, 글자는 고칠 수 있는 글상자 ---- */
@@ -4049,7 +4259,7 @@ async function saveBlob(name,blob){
 }
 $('dlPptx').onclick=async()=>{
   const b=$('dlPptx'),groups=exportGroups();if(!groups.length)return;
-  b.disabled=true;const t=b.textContent;b.textContent='만드는 중…';
+  b.disabled=true;const t=b.innerHTML;b.querySelector('.bt').textContent='만드는 중…';
   try{
     if(!window.PptxGenJS)await loadScript(['https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js','https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js']);
     const pptx=new PptxGenJS();pptx.layout='LAYOUT_WIDE';pptx.title=exportName(groups);
@@ -4076,7 +4286,7 @@ $('dlPptx').onclick=async()=>{
     await saveBlob(`${exportName(groups)}.pptx`,blob);
     toast(`PowerPoint로 내보냈어요 (${n}장)`);exported=true;renderSteps();
   }catch(e){toast(e?.code==='declined'||e?.code==='cancelled'?'내보내기를 취소했어요':'만들지 못했어요: '+(e?.message||e));}
-  finally{b.disabled=false;b.textContent=t;}
+  finally{b.disabled=false;b.innerHTML=t;}
 };
 
 /* ======================== 3. 양식 설정 ======================== */
@@ -4393,7 +4603,7 @@ function loadSession(id){
   $('docTitle').value=c.name;results=c.results||[];store.set('results',results);
   songs.forEach(s=>s.pages.forEach(p=>URL.revokeObjectURL(p.url)));
   songs=results.map(r=>newSong({mode:'lib',title:r.title,result:r,thumb:LIB[r.title]?.thumb,status:'done'}));
-  {const sp=splitCombined(c.text);$('outText').value=sp.song;$('wordText').value=sp.word;$('quoteText').value=sp.quote;store.set('out',sp.song);store.set('wordOut',sp.word);store.set('quoteOut',sp.quote);renderQuoteChips();}dirty=!!c.dirty;store.set('dirty',dirty);refreshWordMeta();
+  {const sp=splitCombined(c.text);$('outText').value=sp.song;$('wordText').value=sp.word;$('quoteText').value=sp.quote;store.set('out',sp.song);store.set('wordOut',sp.word);store.set('quoteOut',sp.quote);renderQuoteChips();INFO=sp.info;infoSel=0;renderInfoAll();}dirty=!!c.dirty;store.set('dirty',dirty);refreshWordMeta();
   $('verseIn').value=c.verseIn||'';$('bTitle').value=c.bTitle||'';BSET.title=c.bTitle||'';
   issues=[];checked=false;exported=false;$('regenBanner').classList.add('hidden');libPend=[];libSkipKey={};$('libBanner').classList.add('hidden');
   renderSongs();renderIssues();refreshOutMeta();renderVerse();renderHist();
@@ -4742,7 +4952,7 @@ function startPresence(){if(pres||!sb||!me)return;
 function trackMe(){if(pres&&me)pres.track({name:me.name,sess:curSess,at:Date.now(),doing:myDoing}).catch(()=>{});}
 // 지금 무엇을 하고 있는지 (마지막으로 손댄 곳) — 팀원 얼굴에 마우스를 올리면 보여요
 let myDoing='',_doT;
-const DOING=[['#outText,#resPanel','찬양 자막 고치는 중'],['#wordText,#wordPanel','말씀 자막 고치는 중'],['#colWord','말씀 넣는 중'],['#colSong','찬양 준비 중'],['#lookCtl','슬라이드 설정 바꾸는 중'],['#slidePanel','슬라이드 보는 중'],['#fmtbox','자막 양식 바꾸는 중'],['#libbox,.rail [data-sec=lib]','곡 보관함 보는 중']];
+const DOING=[['#colInfo,#infoPanel','순서·광고 준비 중'],['#outText,#resPanel','찬양 자막 고치는 중'],['#wordText,#wordPanel','말씀 자막 고치는 중'],['#colWord','말씀 넣는 중'],['#colSong','찬양 준비 중'],['#lookCtl','슬라이드 설정 바꾸는 중'],['#slidePanel','슬라이드 보는 중'],['#fmtbox','자막 양식 바꾸는 중'],['#libbox,.rail [data-sec=lib]','곡 보관함 보는 중']];
 function noteDoing(e){const t=e.target;if(!t||!t.closest)return;const hit=DOING.find(([sel])=>t.closest(sel));if(!hit||hit[1]===myDoing)return;
   myDoing=hit[1];clearTimeout(_doT);_doT=setTimeout(trackMe,800);}
 ['focusin','pointerdown'].forEach(ev=>document.addEventListener(ev,noteDoing,true));
