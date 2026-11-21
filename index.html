@@ -1893,17 +1893,42 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
 @media (min-width:1281px){#pgWord>.panel{height:calc(var(--triH) - 66px)}}
 @media (max-width:1280px){#pgWord>.pvcol{grid-row:2/span 2}}
 @media (max-width:860px){#pgWord>.pvcol{grid-row:auto}#pgWord>.wmode{width:auto}.wmode button{flex:1;justify-content:center;padding:0 10px;font-size:15px}}
+/* ===== 사이드바: 새 예배 · 예배 제목 맨 위, 프로필은 문의·응원 위 / 저장됨은 탭 줄 오른쪽 ===== */
+.railtop{padding:14px 14px 10px;display:flex;flex-direction:column;gap:10px}
+.railnew .newsess{width:100%;height:38px;justify-content:center;gap:6px;border-radius:10px;font-size:14px}
+.railtitle{display:flex;align-items:center;gap:4px;min-width:0}
+.railtitle .ricon{margin:0}
+.rail .railtitle input.title{flex:1;min-width:0;width:auto!important;border:0;background:transparent;font-size:17px;font-weight:700;letter-spacing:-.01em;color:var(--text);padding:4px 6px;border-radius:8px;height:auto}
+.rail .railtitle input.title:hover{background:var(--glass,rgba(0,0,0,.04))}
+.rail .railtitle input.title:focus{background:var(--surface);box-shadow:0 0 0 1px var(--line2);outline:none}
+.rail .railtitle .pen{flex:none}
+.rail #meBox{margin:auto 12px 0!important;position:static}
+.rail #meBox+.railmail{margin-top:8px}
+@media (min-width:1101px){.railtop{padding-right:52px}}
+.ptabs .saved{margin-left:auto;align-self:center;padding:0 4px 4px}
+@media (min-width:1101px){
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .railtitle>:not(.ricon),
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .railnew .newsess span{display:none!important}
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .railtop{padding:14px 0 10px 14px}
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .railnew .newsess{width:40px;height:40px;padding:0;border-radius:12px}
+  .rail{display:flex;flex-direction:column}
+}
+@media (max-width:860px){.ptabs .saved{display:none}}
 </style>
 </head>
 <body>
 <div class="shell">
   <aside class="rail" id="rail"><button class="pin" id="railPin" type="button" aria-pressed="false" aria-label="옆 메뉴 늘 펼쳐 두기" title="늘 펼쳐 두기"><i class="ph ph-push-pin" aria-hidden="true"></i></button>
     <div class="brand"><div class="mk" aria-hidden="true"><img src="brand/logo.svg" alt=""></div><div><b class="brandtx"><span>호감 슬라이드</span><span lang="en" aria-hidden="true">HOGAM SLIDE</span></b></div></div>
-    <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><span class="megear" aria-hidden="true"><i class="ph-fill ph-gear-six"></i></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="themeBtn" title="화면 밝기 바꾸기">화면: 자동</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
+    <div class="railtop" id="railTop">
+      <div class="railnew" id="railNew"></div>
+      <div class="railtitle"><span class="ricon" aria-hidden="true"><i class="ph ph-pencil-simple" aria-hidden="true"></i></span><input class="title" id="docTitle" aria-label="예배 이름"><button class="pen" id="titlePen" type="button" aria-label="예배 이름 고치기" title="예배 이름 고치기"><i class="ph ph-pencil-simple" aria-hidden="true"></i></button></div>
+    </div>
     <div class="railsec" data-sec="hist"><span class="ricon" aria-hidden="true"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>예배 기록</button></h4><ul class="rlist" id="histList"></ul></div>
     <div class="railsec" data-sec="lib"><span class="ricon" aria-hidden="true"><i class="ph ph-music-notes" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>곡 보관함</button> <span class="row" style="gap:6px"><span id="libCount"></span><button type="button" class="libopen" id="libOpen">전체 보기</button></span></h4>
       <span class="libsw"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input type="search" class="libsearch" id="libSearch" placeholder="제목·초성·가사 찾기" aria-label="보관함에서 곡 찾기"></span>
       <ul class="rlist" id="libList"></ul></div>
+    <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><span class="megear" aria-hidden="true"><i class="ph-fill ph-gear-six"></i></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="themeBtn" title="화면 밝기 바꾸기">화면: 자동</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
     <button type="button" class="railmail" id="openMail" title="문의 · 협업 · 응원 보내기"><span class="mico" aria-hidden="true"><i class="ph-fill ph-envelope-simple"></i></span><span class="mt2"><b>문의·응원 보내기</b><small>hogamcommunity@gmail.com</small></span></button>
   </aside>
   <div class="scrim" id="scrim"></div>
@@ -1913,10 +1938,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
     <header class="doc">
       <div class="r1">
         <button class="btn ghost ibtn mtop" id="menuBtn" aria-label="기록과 보관함 열기"><i class="ph ph-list" aria-hidden="true"></i></button>
-        <input class="title" id="docTitle" aria-label="예배 이름"><button class="pen" id="titlePen" type="button" aria-label="예배 이름 고치기" title="예배 이름 고치기"><i class="ph ph-pencil-simple" aria-hidden="true"></i></button>
-        <span class="saved" id="savedAt"></span>
         <div class="onbar" id="onlineBar" aria-label="지금 접속 중인 팀원"></div>
-        <div class="steps" id="steps"></div>
       </div>
     </header>
     <div class="banner clash hidden" id="clashBanner" role="alert">
@@ -1929,6 +1951,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
         <button type="button" role="tab" data-pg="song"><i class="ph-fill ph-music-notes" aria-hidden="true"></i><span>찬양</span></button>
         <button type="button" role="tab" data-pg="word"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i><span>말씀</span></button>
         <button type="button" role="tab" data-pg="slides"><i class="ph-fill ph-presentation" aria-hidden="true"></i><span>슬라이드 미리보기</span><em id="ptCount"></em></button>
+        <span class="saved" id="savedAt"></span>
       </nav>
       <div class="look ribbon" id="lookBox"><button type="button" class="lkundo" id="lkUndo" title="되돌리기 (방금 바꾼 설정 취소)" aria-label="슬라이드 설정 되돌리기" disabled><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i></button><div id="lookCtl"></div></div>
     </div>
@@ -3442,7 +3465,7 @@ function drawCaption(x,W,H,sc){
 let SLIDE_OV=store.get('slideOv',{});
 // 넓은 화면: 미리캔버스처럼 맨 위 한 줄 바 (왼쪽 로고, 오른쪽 프로필 동그라미) · 좁은 화면은 옆 메뉴 안으로 돌려놔요
 {const hd=document.querySelector('header.doc'),br=document.querySelector('.rail .brand'),me=$('meBox'),meHome=me.parentElement,meNext=me.nextSibling,mq=matchMedia('(min-width:1101px)'),av=me.querySelector('.av');
- const place=()=>{if(mq.matches){hd.prepend(br);hd.append(me);}else{meHome.insertBefore(me,meNext);meHome.insertBefore(br,me);me.classList.remove('open');}setDocH();};
+ const place=()=>{if(mq.matches)hd.prepend(br);else $('rail').insertBefore(br,$('railTop'));me.classList.remove('open');setDocH();};
  mq.addEventListener('change',place);place();
  av.setAttribute('role','button');av.tabIndex=0;av.setAttribute('aria-label','내 계정 메뉴');av.removeAttribute('aria-hidden');
  const tog=e=>{if(!mq.matches)return;e.stopPropagation();me.classList.toggle('open');};av.addEventListener('click',tog);me.querySelector('.megear').addEventListener('click',tog);av.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(e);}if(e.key==='Escape')me.classList.remove('open');});
@@ -4546,29 +4569,8 @@ $('libQuick').addEventListener('keydown',e=>{const btns=$('libDrop').querySelect
 
 // 진행 단계와 다음 할 일
 function renderSteps(){
-  const box=$('steps');if(!box)return;
-  const pend=typeof pendingSongs==='function'?pendingSongs().length:0,errs=songs.filter(s=>s.status==='err').length;
-  const ready=songs.filter(s=>s.result).length;
-  const hasWord=!!$('wordText').value.trim();
-  const open=openIssues().length;
-  const st=[
-    {k:'songs',label:'찬양 준비',meta:songs.length?`${ready}/${songs.length}곡`:'',done:songs.length>0&&!pend&&!errs&&!busy},
-    {k:'word',label:'말씀',meta:hasWord?'넣음':'선택',done:hasWord},
-    {k:'result',label:'확인·검사',meta:checked?(open?`${open}곳 남음`:'끝'):'',done:checked&&!open},
-    {k:'result',label:'내보내기',meta:'',done:exported},
-  ];
-  const cur=st.findIndex(x=>!x.done&&x.k!=='word');
-  let act;
-  if(busy)act={t:'가사 읽는 중…',dis:true};
-  else if(pend)act={t:`다음: ${pend}곡 가사 읽기`,f:()=>$('convertBtn').click()};
-  else if(errs)act={t:`다음: 실패한 ${errs}곡 다시 읽기`,f:()=>{songs.filter(s=>s.status==='err').forEach(s=>s.status='idle');renderSongs();$('convertBtn').click();}};
-  else if(!checked&&$('outText').value.trim())act={t:'다음: 맞춤법 검사',f:()=>{location.hash='result';$('checkBtn').click();}};
-  else if(open)act={t:`다음: 고칠 곳 ${open}개 보기`,f:()=>{location.hash='result';renderFixbar(true);}};
-  else if(combinedText()&&!exported)act={t:'다음: 화면 보고 내보내기',f:()=>setPage('slides')};
-  else if(combinedText())act={t:'다음: 전체 복사',f:()=>copy(combinedText())};
-  box.innerHTML=(act?`<button class="btn sm nextact" id="nextAct" ${act.dis?'disabled':''}>${act.t}</button>`:'')+
-    `<button class="btn sm pri nextact newsess${act?' two':''}" id="newSess"><i class="ph ph-plus" aria-hidden="true"></i>새 예배 자막 만들기</button>`;
-  if(act&&act.f)$('nextAct').onclick=act.f;
+  const box=$('railNew');if(!box||box.firstChild)return;
+  box.innerHTML='<button class="btn sm pri newsess" id="newSess" title="새 예배 자막 만들기"><i class="ph ph-plus" aria-hidden="true"></i><span>새 예배 자막 만들기</span></button>';
   $('newSess').onclick=newSessClick;
 }
 
