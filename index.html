@@ -1788,6 +1788,24 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 .ied .chips .libc em{font-style:normal;color:var(--text3);padding:0 4px;border-radius:999px}
 .ied .chips .libc em:hover{color:#E5484D}
 .ied .empty{padding:30px 6px}
+/* 콘티 붙여 넣기 */
+.contic{width:min(680px,100%)}
+.contic .cbody{padding:4px 20px 18px;display:flex;flex-direction:column;gap:10px;min-height:0;flex:1 1 auto;overflow:hidden}
+.contic .clist{overflow:auto;min-height:0;flex:1 1 auto}
+.contic .cfoot{flex:none}
+.contic .hint2{margin:0;font-size:13px;color:var(--text3)}
+.contic textarea{width:100%;box-sizing:border-box;font-size:14px}
+.contic .cfoot{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.contic .cfoot #contiApply{margin-left:auto}
+.clist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.clist li{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;background:var(--sunken)}
+.clist li.off{opacity:.45}
+.clist .stag{font-style:normal;flex:none}
+.clist .ct{display:flex;flex-direction:column;min-width:0;gap:2px}
+.clist .ct b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.clist .ct small{font-size:12px;color:var(--text3)}
+.clist .ct small.ok{color:#1E8E3E}.clist .ct small.warn{color:#C96F00}
+.rail .newsess.conti{margin-top:6px}
 /* 탭 페이지 */
 .page{margin-top:16px}
 body[data-page=song] #pgWord,body[data-page=song] #pgSlides,body[data-page=word] #pgSong,body[data-page=word] #pgSlides,body[data-page=slides] #pgSong,body[data-page=slides] #pgWord,body[data-page=song] #pgInfo,body[data-page=word] #pgInfo,body[data-page=slides] #pgInfo,body[data-page=info] #pgSong,body[data-page=info] #pgWord,body[data-page=info] #pgSlides{display:none}
@@ -2359,6 +2377,20 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
 <div class="logbox" id="logbox" role="dialog" aria-modal="true" aria-labelledby="logTitle">
   <div class="lcard"><div class="lhead"><h2 id="logTitle">편집 기록</h2><span class="meta" id="logMeta"></span><button class="btn ghost ibtn" id="logClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
   <div class="llist" id="logList"></div></div>
+</div>
+<div class="logbox" id="contibox" role="dialog" aria-modal="true" aria-labelledby="contiTitle">
+  <div class="lcard contic"><div class="lhead"><h2 id="contiTitle">콘티 붙여 넣기</h2><span class="meta" id="contiMeta"></span><button class="btn ghost ibtn" id="contiClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
+    <div class="cbody" id="contiStep1">
+      <p class="hint2">카톡 콘티나 예배 순서지 글을 통째로 붙여 넣으세요. 곡은 보관함에서 찾고, 본문·대표기도·광고·축도는 알맞은 자리에 넣어요.</p>
+      <textarea id="contiIn" rows="11" placeholder="예)&#10;11/23 주일 2부 콘티&#10;1. 은혜 (G)&#10;2. 주 품에 (A)&#10;대표기도: 김철수 장로&#10;본문: 요 3:16-18&#10;광고&#10;축도"></textarea>
+      <div class="cfoot"><span></span><button type="button" class="btn pri" id="contiRead"><i class="ph ph-magic-wand" aria-hidden="true"></i> 읽기</button></div>
+    </div>
+    <div class="cbody" id="contiStep2" hidden>
+      <p class="hint2">맞게 읽었는지 보고, 넣지 않을 줄은 체크를 끄세요.</p>
+      <ol class="clist" id="contiList"></ol>
+      <div class="cfoot"><button type="button" class="btn ghost" id="contiBack">다시 붙여 넣기</button><label class="ck" id="contiNewL"><input type="checkbox" id="contiNew"><span>새 예배 자막으로 시작</span></label><button type="button" class="btn pri" id="contiApply">넣기</button></div>
+    </div>
+  </div>
 </div>
 <div class="logbox libbox" id="libbox" role="dialog" aria-modal="true" aria-labelledby="libTitle">
   <div class="lcard libcard"><div class="lhead"><h2 id="libTitle">곡 보관함</h2><span class="meta" id="libAllMeta"></span><button class="btn ghost ibtn" id="libClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
@@ -4047,6 +4079,80 @@ function renderInfoEd(){const box=$('infoEd');if(!box)return;const o=INFO[infoSe
 function renderInfoAll(){renderInfoList();renderInfoEd();}
 document.querySelectorAll('[data-ia]').forEach(b=>b.onclick=()=>addInfo(b.dataset.ia));
 
+/* ======================== 콘티 붙여 넣기: 카톡 콘티·순서지 글 → 찬양·말씀·순서·광고 한 번에 ======================== */
+let CONTI=[]; // 읽은 줄: {t:'song'|'word'|'notice'|'ad'|'text'|'cover', on, title, hymn, book, ch, v1, v2, text, lib}
+const normT=x=>String(x||'').replace(/[\s.,·()\[\]'"’‘“”~!?\-]/g,'').toLowerCase();
+function contiLib(title,hymn){if(hymn){const h=Object.values(LIB).find(it=>it.hymn===+hymn);if(h)return h;}
+  const k=normT(title);if(!k)return null;const all=Object.values(LIB);
+  return all.find(it=>normT(it.title)===k)||all.find(it=>{const t=normT(it.title);return t.length>=3&&(t.includes(k)||k.includes(t));})||null;}
+function contiPrompt(raw){return `다음은 교회 예배 준비용 콘티(찬양 목록) 또는 예배 순서지 글입니다. 예배 화면(자막)으로 만들 항목만 예배 순서대로 뽑아 JSON으로만 답하세요.
+형식: {"items":[...]}  각 항목은 아래 중 하나:
+- 찬양 곡: {"t":"song","title":"곡 제목만","hymn":찬송가 번호 또는 null}  (조성·코드(G, A→B), 번호 매김, 인도자, '찬양:' 같은 머리말, 괄호 메모는 빼고 제목만. "찬송가 305장 나 같은 죄인"이면 title "나 같은 죄인", hymn 305)
+- 성경 본문·성경봉독: {"t":"word","book":"성경 이름","ch":장,"v1":시작 절 또는 null,"v2":끝 절 또는 null}  (book은 반드시 이 목록의 이름 그대로: ${BIBLE.map(b=>b[0]).join(',')}. "요 3:16-18"이면 요한복음 3 16 18)
+- 사도신경·주기도문·교독문 같은 함께 읽는 글: {"t":"text","title":"사도신경"}
+- 광고·교회 소식: {"t":"ad","title":"광고"}
+- 그 밖에 화면에 띄울 순서(예배로 부름, 대표기도, 봉헌, 설교 제목, 축도, 파송, 환영 등): {"t":"notice","text":"순서 이름\\n맡은 사람 또는 설교 제목 (있을 때만)"}
+- 예배 이름이 따로 있으면 맨 앞에 하나만: {"t":"cover","title":"예배 이름"}
+규칙: 글에 없는 것은 지어내지 마세요. 날짜, 연습 시간, 반주·음향 메모, 찬양팀 역할 배정 같은 준비 메모는 빼세요. 같은 곡이 두 번 나오면 두 번 다 넣으세요.
+
+글:
+"""
+${raw}
+"""`;}
+function openConti(){closeRail();$('contibox').classList.add('on');$('contiStep1').hidden=false;$('contiStep2').hidden=true;
+  const has=!!(combinedText().trim()||songs.length);$('contiNew').checked=has;$('contiNewL').hidden=!has;setTimeout(()=>$('contiIn').focus(),30);}
+function closeConti(){$('contibox').classList.remove('on');}
+async function readConti(){const raw=$('contiIn').value.trim();if(!raw){toast('콘티 글을 먼저 붙여 넣어 주세요');return;}
+  const b=$('contiRead');b.disabled=true;const t0=b.innerHTML;b.innerHTML='<span class="spin"></span> 읽는 중…';
+  try{const v=await askJSON(contiPrompt(raw),{modelTier:'simple'});const list=Array.isArray(v)?v:v&&v.items;
+    if(!Array.isArray(list)||!list.length)throw{message:'화면으로 만들 항목을 찾지 못했어요. 글을 확인해 주세요.'};
+    CONTI=list.filter(o=>o&&['song','word','notice','ad','text','cover'].includes(o.t)).map(o=>{const x={...o,on:o.t!=='cover'};
+      if(x.t==='song')x.lib=contiLib(x.title,x.hymn)?.title||null;
+      if(x.t==='word'&&!BIBLE.some(b=>b[0]===x.book))x.bad=true;
+      return x;});
+    renderConti();$('contiStep1').hidden=true;$('contiStep2').hidden=false;}
+  catch(e){toast(aiErr(e));}
+  finally{b.disabled=false;b.innerHTML=t0;}}
+const refOf=o=>`${o.book} ${o.ch}장${o.v1?` ${o.v1}${o.v2&&+o.v2>+o.v1?'-'+o.v2:''}절`:''}`;
+function contiLabel(o){if(o.t==='song')return[o.title+(o.hymn?` (찬송가 ${o.hymn}장)`:''),o.lib?`보관함 ✓ ${o.lib}`:'보관함에 없어요 · 빈 가사 칸을 만들어 둘게요',o.lib?'ok':'warn'];
+  if(o.t==='word')return o.bad?[`${o.book||''} ${o.ch||''}`.trim(),'성경 이름을 못 알아봤어요 · 말씀 탭에서 골라 주세요','warn']:[refOf(o),'말씀 탭의 성경 고르기에 넣어요 · 본문은 갓피아에서 붙여 넣어요',''];
+  if(o.t==='text'){const l=ILIB.find(t=>t.title===o.title);return[o.title,l?'보관한 고백문 ✓':'고백문 글은 순서·광고 탭에서 붙여 넣어요',l?'ok':''];}
+  if(o.t==='ad')return[o.title||'광고','광고 내용은 순서·광고 탭에서 써요',''];
+  if(o.t==='cover')return[o.title,'표지 화면',''];
+  return[String(o.text||'').split('\n').join(' · '),'안내 화면',''];}
+const CTAG={song:['s','찬양'],word:['w','말씀'],notice:['i','안내'],ad:['i','광고'],text:['i','고백문'],cover:['i','표지']};
+function renderConti(){const box=$('contiList');
+  box.innerHTML=CONTI.map((o,i)=>{const[a,b,c]=contiLabel(o);return`<li class="${o.on?'':'off'}"><label class="ck"><input type="checkbox" data-ci="${i}" ${o.on?'checked':''} aria-label="${esc(a)} 넣기"></label><i class="stag ${CTAG[o.t][0]}">${CTAG[o.t][1]}</i><span class="ct"><b>${esc(a)}</b><small class="${c}">${esc(b)}</small></span></li>`;}).join('');
+  box.querySelectorAll('[data-ci]').forEach(c=>c.onchange=()=>{CONTI[+c.dataset.ci].on=c.checked;c.closest('li').classList.toggle('off',!c.checked);});
+  const n=CONTI.filter(o=>o.t==='song').length,m=CONTI.filter(o=>o.t==='song'&&!o.lib).length;
+  $('contiMeta').textContent=`${CONTI.length}개를 읽었어요`+(n?` · 찬양 ${n}곡${m?` 중 ${m}곡은 보관함에 없어요`:''}`:'');}
+function applyConti(){const pick=CONTI.filter(o=>o.on);if(!pick.length){toast('넣을 항목을 골라 주세요');return;}
+  if($('contiNew').checked&&!$('contiNewL').hidden)newSessClick();
+  const cur=songGroups().map(kindOf),seq=[],miss=[];let wordSet=false; // 이미 있던 화면 순서는 넣기 전에 읽어요
+  for(const o of pick){
+    if(o.t==='song'){const it=o.lib&&LIB[o.lib];
+      if(it)songs.push(newSong({mode:'lib',title:it.title,result:JSON.parse(JSON.stringify(it.result)),thumb:it.thumb,status:'done'}));
+      else{songs.push(newSong({mode:'text',title:o.title||''}));miss.push(o.title);}
+      seq.push('s');}
+    else if(o.t==='word'){if(wordSet||o.bad)continue;wordSet=true;seq.push('w');
+      const bk=$('bBook');bk.value=o.book;bk.onchange();if(o.ch){$('bChap').value=String(o.ch);$('bChap').onchange();}
+      if(o.v1){$('bV1').value=String(o.v1);$('bV1').onchange();}if(o.v2&&+o.v2>+o.v1){$('bV2').value=String(o.v2);$('bV2').onchange();}}
+    else{const k=o.t==='notice'?'notice':o.t,x=newInfo(k);
+      if(k==='notice')x.body=String(o.text||'').trim()||x.body;
+      else if(k==='cover')x.title=o.title||x.title;
+      else{x.title=o.title||x.title;if(k==='text'){const l=ILIB.find(t=>t.title===o.title);if(l)x.body=l.body;}}
+      INFO.push(x);seq.push('i');}}
+  // 이미 있던 화면 뒤에 콘티 순서대로 이어 붙여요
+  store.set(ordKey(),[...cur,...seq]);
+  renderSongs();orderChanged(true);infoSel=0;saveInfo();closeConti();
+  const extra=pick.filter(o=>o.t==='word').length-(wordSet?1:0);
+  toast(`콘티를 넣었어요`+(miss.length?` · 보관함에 없는 ${miss.length}곡은 가사나 악보를 넣어 주세요`:'')+(extra>0?` · 본문은 첫 번째만 넣었어요`:''));
+  setPage(miss.length?'song':'slides');}
+$('contiClose').onclick=closeConti;$('contiRead').onclick=readConti;$('contiApply').onclick=applyConti;
+$('contiBack').onclick=()=>{$('contiStep1').hidden=false;$('contiStep2').hidden=true;};
+$('contibox').addEventListener('click',e=>{if(e.target.id==='contibox')closeConti();});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&$('contibox').classList.contains('on'))closeConti();});
+
 /* ======================== 자막 탭 · 예배 순서 · 작은 미리보기 ======================== */
 // 곡/본문마다 첫 줄 번호 (이름표를 누르면 그리로 가요)
 function chunkStarts(text,ed){const m=[];parseText(text,ed,0).forEach(sc=>{if(m[sc.chunk]==null)m[sc.chunk]=sc.cs;});return m;}
@@ -4825,6 +4931,8 @@ function renderSteps(){
   const box=$('railNew');if(!box||box.firstChild)return;
   box.innerHTML='<button class="btn sm pri newsess" id="newSess" title="새 예배 자막 만들기"><i class="ph ph-plus" aria-hidden="true"></i><span>새 예배 자막 만들기</span></button>';
   $('newSess').onclick=newSessClick;
+  box.insertAdjacentHTML('beforeend','<button class="btn sm newsess conti" id="contiOpen" title="카톡 콘티·순서지 글로 한 번에 채우기"><i class="ph ph-clipboard-text" aria-hidden="true"></i><span>콘티 붙여 넣기</span></button>');
+  $('contiOpen').onclick=openConti;
 }
 
 /* ======================== 함께 쓰기: 로그인 · 공유 보관함 · 편집 기록 ======================== */
