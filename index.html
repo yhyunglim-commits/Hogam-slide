@@ -1730,9 +1730,6 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 #sbSet .rg.tx .rgq{margin-bottom:0}
 #sbSet .rg[data-k=fx] .rgq{display:none}
 #sbSet .rg.tx .lkfont select,#sbSet .rg.tx .lkweight select{width:100%;max-width:150px}
-/* 크기가 정한 것보다 작게 나올 때 */
-.szwarn{display:inline-flex;align-items:center;gap:3px;height:26px;margin-left:4px;padding:0 8px;border:0;border-radius:999px;background:#FFF1DC;color:#B45309;font:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
-.szwarn:hover{background:#FFE4BA}
 .lksw .lksub{display:block;font-size:12px;font-weight:400;color:var(--text3);margin-top:2px}
 /* 바로 쓰는 칸은 작게 */
 #lookBox .rgq .lk{display:flex;align-items:center;gap:6px;margin:0}
@@ -3566,18 +3563,7 @@ function buildLookUI(){
       r.querySelector('select').onchange=e=>{L[E.weight]=+e.target.value;loadFont(f,+e.target.value).then(()=>saveLook());};s.q.appendChild(r);}}
   // 크기: PowerPoint와 같은 pt (1920 화면 기준 · 너비의 1% = 9.6pt)
   if(E.size){s=tx('tsize','크기 pt');const[mn,mx]=rng(E.size),q=s.q;
-    // 가사·본문은 줄이 화면(상자)을 넘으면 저절로 줄여요 → 정한 크기보다 작게 나오면 알려 줘요
-    const fitK=(grp==='song'&&E.id==='lyrics')?'lyrics':((grp==='word'||grp==='quote')&&!cap&&E.id==='body')?'body':null;
-    const warn=()=>{q.querySelector('.szwarn')?.remove();if(!fitK)return;
-      const sc=(slideKey&&parseScreens().find(x=>x.ovKey===slideKey))||parseScreens().find(x=>tabOf(x)===grp&&!x.blank&&x.lines&&x.lines.length);if(!sc)return;
-      const cv=document.createElement('canvas');cv.width=1920;cv.height=1080;const t=withLook(sc,()=>slideLayout(cv.getContext('2d'),1920,1080,sc)).texts.find(t=>t.kind===fitK);if(!t)return;
-      const real=Math.round(t.size*.5),want=Math.round(V(E.size)*9.6);if(real>=want-1)return;
-      const autoW=grp!=='song'&&BSET.auto&&LOOK[grp].linesAuto!==false&&!(grp==='quote'&&QMAX);
-      const b=document.createElement('button');b.type='button';b.className='szwarn';b.innerHTML=`<i class="ph ph-warning" aria-hidden="true"></i> ${real}pt`;
-      b.title=grp==='song'?`가장 긴 줄이 화면보다 길어서 ${real}pt로 줄여서 나와요. ‘배치’에서 한 줄 글자 수를 줄이면 더 커져요.`:autoW?`가장 긴 줄이 상자보다 조금 길어서 ${real}pt로 나와요.`:`한 줄 글자 수·화면당 줄을 직접 정해 둬서 ${real}pt까지만 커져요. 누르면 크기에 맞춰 자동으로 다시 나눠요.`;
-      b.onclick=()=>{if(grp==='song'){setRib('layout');return;}if(!autoW){LOOK[grp].linesAuto=true;if(grp==='quote'){QMAX=0;store.set('quoteMax',0);}if(!BSET.auto)setWordMax(BSET.max,true);saveLook();rewrapWord();buildLookUI();toast('글자 크기에 맞춰 한 줄 글자 수·화면당 줄을 자동으로 맞췄어요');}};
-      q.appendChild(b);};
-    step(q,E.n+' 크기',()=>Math.round(V(E.size)*9.6),v=>{L[E.size]=+(v/9.6).toFixed(4);clearTimeout(warn.t);warn.t=setTimeout(warn,350);},Math.ceil(mn*9.6),Math.floor(mx*9.6),1,'');warn();}
+    step(q,E.n+' 크기',()=>Math.round(V(E.size)*9.6),v=>{L[E.size]=+(v/9.6).toFixed(4);},Math.ceil(mn*9.6),Math.floor(mx*9.6),1,'');}
   if(E.color){s=tx('tcolor','색');const cur=V(E.color)||'#ffffff',l=document.createElement('label');l.className='lkcol';
     l.innerHTML=`<span class="sw0"><input type="color" value="${cur}" aria-label="${E.n} 색"><b style="background:${cur}"></b></span>`;const i=l.querySelector('input');
     i.oninput=()=>{L[E.color]=i.value;l.querySelector('b').style.background=i.value;saveLook();};s.q.appendChild(l);}
@@ -3772,14 +3758,6 @@ function drawScreen0(cv,sc,songIdx,opt={}){
 }
 // 미리보기·이미지·파워포인트가 함께 쓰는 배치 계산
 
-// 말씀 화면은 모든 장이 같은 글자 크기가 되도록, 가장 많이 줄여야 하는 화면에 맞춰요
-let _wk={key:'',k:1};
-function wordK(x,W,H,fs,sp,availW,availH,L,q){
-  const key=[W,fs,sp,availW,availH,L.lineH,L.maxLines,L.verseGap,q,$('wordText').value,$('quoteText').value,$('outText').value].join('|');if(_wk.key===key)return _wk.k;
-  let k=1;for(const s of parseScreens()){if(s.type!=='word'||(s.ed==='quote')!==!!q)continue;
-    const mw=Math.max(1,...s.lines.map(l=>spacedW(x,l,sp)));k=Math.min(k,availW/mw,availH/(fs*L.lineH*Math.max(1,s.lines.length)));}
-  _wk={key,k};return k;
-}
 // 지금 슬라이드 설정에서 말씀 한 줄에 들어가는 글자 수 (띄어쓰기 빼고)
 const fitNow=g=>`글자 크기에 맞춰 지금 한 줄 ${BSET.max}자 · 화면당 ${autoLines(LOOK[g])}줄`;
 // 글자 크기에 맞춰 흰 상자에 들어가는 줄 수 (크기가 기준 · 직접 정하기를 켜면 maxLines를 써요)
@@ -3796,24 +3774,21 @@ function slideLayout(x,W,H,sc){
   const texts=[];let box=null,footer=null;
   if(sc.type==='song'){
     const L=LOOK.song,SF=`"${L.font}", "Noto Sans KR", sans-serif`,SW=lookW(L);
-    let fs=W*L.size/100,sp=fs*L.spacing/100;x.font=`${SW} ${fs}px ${SF}`;
-    const maxW=Math.max(1,...sc.lines.map(l=>spacedW(x,l,sp)));if(maxW>W*.9){fs*=W*.9/maxW;sp=fs*L.spacing/100;}
-    const lh=fs*L.lineH,blockH=lh*sc.lines.length,[ox,oy]=OFF(L,'lyrics',W,H),y0=H*L.posY/100-blockH/2+oy;
+    const fs=W*L.size/100,sp=fs*L.spacing/100,lyr=wrapTo(sc.lines,`${SW} ${fs}px ${SF}`,sp,W*.9); // 글자 크기는 정한 그대로 · 화면보다 긴 줄만 다음 줄로
+    const lh=fs*L.lineH,blockH=lh*lyr.length,[ox,oy]=OFF(L,'lyrics',W,H),y0=H*L.posY/100-blockH/2+oy;
     const al=L.align||'center',ax=(al==='left'?W*.05:al==='right'?W*.95:W/2)+ox;
     if(L.title&&sc.title){const ts=W*L.titleSize/100,[tx,ty]=OFF(L,'title',W,H),tf=lv(L,'tFont','song'),tc=lv(L,'tColor','song');texts.push({kind:'title',lines:[sc.title],size:ts,weight:lv(L,'tWeight','song'),family:tf,css:`"${tf}", "Noto Sans KR", sans-serif`,color:tc,hex:String(tc).replace('#','').toUpperCase(),alpha:1,sp:ts*lv(L,'tSpacing','song')/100,align:al,ax:ax+tx,y0:y0-H*L.titleGap/100-ts*.6+ty,lh:ts*1.2,boxW:W*.9});}
-    texts.push({kind:'lyrics',lines:sc.lines,size:fs,weight:SW,family:L.font,css:SF,color:L.color||'#fff',hex:(c=>String(c||'#ffffff').replace('#','').toUpperCase())(L.color),alpha:1,sp,align:al,ax,y0,lh,boxW:W*.9,shadow:L.shadowOn!==false,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null});
+    texts.push({kind:'lyrics',lines:lyr,size:fs,weight:SW,family:L.font,css:SF,color:L.color||'#fff',hex:(c=>String(c||'#ffffff').replace('#','').toUpperCase())(L.color),alpha:1,sp,align:al,ax,y0,lh,boxW:W*.9,shadow:L.shadowOn!==false,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null});
     if(L.footerOn){const[fx,fy]=OFF(L,'footer',W,H);footer={text:L.footer,y:H*.935+fy,dx:fx};}
   }else{
     const L=LOOK.word,WF=`"${L.font}", "Noto Sans KR", serif`,WWt=lookW(L);
     {const[a,b]=OFF(L,'head',W,H),hs=W*lv(L,'hSize','word')/100,hf=lv(L,'hFont','word'),hc=lv(L,'hColor','word');texts.push({kind:'head',lines:[L.head],size:hs,weight:lv(L,'hWeight','word'),family:hf,css:`"${hf}", "Noto Sans KR", sans-serif`,color:hc,hex:String(hc).replace('#','').toUpperCase(),alpha:1,sp:0,align:'left',ax:W*.065+a,y0:H*.245-hs*.6+b,lh:hs*1.2});}
     {const[a,b]=OFF(L,'sub',W,H);texts.push({kind:'sub',lines:[L.sub],size:W*.0135,weight:400,family:'Noto Sans KR',css:'"Noto Sans KR", sans-serif',color:'rgba(255,255,255,.85)',hex:'E3E6EA',alpha:.85,sp:W*.0135*.18,align:'left',ax:W*.065+a,y0:H*.305-W*.0135*.6+b,lh:W*.0135*1.2});}
     {const[a,b]=OFF(L,'ref',W,H),rs=W*lv(L,'rSize','word')/100,rf=lv(L,'rFont','word'),rc=lv(L,'rColor','word');texts.push({kind:'ref',lines:[sc.ref||''],size:rs,weight:lv(L,'rWeight','word'),family:rf,css:`"${rf}", "Noto Sans KR", serif`,color:rc,hex:String(rc).replace('#','').toUpperCase(),alpha:1,sp:rs*(L.refSpacing||0)/100,align:'left',ax:W*.262+a,y0:H*.255-rs*.6+b,lh:rs*1.2});}
-    const[bxo,byo]=OFF(L,'box',W,H),bx=W*.228+bxo,by=H*.315+byo,bw=W*.719,bh=H*.49;box={x:bx,y:by,w:bw,h:bh,fill:`rgba(236,236,238,${L.box/100})`,alpha:L.box/100};
-    let fs=W*L.size/100,sp=fs*L.spacing/100;x.font=`${WWt} ${fs}px ${WF}`;
-    const pad=W*.032,availW=bw-pad*2,availH=bh-pad*1.6;
-    const k=wordK(x,W,H,fs,sp,availW,availH,L,sc.ed==='quote');
-    if(k<1){fs*=k;sp=fs*L.spacing/100;}
-    texts.push({kind:'body',lines:sc.lines.map(l=>l.replace(/\*\*/g,'')),size:fs,weight:WWt,family:L.font,css:WF,color:L.color||'#1d1d1d',hex:(c=>String(c||'#ffffff').replace('#','').toUpperCase())(L.color||'#1d1d1d'),alpha:1,sp,align:L.align||'left',ax:L.align==='center'?bx+bw/2:L.align==='right'?bx+bw-pad:bx+pad,y0:by+pad*.9,lh:fs*L.lineH,boxW:availW,shadow:!!L.shadowOn,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null});
+    const fs=W*L.size/100,sp=fs*L.spacing/100,pad=W*.032,bw=W*.719,availW=bw-pad*2; // 글자 크기는 정한 그대로
+    const body=wrapTo(sc.lines.map(l=>l.replace(/\*\*/g,'')),`${WWt} ${fs}px ${WF}`,sp,availW),need=fs*L.lineH*body.length+pad*1.8;
+    const[bxo,byo]=OFF(L,'box',W,H),bx=W*.228+bxo,bh=Math.max(H*.49,need),by=Math.max(H*.04,Math.min(H*.315,H*.95-bh))+byo;box={x:bx,y:by,w:bw,h:bh,fill:`rgba(236,236,238,${L.box/100})`,alpha:L.box/100};
+    texts.push({kind:'body',lines:body,size:fs,weight:WWt,family:L.font,css:WF,color:L.color||'#1d1d1d',hex:(c=>String(c||'#ffffff').replace('#','').toUpperCase())(L.color||'#1d1d1d'),alpha:1,sp,align:L.align||'left',ax:L.align==='center'?bx+bw/2:L.align==='right'?bx+bw-pad:bx+pad,y0:by+pad*.9,lh:fs*L.lineH,boxW:availW,shadow:!!L.shadowOn,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null});
     if(L.footerOn){const[fx,fy]=OFF(L,'footer',W,H);footer={text:L.footer,y:H*.89+fy,dx:fx};}
   }
   return{texts,box,footer};
