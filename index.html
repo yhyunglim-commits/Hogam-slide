@@ -1803,6 +1803,26 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 .ied .empty{padding:30px 6px}
 /* 콘티 붙여 넣기 */
 .contic{width:min(680px,100%)}
+/* 첫 화면: 예배 제목 + 콘티 창 + 이전 예배 목록 (뒤 작업 화면은 탭 제목만 남기고 비워 보여요) */
+.contic .cwrap{display:flex;min-height:0;flex:1 1 auto}.contic .cwrap>.cbody{flex:1 1 auto;min-width:0}
+#contibox.start .contic{width:min(1000px,100%)}
+.contic .cstart{display:flex;align-items:center;gap:10px;padding:0 20px 12px;flex-wrap:wrap}
+.contic .cstart label{font-size:13px;font-weight:600;color:var(--text2)}
+.contic .cstart input{flex:1 1 220px;min-width:0;font-size:18px;font-weight:700;padding:8px 12px;border:1px solid var(--line2);border-radius:10px;background:var(--surface);color:var(--text)}
+.contic .chist{flex:0 0 260px;border-left:1px solid var(--line);padding:2px 14px 18px;overflow:auto;min-height:0}
+.contic .chist[hidden]{display:none}
+.contic .chist h3{font-size:13px;font-weight:700;color:var(--text2);margin:0 0 8px}
+.contic .chist ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.contic .chist li button{width:100%;text-align:left;border:0;background:transparent;border-radius:10px;padding:8px 10px;cursor:pointer;color:var(--text);display:flex;flex-direction:column;gap:2px}
+.contic .chist li button:hover,.contic .chist li button:focus-visible{background:var(--sunken)}
+.contic .chist li b{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.contic .chist li small{font-size:12px;color:var(--text3)}
+.contic .chist .tag{display:inline-block;font-style:normal;font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px;margin-right:4px;background:var(--sunken);color:var(--text2)}
+.contic .chist .tag.wk{background:var(--blue,#007AFF);color:#fff}
+.contic .chist .empty{font-size:13px;color:var(--text3);padding:8px 10px}
+body.starting #v-home>:not(header.doc){visibility:hidden}
+@media (max-width:760px){.contic .cwrap{flex-direction:column}.contic .chist{flex:none;border-left:0;border-bottom:1px solid var(--line);padding:0 20px 10px;margin-bottom:8px;order:-1}
+  #contibox.start .contic{overflow:auto}#contibox.start .contic .cwrap,#contibox.start .contic .cbody,#contibox.start .contic .cpane{flex:none;overflow:visible}#contibox.start .contic .cform{overflow:visible}}
 .contic .cbody{padding:4px 20px 18px;display:flex;flex-direction:column;gap:10px;min-height:0;flex:1 1 auto;overflow:hidden}
 .contic .clist{overflow:auto;min-height:0;flex:1 1 auto}
 .contic .cfoot{flex:none}
@@ -2419,6 +2439,8 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
 </div>
 <div class="logbox" id="contibox" role="dialog" aria-modal="true" aria-labelledby="contiTitle">
   <div class="lcard contic"><div class="lhead"><h2 id="contiTitle">콘티 &amp; 예배 순서 넣기</h2><span class="meta" id="contiMeta"></span><button class="btn ghost ibtn" id="contiClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
+    <div class="cstart" id="contiStartTop" hidden><label for="contiName">예배 제목</label><input type="text" id="contiName" autocomplete="off" placeholder="예) 11월 23일 주일예배"><button type="button" class="btn ghost" id="contiBlank">빈 화면으로 시작</button></div>
+    <div class="cwrap">
     <div class="cbody" id="contiStep1">
       <div class="seg2 ctabs" role="tablist" aria-label="넣는 방법"><button type="button" role="tab" data-cm="form">양식에 적기</button><button type="button" role="tab" data-cm="paste">카톡 글 붙여 넣기</button></div>
       <div class="cpane" id="contiFormP">
@@ -2437,6 +2459,8 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
       <p class="hint2">맞게 읽었는지 보고, 넣지 않을 줄은 체크를 끄세요.</p>
       <ol class="clist" id="contiList"></ol>
       <div class="cfoot"><button type="button" class="btn ghost" id="contiBack"><i class="ph ph-arrow-left" aria-hidden="true"></i> 고치기</button><label class="ck" id="contiNewL"><input type="checkbox" id="contiNew"><span>새 예배 자막으로 시작</span></label><button type="button" class="btn pri" id="contiApply">넣기</button></div>
+    </div>
+    <aside class="chist" id="contiHist" hidden aria-label="이전 예배"><h3>이전 예배</h3><ul id="contiHistList"></ul></aside>
     </div>
   </div>
 </div>
@@ -4347,7 +4371,21 @@ function cfToConti(){const out=[];
 $('cfNext').onclick=()=>{CONTI=cfToConti();if(!CONTI.length){toast('칸을 하나 이상 채워 주세요');return;}renderConti();$('contiStep1').hidden=true;$('contiStep2').hidden=false;};
 function openConti(){closeRail();$('contibox').classList.add('on');$('contiStep1').hidden=false;$('contiStep2').hidden=true;renderCF();setContiMode(contiMode);
   const has=!!(combinedText().trim()||songs.length);$('contiNew').checked=has;$('contiNewL').hidden=!has;setTimeout(()=>(contiMode==='form'?$('cfList').querySelector('input'):$('contiIn'))?.focus(),30);}
-function closeConti(){$('contibox').classList.remove('on');}
+function closeConti(){$('contibox').classList.remove('on');if(startMode){startMode=false;document.body.classList.remove('starting');$('contibox').classList.remove('start');$('contiStartTop').hidden=$('contiHist').hidden=true;$('contiTitle').innerHTML='콘티 &amp; 예배 순서 넣기';}}
+// 첫 화면: 로그인하면 늘 떠요. 예배 제목을 적고 콘티를 넣거나, 오른쪽 이전 예배를 눌러 이어서 해요
+var startMode=false;
+function openStart(){openConti();startMode=true;document.body.classList.add('starting');$('contibox').classList.add('start');$('contiTitle').textContent='예배 준비하기';
+  $('contiStartTop').hidden=$('contiHist').hidden=false;$('contiNewL').hidden=true;$('contiName').value=sundayName();renderStartHist();}
+// 새 예배로 시작: 지금 예배가 비어 있으면 그걸 쓰고, 아니면 새로 만들어요
+function startNew(){if(combinedText().trim()||songs.length)newSessClick();$('docTitle').value=$('contiName').value.trim()||sundayName();fitTitle();saveSession();}
+function renderStartHist(){const ul=$('contiHistList');if(!ul)return;
+  const list=[...SESS].filter(c=>c.text||(c.results&&c.results.length)||c.verseIn).sort((a,b)=>b.updated-a.updated).slice(0,10);
+  if(!list.length){ul.innerHTML='<li class="empty">아직 기록이 없어요</li>';return;}
+  ul.innerHTML='';list.forEach(c=>{const n=(c.results||[]).length,li=document.createElement('li'),b=document.createElement('button');b.type='button';
+    const tags=(c.name===sundayName()?'<i class="tag wk">이번 주</i>':'')+(c.by&&me&&c.by!==me.name?`<i class="tag">팀원 ${esc(c.by)}</i>`:'');
+    b.innerHTML=`<b></b><small>${tags}${fmtDate(c.updated)} · ${n?`${n}곡`:'곡 없음'}${c.verseIn?' · 말씀':''}</small>`;b.querySelector('b').textContent=c.name;
+    b.onclick=()=>{closeConti();if(c.id!==curSess){saveSession();loadSession(c.id);}toast(`‘${c.name}’을 열었어요`);};li.appendChild(b);ul.appendChild(li);});}
+$('contiBlank').onclick=()=>{startNew();closeConti();setPage('song');toast('새 예배를 시작했어요');};
 async function readConti(){const raw=$('contiIn').value.trim();if(!raw){toast('콘티 글을 먼저 붙여 넣어 주세요');return;}
   const b=$('contiRead');b.disabled=true;const t0=b.innerHTML;b.innerHTML='<span class="spin"></span> 읽는 중…';
   try{const v=await askJSON(contiPrompt(raw),{modelTier:'simple'});const list=Array.isArray(v)?v:v&&v.items;
@@ -4374,7 +4412,7 @@ function renderConti(){const box=$('contiList');
   const n=CONTI.filter(o=>o.t==='song').length,m=CONTI.filter(o=>o.t==='song'&&!o.lib).length;
   $('contiMeta').textContent=`${CONTI.length}개`+(n?` · 찬양 ${n}곡${m?` 중 ${m}곡은 보관함에 없어요`:''}`:'');}
 function applyConti(){const pick=CONTI.filter(o=>o.on);if(!pick.length){toast('넣을 항목을 골라 주세요');return;}
-  if($('contiNew').checked&&!$('contiNewL').hidden)newSessClick();
+  if(startMode)startNew();else if($('contiNew').checked&&!$('contiNewL').hidden)newSessClick();
   const cur=songGroups().map(kindOf),seq=[],miss=[];let wordSet=false; // 이미 있던 화면 순서는 넣기 전에 읽어요
   for(const o of pick){
     if(o.t==='song'){const it=o.lib&&LIB[o.lib];
@@ -4996,6 +5034,7 @@ function showTip(el,name,titles,ref,by){
 }
 function hideTip(){$('tip').classList.remove('on');}
 function renderHist(){
+  if(startMode)renderStartHist();
   const ul=$('histList');ul.innerHTML='';
   const list=[...SESS].sort((a,b)=>b.updated-a.updated);
   if(!list.length){ul.innerHTML='<li class="empty">아직 기록이 없어요</li>';return;}
@@ -5356,7 +5395,7 @@ async function bootRemote(){
     else if((l.updated||0)>(r.updated||0)+2000){const v=r.ver;Object.assign(r,l);r.ver=l.ver??v;pushSession(r);}});
   SESS=remote;store.set('sessions',SESS);
   if(!SESS.find(x=>x.id===curSess)){const wk=SESS.find(x=>x.name===sundayName());const c=wk||newSessionObj();if(!SESS.includes(c))SESS.unshift(c);curSess=c.id;}
-  renderLib();loadSession(curSess);subscribe();startPresence();
+  renderLib();loadSession(curSess);subscribe();startPresence();openStart();
   await bootTeam();
 }
 function subscribe(){
