@@ -1836,6 +1836,37 @@ body{font-family:var(--sans)}
   .tri .fixbar{top:0!important}
   .tri>.pvcol{position:static;max-height:none}
 }
+/* ===== 로그인 화면: 로고 애니메이션 → 제목·설명 → 로그인 → 소개 두 상자 → 저작권 ===== */
+.gate{align-items:flex-start;justify-content:center;overflow-y:auto;padding:0;background:radial-gradient(1100px 560px at 50% -8%,rgba(0,122,255,.16),transparent 70%),radial-gradient(700px 480px at 92% 28%,rgba(139,92,246,.10),transparent 70%),radial-gradient(700px 480px at 6% 40%,rgba(245,158,11,.08),transparent 70%),var(--canvas)}
+.gscroll{width:100%;min-height:100%;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;padding:7vh 20px 28px}
+.ghero{text-align:center;margin-bottom:26px}
+.gstage{position:relative;width:136px;height:136px;margin:0 auto 20px;display:grid;place-items:center}
+.gmark{position:relative;z-index:1;width:104px;height:104px;border-radius:28px;background:var(--surface);box-shadow:0 18px 40px -14px rgba(0,60,140,.45),0 0 0 1px rgba(0,0,0,.04);display:grid;place-items:center;animation:gPop 1.1s cubic-bezier(.2,.9,.2,1) both}
+.gmark img{width:70px;height:70px}
+.gring{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(0,122,255,.35);opacity:0;animation:gRing 3s ease-out 1s infinite}
+.gring.r2{animation-delay:2s}.gring.r3{animation-delay:3s}
+.gtitle{margin:0;font-size:clamp(34px,6vw,56px);font-weight:800;letter-spacing:.06em;line-height:1.1;background:linear-gradient(90deg,#007AFF,#8B5CF6 55%,#F59E0B);-webkit-background-clip:text;background-clip:text;color:transparent;animation:gUp .8s .55s both}
+.gtag{margin:10px 0 0;font-size:17px;font-weight:500;color:var(--text2);animation:gUp .8s .75s both}
+.gate .gcard{animation:gUp .8s 1s both}
+.gcard>.gmk{align-self:center}
+.gcard>h1,.gcard>.gsub{text-align:center}
+.gver{display:inline-block;font-size:11px;font-weight:700;color:var(--blue,#007AFF);background:var(--blue-soft,#e6eeff);border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:1px}
+.gmail{margin:10px 0 0;text-align:center;font-size:13px;color:var(--text3)}
+.gmail a{color:var(--blue,#007AFF);font-weight:600;text-decoration:none;margin-left:4px}
+.gmail a:hover{text-decoration:underline}
+.gfeats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;width:min(920px,100%);margin-top:44px;animation:gUp .8s 1.25s both}
+.gfeat{margin:0;background:var(--surface);border-radius:20px;overflow:hidden;box-shadow:0 0 0 .5px rgba(0,0,0,.08),0 16px 40px -20px rgba(16,24,40,.35)}
+.gfeat canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#1d2a3a}
+.gft{padding:18px 22px 22px}
+.gft h2{margin:0 0 8px;font-size:17px;font-weight:700;letter-spacing:-.01em;color:var(--text)}
+.gft p{margin:0;font-size:14px;line-height:1.65;color:var(--text2)}
+.gfoot{margin-top:40px;text-align:center;font-size:12px;line-height:1.8;color:var(--text3);animation:gUp .8s 1.4s both}
+.gfoot p{margin:0}
+@keyframes gPop{0%{transform:scale(.4) rotate(-14deg);opacity:0;filter:blur(10px)}60%{transform:scale(1.06) rotate(2deg);opacity:1;filter:blur(0)}100%{transform:none;opacity:1}}
+@keyframes gRing{0%{transform:scale(.7);opacity:.75}100%{transform:scale(1.9);opacity:0}}
+@keyframes gUp{0%{transform:translateY(18px);opacity:0}100%{transform:none;opacity:1}}
+@media (max-width:700px){.gfeats{grid-template-columns:minmax(0,1fr);margin-top:32px}.gscroll{padding-top:5vh}.gstage{width:112px;height:112px}.gmark{width:88px;height:88px;border-radius:24px}.gmark img{width:58px;height:58px}}
+@media (prefers-reduced-motion:reduce){.gate *{animation:none!important}}
 </style>
 </head>
 <body>
@@ -2146,10 +2177,16 @@ body{font-family:var(--sans)}
   <div class="lbbar"><button id="sbPrev">이전 화면</button><span id="sbNum"></span><button id="sbNext">다음 화면</button><button id="sbGo">글에서 보기</button><button id="sbClose">닫기</button></div></div>
 <div class="tip" id="tip" role="tooltip"></div>
 <div class="gate on" id="gate">
+ <div class="gscroll">
+  <section class="ghero" aria-label="호감슬라이드">
+    <div class="gstage" aria-hidden="true"><span class="gring r1"></span><span class="gring r2"></span><span class="gring r3"></span><div class="gmark"><img src="brand/logo.svg" alt=""></div></div>
+    <p class="gtitle" lang="en">HOGAM SLIDE</p>
+    <p class="gtag">예배를 돕고, 교회를 세우다</p>
+  </section>
   <form class="gcard" id="gateForm" autocomplete="on" novalidate>
     <div class="gmk" aria-hidden="true"><img src="brand/logo.svg" alt=""></div>
     <h1>호감슬라이드</h1>
-    <p class="gsub" id="gTeam"></p>
+    <p class="gsub" id="gTeam">예배를 돕고, 교회를 세우다 <span class="gver">v.1.0</span></p>
     <div id="gSetup" class="gsetup hidden">아직 서버 설정이 비어 있어요.<br><b>config.js</b>에 Supabase 주소와 공개 키를 넣어 주세요.</div>
     <div id="gBody">
       <div class="seg2 gtabs" role="tablist"><button type="button" role="tab" data-m="in" aria-selected="true">들어가기</button><button type="button" role="tab" data-m="up" aria-selected="false">처음이에요</button></div>
@@ -2159,8 +2196,20 @@ body{font-family:var(--sans)}
       <p class="gerr" id="gErr" role="alert"></p>
       <button class="btn pri big" id="gGo" type="submit">들어가기</button>
       <p class="ghint" id="gHint">처음 오셨다면 ‘처음이에요’를 누르고 팀 암호를 함께 넣어 주세요.</p>
+      <p class="gmail">문의 및 협업 <a href="mailto:hogamcommunity@gmail.com">hogamcommunity@gmail.com</a></p>
     </div>
   </form>
+  <section class="gfeats" aria-label="호감슬라이드 소개">
+    <article class="gfeat"><canvas width="960" height="540" data-gshot="song" role="img" aria-label="찬양 슬라이드 예시"></canvas>
+      <div class="gft"><h2>악보 사진만 올리면 찬양 자막이 돼요</h2><p>콘티 순서대로 악보를 올리면 가사를 읽어 한 화면 두 줄로 나눠 드려요. 곡 보관함에 쌓아 두면 다음 예배엔 찾아 넣기만 하면 돼요.</p></div></article>
+    <article class="gfeat"><canvas width="960" height="540" data-gshot="word" role="img" aria-label="말씀 슬라이드 예시"></canvas>
+      <div class="gft"><h2>말씀·인용 구절까지 한 번에, 바로 PowerPoint로</h2><p>설교 본문과 인용 구절을 붙여 넣으면 화면에 맞게 정리돼요. 글꼴·색·위치를 고르고 이미지나 PowerPoint로 내보내면 끝이에요.</p></div></article>
+  </section>
+  <footer class="gfoot">
+    <p lang="en">Designed &amp; built by HOGAM (hogamcommunity) · © 2026 HOGAM. All rights reserved.</p>
+    <p>호감슬라이드의 저작권 및 지식재산권은 호감에 있습니다.</p>
+  </footer>
+ </div>
 </div>
 <div class="logbox" id="logbox" role="dialog" aria-modal="true" aria-labelledby="logTitle">
   <div class="lcard"><div class="lhead"><h2 id="logTitle">편집 기록</h2><span class="meta" id="logMeta"></span><button class="btn ghost ibtn" id="logClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
@@ -4561,7 +4610,12 @@ function setGateMode(m){gMode=m;document.querySelectorAll('.gtabs button').forEa
   $('gPw').autocomplete=m==='up'?'new-password':'current-password';$('gErr').textContent='';
   $('gHint').textContent=m==='up'?'이름과 개인 암호는 다음부터 들어올 때 써요. 팀 암호는 처음 한 번만 넣어요.':'처음 오셨다면 ‘처음이에요’를 누르고 팀 암호를 함께 넣어 주세요.';}
 document.querySelectorAll('.gtabs button').forEach(b=>b.onclick=()=>setGateMode(b.dataset.m));
-function showGate(kind){$('gate').classList.add('on');$('gTeam').textContent=CFG.TEAM_NAME||'함께 쓰는 예배 자막';
+// 로그인 화면 소개 상자: 지금 슬라이드 디자인으로 그린 예시
+function drawGateShots(){const ex={song:{type:'song',ed:'song',title:'주 하나님 지으신 모든 세계',songKey:'',lines:['주 하나님 지으신 모든 세계','내 마음 속에 그리어 볼 때'],line:0,cs:0,ce:0},
+  word:{type:'word',ed:'word',ref:'시편 23편 1절',lines:['1 주님은 나의 목자시니,','내게 부족함이 없습니다.'],line:0,cs:0,ce:0}};
+  document.querySelectorAll('[data-gshot]').forEach(cv=>{try{drawScreen(cv,ex[cv.dataset.gshot],1);}catch(e){}});}
+document.fonts&&document.fonts.ready.then(()=>{if($('gate').classList.contains('on'))setTimeout(drawGateShots,300);});
+function showGate(kind){$('gate').classList.add('on');drawGateShots();
   const setup=kind==='setup';$('gSetup').classList.toggle('hidden',!setup);$('gBody').classList.toggle('hidden',setup);
   if(!setup)setTimeout(()=>$('gName').focus(),50);}
 function hideGate(){$('gate').classList.remove('on');}
