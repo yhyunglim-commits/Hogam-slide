@@ -1914,6 +1914,28 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
   .rail{display:flex;flex-direction:column}
 }
 @media (max-width:860px){.ptabs .saved{display:none}}
+/* ===== 탭을 맨 위 바로: 크롬·사파리처럼 고른 탭이 아래 편집줄과 이어져요 ===== */
+.pbar{padding-top:0}
+.ribbon{border-top:0}
+.doc .r1 #ptabs{flex:1 1 auto;min-width:0;align-self:stretch;display:flex;align-items:flex-end;gap:0;padding:0 0 0 6px;margin:0}
+#ptabs button{position:relative;height:42px;min-width:150px;padding:0 18px;margin:0;border:0;border-radius:11px 11px 0 0;background:transparent;font-size:14px;font-weight:600;color:var(--text2);justify-content:flex-start;gap:8px;transition:background .12s,color .12s}
+#ptabs button i{font-size:16px}
+#ptabs button::after{content:'';position:absolute;right:0;top:13px;bottom:13px;width:1px;background:var(--line2)}
+#ptabs button:last-of-type::after,#ptabs button[aria-selected=true]::after,#ptabs button:has(+ button[aria-selected=true])::after,#ptabs button:hover::after,#ptabs button:has(+ button:hover)::after{opacity:0}
+#ptabs button:hover{background:var(--glass,rgba(0,0,0,.05));color:var(--text)}
+#ptabs button[aria-selected=true]{background:var(--surface);color:var(--text);border-bottom:0;box-shadow:0 -1px 0 var(--line),1px 0 0 var(--line),-1px 0 0 var(--line);z-index:1}
+#ptabs button[aria-selected=true]::before{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--surface)}
+#ptabs .saved{margin-left:auto;align-self:center;padding:0 12px 0 8px}
+@media (min-width:1101px){
+  header.doc{border-bottom:1px solid var(--line)!important}
+  header.doc .r1{align-self:stretch;display:flex;align-items:flex-end}
+  header.doc .r1 .onbar{align-self:center}
+}
+@media (max-width:1100px){
+  .doc .r1 #ptabs{order:2;flex-basis:100%;padding:0}
+  header.doc{padding-bottom:0!important}
+}
+@media (max-width:860px){#ptabs button{min-width:0;flex:1;justify-content:center;padding:0 8px;font-size:14px}}
 </style>
 </head>
 <body>
@@ -1938,6 +1960,12 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
     <header class="doc">
       <div class="r1">
         <button class="btn ghost ibtn mtop" id="menuBtn" aria-label="기록과 보관함 열기"><i class="ph ph-list" aria-hidden="true"></i></button>
+        <nav class="ptabs" id="ptabs" role="tablist" aria-label="작업 화면">
+          <button type="button" role="tab" data-pg="song"><i class="ph-fill ph-music-notes" aria-hidden="true"></i><span>찬양</span></button>
+          <button type="button" role="tab" data-pg="word"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i><span>말씀</span></button>
+          <button type="button" role="tab" data-pg="slides"><i class="ph-fill ph-presentation" aria-hidden="true"></i><span>슬라이드 미리보기</span><em id="ptCount"></em></button>
+          <span class="saved" id="savedAt"></span>
+        </nav>
         <div class="onbar" id="onlineBar" aria-label="지금 접속 중인 팀원"></div>
       </div>
     </header>
@@ -1947,12 +1975,6 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
     </div>
 
     <div class="pbar" id="pbar">
-      <nav class="ptabs" id="ptabs" role="tablist" aria-label="작업 화면">
-        <button type="button" role="tab" data-pg="song"><i class="ph-fill ph-music-notes" aria-hidden="true"></i><span>찬양</span></button>
-        <button type="button" role="tab" data-pg="word"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i><span>말씀</span></button>
-        <button type="button" role="tab" data-pg="slides"><i class="ph-fill ph-presentation" aria-hidden="true"></i><span>슬라이드 미리보기</span><em id="ptCount"></em></button>
-        <span class="saved" id="savedAt"></span>
-      </nav>
       <div class="look ribbon" id="lookBox"><button type="button" class="lkundo" id="lkUndo" title="되돌리기 (방금 바꾼 설정 취소)" aria-label="슬라이드 설정 되돌리기" disabled><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i></button><div id="lookCtl"></div></div>
     </div>
 
