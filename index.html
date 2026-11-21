@@ -4568,7 +4568,7 @@ function startInline(k){const o=sbList[sbI];if(!o||!EDITABLE.includes(k)||!sbLay
   let st;
   if(t){const bw=t.boxW||r.w,lx=t.align==='center'?t.ax-bw/2:t.align==='right'?t.ax-bw:t.ax;st={x:lx,y:t.y0,w:bw,font:`${t.weight} ${t.size*z}px ${t.css}`,lh:t.lh*z,sp:t.sp*z,color:t.color,al:t.align,sh:t.shadow};}
   else if(k==='footer')st={x:W*.05,y:r.y,w:W*.9,font:`700 ${W*.0125*z}px "Noto Sans KR", sans-serif`,lh:r.h*z,sp:W*.0125*.62*z,color:'#fff',al:'center'};
-  else{const Lq=LOOK.quote,cs=W*(Lq.capSize||2.5)/100,ls=cs*.8;const b2=Lq.quoteStyle==='box2';st=k==='cap'?{x:b2?r.x+W*.035:W*.065,y:r.y+(b2?H*.072:0)+cs*.95,w:b2?W*.79:W*.87,font:`${lookW(Lq)} ${cs*z}px "${Lq.font}", "Noto Sans KR", serif`,lh:cs*(Lq.capLineH||1.6)*z,sp:0,color:b2?inkOn(Lq.capMain):Lq.capColor||'#fff',al:'left'}
+  else{const Lq=LOOK.quote,cs=W*(Lq.capSize||2.5)/100,ls=cs*.8;const b2=Lq.quoteStyle==='box2';st=k==='cap'?{x:b2?r.x+W*.035:W*.065,y:r.y+(b2?cv.height*.072:0)+cs*.95,w:b2?W*.79:W*.87,font:`${lookW(Lq)} ${cs*z}px "${Lq.font}", "Noto Sans KR", serif`,lh:cs*(Lq.capLineH||1.6)*z,sp:0,color:b2?inkOn(Lq.capMain):Lq.capColor||'#fff',al:'left'}
     :{x:r.x,y:r.y,w:Math.max(r.w,W*.3),font:`500 ${ls*z}px "Noto Sans KR", sans-serif`,lh:r.h*z,sp:0,color:'#fff',al:k==='capright'?'right':'left'};if(k==='capright')st.x=r.x+r.w-st.w;}
   Object.assign(ta.style,{left:(b.left+st.x*z)+'px',top:(b.top+st.y*z)+'px',width:(st.w*z)+'px',font:st.font,lineHeight:st.lh+'px',letterSpacing:st.sp+'px',color:st.color,textAlign:st.al,textShadow:st.sh?'0 2px 6px rgba(0,0,0,.35)':'none'});
   const c=String(st.color).replace('#','');ta.classList.toggle('dark',c.length>=6&&parseInt(c.slice(0,2),16)*.3+parseInt(c.slice(2,4),16)*.59+parseInt(c.slice(4,6),16)*.11<128);
