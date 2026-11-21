@@ -1816,12 +1816,16 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 .cform input.lab{flex:0 0 7.5em;font-weight:700}
 .cform input.who{flex:0 1 9em}
 .cform .mv{display:flex;flex:none}
+.cform .grip{flex:none;width:22px;height:30px;margin-left:-4px;border:0;background:none;color:var(--text3);cursor:grab;touch-action:none;border-radius:6px;display:grid;place-items:center;font-size:18px}
+.cform .grip:hover{color:var(--text);background:var(--surface)}
+.cform li.drag{box-shadow:0 6px 18px rgba(0,0,0,.18);background:var(--surface);position:relative;z-index:1}
+.cform li.drag .grip{cursor:grabbing}
 .cform .mv button{width:28px;height:28px;border:0;background:none;color:var(--text3);border-radius:8px;cursor:pointer;font-size:14px}
 .cform .mv button:hover{background:var(--surface);color:var(--text)}
 .cform .mv button:disabled{opacity:.25;cursor:default;background:none}
-.cfadd{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.cfadd{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
 .cfadd>span{font-size:12px;color:var(--text3);margin-right:2px}
-.cfadd button{height:30px;padding:0 10px;border-radius:999px;border:1px dashed var(--line);background:none;color:var(--text2);font:inherit;font-size:13px;cursor:pointer}
+.cfadd button{height:30px;padding:0 9px;border-radius:999px;border:1px dashed var(--line);background:none;color:var(--text2);font:inherit;font-size:13px;cursor:pointer}
 .cfadd button:hover{background:var(--sunken);border-style:solid}
 @media (max-width:560px){.cform li{flex-wrap:wrap}.cform input.lab{flex:1 1 40%}.cform input.who{flex:1 1 40%}}
 /* 탭 페이지 */
@@ -2402,9 +2406,9 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
     <div class="cbody" id="contiStep1">
       <div class="seg2 ctabs" role="tablist" aria-label="넣는 방법"><button type="button" role="tab" data-cm="form">양식에 적기</button><button type="button" role="tab" data-cm="paste">카톡 글 붙여 넣기</button></div>
       <div class="cpane" id="contiFormP">
-      <p class="hint2">칸에 적기만 하면 돼요. 비운 찬양·본문·설교 칸은 건너뛰어요. 줄은 ↑ ↓ 로 옮기고 × 로 빼요.</p>
+      <p class="hint2">칸에 적기만 하면 돼요. 비운 찬양·본문·설교 칸은 건너뛰어요. 줄은 왼쪽 ⠿ 를 잡고 끌어 옮기고, × 로 빼요.</p>
       <ol class="cform" id="cfList"></ol>
-      <div class="cfadd" id="cfAdd"><span>줄 더하기</span></div>
+      <div class="cfadd" id="cfAdd" role="group" aria-label="줄 더하기"></div>
       <div class="cfoot"><button type="button" class="btn ghost" id="cfReset">기본 양식으로</button><button type="button" class="btn pri" id="cfNext">확인 목록 보기 <i class="ph ph-arrow-right" aria-hidden="true"></i></button></div>
       </div>
       <div class="cpane" id="contiPasteP" hidden>
@@ -4216,7 +4220,8 @@ function contiPrompt(raw){return `다음은 교회 예배 준비용 콘티(찬�
 ${raw}
 """`;}
 // 양식에 적기: 줄마다 종류가 정해져 있어서 AI 없이 바로 넣어요 · 줄 구성(종류·이름)은 기억해요
-const CF_DEF=[{t:'cover'},{t:'notice',l:'예배로 부름'},{t:'song'},{t:'song'},{t:'song'},{t:'song'},{t:'text',v:'사도신경'},{t:'notice',l:'대표기도'},{t:'word'},{t:'sermon'},{t:'ad'},{t:'notice',l:'축도'}];
+const CF_DEF=[{t:'cover'},{t:'notice',l:'예배로 부름'},{t:'song'},{t:'song'},{t:'song'},{t:'song'},{t:'text',v:'사도신경'},{t:'notice',l:'대표기도'},{t:'notice',l:'간증'},{t:'word'},{t:'sermon'},{t:'notice',l:'봉헌'},{t:'notice',l:'보고'},{t:'ad'},{t:'notice',l:'축도'}];
+const CF_MORE=['봉헌','간증','보고']; // 자주 쓰는 순서 줄 바로 더하기
 const CF_KIND={song:['s','찬양'],word:['w','본문'],sermon:['i','설교'],notice:['i','순서'],text:['i','고백문'],ad:['i','광고'],cover:['i','표지']};
 const CF_PH={song:'곡 제목 또는 찬송가 번호 (예: 305 나 같은 죄인)',word:'예) 요 3:16-18 · 누가복음 17장 11-19절',sermon:'설교 제목',notice:'맡은 사람 (예: 김철수 장로) · 없으면 비워 두세요',text:'예) 사도신경',ad:'광고 제목 (비우면 “광고”)',cover:'예배 이름 (예: 주일 2부 예배) · 비우면 표지 없이'};
 let CF=(store.get('contiForm',null)||CF_DEF).map(o=>({...o}));let contiMode=store.get('contiMode','form');
@@ -4226,16 +4231,25 @@ function renderCF(){const box=$('cfList');
     const lab=o.t==='notice'?`<input type="text" class="lab" data-k="l" value="${esc(o.l||'')}" placeholder="순서 이름" aria-label="순서 이름">`:'';
     const val=`<input type="text" data-k="v" value="${esc(o.v||'')}" placeholder="${esc(CF_PH[o.t])}" aria-label="${n}"${o.t==='text'?' list="cfLib"':''}>`;
     const who=o.t==='sermon'?`<input type="text" class="who" data-k="w" value="${esc(o.w||'')}" placeholder="설교자" aria-label="설교자">`:'';
-    return`<li data-i="${i}"><i class="stag ${c}">${n}</i>${lab}${val}${who}<span class="mv"><button type="button" data-mv="-1" aria-label="위로" title="위로" ${i?'':'disabled'}>↑</button><button type="button" data-mv="1" aria-label="아래로" title="아래로" ${i<CF.length-1?'':'disabled'}>↓</button><button type="button" data-x aria-label="이 줄 빼기" title="이 줄 빼기">×</button></span></li>`;}).join('')
+    return`<li data-i="${i}"><button type="button" class="grip" aria-label="${n} 줄 옮기기 (끌거나 위·아래 방향키)" title="끌어서 옮기기"><i class="ph ph-dots-six-vertical" aria-hidden="true"></i></button><i class="stag ${c}">${n}</i>${lab}${val}${who}<span class="mv"><button type="button" data-x aria-label="이 줄 빼기" title="이 줄 빼기">×</button></span></li>`;}).join('')
     +`<datalist id="cfLib">${ILIB.map(t=>`<option value="${esc(t.title)}">`).join('')}</datalist>`;
   box.querySelectorAll('li').forEach(li=>{const i=+li.dataset.i,o=CF[i];
     li.querySelectorAll('input[data-k]').forEach(el=>el.oninput=()=>{o[el.dataset.k]=el.value;if(el.dataset.k==='l'||o.t==='text')cfKeep();});
-    li.querySelectorAll('[data-mv]').forEach(b=>b.onclick=()=>{const j=i+ +b.dataset.mv;if(j<0||j>=CF.length)return;[CF[i],CF[j]]=[CF[j],CF[i]];cfKeep();renderCF();box.querySelector(`li[data-i="${j}"] [data-mv="${b.dataset.mv}"]`)?.focus();});
+    const g=li.querySelector('.grip');
+    g.onkeydown=e=>{const d=e.key==='ArrowUp'?-1:e.key==='ArrowDown'?1:0,j=i+d;if(!d)return;e.preventDefault();if(j<0||j>=CF.length)return;[CF[i],CF[j]]=[CF[j],CF[i]];cfKeep();renderCF();box.querySelector(`li[data-i="${j}"] .grip`)?.focus();};
+    // 손잡이를 잡고 끌면 줄이 따라 움직이고, 놓으면 그 자리로 옮겨요 (마우스·손가락 모두)
+    g.onpointerdown=e=>{if(e.button)return;e.preventDefault();li.classList.add('drag');
+      const mv=ev=>{const rows=[...box.querySelectorAll('li')].filter(r=>r!==li);const at=rows.find(r=>{const b=r.getBoundingClientRect();return ev.clientY<b.top+b.height/2;});
+        if(at)box.insertBefore(li,at);else box.insertBefore(li,box.querySelector('datalist'));
+        const b=box.getBoundingClientRect();if(ev.clientY<b.top+24)box.scrollTop-=10;else if(ev.clientY>b.bottom-24)box.scrollTop+=10;};
+      const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);
+        const ord=[...box.querySelectorAll('li')].map(r=>+r.dataset.i),j=ord.indexOf(i);CF=ord.map(k=>CF[k]);cfKeep();renderCF();box.querySelector(`li[data-i="${j}"] .grip`)?.focus({preventScroll:true});};
+      addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up);};
     li.querySelector('[data-x]').onclick=()=>{CF.splice(i,1);cfKeep();renderCF();};});}
-function cfAdd(t){const o={t};if(t==='notice')o.l='';CF.push(o);cfKeep();renderCF();
+function cfAdd(t,l){const o={t};if(t==='notice')o.l=l||'';CF.push(o);cfKeep();renderCF();
   const el=$('cfList').querySelector(`li[data-i="${CF.length-1}"] input`);el?.focus();el?.scrollIntoView({block:'nearest'});}
-$('cfAdd').insertAdjacentHTML('beforeend',Object.entries(CF_KIND).map(([t,[,n]])=>`<button type="button" data-add="${t}">+ ${n}</button>`).join(''));
-$('cfAdd').querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>cfAdd(b.dataset.add));
+$('cfAdd').insertAdjacentHTML('beforeend',Object.entries(CF_KIND).map(([t,[,n]])=>`<button type="button" data-add="${t}">+ ${n}</button>`).join('')+CF_MORE.map(l=>`<button type="button" data-add="notice" data-l="${l}">+ ${l}</button>`).join(''));
+$('cfAdd').querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>cfAdd(b.dataset.add,b.dataset.l));
 $('cfReset').onclick=()=>{const old=CF;CF=CF_DEF.map(o=>({...o}));cfKeep();renderCF();toastUndo('기본 양식으로 돌렸어요',()=>{CF=old;cfKeep();renderCF();});};
 function setContiMode(m){contiMode=m;store.set('contiMode',m);document.querySelectorAll('[data-cm]').forEach(b=>b.setAttribute('aria-selected',b.dataset.cm===m));$('contiFormP').hidden=m!=='form';$('contiPasteP').hidden=m!=='paste';}
 document.querySelectorAll('[data-cm]').forEach(b=>b.onclick=()=>{setContiMode(b.dataset.cm);(b.dataset.cm==='form'?$('cfList').querySelector('input'):$('contiIn'))?.focus();});
