@@ -1845,8 +1845,10 @@ body{font-family:var(--sans)}
 .gmark img{width:70px;height:70px}
 .gring{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(0,122,255,.35);opacity:0;animation:gRing 3s ease-out 1s infinite}
 .gring.r2{animation-delay:2s}.gring.r3{animation-delay:3s}
-.gtitle{margin:0;font-size:clamp(34px,6vw,56px);font-weight:800;letter-spacing:.06em;line-height:1.1;background:linear-gradient(90deg,#007AFF,#8B5CF6 55%,#F59E0B);-webkit-background-clip:text;background-clip:text;color:transparent;animation:gUp .8s .55s both}
-.gtag{margin:10px 0 0;font-size:17px;font-weight:500;color:var(--text2);animation:gUp .8s .75s both}
+.gtitle{margin:0;font-size:clamp(44px,9vw,104px);font-weight:900;letter-spacing:.05em;line-height:1.05;background:linear-gradient(90deg,#007AFF,#8B5CF6,#F59E0B,#8B5CF6,#007AFF);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gUp .8s .55s both,gFlow 7s linear 1.3s infinite,gBreath 5s ease-in-out 1.3s infinite}
+@keyframes gFlow{0%{background-position:0% 50%}100%{background-position:150% 50%}}
+@keyframes gBreath{0%,100%{transform:translateY(0);filter:drop-shadow(0 6px 18px rgba(0,122,255,.18))}50%{transform:translateY(-6px);filter:drop-shadow(0 14px 28px rgba(139,92,246,.30))}}
+.gtag{margin:14px 0 0;font-size:19px;font-weight:500;color:var(--text2);animation:gUp .8s .75s both}
 .gate .gcard{animation:gUp .8s 1s both}
 .gcard>.gmk{align-self:center}
 .gcard>h1,.gcard>.gsub{text-align:center}
@@ -1854,18 +1856,22 @@ body{font-family:var(--sans)}
 .gmail{margin:10px 0 0;text-align:center;font-size:13px;color:var(--text3)}
 .gmail a{color:var(--blue,#007AFF);font-weight:600;text-decoration:none;margin-left:4px}
 .gmail a:hover{text-decoration:underline}
-.gfeats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;width:min(920px,100%);margin-top:44px;animation:gUp .8s 1.25s both}
-.gfeat{margin:0;background:var(--surface);border-radius:20px;overflow:hidden;box-shadow:0 0 0 .5px rgba(0,0,0,.08),0 16px 40px -20px rgba(16,24,40,.35)}
+.gfeats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;width:min(1280px,100%);margin-top:56px;animation:gUp .8s 1.25s both}
+.gfeat{margin:0;background:var(--surface);border-radius:28px;overflow:hidden;box-shadow:0 0 0 .5px rgba(0,0,0,.08),0 24px 60px -28px rgba(16,24,40,.45);display:flex;flex-direction:column}
+.gvid{padding:22px 22px 0;background:linear-gradient(160deg,rgba(0,122,255,.10),rgba(139,92,246,.08))}
+.gvid video{display:block;width:100%;height:auto;aspect-ratio:16/10;border-radius:14px 14px 0 0;background:#f4f5f7;box-shadow:0 -1px 0 rgba(0,0,0,.04),0 10px 30px -12px rgba(16,24,40,.35)}
+.gkick{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--blue,#007AFF);margin-bottom:6px}
 .gfeat canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#1d2a3a}
-.gft{padding:18px 22px 22px}
-.gft h2{margin:0 0 8px;font-size:17px;font-weight:700;letter-spacing:-.01em;color:var(--text)}
-.gft p{margin:0;font-size:14px;line-height:1.65;color:var(--text2)}
+.gft{padding:24px 30px 30px}
+.gft h2{margin:0 0 10px;font-size:24px;font-weight:800;letter-spacing:-.02em;color:var(--text)}
+.gft p{margin:0;font-size:15px;line-height:1.7;color:var(--text2)}
 .gfoot{margin-top:40px;text-align:center;font-size:12px;line-height:1.8;color:var(--text3);animation:gUp .8s 1.4s both}
 .gfoot p{margin:0}
 @keyframes gPop{0%{transform:scale(.4) rotate(-14deg);opacity:0;filter:blur(10px)}60%{transform:scale(1.06) rotate(2deg);opacity:1;filter:blur(0)}100%{transform:none;opacity:1}}
 @keyframes gRing{0%{transform:scale(.7);opacity:.75}100%{transform:scale(1.9);opacity:0}}
 @keyframes gUp{0%{transform:translateY(18px);opacity:0}100%{transform:none;opacity:1}}
-@media (max-width:700px){.gfeats{grid-template-columns:minmax(0,1fr);margin-top:32px}.gscroll{padding-top:5vh}.gstage{width:112px;height:112px}.gmark{width:88px;height:88px;border-radius:24px}.gmark img{width:58px;height:58px}}
+@media (max-width:900px){.gfeats{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:700px){.gfeats{grid-template-columns:minmax(0,1fr);margin-top:32px}.gvid{padding:14px 14px 0}.gft{padding:18px 20px 22px}.gft h2{font-size:20px}.gscroll{padding-top:5vh}.gstage{width:112px;height:112px}.gmark{width:88px;height:88px;border-radius:24px}.gmark img{width:58px;height:58px}}
 @media (prefers-reduced-motion:reduce){.gate *{animation:none!important}}
 </style>
 </head>
@@ -2180,13 +2186,10 @@ body{font-family:var(--sans)}
  <div class="gscroll">
   <section class="ghero" aria-label="호감슬라이드">
     <div class="gstage" aria-hidden="true"><span class="gring r1"></span><span class="gring r2"></span><span class="gring r3"></span><div class="gmark"><img src="brand/logo.svg" alt=""></div></div>
-    <p class="gtitle" lang="en">HOGAM SLIDE</p>
-    <p class="gtag">예배를 돕고, 교회를 세우다</p>
+    <h1 class="gtitle" lang="en">HOGAM SLIDE</h1>
+    <p class="gtag">예배를 돕고, 교회를 세우다 <span class="gver">v.1.0</span></p>
   </section>
-  <form class="gcard" id="gateForm" autocomplete="on" novalidate>
-    <div class="gmk" aria-hidden="true"><img src="brand/logo.svg" alt=""></div>
-    <h1>호감슬라이드</h1>
-    <p class="gsub" id="gTeam">예배를 돕고, 교회를 세우다 <span class="gver">v.1.0</span></p>
+  <form class="gcard" id="gateForm" autocomplete="on" novalidate aria-label="호감슬라이드 로그인">
     <div id="gSetup" class="gsetup hidden">아직 서버 설정이 비어 있어요.<br><b>config.js</b>에 Supabase 주소와 공개 키를 넣어 주세요.</div>
     <div id="gBody">
       <div class="seg2 gtabs" role="tablist"><button type="button" role="tab" data-m="in" aria-selected="true">들어가기</button><button type="button" role="tab" data-m="up" aria-selected="false">처음이에요</button></div>
@@ -2194,16 +2197,16 @@ body{font-family:var(--sans)}
       <label class="gl"><span>개인 암호</span><input id="gPw" type="password" autocomplete="current-password" placeholder="6글자 이상"></label>
       <label class="gl gup hidden"><span>팀 암호</span><input id="gCode" type="password" autocomplete="off" placeholder="팀에서 받은 암호"></label>
       <p class="gerr" id="gErr" role="alert"></p>
-      <button class="btn pri big" id="gGo" type="submit">들어가기</button>
+      <button class="btn pri big" id="gGo" type="submit">로그인</button>
       <p class="ghint" id="gHint">처음 오셨다면 ‘처음이에요’를 누르고 팀 암호를 함께 넣어 주세요.</p>
       <p class="gmail">문의 및 협업 <a href="mailto:hogamcommunity@gmail.com">hogamcommunity@gmail.com</a></p>
     </div>
   </form>
   <section class="gfeats" aria-label="호감슬라이드 소개">
-    <article class="gfeat"><canvas width="960" height="540" data-gshot="song" role="img" aria-label="찬양 슬라이드 예시"></canvas>
-      <div class="gft"><h2>악보 사진만 올리면 찬양 자막이 돼요</h2><p>콘티 순서대로 악보를 올리면 가사를 읽어 한 화면 두 줄로 나눠 드려요. 곡 보관함에 쌓아 두면 다음 예배엔 찾아 넣기만 하면 돼요.</p></div></article>
-    <article class="gfeat"><canvas width="960" height="540" data-gshot="word" role="img" aria-label="말씀 슬라이드 예시"></canvas>
-      <div class="gft"><h2>말씀·인용 구절까지 한 번에, 바로 PowerPoint로</h2><p>설교 본문과 인용 구절을 붙여 넣으면 화면에 맞게 정리돼요. 글꼴·색·위치를 고르고 이미지나 PowerPoint로 내보내면 끝이에요.</p></div></article>
+    <article class="gfeat"><div class="gvid"><video src="brand/demo-song.mp4" autoplay muted loop playsinline preload="auto" aria-label="찬양 자막 만드는 실제 화면"></video></div>
+      <div class="gft"><span class="gkick">찬양 자막</span><h2>찾아 넣으면, 바로 찬양 자막</h2><p>악보 사진을 올리거나 곡 보관함에서 찾아 넣고 ‘찬양 자막에 넣기’를 누르면, 한 화면 두 줄로 나뉜 자막과 슬라이드가 함께 나와요. 곡마다 배경색은 동그라미 하나로 바꿔요.</p></div></article>
+    <article class="gfeat"><div class="gvid"><video src="brand/demo-style.mp4" autoplay muted loop playsinline preload="auto" aria-label="슬라이드 꾸미고 내보내는 실제 화면"></video></div>
+      <div class="gft"><span class="gkick">꾸미기 · 내보내기</span><h2>꾸미고, 옮기고, PowerPoint로</h2><p>위쪽 리본에서 글꼴·크기·정렬을 바꾸면 미리보기가 바로 따라와요. 글자는 끌어서 옮기고, 다 되면 PowerPoint나 이미지로 내보내요.</p></div></article>
   </section>
   <footer class="gfoot">
     <p lang="en">Designed &amp; built by HOGAM (hogamcommunity) · © 2026 HOGAM. All rights reserved.</p>
@@ -4606,19 +4609,16 @@ async function fnErrMsg(error,fn){
 }
 let gMode='in';
 function setGateMode(m){gMode=m;document.querySelectorAll('.gtabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.m===m));
-  document.querySelector('.gup').classList.toggle('hidden',m!=='up');$('gGo').textContent=m==='up'?'팀에 들어가기':'들어가기';
+  document.querySelector('.gup').classList.toggle('hidden',m!=='up');$('gGo').textContent=m==='up'?'팀에 들어가기':'로그인';
   $('gPw').autocomplete=m==='up'?'new-password':'current-password';$('gErr').textContent='';
   $('gHint').textContent=m==='up'?'이름과 개인 암호는 다음부터 들어올 때 써요. 팀 암호는 처음 한 번만 넣어요.':'처음 오셨다면 ‘처음이에요’를 누르고 팀 암호를 함께 넣어 주세요.';}
 document.querySelectorAll('.gtabs button').forEach(b=>b.onclick=()=>setGateMode(b.dataset.m));
-// 로그인 화면 소개 상자: 지금 슬라이드 디자인으로 그린 예시
-function drawGateShots(){const ex={song:{type:'song',ed:'song',title:'주 하나님 지으신 모든 세계',songKey:'',lines:['주 하나님 지으신 모든 세계','내 마음 속에 그리어 볼 때'],line:0,cs:0,ce:0},
-  word:{type:'word',ed:'word',ref:'시편 23편 1절',lines:['1 주님은 나의 목자시니,','내게 부족함이 없습니다.'],line:0,cs:0,ce:0}};
-  document.querySelectorAll('[data-gshot]').forEach(cv=>{try{drawScreen(cv,ex[cv.dataset.gshot],1);}catch(e){}});}
-document.fonts&&document.fonts.ready.then(()=>{if($('gate').classList.contains('on'))setTimeout(drawGateShots,300);});
-function showGate(kind){$('gate').classList.add('on');drawGateShots();
+// 움직임 줄이기 설정이면 소개 영상은 멈춰 두고 직접 재생하게
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.querySelectorAll('.gvid video').forEach(v=>{v.removeAttribute('autoplay');v.controls=true;v.pause();});
+function showGate(kind){$('gate').classList.add('on');document.querySelectorAll('.gvid video').forEach(v=>{if(v.autoplay)v.play().catch(()=>{});});
   const setup=kind==='setup';$('gSetup').classList.toggle('hidden',!setup);$('gBody').classList.toggle('hidden',setup);
   if(!setup)setTimeout(()=>$('gName').focus(),50);}
-function hideGate(){$('gate').classList.remove('on');}
+function hideGate(){$('gate').classList.remove('on');document.querySelectorAll('.gvid video').forEach(v=>v.pause());}
 $('gateForm').onsubmit=async e=>{
   e.preventDefault();const name=normName($('gName').value),pw=$('gPw').value,code=$('gCode').value,err=$('gErr');err.textContent='';
   if(name.length<2)return err.textContent='이름을 2글자 이상 적어 주세요';
