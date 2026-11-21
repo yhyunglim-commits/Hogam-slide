@@ -1747,6 +1747,7 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 #lookBox .rgq .lksw i::after{width:14px;height:14px}
 #lookBox .rgq .lksw input:checked+i::after{transform:translateX(14px)}
 #lookBox .rgq .seg2 button{white-space:nowrap}
+.capairs>div{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}.capairs button{width:28px;height:28px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line);padding:0;cursor:pointer}.capairs button[aria-checked=true]{box-shadow:0 0 0 2px var(--blue,#007AFF)}
 .sr{position:absolute;left:0;top:0;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .rgthumb{width:44px;height:26px;border-radius:6px;background:center/cover var(--sunken);box-shadow:inset 0 0 0 1px var(--line)}
 .rgthumb.logo{background-size:contain;background-repeat:no-repeat;background-color:#fff}
@@ -2190,7 +2191,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
         <span class="grp wchars"><label for="wMax">한 줄</label><span class="stp2"><button type="button" id="wMaxDn" aria-label="한 글자 줄이기">−</button><input type="number" id="wMax" min="10" max="60"><button type="button" id="wMaxUp" aria-label="한 글자 늘리기">+</button></span><label for="wMax">자</label></span>
         <label class="ck" title="끄면 이 탭만 따로 글자 수를 정해요"><input type="checkbox" id="wAuto"><span>슬라이드에 맞춰 자동</span></label>
         <span class="div"></span><button type="button" class="btn sm" id="openFmtW">양식 설정</button>
-        <span class="grp qstyle"><label>모양</label><span class="seg2" role="radiogroup" aria-label="참고 구절 디자인"><button type="button" role="radio" data-qs="body">본문 디자인</button><button type="button" role="radio" data-qs="caption">자막 박스</button></span></span>
+        <span class="grp qstyle"><label>모양</label><span class="seg2" role="radiogroup" aria-label="참고 구절 디자인"><button type="button" role="radio" data-qs="body">본문 디자인</button><button type="button" role="radio" data-qs="caption">자막 박스</button><button type="button" role="radio" data-qs="box2">두 색 상자</button></span></span>
       </div>
       <div class="songcopy" id="wTabs" role="tablist" aria-label="본문과 참고 구절"></div>
       <div class="qcap" id="qCapOpts" hidden><label><span>띠 위 오른쪽 문구</span><input type="text" id="qRight" placeholder="예) 평안한 삶의 비결 (설교 제목)"></label><p class="hint">강조하고 싶은 말은 <b>**이렇게**</b> 감싸면 노란색으로 보여요.</p></div>
@@ -3345,7 +3346,7 @@ function parseText(text,ed,base){
       const LL=ed==='quote'?LOOK.quote:LOOK.word,max=LL.linesAuto!==false?autoLines(LL):LL.maxLines;let cur=[];
       const push=()=>{while(cur.length&&cur[cur.length-1].sp)cur.pop();while(cur.length&&cur[0].sp)cur.shift();if(cur.length)screens.push({type:'word',ed,chunk:base+ci,ref,title:ref||'성경봉독',lines:cur.map(o=>o.t.trim()),line:cur[0].i,src:cur.filter(o=>!o.sp).map(o=>o.i),cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});cur=[];};
       // 줄 수는 화면에 실제로 그려지는 줄로 센다 (상자보다 긴 줄은 꺾여서 2줄 이상이 됨)
-      const capQ=ed==='quote'&&LL.quoteStyle==='caption',vfs=1920*LL.size/100,vfont=`${lookW(LL)} ${vfs}px "${LL.font}", "Noto Sans KR", serif`,vW=1920*.719-1920*.032*2;
+      const capQ=ed==='quote'&&isCapStyle(LL.quoteStyle),vfs=1920*LL.size/100,vfont=`${lookW(LL)} ${vfs}px "${LL.font}", "Noto Sans KR", serif`,vW=1920*.719-1920*.032*2;
       const vis=o=>capQ?1:(wrapTo([o.t.replace(/\*\*/g,'')],vfont,vfs*LL.spacing/100,vW).length||1);
       const vn=a=>a.reduce((s,o)=>s+(o.sp?0:vis(o)),0),vna=a=>a.reduce((s,o)=>s+(o.sp?1:vis(o)),0);
       for(const v0 of verses){const parts=[];if(vn(v0)>max){let p=[];for(const o of v0){if(!o.sp&&vn(p)&&vn(p)+vis(o)>max){parts.push(p);p=[];}p.push(o);}if(p.length)parts.push(p);}else parts.push(v0);
@@ -3396,7 +3397,7 @@ const fontW=f=>(FONTS.find(x=>x.f===f)||FONTS[0]).w;
 const lookW=L=>+L.weight||fontW(L.font);
 const LOOK_DEF={
   song:{font:'Noto Sans KR',bgDim:15,logoPos:'off',logoSize:6,size:5,spacing:-6,lineH:1.22,posY:61,title:true,titleSize:1.6,titleGap:7,footer:'OKSU ASSEMBLIES OF GOD CHURCH',footerOn:true,color:'#ffffff',shadowOn:true,shadowAmt:18,strokeOn:false,strokeColor:'#000000',strokeW:4},
-  word:{font:'Nanum Myeongjo',refSpacing:-5,bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,linesAuto:true,box:88,verseGap:false,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true,quoteStyle:'body',capRight:'',capHex:'#0E6874',capAlpha:84,capSize:2.5,capBottom:3,capLineH:1.6,capColor:'#ffffff',color:'#1d1d1d',shadowOn:false,shadowAmt:18,strokeOn:false,strokeColor:'#ffffff',strokeW:4}
+  word:{font:'Nanum Myeongjo',refSpacing:-5,bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,linesAuto:true,box:88,verseGap:false,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true,quoteStyle:'body',capMain:'#C25E1D',capLight:'#E8DECB',capRight:'',capHex:'#0E6874',capAlpha:84,capSize:2.5,capBottom:3,capLineH:1.6,capColor:'#ffffff',color:'#1d1d1d',shadowOn:false,shadowAmt:18,strokeOn:false,strokeColor:'#ffffff',strokeW:4}
 };
 LOOK_DEF.quote={...LOOK_DEF.word};
 // 순서·광고 화면 (표지·안내·광고·고백문)
@@ -3501,6 +3502,11 @@ function buildLookUI(){
     i.onchange=()=>{T(k)[k]=i.checked;saveLook();if(k==='verseGap')renderVerse();if(after)after(i.checked);};g.appendChild(l);return l;};
   const color=(g,k,label)=>{const l=document.createElement('label');l.className='lkcol';l.innerHTML=`<span>${label}</span><span class="sw0"><input type="color" value="${L[k]}" aria-label="${label}"><b style="background:${L[k]}"></b><em>${String(L[k]).toUpperCase()}</em></span>`;
     const i=l.querySelector('input'),b=l.querySelector('b'),em=l.querySelector('em');i.oninput=()=>{if(k==='capHex'&&scope!=='slide'){let ch=0;for(const s0 of parseScreens())if(s0.ed==='quote'&&songColors['📖'+s0.ref]){delete songColors['📖'+s0.ref];ch=1;}if(ch){store.set('songColors',songColors);teamSet('songColors');}}L[k]=i.value;b.style.background=i.value;em.textContent=i.value.toUpperCase();saveLook();};g.appendChild(l);return l;};
+  // 색 조합 견본: 누르면 진한 상자 색 · 밝은 상자 색이 같이 바뀌어요
+  const pairs=g=>{const w=document.createElement('div');w.className='lk lkwide capairs';w.innerHTML='<span>색 조합</span><div role="radiogroup" aria-label="상자 색 조합"></div>';const rg=w.querySelector('div');
+    CAPPAIRS.forEach(([n,m,p])=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.title=n;b.setAttribute('aria-label',n);
+      b.setAttribute('aria-checked',String(L.capMain||'').toUpperCase()===m&&String(L.capLight||'').toUpperCase()===p);b.style.background=`linear-gradient(135deg,${m} 50%,${p} 50%)`;
+      b.onclick=()=>{L.capMain=m;L.capLight=p;saveLook();buildLookUI();};rg.appendChild(b);});g.appendChild(w);};
   const text=(g,k,ph)=>{const w=document.createElement('label');w.className='lk lkwide';w.innerHTML=`<span>${ph}${allTag(k)}</span>`;const i=document.createElement('input');i.type='text';i.className='lktext';i.placeholder=ph;i.value=T(k)[k]||'';i.oninput=()=>{T(k)[k]=i.value;saveLook();};w.appendChild(i);g.appendChild(w);};
   // 사진·로고: 왼쪽은 버튼, 오른쪽은 썸네일
   const upload=(g,k,isLogo)=>{const on=!!MEDIA[k],w=document.createElement('div');w.className='media2 lkwide';
@@ -3519,17 +3525,18 @@ function buildLookUI(){
     w.querySelectorAll('[data-bg]').forEach(b=>b.onclick=()=>{setBg(b.dataset.bg);buildLookUI();});
     const ci=w.querySelector('input[type=color]');ci.oninput=()=>setBg(ci.value);ci.onchange=()=>buildLookUI();
     box.appendChild(w);setRib(null);return;}
-  const cap=grp==='quote'&&LOOK.quote.quoteStyle==='caption',isW0=grp!=='song';
+  const cap=grp==='quote'&&isCapStyle(LOOK.quote.quoteStyle),isW0=grp!=='song';
   // 참고 구절 자막 박스
   if(grp==='quote'){const s=sec('cap','구절 모양','ph-quotes');
-    const r=document.createElement('div');r.className='lk lkseg';r.innerHTML=`<div class="seg2" role="radiogroup" aria-label="참고 구절 모양 (모든 참고 구절)"><button type="button" role="radio" data-q2="body">본문처럼</button><button type="button" role="radio" data-q2="caption">자막 박스</button></div>`;
+    const r=document.createElement('div');r.className='lk lkseg';r.innerHTML=`<div class="seg2" role="radiogroup" aria-label="참고 구절 모양 (모든 참고 구절)"><button type="button" role="radio" data-q2="body">본문처럼</button><button type="button" role="radio" data-q2="caption">자막 박스</button><button type="button" role="radio" data-q2="box2">두 색 상자</button></div>`;
     r.querySelectorAll('[data-q2]').forEach(b=>{b.setAttribute('aria-checked',(LOOK.quote.quoteStyle||'body')===b.dataset.q2);b.onclick=()=>{LOOK.quote.quoteStyle=b.dataset.q2;saveLook();syncQStyle();renderWTabs();buildLookUI();};});s.q.appendChild(r);
     if(cap){const b=document.createElement('button');b.type='button';b.className='btn sm pri lkwide capfit';b.innerHTML='<i class="ph ph-magic-wand" aria-hidden="true"></i> 자동 최적으로 맞추기';
       b.title='모든 참고 구절을 띠 한 줄에 꼭 맞는 글자 수로 다시 나누고, 슬라이드마다 따로 바꾼 설정을 지워요';
       b.onclick=()=>{const heads=$('quoteText').value.split(gapRe()).map(c=>c.split('\n')[0].trim()).filter(Boolean);heads.forEach(h=>delete WOV[h]);store.set('wordOv',WOV);QMAX=0;store.set('quoteMax',0);
         for(const k in SLIDE_OV)if(k.startsWith('q:'))delete SLIDE_OV[k];saveLook();capLast=capKey();rewrapWord();renderWCharCtl();buildLookUI();toast('참고 구절을 띠 한 줄에 꽉 차게 다시 나눴어요');};s.p.appendChild(b);
       const p=document.createElement('p');p.className='lkhint lkwide';p.textContent='자막 박스는 배경이 비치게 나가요. 그래서 배경 사진·로고·아래 문구·머리글은 쓰지 않아요.';s.p.appendChild(p);
-      color(s.p,'capHex','띠 색');slider(s.p,'capAlpha',true);slider(s.p,'capBottom',true);text(s.p,'capRight','띠 위 오른쪽 문구 (설교 제목)');}
+      if(L.quoteStyle==='box2'){pairs(s.p);color(s.p,'capMain','진한 상자 색');color(s.p,'capLight','밝은 상자 색');slider(s.p,'capBottom',true,'상자 아래 여백');text(s.p,'capRight','위 칸 오른쪽 문구 (설교 제목)');}
+      else{color(s.p,'capHex','띠 색');slider(s.p,'capAlpha',true);slider(s.p,'capBottom',true);text(s.p,'capRight','띠 위 오른쪽 문구 (설교 제목)');}}
     else s.rg.classList.add('noP');}
   // ── 글자: 바꿀 글자를 고르면, 그 글자의 글꼴 · 굵기 · 크기 · 색 · 자간 · 줄간격이 한 줄에 다 나와요 (그 글자에 없는 칸은 안 보여요) ──
   const hint=(g,t)=>{const p=document.createElement('p');p.className='lkhint lkwide';p.textContent=t;g.appendChild(p);return p;};
@@ -3540,7 +3547,7 @@ function buildLookUI(){
     s=sec('look','모양','ph-squares-four');
     {const r=document.createElement('div');r.className='lk lkseg';r.innerHTML=`<div class="seg2" role="radiogroup" aria-label="순서·광고 모양 (모든 순서·광고)"><button type="button" role="radio" data-is="full">전체 화면</button><button type="button" role="radio" data-is="cap">방송 자막</button></div>`;
       r.querySelectorAll('[data-is]').forEach(b=>{b.setAttribute('aria-checked',(LOOK.info.style||'full')===b.dataset.is);b.onclick=()=>{LOOK.info.style=b.dataset.is;saveLook();buildLookUI();renderInfoList();toast(b.dataset.is==='cap'?'표지 말고는 화면 아래 자막 상자로 보여 줘요 (배경이 비쳐요)':'순서·광고를 전체 화면으로 보여 줘요');};});s.q.appendChild(r);}
-    if(L.style==='cap'){hint(s.p,'방송 화면 위에 얹는 자막이에요. 배경이 비치게 나가고, 표지만 전체 화면이에요. 글자 색은 상자 색에 맞춰 저절로 흰색·검정이 돼요.');color(s.p,'capMain','진한 상자 색');color(s.p,'capLight','밝은 상자 색');}
+    if(L.style==='cap'){hint(s.p,'방송 화면 위에 얹는 자막이에요. 배경이 비치게 나가고, 표지만 전체 화면이에요. 글자 색은 상자 색에 맞춰 저절로 흰색·검정이 돼요.');pairs(s.p);color(s.p,'capMain','진한 상자 색');color(s.p,'capLight','밝은 상자 색');}
     else{hint(s.p,'표지·설교·안내는 사진 위에, 광고·고백문은 흰 상자 안에 글자가 놓여요.');slider(s.p,'box',true,'흰 상자 불투명도');}}
   const EL=textElems(grp,ik,ICAP,cap);if(!EL.some(e=>e.id===lookElem[grp]))lookElem[grp]=EL[0].id;const E=EL.find(e=>e.id===lookElem[grp]);
   const tx=(key,title)=>{const o=sec(key,title,'ph-text-aa');o.rg.classList.add('noP','tx');return o;};
@@ -3684,14 +3691,18 @@ function logoBox(x,W,H,L,footY,img){
   if(L.logoPos==='bc')return{x:W/2-w/2+W*(+L.ox_footer||0)/100,y:footY-h/2-(L.footerOn?H*.055:0)+H*(+L.oy_footer||0)/100,w,h};
   const fw=L.footerOn?footerWidth(x,W,L.footer):0,fx=W*(+L.ox_footer||0)/100,fy=H*(+L.oy_footer||0)/100;return{x:W/2-fw/2-w-W*.012+fx,y:footY-h/2+fy,w,h};
 }
-function isCaption(sc){return sc&&sc.ed==='quote'&&LOOK.quote.quoteStyle==='caption';}
+// 자막처럼 배경 없이 아래쪽에 얹는 참고 구절 모양: 띠(caption) · 두 색 상자(box2)
+const isCapStyle=v=>v==='caption'||v==='box2';
+function isCaption(sc){return sc&&sc.ed==='quote'&&isCapStyle(LOOK.quote.quoteStyle);}
+// 두 색 상자 색 조합 (진한 상자 · 밝은 상자)
+const CAPPAIRS=[['주황·베이지','#C25E1D','#E8DECB'],['남색·하늘','#1F3A5F','#CFE0F0'],['초록·연두','#2F5D3A','#DCE8C8'],['청록·민트','#0E6874','#CDEBE4'],['자주·분홍','#7A2E4D','#F2D6DF'],['보라·연보라','#4B3A78','#E2DBF2'],['먹색·회색','#2B2B2B','#E3E3E3'],['갈색·크림','#5C3A21','#F1E6D2']];
 // 참고 구절 · 자막 박스: 배경 없이(투명) 아래쪽에 상자만 그려요
 const CAPMW=new Map(); // 참고 구절마다 가장 긴 줄 너비 (같은 구절은 같은 글자 크기로)
 function drawCaption(x,W,H,sc,opt={}){
   // 참고: 화면 아래를 가로지르는 청록 반투명 띠 · 왼쪽 흰 막대 · 띠 위 왼쪽 구절 이름, 오른쪽 설교 제목 · “ ” 안의 구절, **강조**는 노랑
   x.clearRect(0,0,W,H);const L=LOOK.word,WF=`"${L.font}", "Noto Sans KR", serif`,wt=lookW(L);
   // 입력한 줄바꿈 그대로: 긴 줄이 있으면 글자를 줄여 맞추고(최대 55%까지), 그래도 넘칠 때만 접어요
-  const padX=W*.065,avail=W-padX*2;let fs=W*(L.capSize||2.5)/100;
+  const padX=W*.065,avail=L.quoteStyle==='box2'?capAvailW(L,W):W-padX*2;let fs=W*(L.capSize||2.5)/100;
   let lines=(sc.lines||[]).map(l=>l.replace(/(^|\s)\d{1,3}\s+(?=\S)/g,'$1').trim()).filter(Boolean);if(!lines.length)lines.push('');
   const dec=(l,i,n)=>(i===0?'“ ':'')+l+(i===n-1?' ”':''),lw=()=>lines.map((l,i)=>spacedW(x,dec(l,i,lines.length),fs*(L.spacing||0)/100));
   x.font=`${wt} ${fs}px ${WF}`;const spx=fs*(L.spacing||0)/100,ck=[$('quoteText').value,W,fs,spx,L.font,sc.chunk].join('|');let mw=CAPMW.get(ck);
@@ -3700,6 +3711,7 @@ function drawCaption(x,W,H,sc,opt={}){
   if(mw>avail){fs*=Math.max(.55,avail/mw)*.995;x.font=`${wt} ${fs}px ${WF}`;const maxC=Math.max(12,Math.floor(avail/(fs*1.02))-2),ws=lw();
     lines=lines.flatMap((l,i)=>ws[i]>avail?splitLine(l,maxC):[l]);}
   const lh=fs*(L.capLineH||1.6),padY=fs*.95;
+  if(L.quoteStyle==='box2')return drawBox2(x,W,H,sc,opt,L,lines,fs,lh,wt,WF);
   const bh=padY*2+lh*Math.max(1,lines.length),by=H-H*(L.capBottom??3)/100-bh;
   const gc=songColors['📖'+(sc.ref||'')],pc=gc?(gc[0]==='#'?gc:(palById(gc)||{c:[]}).c[0]):null,oc=(SLIDE_OV[sc.ovKey]||{}).capHex;
   const hx=String(oc||pc||L.capHex||'#0E6874').replace('#',''),cn=parseInt(hx.length===3?hx.replace(/./g,'$&$&'):hx,16);
@@ -3719,6 +3731,23 @@ function drawCaption(x,W,H,sc,opt={}){
   const R=[{k:'cap',x:0,y:by,w:W,h:bh}];x.font=`500 ${ls}px "Noto Sans KR", sans-serif`;
   R.push({k:'capref',x:padX,y:by-ls*1.5,w:spacedW(x,sc.ref||'',ls*.02),h:ls*1.3});
   if(L.capRight){const w=spacedW(x,L.capRight,ls*.22);R.push({k:'capright',x:W-W*.03-w,y:by-ls*1.5,w,h:ls*1.3});}
+  return{texts:[],box:null,footer:null,caption:true,regions:R};
+}
+// 참고 구절 · 두 색 상자: 밝은 위 칸(구절 이름 · 오른쪽 문구) + 진한 아래 상자(“구절”) · 배경 없음
+function drawBox2(x,W,H,sc,opt,L,lines,fs,lh,wt,WF){
+  const M=L.capMain||'#C25E1D',P=L.capLight||'#E8DECB',mInk=inkOn(M),pInk=inkOn(P),[ox,oy]=OFF(L,'cap',W,H);
+  const X0=W*.07+ox,BW=W*.86,pad=W*.035,padY=fs*.95,BOT=H-H*(L.capBottom??3)/100+oy;
+  const bh=padY*2+lh*Math.max(1,lines.length),by=BOT-bh,hh=H*.072,hy=by-hh,hs=W*(L.capSize||2.5)/100*.78;
+  x.fillStyle=P;x.fillRect(X0,hy,BW,hh);x.fillStyle=M;x.fillRect(X0,by,BW,bh);x.textBaseline='middle';
+  x.font=`700 ${hs}px "Noto Sans KR", sans-serif`;x.fillStyle=pInk;const rsp=hs*.02;
+  if(opt.hide!=='capref')drawSpaced(x,sc.ref||'',X0+W*.018,hy+hh/2,rsp,'left');
+  let rw=0;if(L.capRight){x.font=`500 ${hs}px "Noto Sans KR", sans-serif`;rw=spacedW(x,L.capRight,hs*.1);if(opt.hide!=='capright')drawSpaced(x,L.capRight,X0+BW-W*.018-rw,hy+hh/2,hs*.1,'left');}
+  x.font=`${wt} ${fs}px ${WF}`;const sp=fs*(L.spacing||0)/100,hiC=mInk==='#ffffff'?'#FFE58A':'#9A3412';let hi=false;
+  if(opt.hide!=='cap')lines.forEach((l,i)=>{const t=(i===0?'“ ':'')+l+(i===lines.length-1?' ”':''),y=by+padY+lh*(i+.5);let cx=X0+pad;
+    t.split('**').forEach((seg,k)=>{if(k>0)hi=!hi;if(!seg)return;x.fillStyle=hi?hiC:mInk;cx+=drawSpaced(x,seg,cx,y,sp,'left')+sp;});});
+  x.font=`700 ${hs}px "Noto Sans KR", sans-serif`;
+  const R=[{k:'cap',x:X0,y:hy,w:BW,h:BOT-hy},{k:'capref',x:X0+W*.018,y:hy+hh/2-hs*.65,w:spacedW(x,sc.ref||'',rsp),h:hs*1.3}];
+  if(L.capRight)R.push({k:'capright',x:X0+BW-W*.018-rw,y:hy+hh/2-hs*.65,w:rw,h:hs*1.3});
   return{texts:[],box:null,footer:null,caption:true,regions:R};
 }
 let SLIDE_OV=store.get('slideOv',{});
@@ -3947,7 +3976,7 @@ function applySongWindow(){const sc=$('edScroll'),hl=sc?.querySelector('.hl');if
 addEventListener('resize',()=>setTimeout(applySongWindow,50));
 
 /* ---- 말씀 자막: 설교 본문 / 참고 구절 ---- */
-document.querySelectorAll('[data-qs]').forEach(b=>b.onclick=()=>{LOOK.quote.quoteStyle=b.dataset.qs;saveLook();buildLookUI();syncQStyle();renderWTabs();toast(b.dataset.qs==='caption'?'참고 구절을 배경 없는 자막 박스로 보여 줘요':'참고 구절을 본문 디자인으로 보여 줘요');});
+document.querySelectorAll('[data-qs]').forEach(b=>b.onclick=()=>{LOOK.quote.quoteStyle=b.dataset.qs;saveLook();buildLookUI();syncQStyle();renderWTabs();toast(b.dataset.qs==='box2'?'참고 구절을 배경 없는 두 색 상자로 보여 줘요':b.dataset.qs==='caption'?'참고 구절을 배경 없는 자막 박스로 보여 줘요':'참고 구절을 본문 디자인으로 보여 줘요');});
 $('qRight').oninput=e=>{LOOK.quote.capRight=e.target.value;saveLook();};
 function syncQStyle(){document.querySelectorAll('[data-qs]').forEach(b=>b.setAttribute('aria-checked',b.dataset.qs===(LOOK.quote.quoteStyle||'body')));}
 function quoteChunks(){const t=$('quoteText').value.trim();return t?t.split(gapRe()).filter(x=>x.trim()):[];}
@@ -3997,7 +4026,7 @@ function renderWTabs(){const box=$('wTabs');if(!box)return;const all=wItems(),it
     w.querySelector('[data-x]').onclick=()=>x.k==='q'?removeQuoteChunk(x.i):removeTextChunk('wordText',x.i,'설교 본문');box.appendChild(w);});
   const ed=$('wEd'),cur=it.find(x=>x.k===wTab.k&&x.i===wTab.i);
   if(document.activeElement!==ed||!cur)ed.value=cur?cur.c:'';ed.disabled=!cur;
-  $('qCapOpts').hidden=!(cur&&cur.k==='q'&&LOOK.quote.quoteStyle==='caption');if(document.activeElement!==$('qRight'))$('qRight').value=LOOK.quote.capRight||'';
+  $('qCapOpts').hidden=!(cur&&cur.k==='q'&&isCapStyle(LOOK.quote.quoteStyle));if(document.activeElement!==$('qRight'))$('qRight').value=LOOK.quote.capRight||'';
   autosizeWEd();if(typeof renderWCharCtl==='function')renderWCharCtl();
   if(curPage==='word'&&!lookSlideKey){const t=WMODE==='q'?'quote':'word';if(lookTab!==t){lookTab=t;store.set('lookTab',t);buildLookUI();}}if(curPage)renderShots();}
 function autosizeWEd(){const t=$('wEd');if(!t||!t.offsetParent)return;t.style.height='auto';t.style.height=Math.max(t.scrollHeight+2,160)+'px';}
@@ -4539,7 +4568,7 @@ function startInline(k){const o=sbList[sbI];if(!o||!EDITABLE.includes(k)||!sbLay
   let st;
   if(t){const bw=t.boxW||r.w,lx=t.align==='center'?t.ax-bw/2:t.align==='right'?t.ax-bw:t.ax;st={x:lx,y:t.y0,w:bw,font:`${t.weight} ${t.size*z}px ${t.css}`,lh:t.lh*z,sp:t.sp*z,color:t.color,al:t.align,sh:t.shadow};}
   else if(k==='footer')st={x:W*.05,y:r.y,w:W*.9,font:`700 ${W*.0125*z}px "Noto Sans KR", sans-serif`,lh:r.h*z,sp:W*.0125*.62*z,color:'#fff',al:'center'};
-  else{const Lq=LOOK.quote,cs=W*(Lq.capSize||2.5)/100,ls=cs*.8;st=k==='cap'?{x:W*.065,y:r.y+cs*.95,w:W*.87,font:`${lookW(Lq)} ${cs*z}px "${Lq.font}", "Noto Sans KR", serif`,lh:cs*(Lq.capLineH||1.6)*z,sp:0,color:Lq.capColor||'#fff',al:'left'}
+  else{const Lq=LOOK.quote,cs=W*(Lq.capSize||2.5)/100,ls=cs*.8;const b2=Lq.quoteStyle==='box2';st=k==='cap'?{x:b2?r.x+W*.035:W*.065,y:r.y+(b2?H*.072:0)+cs*.95,w:b2?W*.79:W*.87,font:`${lookW(Lq)} ${cs*z}px "${Lq.font}", "Noto Sans KR", serif`,lh:cs*(Lq.capLineH||1.6)*z,sp:0,color:b2?inkOn(Lq.capMain):Lq.capColor||'#fff',al:'left'}
     :{x:r.x,y:r.y,w:Math.max(r.w,W*.3),font:`500 ${ls*z}px "Noto Sans KR", sans-serif`,lh:r.h*z,sp:0,color:'#fff',al:k==='capright'?'right':'left'};if(k==='capright')st.x=r.x+r.w-st.w;}
   Object.assign(ta.style,{left:(b.left+st.x*z)+'px',top:(b.top+st.y*z)+'px',width:(st.w*z)+'px',font:st.font,lineHeight:st.lh+'px',letterSpacing:st.sp+'px',color:st.color,textAlign:st.al,textShadow:st.sh?'0 2px 6px rgba(0,0,0,.35)':'none'});
   const c=String(st.color).replace('#','');ta.classList.toggle('dark',c.length>=6&&parseInt(c.slice(0,2),16)*.3+parseInt(c.slice(2,4),16)*.59+parseInt(c.slice(4,6),16)*.11<128);
@@ -4846,18 +4875,20 @@ const isQHead=h=>$('quoteText').value.split(gapRe()).some(c=>c.split('\n')[0].tr
 function capAutoMax(){const L=LOOK.quote,W=1920,c=capAutoMax.c||(capAutoMax.c=document.createElement('canvas').getContext('2d'));
   const fs=W*(L.capSize||2.5)/100,sp=fs*(L.spacing||0)/100;c.font=`${lookW(L)} ${fs}px "${L.font}", "Noto Sans KR", serif`;
   const sample='그들은열매를따고난올리브나무처럼될것이다';const per=c.measureText(sample).width/[...sample].length+sp,sw=c.measureText(' ').width+sp;
-  const avail=W*(1-.13)-c.measureText('“  ”').width;return Math.max(10,Math.min(60,Math.floor(avail/(per+sw*.28)*.96)));}
-const capAuto=()=>LOOK.quote.quoteStyle==='caption'&&!QMAX;
-const maxFor=h=>(WOV[h]&&WOV[h].max)||(isQHead(h)?(QMAX||(LOOK.quote.quoteStyle==='caption'?capAutoMax():0)):0)||BSET.max;
+  const avail=capAvailW(L,W)-c.measureText('“  ”').width;return Math.max(10,Math.min(60,Math.floor(avail/(per+sw*.28)*.96)));}
+const capAuto=()=>isCapStyle(LOOK.quote.quoteStyle)&&!QMAX;
+const maxFor=h=>(WOV[h]&&WOV[h].max)||(isQHead(h)?(QMAX||(isCapStyle(LOOK.quote.quoteStyle)?capAutoMax():0)):0)||BSET.max;
 // 자막 박스 자동: 글자 수 대신 실제 너비를 재서 띠 한 줄을 꽉 채우도록 단어 단위로 나눠요
 function capFit(text,first){const L=LOOK.quote,W=1920,c=capAutoMax.c||(capAutoMax.c=document.createElement('canvas').getContext('2d'));
   const fs=W*(L.capSize||2.5)/100,sp=fs*(L.spacing||0)/100;c.font=`${lookW(L)} ${fs}px "${L.font}", "Noto Sans KR", serif`;
-  const avail=W*(1-.13)*.995,wd=(t,f)=>spacedW(c,(f?'“ ':'')+t.replace(/(^|\s)\d{1,3}\s+(?=\S)/g,'$1').trim()+' ”',sp);
+  const avail=capAvailW(L,W)*.995,wd=(t,f)=>spacedW(c,(f?'“ ':'')+t.replace(/(^|\s)\d{1,3}\s+(?=\S)/g,'$1').trim()+' ”',sp);
   const out=[];let cur='';for(const w of text.split(/\s+/).filter(Boolean)){const t=cur?cur+' '+w:w;if(cur&&wd(t,first&&!out.length)>avail){out.push(cur);cur=w;}else cur=t;}if(cur)out.push(cur);return out;}
 function reflowCap(c){const ls=c.split('\n'),out=[];let cur=[];const flush=()=>{if(cur.length){out.push(...capFit(cur.join(' '),!out.length));cur=[];}};
   for(const l of ls.slice(1)){const t=l.trim();if(!t){flush();if(out.length&&out[out.length-1]!=='')out.push('');continue;}if(/^\d{1,3}\s/.test(t))flush();cur.push(t);}
   flush();while(out.length&&out[out.length-1]==='')out.pop();return[ls[0],...out].join('\n');}
-const capKey=()=>{const L=LOOK.quote;return[L.capSize,L.spacing,L.font].join('|');};
+const capKey=()=>{const L=LOOK.quote;return[L.capSize,L.spacing,L.font,L.quoteStyle].join('|');};
+// 자막 글이 들어가는 너비: 띠는 화면 거의 끝까지, 두 색 상자는 상자 안쪽 여백만큼 좁아요
+const capAvailW=(L,W)=>L.quoteStyle==='box2'?W*.86-W*.035*2:W*(1-.13);
 function rewrapWord(only){let changed=0;const clean=x=>x.replace(/[ \t]+$/gm,'').trim();
   for(const id of ['wordText','quoteText']){const ta=$(id),t=ta.value.trim();if(!t)continue;const ch=t.split(gapRe()).filter(x=>x.trim());let ch2=0;
     const out=ch.map(c=>{const h=c.split('\n')[0].trim();if(only&&h!==only)return c;const max=maxFor(h),s=WSRC[h];
