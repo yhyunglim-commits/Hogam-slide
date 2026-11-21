@@ -1730,6 +1730,10 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 #sbSet .rg.tx .rgq{margin-bottom:0}
 #sbSet .rg[data-k=fx] .rgq{display:none}
 #sbSet .rg.tx .lkfont select,#sbSet .rg.tx .lkweight select{width:100%;max-width:150px}
+/* 크기가 정한 것보다 작게 나올 때 */
+.szwarn{display:inline-flex;align-items:center;gap:3px;height:26px;margin-left:4px;padding:0 8px;border:0;border-radius:999px;background:#FFF1DC;color:#B45309;font:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.szwarn:hover{background:#FFE4BA}
+.lksw .lksub{display:block;font-size:12px;font-weight:400;color:var(--text3);margin-top:2px}
 /* 바로 쓰는 칸은 작게 */
 #lookBox .rgq .lk{display:flex;align-items:center;gap:6px;margin:0}
 #lookBox .rgq .lk .lkhead{margin:0;gap:6px}
@@ -3343,7 +3347,7 @@ function parseText(text,ed,base){
       // 절 단위로 묶어서, 한 절이 두 화면에 걸치지 않게
       const body2=[];body.forEach((o,k)=>{if(k>0&&(o.gapBefore>0||((ed==='quote'?LOOK.quote:LOOK.word).verseGap&&/^\d{1,3} /.test(o.t.trim()))))body2.push({t:'',i:o.i,sp:true});body2.push(o);});
       const verses=[];let nv=false;for(const o of body2){if(o.sp){if(verses.length)verses[verses.length-1].push(o);nv=true;continue;}if(nv||/^\d{1,3} /.test(o.t.trim())||!verses.length)verses.push([o]);else verses[verses.length-1].push(o);nv=false;}
-      const max=(ed==='quote'?LOOK.quote:LOOK.word).maxLines;let cur=[];
+      const LL=ed==='quote'?LOOK.quote:LOOK.word,max=LL.linesAuto!==false?autoLines(LL):LL.maxLines;let cur=[];
       const push=()=>{while(cur.length&&cur[cur.length-1].sp)cur.pop();while(cur.length&&cur[0].sp)cur.shift();if(cur.length)screens.push({type:'word',ed,chunk:base+ci,ref,title:ref||'성경봉독',lines:cur.map(o=>o.t.trim()),line:cur[0].i,src:cur.filter(o=>!o.sp).map(o=>o.i),cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});cur=[];};
       for(const v0 of verses){const parts=[];if(v0.filter(o=>!o.sp).length>max){for(let i=0;i<v0.length;i+=max)parts.push(v0.slice(i,i+max));}else parts.push(v0);
        for(const v of parts){const real=v.filter(o=>!o.sp).length,curReal=cur.filter(o=>!o.sp).length;if(curReal&&cur.length+real>max)push();cur.push(...v);if(cur.filter(o=>!o.sp).length>=max)push();}}
@@ -3393,7 +3397,7 @@ const fontW=f=>(FONTS.find(x=>x.f===f)||FONTS[0]).w;
 const lookW=L=>+L.weight||fontW(L.font);
 const LOOK_DEF={
   song:{font:'Noto Sans KR',bgDim:15,logoPos:'off',logoSize:6,size:5,spacing:-6,lineH:1.22,posY:61,title:true,titleSize:1.6,titleGap:7,footer:'OKSU ASSEMBLIES OF GOD CHURCH',footerOn:true,color:'#ffffff',shadowOn:true,shadowAmt:18,strokeOn:false,strokeColor:'#000000',strokeW:4},
-  word:{font:'Nanum Myeongjo',refSpacing:-5,bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,box:88,verseGap:false,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true,quoteStyle:'body',capRight:'',capHex:'#0E6874',capAlpha:84,capSize:2.5,capBottom:3,capLineH:1.6,capColor:'#ffffff',color:'#1d1d1d',shadowOn:false,shadowAmt:18,strokeOn:false,strokeColor:'#ffffff',strokeW:4}
+  word:{font:'Nanum Myeongjo',refSpacing:-5,bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,linesAuto:true,box:88,verseGap:false,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true,quoteStyle:'body',capRight:'',capHex:'#0E6874',capAlpha:84,capSize:2.5,capBottom:3,capLineH:1.6,capColor:'#ffffff',color:'#1d1d1d',shadowOn:false,shadowAmt:18,strokeOn:false,strokeColor:'#ffffff',strokeW:4}
 };
 LOOK_DEF.quote={...LOOK_DEF.word};
 // 순서·광고 화면 (표지·안내·광고·고백문)
@@ -3415,13 +3419,14 @@ let INFO=[],infoSel=0,ILIB=store.get('infoLib',[]); // 순서·광고 항목 · 
 let songColors=store.get('songColors',{}); // 제목 → 팔레트 id
 const LOOK_CTRLS=[
  ['song','size','가사 크기',3,7,.1,''],['song','spacing','가사 자간',-30,60,1,'%'],['song','lineH','가사 줄간격',1,2,.02,''],['song','posY','가사 높이',40,80,1,'%'],['song','titleSize','제목 크기',1,3.5,.1,''],['song','titleGap','제목·가사 간격',2,20,.5,'%'],
- ['word','size','본문 크기',1.8,4,.05,''],['word','spacing','본문 자간',-30,60,1,'%'],['word','capLineH','자막 줄간격',1,2.6,.02,''],['word','refSpacing','구절 이름 자간',-30,60,1,'%'],['word','lineH','본문 줄간격',1,2.2,.02,''],['word','maxLines','화면당 줄',2,8,1,'줄'],['word','box','상자 불투명도',40,100,1,'%'],['song','bgDim','사진 어둡게',0,80,1,'%'],['word','bgDim','사진 어둡게',0,80,1,'%'],['song','logoSize','로고 크기',2,20,.5,'%'],['word','logoSize','로고 크기',2,20,.5,'%'],['song','shadowAmt','그림자 진하기',0,80,1,'%'],['word','shadowAmt','그림자 진하기',0,80,1,'%'],['song','strokeW','외곽선 두께',1,15,.5,'%'],['word','strokeW','외곽선 두께',1,15,.5,'%'],['word','capSize','자막 글자 크기',1.5,4,.05,''],['word','capAlpha','띠 불투명도',30,100,1,'%'],['word','capBottom','띠 아래 여백',0,20,.5,'%'],
+ ['word','size','본문 크기',1.8,6,.05,''],['word','spacing','본문 자간',-30,60,1,'%'],['word','capLineH','자막 줄간격',1,2.6,.02,''],['word','refSpacing','구절 이름 자간',-30,60,1,'%'],['word','lineH','본문 줄간격',1,2.2,.02,''],['word','maxLines','화면당 줄',2,8,1,'줄'],['word','box','상자 불투명도',40,100,1,'%'],['song','bgDim','사진 어둡게',0,80,1,'%'],['word','bgDim','사진 어둡게',0,80,1,'%'],['song','logoSize','로고 크기',2,20,.5,'%'],['word','logoSize','로고 크기',2,20,.5,'%'],['song','shadowAmt','그림자 진하기',0,80,1,'%'],['word','shadowAmt','그림자 진하기',0,80,1,'%'],['song','strokeW','외곽선 두께',1,15,.5,'%'],['word','strokeW','외곽선 두께',1,15,.5,'%'],['word','capSize','자막 글자 크기',1.5,4,.05,''],['word','capAlpha','띠 불투명도',30,100,1,'%'],['word','capBottom','띠 아래 여백',0,20,.5,'%'],
  ['info','size','표지·설교 제목 크기',4,14,.1,''],['info','nSize','안내 글 크기',2,7,.05,''],['info','bSize','광고·고백문 글 크기',1.4,3.5,.05,''],['info','cSize','자막 글 크기',1.1,2.8,.05,''],['info','capLines','자막 화면당 줄',1,7,1,'줄'],['info','spacing','자간',-30,60,1,'%'],['info','lineH','줄간격',1,2.4,.02,''],['info','maxLines','화면당 줄',3,12,1,'줄'],['info','box','상자 불투명도',40,100,1,'%'],['info','bgDim','사진 어둡게',0,80,1,'%'],['info','logoSize','로고 크기',2,20,.5,'%'],['info','shadowAmt','그림자 진하기',0,80,1,'%'],['info','strokeW','외곽선 두께',1,15,.5,'%'],
 ];
 let lookTab=store.get('lookTab','song');
 let capLast='';
 function lookChanged(){try{if(capAuto()){const m=capKey();if(m!==capLast){const first=!capLast;capLast=m;if(!first)rewrapWord();}}else capLast='';}catch(e){}
-  if(BSET.auto){const m=autoWordMax();if(m!==BSET.max){BSET.max=m;store.set('bset2',BSET);$('bMax').value=m;$('bMaxOut').textContent=m+'자';renderVerse();syncWordCtl();rewrapWord();}}}
+  if(BSET.auto){const m=autoWordMax();if(m!==BSET.max){BSET.max=m;store.set('bset2',BSET);$('bMax').value=m;$('bMaxOut').textContent=m+'자';renderVerse();syncWordCtl();rewrapWord();}}
+  const fn=document.querySelector('[data-fitnow]');if(fn)fn.textContent=fitNow(fn.dataset.fitnow);}
 let lkOpen=store.get('lkOpen',{}),lookSlideKey=null,lookScope='all',lookElem={song:'lyrics',word:'body',quote:'body',info:'title'}; // lookElem: 화면 종류마다 지금 바꾸는 글자
 // 슬라이드 설정 = 위쪽 리본: 묶음마다 자주 쓰는 건 바로, 나머지는 ▾ 로 펼쳐요 (크게 보기 옆에서는 세로로 다 펼쳐요)
 let ribOpen=null;
@@ -3560,7 +3565,19 @@ function buildLookUI(){
     else{const r=document.createElement('label');r.className='lk lkweight';r.innerHTML=`<select aria-label="${E.n} 굵기">${ws.map(v=>`<option value="${v}" ${v===w?'selected':''}>${WNAME[v]}</option>`).join('')}</select>`;
       r.querySelector('select').onchange=e=>{L[E.weight]=+e.target.value;loadFont(f,+e.target.value).then(()=>saveLook());};s.q.appendChild(r);}}
   // 크기: PowerPoint와 같은 pt (1920 화면 기준 · 너비의 1% = 9.6pt)
-  if(E.size){s=tx('tsize','크기 pt');const[mn,mx]=rng(E.size);step(s.q,E.n+' 크기',()=>Math.round(V(E.size)*9.6),v=>{L[E.size]=+(v/9.6).toFixed(4);},Math.ceil(mn*9.6),Math.floor(mx*9.6),1,'');}
+  if(E.size){s=tx('tsize','크기 pt');const[mn,mx]=rng(E.size),q=s.q;
+    // 가사·본문은 줄이 화면(상자)을 넘으면 저절로 줄여요 → 정한 크기보다 작게 나오면 알려 줘요
+    const fitK=(grp==='song'&&E.id==='lyrics')?'lyrics':((grp==='word'||grp==='quote')&&!cap&&E.id==='body')?'body':null;
+    const warn=()=>{q.querySelector('.szwarn')?.remove();if(!fitK)return;
+      const sc=(slideKey&&parseScreens().find(x=>x.ovKey===slideKey))||parseScreens().find(x=>tabOf(x)===grp&&!x.blank&&x.lines&&x.lines.length);if(!sc)return;
+      const cv=document.createElement('canvas');cv.width=1920;cv.height=1080;const t=withLook(sc,()=>slideLayout(cv.getContext('2d'),1920,1080,sc)).texts.find(t=>t.kind===fitK);if(!t)return;
+      const real=Math.round(t.size*.5),want=Math.round(V(E.size)*9.6);if(real>=want-1)return;
+      const autoW=grp!=='song'&&BSET.auto&&LOOK[grp].linesAuto!==false&&!(grp==='quote'&&QMAX);
+      const b=document.createElement('button');b.type='button';b.className='szwarn';b.innerHTML=`<i class="ph ph-warning" aria-hidden="true"></i> ${real}pt`;
+      b.title=grp==='song'?`가장 긴 줄이 화면보다 길어서 ${real}pt로 줄여서 나와요. ‘배치’에서 한 줄 글자 수를 줄이면 더 커져요.`:autoW?`가장 긴 줄이 상자보다 조금 길어서 ${real}pt로 나와요.`:`한 줄 글자 수·화면당 줄을 직접 정해 둬서 ${real}pt까지만 커져요. 누르면 크기에 맞춰 자동으로 다시 나눠요.`;
+      b.onclick=()=>{if(grp==='song'){setRib('layout');return;}if(!autoW){LOOK[grp].linesAuto=true;if(grp==='quote'){QMAX=0;store.set('quoteMax',0);}if(!BSET.auto)setWordMax(BSET.max,true);saveLook();rewrapWord();buildLookUI();toast('글자 크기에 맞춰 한 줄 글자 수·화면당 줄을 자동으로 맞췄어요');}};
+      q.appendChild(b);};
+    step(q,E.n+' 크기',()=>Math.round(V(E.size)*9.6),v=>{L[E.size]=+(v/9.6).toFixed(4);clearTimeout(warn.t);warn.t=setTimeout(warn,350);},Math.ceil(mn*9.6),Math.floor(mx*9.6),1,'');warn();}
   if(E.color){s=tx('tcolor','색');const cur=V(E.color)||'#ffffff',l=document.createElement('label');l.className='lkcol';
     l.innerHTML=`<span class="sw0"><input type="color" value="${cur}" aria-label="${E.n} 색"><b style="background:${cur}"></b></span>`;const i=l.querySelector('input');
     i.oninput=()=>{L[E.color]=i.value;l.querySelector('b').style.background=i.value;saveLook();};s.q.appendChild(l);}
@@ -3579,6 +3596,12 @@ function buildLookUI(){
      else{useFormat({...FMT,maxChars:v});if(!$('regenBanner').classList.contains('hidden')){setOutput(allText(results,FMT),true);}}
      setTimeout(()=>{if($('slidebox').classList.contains('on')){sbList=songGroups().flatMap(g=>g.items.map(s=>({s,si:g.songIdx||0})));drawSlide();}},250);};
    nb.onchange=()=>set(nb.value);dn.onclick=()=>set(cur()-1);up.onclick=()=>set(cur()+1);g.appendChild(r);};
+  // 말씀·참고 구절: 글자 크기에 맞춰 한 줄 글자 수·화면당 줄 자동 (기본) / 직접 정하기
+  const autoFit=g=>{const LL=LOOK[grp],on=BSET.auto&&LL.linesAuto!==false&&!(grp==='quote'&&QMAX);
+    const l=document.createElement('label');l.className='lksw lkwide';l.innerHTML=`<span>한 줄 글자 수·화면당 줄 자동<small class="lksub"${on?` data-fitnow="${grp}"`:''}>${on?fitNow(grp):'아래에서 직접 정해요. 글자가 커지지 않으면 다시 켜 주세요'}</small></span><input type="checkbox" role="switch"><i aria-hidden="true"></i>`;
+    const i=l.querySelector('input');i.checked=on;
+    i.onchange=()=>{if(i.checked){LL.linesAuto=true;if(grp==='quote'){QMAX=0;store.set('quoteMax',0);}setWordMax(BSET.max,true);}else{LL.maxLines=autoLines(LL);LL.linesAuto=false;setWordMax(BSET.max,false);}saveLook();rewrapWord();buildLookUI();};g.appendChild(l);
+    if(!on){slider(g,'maxLines',true,'화면당 줄');charsCtl(g);}};
   // 정렬
   if(!cap){s=sec('align','정렬','ph-text-align-center');s.rg.classList.add('noP');const cur=L.align||(grp==='song'||grp==='info'?'center':'left');
     [['left','왼쪽'],['center','가운데'],['right','오른쪽']].forEach(([v,n])=>{const b=document.createElement('button');b.type='button';b.className='albtn';b.setAttribute('aria-pressed',cur===v);b.setAttribute('aria-label',n+' 정렬');b.title=n+' 정렬';
@@ -3592,8 +3615,9 @@ function buildLookUI(){
   s=sec('layout','배치','ph-layout');
   if(grp==='song'){sw(s.p,'title','곡 제목 보이기');slider(s.p,'posY',true);slider(s.p,'titleGap',true);charsCtl(s.p);}
   else if(cap){slider(s.p,'maxLines',true,'화면당 줄');charsCtl(s.p);}
+  else if(grp!=='info'){autoFit(s.p);sw(s.p,'verseGap','절마다 한 줄 띄우기');slider(s.p,'box',true);text(s.p,'head','머리글');text(s.p,'sub','작은 머리글');}
   else if(grp==='info'){if(L.style==='cap')slider(s.p,'capLines',true,'화면당 줄');else slider(s.p,'maxLines',true,'화면당 줄');hint(s.p,'광고·고백문이 길면 이 줄 수마다 다음 장으로 넘어가요.');}
-  else{slider(s.p,'maxLines',true,'화면당 줄');charsCtl(s.p);sw(s.p,'verseGap','절마다 한 줄 띄우기');slider(s.p,'box',true);text(s.p,'head','머리글');text(s.p,'sub','작은 머리글');}
+
   {const t=scope==='slide'?SLIDE_OV[slideKey]:LOOK[grp],has=t&&Object.keys(t).some(k=>/^o[xy]_/.test(k));
     hint(s.p,'미리보기나 크게 보기에서 글자를 끌면 위치를 옮길 수 있어요.');
     if(has){const b=document.createElement('button');b.type='button';b.className='btn sm lkwide';b.innerHTML='<i class="ph ph-arrows-in-cardinal" aria-hidden="true"></i> 글자 위치 처음대로';
@@ -3757,6 +3781,9 @@ function wordK(x,W,H,fs,sp,availW,availH,L,q){
   _wk={key,k};return k;
 }
 // 지금 슬라이드 설정에서 말씀 한 줄에 들어가는 글자 수 (띄어쓰기 빼고)
+const fitNow=g=>`글자 크기에 맞춰 지금 한 줄 ${BSET.max}자 · 화면당 ${autoLines(LOOK[g])}줄`;
+// 글자 크기에 맞춰 흰 상자에 들어가는 줄 수 (크기가 기준 · 직접 정하기를 켜면 maxLines를 써요)
+function autoLines(L){const W=1920,H=1080,fs=W*L.size/100,availH=H*.49-W*.032*1.6;return Math.max(1,Math.min(8,Math.floor(availH/(fs*L.lineH)+.02)));}
 function autoWordMax(){
   const L=LOOK.word,W=1920,c=autoWordMax.c||(autoWordMax.c=document.createElement('canvas').getContext('2d'));
   const fs=W*L.size/100,sp=fs*L.spacing/100;c.font=`${lookW(L)} ${fs}px "${L.font}", "Noto Sans KR", serif`;
