@@ -1430,7 +1430,7 @@ h3.wh small{font-weight:400;font-size:12px;color:var(--text3);margin-left:4px}
 .bpick select:first-child{grid-column:auto!important}
 .bpick #bBook{grid-column:auto!important}
 .bpick select{padding-left:8px!important;padding-right:22px!important;font-size:13px}
-/* 인용 구절 칸 */
+/* 참고 구절 칸 */
 #qSlots{display:flex;flex-direction:column;gap:10px;margin-bottom:10px}
 .qslot{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--sunken)}
 .qslot .qsh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:13px}
@@ -1492,7 +1492,7 @@ details.look>summary{position:sticky;top:0;z-index:23;background:var(--surface)}
 #lookCtl .lkscope p{margin:8px 0 6px;font-size:12px;color:var(--text3);line-height:1.5}
 #lookCtl .lkn{font-style:normal;font-size:11px;font-weight:700;padding:1px 6px;border-radius:999px;background:rgba(0,122,255,.12);color:var(--blue,#007AFF);margin-left:4px}
 #lookCtl .lkhint{margin:4px 0 0;font-size:12px;color:var(--text3)}
-/* 인용 구절 칸: 두 개씩 나란히 (1 2 / 3 4 …) */
+/* 참고 구절 칸: 두 개씩 나란히 (1 2 / 3 4 …) */
 #qSlots{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 #qSlots .bpick{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto minmax(0,1fr)!important}
 #qSlots .bpick select:first-child{grid-column:1/-1!important}
@@ -1577,7 +1577,7 @@ details.look>summary .lkundo:disabled{opacity:.35;cursor:default}
 
 /* 휴대폰: 성경 이름이 잘리지 않게 첫 칸은 한 줄 전체 */
 @media (max-width:600px){.bpick{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto minmax(0,1fr)!important}.bpick select:first-child,.bpick #bBook{grid-column:1/-1!important}}
-/* 인용 구절 모양: 고른 쪽 또렷하게 */
+/* 참고 구절 모양: 고른 쪽 또렷하게 */
 #lookCtl .seg2 [data-q2]{flex:1}
 #lookCtl .seg2 [data-q2][aria-checked=true]{background:var(--blue,#007AFF);color:#fff;font-weight:700}
 /* 옆 메뉴 로고 칸 아래 선 = 위 예배 제목 상자 아래 선 (한 줄로 이어지게) */
@@ -1873,6 +1873,26 @@ body{font-family:var(--sans)}
 @media (max-width:900px){.gfeats{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:700px){.gfeats{grid-template-columns:minmax(0,1fr);margin-top:32px}.gvid{padding:14px 14px 0}.gft{padding:18px 20px 22px}.gft h2{font-size:20px}.gscroll{padding-top:5vh}.gstage{width:112px;height:112px}.gmark{width:88px;height:88px;border-radius:24px}.gmark img{width:58px;height:58px}}
 @media (prefers-reduced-motion:reduce){.gate *{animation:none!important}}
+/* ===== 말씀 탭: 설교 본문 / 참고 구절 큰 전환 단추 ===== */
+#pgWord>.wmode{grid-column:1/-1;display:flex;gap:6px;padding:5px;background:var(--surface);border-radius:16px;box-shadow:0 0 0 1px var(--line);width:max-content;max-width:100%}
+.wmode button{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 22px;border:0;border-radius:12px;background:transparent;font:inherit;font-size:16px;font-weight:700;color:var(--text3);cursor:pointer;white-space:nowrap}
+.wmode button i{font-size:19px}
+.wmode button:hover{background:var(--sunken);color:var(--text)}
+.wmode button em{font-style:normal;font-size:12px;font-weight:700;min-width:20px;padding:1px 7px;border-radius:10px;background:var(--sunken);color:var(--text3)}
+.wmode button em:empty{display:none}
+.wmode button[data-wm=w][aria-selected=true]{background:linear-gradient(160deg,#FFC566,#FF9F0A 55%,#F07C00);color:#fff;box-shadow:0 6px 14px -6px rgba(255,159,10,.7)}
+.wmode button[data-wm=q][aria-selected=true]{background:linear-gradient(160deg,#5EEAD4,#14B8A6 55%,#0F8F82);color:#fff;box-shadow:0 6px 14px -6px rgba(20,184,166,.7)}
+.wmode button[aria-selected=true] em{background:rgba(255,255,255,.28);color:#fff}
+.pico.c5{background:linear-gradient(160deg,#5EEAD4,#14B8A6 55%,#0F8F82)!important;--pc:rgba(20,184,166,.6);color:#fff!important}
+/* 고른 쪽만 보여요 */
+body[data-wmode=q] #colWord>.pb,body[data-wmode=w] #colWord>.qadd{display:none}
+body[data-wmode=q] #verseCopy,body[data-wmode=q] #verseClear,body[data-wmode=q] #verseCount{display:none}
+body[data-wmode=w] #wordPanel .qstyle{display:none!important}
+#colWord .qhint{margin:0 0 10px;font-size:13px;color:var(--text3)}
+body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
+@media (min-width:1281px){#pgWord>.panel{height:calc(var(--triH) - 66px)}}
+@media (max-width:1280px){#pgWord>.pvcol{grid-row:2/span 2}}
+@media (max-width:860px){#pgWord>.pvcol{grid-row:auto}#pgWord>.wmode{width:auto}.wmode button{flex:1;justify-content:center;padding:0 10px;font-size:15px}}
 </style>
 </head>
 <body>
@@ -1971,13 +1991,16 @@ body{font-family:var(--sans)}
     </div>
 
     <div class="page tri" id="pgWord">
+      <div class="wmode" id="wMode" role="tablist" aria-label="설교 본문과 참고 구절">
+        <button type="button" role="tab" data-wm="w"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i><span>설교 본문</span><em data-wmn="w"></em></button>
+        <button type="button" role="tab" data-wm="q"><i class="ph-fill ph-quotes" aria-hidden="true"></i><span>참고 구절</span><em data-wmn="q"></em></button>
+      </div>
       <section class="panel" id="colWord">
-        <div class="ph2"><span class="pico c2" aria-hidden="true"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span><h2>말씀</h2><span class="meta" id="verseCount"></span>
+        <div class="ph2"><span class="pico c2 wpico" aria-hidden="true"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span><h2 id="wColT">설교 본문</h2><span class="meta" id="verseCount"></span>
           <div class="acts tools"><a class="tlink" href="https://www.godpia.com/read/reading.asp" target="_blank" rel="noopener" aria-label="갓피아성경 열기"><i class="ph ph-arrow-square-out" aria-hidden="true"></i><span>갓피아성경</span></a><button class="tbtn lab" id="verseCopy"><i class="ph ph-copy" aria-hidden="true"></i><span>복사</span></button><button class="tbtn danger" id="verseClear" data-tip="비우기" aria-label="비우기"><i class="ph ph-trash" aria-hidden="true"></i></button></div></div>
         <div class="pb">
           <div class="wgrid wgrid4">
             <div class="wc a">
-              <h3 class="wh"><i class="ph ph-book-open-text" aria-hidden="true"></i> 설교 본문</h3>
               <div class="bpick">
                 <select id="bBook" aria-label="성경"><option value="">성경 고르기</option></select>
                 <select id="bChap" aria-label="장" disabled><option value="">장</option></select>
@@ -2006,24 +2029,24 @@ body{font-family:var(--sans)}
           </div>
         </div>
         <div class="qadd">
-          <h3 class="wh"><i class="ph ph-quotes" aria-hidden="true"></i> 인용 구절 <small>설교 중에 띄울 구절을 칸마다 넣어요</small></h3>
+          <p class="qhint">설교 중에 띄울 구절을 칸마다 넣어요.</p>
           <div id="qSlots"></div>
-          <button type="button" class="qaddbtn" id="qAddSlot"><i class="ph ph-plus-circle" aria-hidden="true"></i> 인용 구절 추가</button>
+          <button type="button" class="qaddbtn" id="qAddSlot"><i class="ph ph-plus-circle" aria-hidden="true"></i> 참고 구절 추가</button>
         </div>
-        <div class="pf"><button class="btn pri" id="verseToEdit" style="margin-left:auto">말씀 자막에 넣기</button></div>
+        <div class="pf"><button class="btn pri" id="verseToEdit" style="margin-left:auto">설교 본문 자막에 넣기</button></div>
       </section>
 
       <section class="panel" id="wordPanel">
-      <div class="ph2"><span class="pico c2" aria-hidden="true"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span><h2>말씀 자막</h2><span class="meta" id="wordCount"></span>
+      <div class="ph2"><span class="pico c2 wpico" aria-hidden="true"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span><h2 id="wPanT">설교 본문 자막</h2><span class="meta" id="wordCount"></span>
         <span class="acts tools rbtools"><button class="tbtn" id="wordCopy" data-tip="복사" aria-label="말씀 자막 복사"><i class="ph ph-copy" aria-hidden="true"></i></button><button class="tbtn danger" id="wordClear" data-tip="비우기" aria-label="비우기"><i class="ph ph-trash" aria-hidden="true"></i></button></span></div>
       <div class="foldbody" id="wordBody">
       <div class="rbar">
         <span class="grp wchars"><label for="wMax">한 줄</label><span class="stp2"><button type="button" id="wMaxDn" aria-label="한 글자 줄이기">−</button><input type="number" id="wMax" min="10" max="60"><button type="button" id="wMaxUp" aria-label="한 글자 늘리기">+</button></span><label for="wMax">자</label></span>
         <label class="ck" title="끄면 이 탭만 따로 글자 수를 정해요"><input type="checkbox" id="wAuto"><span>슬라이드에 맞춰 자동</span></label>
         <span class="div"></span><button type="button" class="btn sm" id="openFmtW">양식 설정</button>
-        <span class="grp qstyle"><label>인용 구절</label><span class="seg2" role="radiogroup" aria-label="인용 구절 디자인"><button type="button" role="radio" data-qs="body">본문 디자인</button><button type="button" role="radio" data-qs="caption">자막 박스</button></span></span>
+        <span class="grp qstyle"><label>모양</label><span class="seg2" role="radiogroup" aria-label="참고 구절 디자인"><button type="button" role="radio" data-qs="body">본문 디자인</button><button type="button" role="radio" data-qs="caption">자막 박스</button></span></span>
       </div>
-      <div class="songcopy" id="wTabs" role="tablist" aria-label="본문과 인용 구절"></div>
+      <div class="songcopy" id="wTabs" role="tablist" aria-label="본문과 참고 구절"></div>
       <div class="qcap" id="qCapOpts" hidden><label><span>띠 위 오른쪽 문구</span><input type="text" id="qRight" placeholder="예) 평안한 삶의 비결 (설교 제목)"></label><p class="hint">강조하고 싶은 말은 <b>**이렇게**</b> 감싸면 노란색으로 보여요.</p></div>
       <div class="edcol"><textarea id="wEd" spellcheck="false" placeholder="‘말씀 자막에 넣기’를 누르면 여기에 들어와요."></textarea></div>
       <textarea id="wordText" hidden aria-hidden="true"></textarea><textarea id="quoteText" hidden aria-hidden="true"></textarea>
@@ -2233,6 +2256,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2200);}
 let curPage=null; // 지금 보는 탭 페이지: song · word · slides (setPage에서 정해요)
 const store={get(k,d){try{const v=localStorage.getItem('cj_'+k);return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){try{localStorage.setItem('cj_'+k,JSON.stringify(v));return true;}catch(e){return false;}}};
+let WMODE=store.get('wmode','w')==='q'?'q':'w'; // 말씀 탭: 설교 본문(w) · 참고 구절(q)
 // 데이터베이스에서 온 썸네일은 그림 주소(data:image/…)일 때만 써요
 const safeImg=u=>typeof u==='string'&&/^data:image\/(png|jpe?g|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(u)?u:null;
 
@@ -2438,7 +2462,7 @@ function route(){const h=location.hash.slice(1);if(ANCH[h])setPage(ANCH[h]);clos
 // 위쪽 탭: [찬양] [말씀] [슬라이드 미리보기]
 function setPage(p){if(!['song','word','slides'].includes(p))p='song';const changed=curPage!==p;curPage=p;store.set('page',p);document.body.dataset.page=p;
   document.querySelectorAll('#ptabs [data-pg]').forEach(b=>b.setAttribute('aria-selected',b.dataset.pg===p));
-  if(changed){setRib(null);lookSlideKey=null;if(p==='song')lookTab='song';else if(p==='word')lookTab=wTab.k==='q'?'quote':'word';store.set('lookTab',lookTab);buildLookUI();scrollTo(0,0);}
+  if(changed){setRib(null);lookSlideKey=null;if(p==='song')lookTab='song';else if(p==='word')lookTab=WMODE==='q'?'quote':'word';store.set('lookTab',lookTab);buildLookUI();scrollTo(0,0);}
   setTimeout(()=>{autosize();autosizeWEd();applySongWindow();renderShots();},0);}
 document.querySelectorAll('#ptabs [data-pg]').forEach(b=>b.onclick=()=>{if(location.hash)history.replaceState(null,'',location.pathname+location.search);setPage(b.dataset.pg);});
 // 위쪽 고정 머리글 높이만큼 아래에 붙도록
@@ -2811,7 +2835,7 @@ function splitCombined(t){t=String(t||'');if(!t.trim())return{song:'',word:'',qu
 function combinedText(){const q=($('quoteText')?.value||'').trim();return[$('outText').value.trim(),$('wordText').value.trim(),q?q.split(gapRe()).filter(x=>x.trim()).map(c=>QMARK+c.trimStart()).join(gapStr()):''].filter(Boolean).join(gapStr());}
 function wordChunks(){const t=$('wordText').value.trim();return t?t.split(gapRe()).filter(x=>x.trim()):[];}
 function autosizeWord(){const t=$('wordText');if(!t.offsetParent)return;t.style.height='auto';t.style.height=Math.max(t.scrollHeight+2,140)+'px';}
-function refreshWordMeta(){const n=wordChunks().length,l=$('wordText').value.trim()?$('wordText').value.trim().split('\n').length:0;$('wordCount').textContent=n?`본문 ${n}개 · ${l}줄`:'';autosizeWord();}
+function refreshWordMeta(){const q=WMODE==='q',ta=$(q?'quoteText':'wordText'),n=(q?quoteChunks():wordChunks()).length,l=ta.value.trim()?ta.value.trim().split('\n').length:0;$('wordCount').textContent=n?`${q?'구절':'본문'} ${n}개 · ${l}줄`:'';autosizeWord();}
 $('wordText').value=store.get('wordOut','');
 {const sp=splitCombined($('outText').value);if(sp.word){$('outText').value=sp.song;store.set('out',sp.song);$('wordText').value=[$('wordText').value.trim(),sp.word].filter(Boolean).join(gapStr());store.set('wordOut',$('wordText').value);}}
 $('wordText').addEventListener('input',()=>{clearTimeout(window._wv);window._wv=setTimeout(()=>store.set('wordOut',$('wordText').value),400);refreshWordMeta();renderShots();scheduleSave();renderSteps();});
@@ -2821,8 +2845,8 @@ $('songClear').onclick=()=>{const ta=$('outText'),before=ta.value;if(!before.tri
 $('verseClear').onclick=()=>{const t=$('bTitle'),v=$('verseIn'),b={t:t.value,v:v.value};if(!b.t.trim()&&!b.v.trim())return;
   t.value='';v.value='';v.dispatchEvent(new Event('input',{bubbles:true}));t.dispatchEvent(new Event('input',{bubbles:true}));
   toastUndo('말씀 칸을 비웠어요',()=>{t.value=b.t;v.value=b.v;v.dispatchEvent(new Event('input',{bubbles:true}));t.dispatchEvent(new Event('input',{bubbles:true}));});};
-$('wordCopy').onclick=()=>{const t=$('wordText').value.trim();if(t)copy(t);else toast('말씀 자막이 비어 있어요');};
-$('wordClear').onclick=()=>{const ta=$('wordText'),before=ta.value;if(!before.trim())return;ta.value='';ta.dispatchEvent(new Event('input',{bubbles:true}));toastUndo('말씀 자막을 비웠어요',()=>{ta.value=before;ta.dispatchEvent(new Event('input',{bubbles:true}));});};
+$('wordCopy').onclick=()=>{const t=$(WMODE==='q'?'quoteText':'wordText').value.trim();if(t)copy(t);else toast((WMODE==='q'?'참고 구절':'설교 본문')+' 자막이 비어 있어요');};
+$('wordClear').onclick=()=>{const ta=$(WMODE==='q'?'quoteText':'wordText'),before=ta.value;if(!before.trim())return;ta.value='';ta.dispatchEvent(new Event('input',{bubbles:true}));toastUndo((WMODE==='q'?'참고 구절':'설교 본문')+' 자막을 비웠어요',()=>{ta.value=before;ta.dispatchEvent(new Event('input',{bubbles:true}));});};
 function gotoWordLineOld(n){const ta=$('wordText'),ls=ta.value.split('\n');if(n<0||n>=ls.length)return;
   let a=0;for(let i=0;i<n;i++)a+=ls[i].length+1;ta.focus({preventScroll:true});ta.setSelectionRange(a,a+ls[n].length);
   const lh=parseFloat(getComputedStyle(ta).lineHeight)||26,y=ta.getBoundingClientRect().top+scrollY+10+n*lh,doch=document.querySelector('.doc')?.offsetHeight||104;
@@ -3197,9 +3221,9 @@ addEventListener('resize',()=>placeRib());addEventListener('scroll',()=>placeRib
 function buildLookUI(){
   const box=$('lookCtl');box.innerHTML='';
   const pg=typeof curPage==='string'?curPage:'slides',inBox=!!$('lookBox').closest('#sbSet');
-  const G=inBox?['song','word','quote']:pg==='song'?['song']:pg==='word'?['word','quote']:['song','word','quote'];
+  const G=inBox?['song','word','quote']:pg==='song'?['song']:pg==='word'?[WMODE==='q'?'quote':'word']:['song','word','quote'];
   if(!G.includes(lookTab)&&!lookSlideKey){lookTab=G[0];store.set('lookTab',lookTab);}
-  const NM=G.length>1?{song:'찬양',word:'말씀',quote:'인용'}:{song:'찬양 화면',word:'말씀 화면',quote:'인용 화면'};
+  const NM=G.length>1?{song:'찬양',word:'설교 본문',quote:'참고 구절'}:{song:'찬양 화면',word:'설교 본문 화면',quote:'참고 구절 화면'};
   const tabs=document.createElement('div');tabs.className='lktabs';
   tabs.innerHTML=G.length>1?`<div class="seg2" role="tablist" aria-label="바꿀 화면">${G.map(g=>`<button role="tab" data-g="${g}">${NM[g]}</button>`).join('')}</div>`:`<span class="lkone">${NM[G[0]]}</span>`;
   tabs.querySelectorAll('[data-g]').forEach(b=>{b.setAttribute('aria-selected',b.dataset.g===lookTab);b.onclick=()=>{lookTab=b.dataset.g;store.set('lookTab',lookTab);lookSlideKey=null;buildLookUI();};});
@@ -3210,7 +3234,7 @@ function buildLookUI(){
     L=new Proxy(ov,{get:(t,k)=>k in t?t[k]:LOOK[grp][k],set:(t,k,v)=>{t[k]=v;return true;}});}
   const L0=L;
   if(slideKey){const own=SLIDE_OV[slideKey]&&Object.keys(SLIDE_OV[slideKey]).filter(k=>k!=='bg').length;const sc=document.createElement('div');sc.className='lkscope';
-    sc.innerHTML=`<div class="seg2" role="radiogroup" aria-label="바꿀 범위"><button type="button" role="radio" data-sc="slide" aria-checked="${scope==='slide'}" title="여기서 바꾸면 이 슬라이드에만 적용돼요. 배경 사진·로고 파일은 모든 슬라이드가 같이 써요.">이 슬라이드만</button><button type="button" role="radio" data-sc="all" aria-checked="${scope==='all'}">모든 ${grp==='song'?'찬양':grp==='quote'?'인용':'말씀'} 슬라이드</button></div>${own?`<button type="button" class="btn sm" data-ovclear title="이 슬라이드만 따로 바꾼 설정을 지우고 다른 슬라이드와 똑같이 맞춰요">따로 바꾼 것 지우기</button>`:''}`;
+    sc.innerHTML=`<div class="seg2" role="radiogroup" aria-label="바꿀 범위"><button type="button" role="radio" data-sc="slide" aria-checked="${scope==='slide'}" title="여기서 바꾸면 이 슬라이드에만 적용돼요. 배경 사진·로고 파일은 모든 슬라이드가 같이 써요.">이 슬라이드만</button><button type="button" role="radio" data-sc="all" aria-checked="${scope==='all'}">모든 ${grp==='song'?'찬양':grp==='quote'?'참고 구절':'설교 본문'} 슬라이드</button></div>${own?`<button type="button" class="btn sm" data-ovclear title="이 슬라이드만 따로 바꾼 설정을 지우고 다른 슬라이드와 똑같이 맞춰요">따로 바꾼 것 지우기</button>`:''}`;
     sc.querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{lookScope=b.dataset.sc;buildLookUI();});
     sc.querySelector('[data-ovclear]')?.addEventListener('click',()=>{delete SLIDE_OV[slideKey];saveLook();buildLookUI();toast('이 슬라이드를 모든 슬라이드 설정으로 돌렸어요');});
     box.appendChild(sc);}
@@ -3253,14 +3277,14 @@ function buildLookUI(){
     const ci=w.querySelector('input[type=color]');ci.oninput=()=>setBg(ci.value);ci.onchange=()=>buildLookUI();
     box.appendChild(w);setRib(null);return;}
   const cap=grp==='quote'&&LOOK.quote.quoteStyle==='caption',isW0=grp!=='song';
-  // 인용 구절 자막 박스
-  if(grp==='quote'){const s=sec('cap','인용 모양','ph-quotes');
-    const r=document.createElement('div');r.className='lk lkseg';r.innerHTML=`<div class="seg2" role="radiogroup" aria-label="인용 구절 모양 (모든 인용)"><button type="button" role="radio" data-q2="body">본문처럼</button><button type="button" role="radio" data-q2="caption">자막 박스</button></div>`;
+  // 참고 구절 자막 박스
+  if(grp==='quote'){const s=sec('cap','구절 모양','ph-quotes');
+    const r=document.createElement('div');r.className='lk lkseg';r.innerHTML=`<div class="seg2" role="radiogroup" aria-label="참고 구절 모양 (모든 참고 구절)"><button type="button" role="radio" data-q2="body">본문처럼</button><button type="button" role="radio" data-q2="caption">자막 박스</button></div>`;
     r.querySelectorAll('[data-q2]').forEach(b=>{b.setAttribute('aria-checked',(LOOK.quote.quoteStyle||'body')===b.dataset.q2);b.onclick=()=>{LOOK.quote.quoteStyle=b.dataset.q2;saveLook();syncQStyle();renderWTabs();buildLookUI();};});s.q.appendChild(r);
     if(cap){const b=document.createElement('button');b.type='button';b.className='btn sm pri lkwide capfit';b.innerHTML='<i class="ph ph-magic-wand" aria-hidden="true"></i> 자동 최적으로 맞추기';
-      b.title='모든 인용 구절을 띠 한 줄에 꼭 맞는 글자 수로 다시 나누고, 슬라이드마다 따로 바꾼 설정을 지워요';
+      b.title='모든 참고 구절을 띠 한 줄에 꼭 맞는 글자 수로 다시 나누고, 슬라이드마다 따로 바꾼 설정을 지워요';
       b.onclick=()=>{const heads=$('quoteText').value.split(gapRe()).map(c=>c.split('\n')[0].trim()).filter(Boolean);heads.forEach(h=>delete WOV[h]);store.set('wordOv',WOV);QMAX=0;store.set('quoteMax',0);
-        for(const k in SLIDE_OV)if(k.startsWith('q:'))delete SLIDE_OV[k];saveLook();capLast=capKey();rewrapWord();renderWCharCtl();buildLookUI();toast('인용 구절을 띠 한 줄에 꽉 차게 다시 나눴어요');};s.p.appendChild(b);
+        for(const k in SLIDE_OV)if(k.startsWith('q:'))delete SLIDE_OV[k];saveLook();capLast=capKey();rewrapWord();renderWCharCtl();buildLookUI();toast('참고 구절을 띠 한 줄에 꽉 차게 다시 나눴어요');};s.p.appendChild(b);
       const p=document.createElement('p');p.className='lkhint lkwide';p.textContent='자막 박스는 배경이 비치게 나가요. 그래서 배경 사진·로고·아래 문구·머리글은 쓰지 않아요.';s.p.appendChild(p);
       color(s.p,'capHex','띠 색');slider(s.p,'capAlpha',true);slider(s.p,'capBottom',true);text(s.p,'capRight','띠 위 오른쪽 문구 (설교 제목)');}
     else s.rg.classList.add('noP');}
@@ -3281,7 +3305,7 @@ function buildLookUI(){
    const wHead=isW&&scope==='slide'&&slideKey?slideKey.split(':').slice(1,-1).join(':').trim():'';
    const cur=()=>grp==='song'?(songIdx>=0?ffmt(results[songIdx],FMT).maxChars:FMT.maxChars):(wHead?maxFor(wHead):grp==='quote'?(QMAX||(capAuto()?capAutoMax():BSET.max)):BSET.max),[mn,mx]=grp==='song'?[6,30]:[10,60];
    const r=document.createElement('div');r.className='lk lkwide';
-   r.innerHTML=`<div class="lkhead"><label for="lkChars">한 줄 글자 수${grp==='song'?(songIdx>=0?' <em class="lkn">이 곡만</em>':''):(wHead?` <em class="lkn">${grp==='quote'?'이 인용만':'이 본문만'}</em>`:grp==='quote'?(QMAX?' <em class="lkn">모든 인용</em>':capAuto()?' <em class="lkn">자동</em>':' <em class="lkn">본문과 같이</em>'):BSET.auto?' <em class="lkn">자동</em>':'')}</label><span class="stp"><button type="button" aria-label="한 글자 줄이기">−</button><span class="num"><input type="number" id="lkChars" min="${mn}" max="${mx}" value="${cur()}"><em>자</em></span><button type="button" aria-label="한 글자 늘리기">+</button></span></div><p class="lkhint">띄어쓰기 빼고 셉니다. 바꾸면 자막 줄도 다시 나눠요.</p>`;
+   r.innerHTML=`<div class="lkhead"><label for="lkChars">한 줄 글자 수${grp==='song'?(songIdx>=0?' <em class="lkn">이 곡만</em>':''):(wHead?` <em class="lkn">${grp==='quote'?'이 구절만':'이 본문만'}</em>`:grp==='quote'?(QMAX?' <em class="lkn">모든 참고 구절</em>':capAuto()?' <em class="lkn">자동</em>':' <em class="lkn">본문과 같이</em>'):BSET.auto?' <em class="lkn">자동</em>':'')}</label><span class="stp"><button type="button" aria-label="한 글자 줄이기">−</button><span class="num"><input type="number" id="lkChars" min="${mn}" max="${mx}" value="${cur()}"><em>자</em></span><button type="button" aria-label="한 글자 늘리기">+</button></span></div><p class="lkhint">띄어쓰기 빼고 셉니다. 바꾸면 자막 줄도 다시 나눠요.</p>`;
    const nb=r.querySelector('input'),[dn,up]=r.querySelectorAll('.stp button');
    const set=v=>{v=Math.min(mx,Math.max(mn,Math.round(+v)));if(isNaN(v))return;nb.value=v;
      if(isW){if(wHead){WOV[wHead]={max:v};store.set('wordOv',WOV);rewrapWord(wHead);renderWCharCtl();}else if(grp==='quote'){QMAX=v;store.set('quoteMax',QMAX);rewrapWord();renderWCharCtl();}else setWordMax(v,false);}
@@ -3379,8 +3403,8 @@ function logoBox(x,W,H,L,footY,img){
   const fw=L.footerOn?footerWidth(x,W,L.footer):0,fx=W*(+L.ox_footer||0)/100,fy=H*(+L.oy_footer||0)/100;return{x:W/2-fw/2-w-W*.012+fx,y:footY-h/2+fy,w,h};
 }
 function isCaption(sc){return sc&&sc.ed==='quote'&&LOOK.quote.quoteStyle==='caption';}
-// 인용 구절 · 자막 박스: 배경 없이(투명) 아래쪽에 상자만 그려요
-const CAPMW=new Map(); // 인용 구절마다 가장 긴 줄 너비 (같은 구절은 같은 글자 크기로)
+// 참고 구절 · 자막 박스: 배경 없이(투명) 아래쪽에 상자만 그려요
+const CAPMW=new Map(); // 참고 구절마다 가장 긴 줄 너비 (같은 구절은 같은 글자 크기로)
 function drawCaption(x,W,H,sc){
   // 참고: 화면 아래를 가로지르는 청록 반투명 띠 · 왼쪽 흰 막대 · 띠 위 왼쪽 구절 이름, 오른쪽 설교 제목 · “ ” 안의 구절, **강조**는 노랑
   x.clearRect(0,0,W,H);const L=LOOK.word,WF=`"${L.font}", "Noto Sans KR", serif`,wt=lookW(L);
@@ -3581,7 +3605,7 @@ function renderPv(groups=songGroups()){
   const kind=curPage==='song'?'song':curPage==='word'?'word':null;if(!kind)return;
   const col=$(kind==='song'?'pvSong':'pvWord'),body=col.querySelector('[data-pvbody]'),g=pvGroup(kind,groups);
   col.querySelectorAll('[data-pvz]').forEach(b=>b.disabled=+b.dataset.pvz<0?PVC>=3:PVC<=1);
-  if(!g){body.innerHTML=`<div class="empty">${kind==='song'?'‘찬양 자막에 넣기’를 누르면 고른 곡의 슬라이드가 여기 나와요.':'‘말씀 자막에 넣기’를 누르면 고른 본문의 슬라이드가 여기 나와요.'}</div>`;col.querySelector('[data-pvmeta]').textContent='';return;}
+  if(!g){body.innerHTML=`<div class="empty">${kind==='song'?'‘찬양 자막에 넣기’를 누르면 고른 곡의 슬라이드가 여기 나와요.':(WMODE==='q'?'‘참고 구절 자막에 넣기’를 누르':'‘설교 본문 자막에 넣기’를 누르')+'면 슬라이드가 여기 나와요.'}</div>`;col.querySelector('[data-pvmeta]').textContent='';return;}
   let n0=0;for(const x of groups){if(x===g)break;n0+=x.items.length;}
   const sc=body.scrollTop;body.innerHTML='';body.appendChild(shotGroupEl(g,groups,n0,{cw:Math.round(720/PVC)}));body.scrollTop=sc;markFollow(kind,false);
   col.querySelector('[data-pvmeta]').textContent=`${g.items.length}장`;}
@@ -3615,7 +3639,7 @@ function attachMove(cv,get,redraw){
 // 미리보기에서 곡/본문을 고르면 자막 칸도 그 탭으로
 function syncEditorsTo(g){if(!g)return;const k=kindOf(g);
   if(k==='s'){if(songTab!==g.chunk){songTab=g.chunk;store.set('songTab',songTab);refreshOutMeta();}}
-  else{const t={k:k==='q'?'q':'w',i:g.chunk-(k==='q'?20000:10000)};if(t.k!==wTab.k||t.i!==wTab.i){wTab=t;store.set('wTab',wTab);renderWTabs();}}}
+  else{const t={k:k==='q'?'q':'w',i:g.chunk-(k==='q'?20000:10000)};if(t.k!==WMODE)setWMode(t.k,true);if(t.k!==wTab.k||t.i!==wTab.i){wTab=t;store.set('wTab',wTab);renderWTabs();}}}
 
 
 
@@ -3636,8 +3660,8 @@ function applySongWindow(){const sc=$('edScroll'),hl=sc?.querySelector('.hl');if
 ['keyup','click'].forEach(ev=>$('outText').addEventListener(ev,()=>{const ta=$('outText');showSongTabForLine(ta.value.slice(0,ta.selectionStart).split('\n').length-1);}));
 addEventListener('resize',()=>setTimeout(applySongWindow,50));
 
-/* ---- 말씀 자막: 설교 본문 / 인용 구절 ---- */
-document.querySelectorAll('[data-qs]').forEach(b=>b.onclick=()=>{LOOK.quote.quoteStyle=b.dataset.qs;saveLook();buildLookUI();syncQStyle();renderWTabs();toast(b.dataset.qs==='caption'?'인용 구절을 배경 없는 자막 박스로 보여 줘요':'인용 구절을 본문 디자인으로 보여 줘요');});
+/* ---- 말씀 자막: 설교 본문 / 참고 구절 ---- */
+document.querySelectorAll('[data-qs]').forEach(b=>b.onclick=()=>{LOOK.quote.quoteStyle=b.dataset.qs;saveLook();buildLookUI();syncQStyle();renderWTabs();toast(b.dataset.qs==='caption'?'참고 구절을 배경 없는 자막 박스로 보여 줘요':'참고 구절을 본문 디자인으로 보여 줘요');});
 $('qRight').oninput=e=>{LOOK.quote.capRight=e.target.value;saveLook();};
 function syncQStyle(){document.querySelectorAll('[data-qs]').forEach(b=>b.setAttribute('aria-checked',b.dataset.qs===(LOOK.quote.quoteStyle||'body')));}
 function quoteChunks(){const t=$('quoteText').value.trim();return t?t.split(gapRe()).filter(x=>x.trim()):[];}
@@ -3652,9 +3676,9 @@ function renderQuoteChips(){const box=$('quoteChips');if(!box)return;const ch=qu
   $('wtBodyN').textContent=wordChunks().length?wordChunks().length+'':'';$('wtQuoteN').textContent=ch.length?ch.length+'':'';}
 function removeTextChunk(ta,i,label){const t=$(ta),ch=t.value.trim()?t.value.trim().split(gapRe()).filter(x=>x.trim()):[];if(i<0||i>=ch.length)return;const before=t.value;
   ch.splice(i,1);t.value=ch.join(gapStr());t.dispatchEvent(new Event('input',{bubbles:true}));toastUndo(`${label}을 지웠어요`,()=>{t.value=before;t.dispatchEvent(new Event('input',{bubbles:true}));});}
-function removeQuoteChunk(i){removeTextChunk('quoteText',i,'인용 구절');}
+function removeQuoteChunk(i){removeTextChunk('quoteText',i,'참고 구절');}
 $('quoteText').value=store.get('quoteOut','');
-$('quoteText').addEventListener('input',()=>{clearTimeout(window._qv);window._qv=setTimeout(()=>store.set('quoteOut',$('quoteText').value),400);autosizeQuote();renderQuoteChips();renderShots();scheduleSave();});
+$('quoteText').addEventListener('input',()=>{refreshWordMeta();clearTimeout(window._qv);window._qv=setTimeout(()=>store.set('quoteOut',$('quoteText').value),400);autosizeQuote();renderQuoteChips();renderShots();scheduleSave();});
 $('wordText').addEventListener('input',()=>{clearTimeout(window._qc);window._qc=setTimeout(renderQuoteChips,200);});
 
 
@@ -3664,12 +3688,23 @@ let wTab=store.get('wTab',{k:'w',i:0}),_wSync=false;
 const wMaster=k=>$(k==='q'?'quoteText':'wordText');
 const chunksOf=k=>k==='q'?quoteChunks():wordChunks();
 function wItems(){return[...wordChunks().map((c,i)=>({k:'w',i,c})),...quoteChunks().map((c,i)=>({k:'q',i,c}))];}
-function setWordTab(k){const it=wItems();const pick=k==='quote'?it.filter(x=>x.k==='q').pop():it.find(x=>x.k==='w');if(pick){wTab={k:pick.k,i:pick.i};store.set('wTab',wTab);}renderWTabs();}
-function renderWTabs(){const box=$('wTabs');if(!box)return;const it=wItems();
-  if(!it.some(x=>x.k===wTab.k&&x.i===wTab.i))wTab=it[0]?{k:it[0].k,i:it[0].i}:{k:'w',i:0};
+function setWordTab(k){if(k==='quote'||k==='body')setWMode(k==='quote'?'q':'w',true);const it=wItems();const pick=k==='quote'?it.filter(x=>x.k==='q').pop():it.find(x=>x.k==='w');if(pick){wTab={k:pick.k,i:pick.i};store.set('wTab',wTab);}renderWTabs();}
+function setWMode(m,quiet){WMODE=m==='q'?'q':'w';store.set('wmode',WMODE);document.body.dataset.wmode=WMODE;const q=WMODE==='q';
+  document.querySelectorAll('#wMode [data-wm]').forEach(b=>b.setAttribute('aria-selected',b.dataset.wm===WMODE));
+  $('wColT').textContent=q?'참고 구절':'설교 본문';$('wPanT').textContent=q?'참고 구절 자막':'설교 본문 자막';
+  document.querySelectorAll('.wpico').forEach(e=>{e.classList.toggle('c2',!q);e.classList.toggle('c5',q);e.querySelector('i').className='ph-fill '+(q?'ph-quotes':'ph-book-open-text');});
+  $('verseToEdit').textContent=q?'참고 구절 자막에 넣기':'설교 본문 자막에 넣기';$('wEd').placeholder=q?'‘참고 구절 자막에 넣기’를 누르면 여기에 들어와요.':'‘설교 본문 자막에 넣기’를 누르면 여기에 들어와요.';
+  $('wordCopy').setAttribute('aria-label',(q?'참고 구절':'설교 본문')+' 자막 복사');
+  if(!quiet)renderWTabs();refreshWordMeta();
+  if(curPage==='word'&&!lookSlideKey){lookTab=q?'quote':'word';store.set('lookTab',lookTab);buildLookUI();}}
+document.querySelectorAll('#wMode [data-wm]').forEach(b=>b.onclick=()=>{if(b.dataset.wm!==WMODE)setWMode(b.dataset.wm);});
+setTimeout(()=>setWMode(WMODE,true),0);
+function renderWTabs(){const box=$('wTabs');if(!box)return;const all=wItems(),it=all.filter(x=>x.k===WMODE);
+  document.querySelectorAll('[data-wmn]').forEach(e=>{const n=all.filter(x=>x.k===e.dataset.wmn).length;e.textContent=n||'';});
+  if(!it.some(x=>x.k===wTab.k&&x.i===wTab.i))wTab=it[0]?{k:it[0].k,i:it[0].i}:{k:WMODE,i:0};
   const nw=it.filter(x=>x.k==='w').length;box.innerHTML='';
   it.forEach(x=>{const w=document.createElement('span');w.className='chipw '+(x.k==='q'?'qtab':'wtab')+(x.k===wTab.k&&x.i===wTab.i?' on':'');
-    const name=esc((x.c.split('\n')[0]||'').slice(0,22)),tag=x.k==='q'?`인용 ${x.i+1}`:(nw>1?`설교 본문 ${x.i+1}`:'설교 본문');
+    const name=esc((x.c.split('\n')[0]||'').slice(0,22)),tag=x.k==='q'?`참고 ${x.i+1}`:(nw>1?`설교 본문 ${x.i+1}`:'설교 본문');
     w.innerHTML=`<button class="chip" data-c role="tab" aria-selected="${x.k===wTab.k&&x.i===wTab.i}" title="${x.k==='q'?'눌러서 보기 · 끌어서 순서 바꾸기':'눌러서 보기'}"><i class="stag ${x.k}">${tag}</i> ${name}</button><button class="chipc" data-cp aria-label="${name} 복사" title="이 글만 복사"><i class="ph ph-copy" aria-hidden="true"></i></button><button class="chipx" data-x aria-label="${name} 지우기">×</button>`;
     w.querySelector('[data-c]').onclick=()=>{wTab={k:x.k,i:x.i};store.set('wTab',wTab);renderWTabs();};
     w.querySelector('[data-cp]').onclick=()=>copy(x.c);
@@ -3678,14 +3713,14 @@ function renderWTabs(){const box=$('wTabs');if(!box)return;const it=wItems();
   if(document.activeElement!==ed||!cur)ed.value=cur?cur.c:'';ed.disabled=!cur;
   $('qCapOpts').hidden=!(cur&&cur.k==='q'&&LOOK.quote.quoteStyle==='caption');if(document.activeElement!==$('qRight'))$('qRight').value=LOOK.quote.capRight||'';
   autosizeWEd();if(typeof renderWCharCtl==='function')renderWCharCtl();
-  if(curPage==='word'&&!lookSlideKey){const t=cur&&cur.k==='q'?'quote':'word';if(lookTab!==t){lookTab=t;store.set('lookTab',t);buildLookUI();}}if(curPage)renderShots();}
+  if(curPage==='word'&&!lookSlideKey){const t=WMODE==='q'?'quote':'word';if(lookTab!==t){lookTab=t;store.set('lookTab',t);buildLookUI();}}if(curPage)renderShots();}
 function autosizeWEd(){const t=$('wEd');if(!t||!t.offsetParent)return;t.style.height='auto';t.style.height=Math.max(t.scrollHeight+2,160)+'px';}
 $('wEd').addEventListener('input',()=>{const k=wTab.k,ch=chunksOf(k);if(!ch.length)return;ch[wTab.i]=$('wEd').value.replace(/\s+$/,'');
   _wSync=true;const m=wMaster(k);m.value=ch.join(gapStr());m.dispatchEvent(new Event('input',{bubbles:true}));_wSync=false;autosizeWEd();});
 ['wordText','quoteText'].forEach(id=>$(id).addEventListener('input',()=>{if(!_wSync)renderWTabs();else{clearTimeout(window._wt);window._wt=setTimeout(()=>{if(document.activeElement!==$('wEd'))renderWTabs();},300);}}));
 sortable($('wTabs'),{item:'.chipw.qtab',axis:'xy',onEnd:o=>{reorderQuoteChunks(o);wTab={k:'q',i:o.indexOf(wTab.i)>=0&&wTab.k==='q'?o.indexOf(wTab.i):wTab.i};renderWTabs();}});
 function gotoInWEd(k,n){const m=wMaster(k),ls=m.value.split('\n');const starts=chunkStarts(m.value,k==='q'?'quote':'word');let i=0;starts.forEach((st,j)=>{if(st!=null&&n>=st)i=j;});
-  wTab={k,i};store.set('wTab',wTab);renderWTabs();const rel=n-(starts[i]||0),ed=$('wEd'),el=ed.value.split('\n');let a=0;for(let j=0;j<rel&&j<el.length;j++)a+=el[j].length+1;
+  wTab={k,i};store.set('wTab',wTab);if(k!==WMODE)setWMode(k,true);renderWTabs();const rel=n-(starts[i]||0),ed=$('wEd'),el=ed.value.split('\n');let a=0;for(let j=0;j<rel&&j<el.length;j++)a+=el[j].length+1;
   ed.focus({preventScroll:true});ed.setSelectionRange(a,a+(el[rel]||'').length);ed.scrollIntoView({behavior:'smooth',block:'center'});}
 function gotoWordLine(n){gotoInWEd('w',n);}
 function gotoQuoteLine(n){gotoInWEd('q',n);}
@@ -3699,15 +3734,15 @@ function setTabMax(v){const h=curWHead();if(!h)return;v=Math.min(60,Math.max(10,
 $('wMaxDn').onclick=()=>setTabMax(maxFor(curWHead())-1);$('wMaxUp').onclick=()=>setTabMax(maxFor(curWHead())+1);
 $('wMax').addEventListener('change',e=>setTabMax(e.target.value));
 $('wAuto').addEventListener('change',e=>{const h=curWHead();if(!h)return;if(e.target.checked){delete WOV[h];store.set('wordOv',WOV);rewrapWord(h);toast('이 탭을 슬라이드에 맞춘 자동 글자 수로 돌렸어요');}else{WOV[h]={max:maxFor(h)};store.set('wordOv',WOV);toast('이 탭만 따로 글자 수를 정할 수 있어요');}renderWCharCtl();});
-/* ---- 인용 구절 넣는 칸: 1, 2, 3 … ---- */
+/* ---- 참고 구절 넣는 칸: 1, 2, 3 … ---- */
 let qSlots=store.get('qSlots',[{title:'',raw:''}]);if(!qSlots.length)qSlots=[{title:'',raw:''}];
 const saveSlots=()=>store.set('qSlots',qSlots);
 function renderQSlots(){const box=$('qSlots');box.innerHTML='';
   qSlots.forEach((q,i)=>{const d=document.createElement('div');d.className='qslot';
-    d.innerHTML=`<div class="qsh"><b>인용 ${i+1}</b>${qSlots.length>1?`<button type="button" class="qsx" aria-label="인용 ${i+1} 칸 지우기" title="이 칸 지우기">×</button>`:''}</div>
-      <div class="bpick"><select aria-label="인용 ${i+1} 성경"><option value="">성경 고르기</option></select><select aria-label="장" disabled><option value="">장</option></select><select aria-label="시작 절" disabled><option value="">절</option></select><span class="bto">~</span><select aria-label="끝 절" disabled><option value="">절</option></select></div>
+    d.innerHTML=`<div class="qsh"><b>참고 ${i+1}</b>${qSlots.length>1?`<button type="button" class="qsx" aria-label="참고 ${i+1} 칸 지우기" title="이 칸 지우기">×</button>`:''}</div>
+      <div class="bpick"><select aria-label="참고 ${i+1} 성경"><option value="">성경 고르기</option></select><select aria-label="장" disabled><option value="">장</option></select><select aria-label="시작 절" disabled><option value="">절</option></select><span class="bto">~</span><select aria-label="끝 절" disabled><option value="">절</option></select></div>
       <input type="text" class="qt" placeholder="예) 로마서 8장 28절 (위에서 고르거나 직접 써요)" value="${esc(q.title)}">
-      <textarea class="qr" rows="3" placeholder="인용할 구절을 붙여 넣으세요.">${esc(q.raw)}</textarea>`;
+      <textarea class="qr" rows="3" placeholder="참고할 구절을 붙여 넣으세요.">${esc(q.raw)}</textarea>`;
     const [bk,ch,v1,v2]=d.querySelectorAll('select'),t=d.querySelector('.qt'),r=d.querySelector('.qr');
     biblePicker(bk,ch,v1,v2,t,()=>{q.title=t.value;saveSlots();});
     t.oninput=()=>{q.title=t.value;saveSlots();};r.oninput=()=>{q.raw=r.value;saveSlots();};
@@ -3753,7 +3788,7 @@ function setOutTab(k){if(k==='quote'||k==='body')setWordTab(k);}
 const ordKey=()=>'order:'+(typeof curSess!=='undefined'?curSess:'');
 const kindOf=g=>g.type!=='word'?'s':(g.items[0]?.ed==='quote'?'q':'w');
 const gKey=g=>kindOf(g)+':'+g.chunk;
-function tagOf(g,groups){const k=kindOf(g);if(k==='w')return '설교 본문';if(k==='q')return '인용';return '찬양 '+(groups.filter(x=>kindOf(x)==='s').indexOf(g)+1);}
+function tagOf(g,groups){const k=kindOf(g);if(k==='w')return '설교 본문';if(k==='q')return '참고 구절';return '찬양 '+(groups.filter(x=>kindOf(x)==='s').indexOf(g)+1);}
 function applyOrder(groups){const p=store.get(ordKey(),null);if(!Array.isArray(p))return groups;
   const Q={s:groups.filter(g=>kindOf(g)==='s'),w:groups.filter(g=>kindOf(g)==='w'),q:groups.filter(g=>kindOf(g)==='q')},I={s:0,w:0,q:0},out=[];
   for(const t of p){if(Q[t]&&I[t]<Q[t].length)out.push(Q[t][I[t]++]);}
@@ -4172,12 +4207,13 @@ $('verseIn').addEventListener('input',renderVerse);
 $('bMaxDn').onclick=()=>{$('bMax').value=Math.max(10,+$('bMax').value-1);readBible();};
 $('bMaxUp').onclick=()=>{$('bMax').value=Math.min(60,+$('bMax').value+1);readBible();};
 $('verseCopy').onclick=()=>{const r=verseResult().text;if(r)copy(r);else toast('본문을 먼저 붙여 넣어 주세요');};
-$('verseToEdit').onclick=()=>{const r=verseResult().text,nq=insertQuotes();if(!r){if(nq){setWordTab('quote');toast(`인용 구절 ${nq}개를 넣었어요`);}else toast('설교 본문이나 인용 구절을 먼저 붙여 넣어 주세요');return;}
+$('verseToEdit').onclick=()=>{if(WMODE==='q'){const nq=insertQuotes();if(nq){setWordTab('quote');toast(`참고 구절 ${nq}개를 넣었어요`);}else toast('참고 구절을 먼저 붙여 넣어 주세요');return;}
+  const r=verseResult().text;if(!r){toast('설교 본문을 먼저 붙여 넣어 주세요');return;}
   const ta=$('wordText'),ch=wordChunks(),head=r.split('\n')[0].trim();
   const at=BSET.title?ch.findIndex(c=>c.split('\n')[0].trim()===head):-1;
   if(at>=0){ch[at]=r;ta.value=ch.join(gapStr());}else ta.value=ta.value.trim()?ta.value.trim()+gapStr()+r:r;
   rememberWord(r,$('verseIn').value,BSET.title);
-  ta.dispatchEvent(new Event('input',{bubbles:true}));setWordTab('body');toast((at>=0?'말씀 자막의 같은 본문을 새로 바꿨어요':'말씀 자막에 넣었어요')+(nq?` · 인용 구절 ${nq}개`:''));};
+  ta.dispatchEvent(new Event('input',{bubbles:true}));setWordTab('body');toast(at>=0?'설교 본문 자막의 같은 본문을 새로 바꿨어요':'설교 본문 자막에 넣었어요');};
 // 말씀 자막에 넣은 본문을 기억해 두었다가, 글자 수를 바꾸면 손대지 않은 본문만 다시 나눠요
 let WSRC=store.get('wordSrc',{});
 function rememberWord(gen,raw,title){const k=gen.split('\n')[0].trim();delete WSRC[k];WSRC[k]={raw,title,gen};
