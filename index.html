@@ -1717,6 +1717,19 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 .rgh .lkcar{font-size:11px!important;margin:0!important;transition:transform .15s}
 .rg.open .rgh .lkcar{transform:rotate(180deg)}
 .rg.noP .rgh .lkcar{display:none}.rg.noP .rgh{pointer-events:none}
+/* 글자 칸: 칸 이름은 아래에 작게, 칸 사이 줄 없이 */
+.rg.tx{padding:0 5px}
+.rg.tx+.rg.tx{border-left:0}
+#lookBox .telseg button{padding:0 10px}
+#lookCtl .seg2 [data-el][aria-checked=true]{background:var(--blue,#007AFF);color:#fff;font-weight:700}
+.telone{font-size:13px;font-weight:700;white-space:nowrap;padding:0 4px}.telone.dim{font-weight:500;color:var(--text3)}
+#lookBox .rgq .stp .num input{width:44px!important}
+#sbSet .rg.tx{display:inline-flex;width:50%;box-sizing:border-box;vertical-align:top;border-top:0;padding:6px 8px 6px 0}
+#sbSet .rg.tx[data-k=tel]{width:100%;border-top:1px solid var(--line);padding-top:12px}
+#sbSet .rg.tx .rgh{font-size:12px;color:var(--text3);margin-bottom:4px}
+#sbSet .rg.tx .rgq{margin-bottom:0}
+#sbSet .rg[data-k=fx] .rgq{display:none}
+#sbSet .rg.tx .lkfont select,#sbSet .rg.tx .lkweight select{width:100%;max-width:150px}
 /* 바로 쓰는 칸은 작게 */
 #lookBox .rgq .lk{display:flex;align-items:center;gap:6px;margin:0}
 #lookBox .rgq .lk .lkhead{margin:0;gap:6px}
@@ -1725,8 +1738,8 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 #lookBox .rgq .stp{height:30px}
 #lookBox .rgq .stp button{width:26px}
 #lookBox .rgq .stp .num input{width:40px!important;height:28px!important}
-#lookBox .rgq .lkfont select{height:32px;border-radius:8px;font-size:14px;padding:0 8px;width:128px}
-#lookBox .rgq .lkweight select{height:32px;border-radius:8px;font-size:13px;padding:0 8px;width:100px}
+#lookBox .rgq .lkfont select{height:32px;border-radius:8px;font-size:14px;padding:0 8px;width:116px}
+#lookBox .rgq .lkweight select{height:32px;border-radius:8px;font-size:13px;padding:0 6px;width:86px}
 #lookBox .rgq .lkcol{gap:6px;font-size:12px}
 #lookBox .rgq .lkcol .sw0{min-width:0;height:30px;padding:0 8px}
 #lookBox .rgq .lkcol .sw0 em{display:none}
@@ -1827,6 +1840,9 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 .cfadd>span{font-size:12px;color:var(--text3);margin-right:2px}
 .cfadd button{height:30px;padding:0 9px;border-radius:999px;border:1px dashed var(--line);background:none;color:var(--text2);font:inherit;font-size:13px;cursor:pointer}
 .cfadd button:hover{background:var(--sunken);border-style:solid}
+.cfown{display:inline-flex;align-items:center;gap:4px}
+.cfown input{height:30px;width:150px;box-sizing:border-box;border-radius:999px;padding:0 12px;font-size:13px}
+.cfadd .cfown button{border-style:solid;color:var(--text)}
 @media (max-width:560px){.cform li{flex-wrap:wrap}.cform input.lab{flex:1 1 40%}.cform input.who{flex:1 1 40%}}
 /* 탭 페이지 */
 .page{margin-top:16px}
@@ -3406,10 +3422,33 @@ let lookTab=store.get('lookTab','song');
 let capLast='';
 function lookChanged(){try{if(capAuto()){const m=capKey();if(m!==capLast){const first=!capLast;capLast=m;if(!first)rewrapWord();}}else capLast='';}catch(e){}
   if(BSET.auto){const m=autoWordMax();if(m!==BSET.max){BSET.max=m;store.set('bset2',BSET);$('bMax').value=m;$('bMaxOut').textContent=m+'자';renderVerse();syncWordCtl();rewrapWord();}}}
-let lkOpen=store.get('lkOpen',{}),lookSlideKey=null,lookScope='all';
+let lkOpen=store.get('lkOpen',{}),lookSlideKey=null,lookScope='all',lookElem={song:'lyrics',word:'body',quote:'body',info:'title'}; // lookElem: 화면 종류마다 지금 바꾸는 글자
 // 슬라이드 설정 = 위쪽 리본: 묶음마다 자주 쓰는 건 바로, 나머지는 ▾ 로 펼쳐요 (크게 보기 옆에서는 세로로 다 펼쳐요)
 let ribOpen=null;
-const WEIGHTS=[['','기본 굵기'],[300,'가늘게'],[400,'보통'],[500,'중간'],[700,'굵게'],[800,'아주 굵게'],[900,'가장 굵게']];
+// 글자(가사·곡 제목·본문…)마다 글꼴·굵기·크기·색·자간·줄간격 키. 따로 정한 적 없으면 FB 값(예전과 같은 모양)을 써요
+const FB={
+  all:{weight:L=>fontW(L.font)},
+  song:{tFont:L=>L.font,tWeight:L=>lookW(L)>=700?500:400,tColor:()=>'#E9EDF2',tSpacing:()=>12},
+  word:{rFont:L=>L.font,rWeight:L=>lookW(L),rSize:()=>2.9,rColor:()=>'#ffffff',hFont:()=>'Noto Sans KR',hWeight:()=>800,hSize:()=>3.1,hColor:()=>'#ffffff'},
+  info:{weight2:()=>400,spacing2:L=>L.spacing,color2:L=>L.color,boxTitle:L=>L.boxText}};
+const lv=(L,k,g)=>{const v=L[k];if(v!==undefined&&v!==null&&v!=='')return v;const f=(FB[g==='quote'?'word':g]||{})[k]||FB.all[k];return f?f(L):undefined;};
+const FONT_WTS={'Noto Sans KR':[400,500,600,700,800],'Pretendard Variable':[300,400,500,600,700,800,900],'Nanum Gothic':[400,700,800],'IBM Plex Sans KR':[400,700],'Gothic A1':[400,800],'Sunflower':[500,700],
+  'Noto Serif KR':[400,700],'Nanum Myeongjo':[400,700,800],'Gowun Batang':[400,700],'Hahmlet':[400,700],'Dongle':[400,700],'Gaegu':[400,700]};
+const fontWts=f=>FONT_WTS[f]||[400],nearW=(f,w)=>fontWts(f).reduce((a,b)=>Math.abs(b-w)<Math.abs(a-w)?b:a);
+const WNAME={300:'가늘게',400:'보통',500:'중간',600:'약간 굵게',700:'굵게',800:'아주 굵게',900:'가장 굵게'};
+// 바꿀 수 있는 글자 목록 (그 글자에 없는 설정은 null → 칸을 안 보여 줘요)
+function textElems(grp,ik,icap,qcap){
+  if(grp==='song')return[{id:'lyrics',n:'가사',font:'font',weight:'weight',size:'size',color:'color',spacing:'spacing',lineH:'lineH'},
+    {id:'title',n:'곡 제목',font:'tFont',weight:'tWeight',size:'titleSize',color:'tColor',spacing:'tSpacing'}];
+  if(grp==='quote'&&qcap)return[{id:'body',n:'자막 글',font:'font',weight:'weight',size:'capSize',color:'capColor',spacing:'spacing',lineH:'capLineH'}];
+  if(grp!=='info')return[{id:'body',n:'본문',font:'font',weight:'weight',size:'size',color:'color',spacing:'spacing',lineH:'lineH'},
+    {id:'ref',n:'구절 이름',font:'rFont',weight:'rWeight',size:'rSize',color:'rColor',spacing:'refSpacing'},
+    {id:'head',n:'머리글',font:'hFont',weight:'hWeight',size:'hSize',color:'hColor'}];
+  const box=ik==='ad'||ik==='text',big=ik==='cover'||ik==='sermon';
+  return[{id:'title',n:'제목',font:'font',weight:'weight',size:!icap&&big?'size':null,color:icap?null:box?'boxTitle':'color',spacing:'spacing'},
+    {id:'body',n:ik==='notice'?'안내 글':box?'내용':'작은 글',font:'font2',weight:'weight2',size:icap?'cSize':ik==='notice'?'nSize':box?'bSize':null,color:icap?null:box?'boxText':'color2',spacing:'spacing2',lineH:'lineH'}];}
+const FPAIRS={song:[['font','weight'],['tFont','tWeight']],word:[['font','weight'],['rFont','rWeight'],['hFont','hWeight']],info:[['font','weight'],['font2','weight2']]};
+const SZR={rSize:[1.5,4.5,.05],hSize:[1.5,5,.05],tSpacing:[-30,60,1],spacing2:[-30,60,1]}; // 새 키의 범위 (나머지는 LOOK_CTRLS)
 function placeRib(){const rg=ribOpen&&$('lookCtl').querySelector(`.rg[data-k="${ribOpen}"]`),p=rg&&rg.querySelector('.rgp');if(!p||$('lookBox').closest('#sbSet'))return;
   const r=rg.getBoundingClientRect(),w=Math.min(innerWidth-16,Math.max(300,p.offsetWidth));p.style.top=Math.round(r.bottom+6)+'px';p.style.left=Math.round(Math.max(8,Math.min(innerWidth-w-8,r.left)))+'px';}
 function setRib(k){ribOpen=k;const all=!!$('lookBox').closest('#sbSet');$('lookCtl').querySelectorAll('.rg').forEach(g=>{const on=all||g.dataset.k===k,p=g.querySelector('.rgp'),h=g.querySelector('.rgh');g.classList.toggle('open',on);if(p)p.hidden=!on;if(h)h.setAttribute('aria-expanded',on);});placeRib();}
@@ -3486,51 +3525,49 @@ function buildLookUI(){
       const p=document.createElement('p');p.className='lkhint lkwide';p.textContent='자막 박스는 배경이 비치게 나가요. 그래서 배경 사진·로고·아래 문구·머리글은 쓰지 않아요.';s.p.appendChild(p);
       color(s.p,'capHex','띠 색');slider(s.p,'capAlpha',true);slider(s.p,'capBottom',true);text(s.p,'capRight','띠 위 오른쪽 문구 (설교 제목)');}
     else s.rg.classList.add('noP');}
-  // 글꼴 고르기 (미리 그 글꼴 모양으로 보여 줘요)
-  const groups=[...new Set(FONTS.map(o=>o.g))];
-  const fontPick=(g,key,aria)=>{const r=document.createElement('label');r.className='lk lkfont';
-    r.innerHTML=`<span class="sr">${aria}</span><select aria-label="${aria}">${groups.map(gg=>`<optgroup label="${gg}">${FONTS.filter(o=>o.g===gg).map(o=>`<option value="${o.f}" ${L[key]===o.f?'selected':''} style="font-family:'${o.f}'">${o.n}</option>`).join('')}</optgroup>`).join('')}</select>`;
-    const se=r.querySelector('select');se.style.fontFamily=`'${L[key]}', 'Noto Sans KR', sans-serif`;
-    se.onchange=e=>{L[key]=e.target.value;se.style.fontFamily=`'${L[key]}', 'Noto Sans KR', sans-serif`;loadFont(L[key],key==='font'?lookW(L):400).then(()=>saveLook());};g.appendChild(r);return r;};
-  const weightPick=g=>{const r=document.createElement('label');r.className='lk lkweight';r.innerHTML=`<span class="sr">굵기</span><select aria-label="글꼴 굵기">${WEIGHTS.map(([v,n])=>`<option value="${v}" ${String(L.weight||'')===String(v)?'selected':''}>${v?n:'기본 굵기'}</option>`).join('')}</select>`;
-    r.querySelector('select').onchange=e=>{const v=e.target.value;if(v)L.weight=+v;else if(scope==='slide')delete SLIDE_OV[slideKey].weight;else delete L.weight;loadFont(L.font,lookW(L)).then(()=>saveLook());};g.appendChild(r);};
+  // ── 글자: 바꿀 글자를 고르면, 그 글자의 글꼴 · 굵기 · 크기 · 색 · 자간 · 줄간격이 한 줄에 다 나와요 (그 글자에 없는 칸은 안 보여요) ──
   const hint=(g,t)=>{const p=document.createElement('p');p.className='lkhint lkwide';p.textContent=t;g.appendChild(p);return p;};
+  const V=k=>lv(L,k,grp);
   let s;
-  if(grp==='info'){
-    const ik=(slideKey&&(INFO.find(o=>o.id===slideKey.split(':')[1])||{}).k)||(INFO[infoSel]||{}).k||'notice',ICAP=L.style==='cap'&&ik!=='cover'; // 표지는 늘 전체 화면
-    // 모양: 전체 화면 / 방송 자막
+  const ik=grp==='info'?((slideKey&&(INFO.find(o=>o.id===slideKey.split(':')[1])||{}).k)||(INFO[infoSel]||{}).k||'notice'):null,ICAP=grp==='info'&&L.style==='cap'&&ik!=='cover'; // 표지는 늘 전체 화면
+  if(grp==='info'){ // 모양: 전체 화면 / 방송 자막
     s=sec('look','모양','ph-squares-four');
     {const r=document.createElement('div');r.className='lk lkseg';r.innerHTML=`<div class="seg2" role="radiogroup" aria-label="순서·광고 모양 (모든 순서·광고)"><button type="button" role="radio" data-is="full">전체 화면</button><button type="button" role="radio" data-is="cap">방송 자막</button></div>`;
       r.querySelectorAll('[data-is]').forEach(b=>{b.setAttribute('aria-checked',(LOOK.info.style||'full')===b.dataset.is);b.onclick=()=>{LOOK.info.style=b.dataset.is;saveLook();buildLookUI();renderInfoList();toast(b.dataset.is==='cap'?'표지 말고는 화면 아래 자막 상자로 보여 줘요 (배경이 비쳐요)':'순서·광고를 전체 화면으로 보여 줘요');};});s.q.appendChild(r);}
-    if(L.style==='cap'){hint(s.p,'방송 화면 위에 얹는 자막이에요. 배경이 비치게 나가고, 표지만 전체 화면이에요. 글자 색은 상자 색에 맞춰 저절로 흰색·검정이 돼요.');
-      color(s.p,'capMain','진한 상자 색');color(s.p,'capLight','밝은 상자 색');}
-    else{hint(s.p,'표지·설교·안내는 사진 위에, 광고·고백문은 흰 상자 안에 글자가 놓여요.');color(s.p,'color','사진 위 글자 색');color(s.p,'boxText','흰 상자 안 글자 색');slider(s.p,'box',true,'흰 상자 불투명도');}
-    // 제목 글씨
-    s=sec('text','제목 글씨','ph-text-h');fontPick(s.q,'font','제목 글꼴');weightPick(s.q);
-    if(!ICAP&&(ik==='cover'||ik==='sermon'))slider(s.q,'size',false,'제목 크기');
-    hint(s.p,ICAP?'설교 제목 · 광고 제목 · 고백문 이름 · 이름표에 쓰여요':'표지 큰 제목 · 설교 제목 · 광고·고백문 제목에 쓰여요');
-    if(ICAP||!(ik==='cover'||ik==='sermon'))slider(s.p,'size',true);
-    slider(s.p,'spacing',true);
-    // 본문 글씨 (크기는 지금 고른 화면에 쓰이는 칸이 위에 와요)
-    s=sec('body','본문 글씨','ph-paragraph');fontPick(s.q,'font2','본문 글꼴');
-    const bk=ICAP?'cSize':ik==='notice'?'nSize':(ik==='ad'||ik==='text')?'bSize':null; // 표지·설교(전체 화면)는 본문 크기를 안 써요
-    if(bk)slider(s.q,bk,false,{cSize:'자막 크기',nSize:'안내 글 크기',bSize:'광고 글 크기'}[bk]);
-    hint(s.p,L.style==='cap'?'방송 자막의 글 크기예요. 광고 내용 · 고백문 글은 이 글꼴로 나와요':'안내 글 · 광고 내용 · 고백문 · 표지 작은 글에 쓰여요');
-    (L.style==='cap'?['cSize']:['nSize','bSize']).filter(k=>k!==bk).forEach(k=>slider(s.p,k,true));
-    slider(s.p,'lineH',true);
-  }else{
-  s=sec('text','글자','ph-text-aa');
-  const fr=document.createElement('label');fr.className='lk lkfont';
-  fr.innerHTML=`<span class="sr">글꼴</span><select data-font aria-label="글꼴">${groups.map(gg=>`<optgroup label="${gg}">${FONTS.filter(o=>o.g===gg).map(o=>`<option value="${o.f}" ${L.font===o.f?'selected':''} style="font-family:'${o.f}'">${o.n}</option>`).join('')}</optgroup>`).join('')}</select>`;
-  const fsel=fr.querySelector('select');fsel.style.fontFamily=`'${L.font}', 'Noto Sans KR', sans-serif`;
-  fsel.onchange=e=>{L.font=e.target.value;fsel.style.fontFamily=`'${L.font}', 'Noto Sans KR', sans-serif`;loadFont(e.target.value,lookW(L)).then(()=>saveLook());};
-  s.q.appendChild(fr);
-  {const r=document.createElement('label');r.className='lk lkweight';r.innerHTML=`<span class="sr">굵기</span><select aria-label="글꼴 굵기">${WEIGHTS.map(([v,n])=>`<option value="${v}" ${String(L.weight||'')===String(v)?'selected':''}>${v?n:'기본 굵기'}</option>`).join('')}</select>`;
-    r.querySelector('select').onchange=e=>{const v=e.target.value;if(v)L.weight=+v;else if(scope==='slide')delete SLIDE_OV[slideKey].weight;else delete L.weight;loadFont(L.font,lookW(L)).then(()=>saveLook());};s.q.appendChild(r);}
-  if(cap)slider(s.q,'capSize',false,'크기');else slider(s.q,'size',false,'크기');
-  if(cap)color(s.q,'capColor','색');else color(s.q,'color','색');
-  // 한 줄 글자 수 (찬양: 자막 양식 · 크게 보기에서 '이 슬라이드만'이면 그 곡만 / 말씀: 말씀 한 줄 글자 수)
-  if(grp!=='info'){const isW=grp!=='song',songIdx=grp==='song'&&scope==='slide'&&slideKey?results.findIndex(r=>r&&(r.title||'').trim()===slideKey.split(':').slice(1,-1).join(':').trim()):-1;
+    if(L.style==='cap'){hint(s.p,'방송 화면 위에 얹는 자막이에요. 배경이 비치게 나가고, 표지만 전체 화면이에요. 글자 색은 상자 색에 맞춰 저절로 흰색·검정이 돼요.');color(s.p,'capMain','진한 상자 색');color(s.p,'capLight','밝은 상자 색');}
+    else{hint(s.p,'표지·설교·안내는 사진 위에, 광고·고백문은 흰 상자 안에 글자가 놓여요.');slider(s.p,'box',true,'흰 상자 불투명도');}}
+  const EL=textElems(grp,ik,ICAP,cap);if(!EL.some(e=>e.id===lookElem[grp]))lookElem[grp]=EL[0].id;const E=EL.find(e=>e.id===lookElem[grp]);
+  const tx=(key,title)=>{const o=sec(key,title,'ph-text-aa');o.rg.classList.add('noP','tx');return o;};
+  // − 값 + (칸 이름은 아래에)
+  const step=(g,aria,get,put,min,max,st,unit,dec=0)=>{const r=document.createElement('div');r.className='lk';
+    r.innerHTML=`<span class="stp"><button type="button" aria-label="${aria} 줄이기">−</button><span class="num"><input type="number" min="${min}" max="${max}" step="${st}" value="${(+get()).toFixed(dec)}" aria-label="${aria}">${unit?`<em>${unit}</em>`:''}</span><button type="button" aria-label="${aria} 늘리기">+</button></span>`;
+    const nb=r.querySelector('input'),[dn,up]=r.querySelectorAll('button');
+    const set=v=>{v=Math.min(max,Math.max(min,+v));if(isNaN(v))return;v=+(Math.round(v/st)*st).toFixed(3);nb.value=v.toFixed(dec);put(v);saveLook();};
+    nb.onchange=()=>set(nb.value===''?get():nb.value);nb.onkeydown=e=>{if(e.key==='Enter')set(nb.value);};dn.onclick=()=>set(+get()-st);up.onclick=()=>set(+get()+st);g.appendChild(r);return r;};
+  const rng=k=>{const c=LOOK_CTRLS.find(x=>x[0]===cg&&x[1]===k);return c?[c[3],c[4],c[5]]:SZR[k]||[-30,60,1];};
+  if(EL.length>1){s=tx('tel','바꿀 글자');const r=document.createElement('div');r.className='seg2 telseg';r.setAttribute('role','radiogroup');r.setAttribute('aria-label','바꿀 글자');
+    r.innerHTML=EL.map(e=>`<button type="button" role="radio" data-el="${e.id}" aria-checked="${e.id===E.id}" title="미리보기에서 글자를 눌러도 골라져요">${e.n}</button>`).join('');
+    r.querySelectorAll('[data-el]').forEach(b=>b.onclick=()=>{lookElem[grp]=b.dataset.el;buildLookUI();});s.q.appendChild(r);}
+  else{s=tx('tel','바꿀 글자');s.q.innerHTML=`<span class="telone">${E.n}</span>`;}
+  // 글꼴 (고르면 그 글꼴에 없는 굵기는 가까운 굵기로 맞춰요)
+  {s=tx('tfont','글꼴');const groups=[...new Set(FONTS.map(o=>o.g))],cur=V(E.font),r=document.createElement('label');r.className='lk lkfont';
+    r.innerHTML=`<select aria-label="${E.n} 글꼴">${groups.map(gg=>`<optgroup label="${gg}">${FONTS.filter(o=>o.g===gg).map(o=>`<option value="${o.f}" ${cur===o.f?'selected':''} style="font-family:'${o.f}'">${o.n}${fontWts(o.f).length>1?'':' ·'}</option>`).join('')}</optgroup>`).join('')}</select>`;
+    const se=r.querySelector('select');se.style.fontFamily=`'${cur}', 'Noto Sans KR', sans-serif`;
+    se.onchange=()=>{const f=se.value;L[E.font]=f;const w=nearW(f,+V(E.weight)||fontW(f));L[E.weight]=w;loadFont(f,w).then(()=>{saveLook();buildLookUI();});};s.q.appendChild(r);}
+  // 굵기: 그 글꼴에 있는 굵기만
+  {s=tx('tweight','굵기');const f=V(E.font),ws=fontWts(f),w=nearW(f,+V(E.weight)||fontW(f));
+    if(ws.length<2){s.q.innerHTML=`<span class="telone dim" title="이 글꼴은 굵기가 한 가지뿐이에요">${WNAME[w]||'보통'}</span>`;}
+    else{const r=document.createElement('label');r.className='lk lkweight';r.innerHTML=`<select aria-label="${E.n} 굵기">${ws.map(v=>`<option value="${v}" ${v===w?'selected':''}>${WNAME[v]}</option>`).join('')}</select>`;
+      r.querySelector('select').onchange=e=>{L[E.weight]=+e.target.value;loadFont(f,+e.target.value).then(()=>saveLook());};s.q.appendChild(r);}}
+  // 크기: PowerPoint와 같은 pt (1920 화면 기준 · 너비의 1% = 9.6pt)
+  if(E.size){s=tx('tsize','크기 pt');const[mn,mx]=rng(E.size);step(s.q,E.n+' 크기',()=>Math.round(V(E.size)*9.6),v=>{L[E.size]=+(v/9.6).toFixed(4);},Math.ceil(mn*9.6),Math.floor(mx*9.6),1,'');}
+  if(E.color){s=tx('tcolor','색');const cur=V(E.color)||'#ffffff',l=document.createElement('label');l.className='lkcol';
+    l.innerHTML=`<span class="sw0"><input type="color" value="${cur}" aria-label="${E.n} 색"><b style="background:${cur}"></b></span>`;const i=l.querySelector('input');
+    i.oninput=()=>{L[E.color]=i.value;l.querySelector('b').style.background=i.value;saveLook();};s.q.appendChild(l);}
+  if(E.spacing){s=tx('tsp','자간');const[mn,mx]=rng(E.spacing);step(s.q,E.n+' 자간',()=>V(E.spacing)||0,v=>{L[E.spacing]=v;},mn,mx,1,'%');}
+  if(E.lineH){s=tx('tlh','줄간격');const[mn,mx]=rng(E.lineH);step(s.q,E.n+' 줄간격',()=>V(E.lineH),v=>{L[E.lineH]=v;},mn,mx,.05,'배',2);}
+  // 한 줄 글자 수 (찬양: 자막 양식 · 크게 보기에서 '이 슬라이드만'이면 그 곡만 / 말씀: 말씀 한 줄 글자 수) → 배치에 넣어요
+  const charsCtl=g=>{const isW=grp!=='song',songIdx=grp==='song'&&scope==='slide'&&slideKey?results.findIndex(r=>r&&(r.title||'').trim()===slideKey.split(':').slice(1,-1).join(':').trim()):-1;
    const wHead=isW&&scope==='slide'&&slideKey?slideKey.split(':').slice(1,-1).join(':').trim():'';
    const cur=()=>grp==='song'?(songIdx>=0?ffmt(results[songIdx],FMT).maxChars:FMT.maxChars):(wHead?maxFor(wHead):grp==='quote'?(QMAX||(capAuto()?capAutoMax():BSET.max)):BSET.max),[mn,mx]=grp==='song'?[6,30]:[10,60];
    const r=document.createElement('div');r.className='lk lkwide';
@@ -3541,43 +3578,40 @@ function buildLookUI(){
      else if(songIdx>=0){const rr=results[songIdx],f=ffmt(rr,FMT);rr.fmtOv={lines:f.lines,maxChars:v};store.set('results',results);const c2=songChunks();if(c2.length===results.length){c2[songIdx]=songText(rr,FMT,songIdx);const ta=$('outText');ta.value=c2.join(gapStr());ta.dispatchEvent(new Event('input',{bubbles:true}));}renderSongFmt();}
      else{useFormat({...FMT,maxChars:v});if(!$('regenBanner').classList.contains('hidden')){setOutput(allText(results,FMT),true);}}
      setTimeout(()=>{if($('slidebox').classList.contains('on')){sbList=songGroups().flatMap(g=>g.items.map(s=>({s,si:g.songIdx||0})));drawSlide();}},250);};
-   nb.onchange=()=>set(nb.value);dn.onclick=()=>set(cur()-1);up.onclick=()=>set(cur()+1);s.p.appendChild(r);}
-  slider(s.p,'spacing',true);if(cap)slider(s.p,'capLineH',true);else{slider(s.p,'lineH',true);if(isW0)slider(s.p,'refSpacing',true);}
-  }
-  // 정렬: 찬양은 가사·제목, 말씀은 상자 안 본문
-  if(!cap){s=sec('align','정렬','ph-text-align-center');s.rg.classList.add('noP');const cur=L.align||(grp==='song'?'center':'left');
+   nb.onchange=()=>set(nb.value);dn.onclick=()=>set(cur()-1);up.onclick=()=>set(cur()+1);g.appendChild(r);};
+  // 정렬
+  if(!cap){s=sec('align','정렬','ph-text-align-center');s.rg.classList.add('noP');const cur=L.align||(grp==='song'||grp==='info'?'center':'left');
     [['left','왼쪽'],['center','가운데'],['right','오른쪽']].forEach(([v,n])=>{const b=document.createElement('button');b.type='button';b.className='albtn';b.setAttribute('aria-pressed',cur===v);b.setAttribute('aria-label',n+' 정렬');b.title=n+' 정렬';
       b.innerHTML=`<i class="ph ph-text-align-${v}" aria-hidden="true"></i>`;b.onclick=()=>{L.align=v;saveLook();buildLookUI();};s.q.appendChild(b);});}
-  // 효과: 외곽선 · 그림자
-  s=sec('fx','효과','ph-sparkle');
-  sw(s.q,'strokeOn','외곽선',()=>buildLookUI());sw(s.q,'shadowOn','그림자',()=>buildLookUI());
-  color(s.p,'strokeColor','외곽선 색');slider(s.p,'strokeW',true);slider(s.p,'shadowAmt',true);
-  // 배치
+  // 효과: 켠 것만 세부 칸이 나와요 (방송 자막에는 효과가 없어요)
+  if(!ICAP){s=sec('fx','효과','ph-sparkle');
+    sw(s.p,'strokeOn','외곽선',()=>buildLookUI());if(L.strokeOn){color(s.p,'strokeColor','외곽선 색');slider(s.p,'strokeW',true,'외곽선 두께');}
+    sw(s.p,'shadowOn','그림자',()=>buildLookUI());if(L.shadowOn)slider(s.p,'shadowAmt',true,'그림자 진하기');
+    const on=[L.strokeOn&&'외곽선',L.shadowOn&&'그림자'].filter(Boolean);s.q.innerHTML=`<span class="rgtxt">${on.length?on.join(' · '):'없음'}</span>`;}
+  // 배치: 위치 · 줄 나누기 · 상자
   s=sec('layout','배치','ph-layout');
-  if(grp==='song'){sw(s.q,'title','제목');['posY','titleSize','titleGap'].forEach(k=>slider(s.p,k,true));}
-  else if(cap){slider(s.q,'maxLines',false,'화면당');s.rg.classList.add('noP');}
-  else if(grp==='info'){if(L.style==='cap')slider(s.q,'capLines',false,'화면당');else slider(s.q,'maxLines',false,'화면당');hint(s.p,'광고·고백문이 길면 이 줄 수마다 다음 장으로 넘어가요.');}
-  else{slider(s.q,'maxLines',false,'화면당');sw(s.p,'verseGap','절마다 한 줄 띄우기');slider(s.p,'box',true);text(s.p,'head','머리글');text(s.p,'sub','작은 머리글');}
+  if(grp==='song'){sw(s.p,'title','곡 제목 보이기');slider(s.p,'posY',true);slider(s.p,'titleGap',true);charsCtl(s.p);}
+  else if(cap){slider(s.p,'maxLines',true,'화면당 줄');charsCtl(s.p);}
+  else if(grp==='info'){if(L.style==='cap')slider(s.p,'capLines',true,'화면당 줄');else slider(s.p,'maxLines',true,'화면당 줄');hint(s.p,'광고·고백문이 길면 이 줄 수마다 다음 장으로 넘어가요.');}
+  else{slider(s.p,'maxLines',true,'화면당 줄');charsCtl(s.p);sw(s.p,'verseGap','절마다 한 줄 띄우기');slider(s.p,'box',true);text(s.p,'head','머리글');text(s.p,'sub','작은 머리글');}
   {const t=scope==='slide'?SLIDE_OV[slideKey]:LOOK[grp],has=t&&Object.keys(t).some(k=>/^o[xy]_/.test(k));
-    const p=document.createElement('p');p.className='lkhint lkwide';p.textContent='미리보기나 크게 보기에서 글자를 끌면 위치를 옮길 수 있어요.';s.p.appendChild(p);
+    hint(s.p,'미리보기나 크게 보기에서 글자를 끌면 위치를 옮길 수 있어요.');
     if(has){const b=document.createElement('button');b.type='button';b.className='btn sm lkwide';b.innerHTML='<i class="ph ph-arrows-in-cardinal" aria-hidden="true"></i> 글자 위치 처음대로';
-      b.onclick=()=>{for(const k of Object.keys(t))if(/^o[xy]_/.test(k))delete t[k];saveLook();buildLookUI();toast('글자 위치를 처음대로 돌렸어요');};s.p.appendChild(b);}
-    s.rg.classList.remove('noP');}
-  if(grp==='info'){s=sec('band','띠·머리표','ph-tag');color(s.q,'bandColor','왼쪽');color(s.q,'band2Color','오른쪽');
+      b.onclick=()=>{for(const k of Object.keys(t))if(/^o[xy]_/.test(k))delete t[k];saveLook();buildLookUI();toast('글자 위치를 처음대로 돌렸어요');};s.p.appendChild(b);}}
+  if(grp==='info'){s=sec('band','띠·머리표','ph-tag');color(s.p,'bandColor','띠·머리표 왼쪽 색');color(s.p,'band2Color','띠·머리표 오른쪽 색');
     hint(s.p,L.style==='cap'?'표지 띠 색이에요. (방송 자막 상자 색은 ‘모양’에서 바꿔요)':'표지·설교 화면의 띠, 광고·고백문 상자 위 머리표 색이에요.');
     if(L.style!=='cap'){text(s.p,'tag1','머리표 윗줄 (광고·고백문)');text(s.p,'tag2','머리표 아랫줄');}}
   if(!cap){
     // 배경
     s=sec('bg','배경','ph-image');upload(s.p,grp,false);if(MEDIA[grp]||(grp==='quote'&&MEDIA.word))slider(s.p,'bgDim',true);
     {const on=!!(MEDIA[grp]||(grp==='quote'&&MEDIA.word));if(on)s.q.innerHTML=`<span class="rgthumb" style="background-image:url('${MEDIA[grp]||MEDIA.word}')" title="배경 사진 사용 중"></span>`;}
-    // 로고
-    s=sec('logo','로고','ph-seal');upload(s.p,'logo',true);
+    // 로고 · 아래 문구 (화면 맨 아래에 같이 놓여서 한 묶음)
+    s=sec('logo','로고·아래 문구','ph-seal');upload(s.p,'logo',true);
     if(MEDIA.logo)s.q.innerHTML=`<span class="rgthumb logo" style="background-image:url('${MEDIA.logo}')" title="로고"></span>`;
     if(MEDIA.logo){const pos=[['off','넣지 않기'],['footer','아래 문구 앞'],['tl','왼쪽 위'],['tr','오른쪽 위'],['br','오른쪽 아래'],['bc','아래 가운데']];
       const r=document.createElement('label');r.className='lk';r.innerHTML=`<span>로고 위치</span><select aria-label="로고 위치">${pos.map(([v,n])=>`<option value="${v}" ${L.logoPos===v?'selected':''}>${n}</option>`).join('')}</select>`;
       r.querySelector('select').onchange=e=>{L.logoPos=e.target.value;saveLook();};s.p.appendChild(r);slider(s.p,'logoSize',true);}
-    // 아래 문구
-    s=sec('footer','아래 문구','ph-subtitles');sw(s.q,'footerOn','보이기');text(s.p,'footer','아래 문구');}
+    sw(s.p,'footerOn','아래 문구 보이기');text(s.p,'footer','아래 문구');}
   // 더보기
   s=sec('more','더보기','ph-dots-three');
   s.p.innerHTML=`<button class="btn sm ghost lkwide" data-copylook title="지금 슬라이드 설정을 글자로 복사해요"><i class="ph ph-copy" aria-hidden="true"></i> 설정 복사</button><button class="btn sm ghost lkwide" data-reset title="다른 화면 종류 설정은 그대로 둬요"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> ${NM[grp].replace(/ 화면$/,'')} 화면만 처음 설정으로</button>`;
@@ -3739,14 +3773,14 @@ function slideLayout(x,W,H,sc){
     const maxW=Math.max(1,...sc.lines.map(l=>spacedW(x,l,sp)));if(maxW>W*.9){fs*=W*.9/maxW;sp=fs*L.spacing/100;}
     const lh=fs*L.lineH,blockH=lh*sc.lines.length,[ox,oy]=OFF(L,'lyrics',W,H),y0=H*L.posY/100-blockH/2+oy;
     const al=L.align||'center',ax=(al==='left'?W*.05:al==='right'?W*.95:W/2)+ox;
-    if(L.title&&sc.title){const ts=W*L.titleSize/100,[tx,ty]=OFF(L,'title',W,H);texts.push({kind:'title',lines:[sc.title],size:ts,weight:SW>=700?500:400,family:L.font,css:SF,color:'rgba(255,255,255,.9)',hex:'E9EDF2',alpha:.9,sp:ts*.12,align:al,ax:ax+tx,y0:y0-H*L.titleGap/100-ts*.6+ty,lh:ts*1.2,boxW:W*.9});}
+    if(L.title&&sc.title){const ts=W*L.titleSize/100,[tx,ty]=OFF(L,'title',W,H),tf=lv(L,'tFont','song'),tc=lv(L,'tColor','song');texts.push({kind:'title',lines:[sc.title],size:ts,weight:lv(L,'tWeight','song'),family:tf,css:`"${tf}", "Noto Sans KR", sans-serif`,color:tc,hex:String(tc).replace('#','').toUpperCase(),alpha:1,sp:ts*lv(L,'tSpacing','song')/100,align:al,ax:ax+tx,y0:y0-H*L.titleGap/100-ts*.6+ty,lh:ts*1.2,boxW:W*.9});}
     texts.push({kind:'lyrics',lines:sc.lines,size:fs,weight:SW,family:L.font,css:SF,color:L.color||'#fff',hex:(c=>String(c||'#ffffff').replace('#','').toUpperCase())(L.color),alpha:1,sp,align:al,ax,y0,lh,boxW:W*.9,shadow:L.shadowOn!==false,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null});
     if(L.footerOn){const[fx,fy]=OFF(L,'footer',W,H);footer={text:L.footer,y:H*.935+fy,dx:fx};}
   }else{
     const L=LOOK.word,WF=`"${L.font}", "Noto Sans KR", serif`,WWt=lookW(L);
-    {const[a,b]=OFF(L,'head',W,H);texts.push({kind:'head',lines:[L.head],size:W*.031,weight:800,family:'Noto Sans KR',css:'"Noto Sans KR", sans-serif',color:'#fff',hex:'FFFFFF',alpha:1,sp:0,align:'left',ax:W*.065+a,y0:H*.245-W*.031*.6+b,lh:W*.031*1.2});}
+    {const[a,b]=OFF(L,'head',W,H),hs=W*lv(L,'hSize','word')/100,hf=lv(L,'hFont','word'),hc=lv(L,'hColor','word');texts.push({kind:'head',lines:[L.head],size:hs,weight:lv(L,'hWeight','word'),family:hf,css:`"${hf}", "Noto Sans KR", sans-serif`,color:hc,hex:String(hc).replace('#','').toUpperCase(),alpha:1,sp:0,align:'left',ax:W*.065+a,y0:H*.245-hs*.6+b,lh:hs*1.2});}
     {const[a,b]=OFF(L,'sub',W,H);texts.push({kind:'sub',lines:[L.sub],size:W*.0135,weight:400,family:'Noto Sans KR',css:'"Noto Sans KR", sans-serif',color:'rgba(255,255,255,.85)',hex:'E3E6EA',alpha:.85,sp:W*.0135*.18,align:'left',ax:W*.065+a,y0:H*.305-W*.0135*.6+b,lh:W*.0135*1.2});}
-    {const[a,b]=OFF(L,'ref',W,H);texts.push({kind:'ref',lines:[sc.ref||''],size:W*.029,weight:WWt,family:L.font,css:WF,color:'#fff',hex:'FFFFFF',alpha:1,sp:W*.029*(L.refSpacing||0)/100,align:'left',ax:W*.262+a,y0:H*.255-W*.029*.6+b,lh:W*.029*1.2});}
+    {const[a,b]=OFF(L,'ref',W,H),rs=W*lv(L,'rSize','word')/100,rf=lv(L,'rFont','word'),rc=lv(L,'rColor','word');texts.push({kind:'ref',lines:[sc.ref||''],size:rs,weight:lv(L,'rWeight','word'),family:rf,css:`"${rf}", "Noto Sans KR", serif`,color:rc,hex:String(rc).replace('#','').toUpperCase(),alpha:1,sp:rs*(L.refSpacing||0)/100,align:'left',ax:W*.262+a,y0:H*.255-rs*.6+b,lh:rs*1.2});}
     const[bxo,byo]=OFF(L,'box',W,H),bx=W*.228+bxo,by=H*.315+byo,bw=W*.719,bh=H*.49;box={x:bx,y:by,w:bw,h:bh,fill:`rgba(236,236,238,${L.box/100})`,alpha:L.box/100};
     let fs=W*L.size/100,sp=fs*L.spacing/100;x.font=`${WWt} ${fs}px ${WF}`;
     const pad=W*.032,availW=bw-pad*2,availH=bh-pad*1.6;
@@ -3819,8 +3853,8 @@ function shotGroupEl(g,groups,n0,{cw=480}={}){
 }
 // 한글 웹 글꼴은 글자 묶음별로 받아요: 화면에 쓰인 글자를 미리 받고, 새로 받은 게 있으면 다시 그려요
 let _glyphKey='';
-function ensureGlyphs(){const t=[$('outText').value,$('wordText').value,$('quoteText').value,...INFO.map(o=>[o.title,o.band,o.time,o.note,o.body].join('\n'))].join('\n')+Object.values(LOOK).map(L=>[L.head,L.sub,L.footer,L.tag1,L.tag2,L.capRight].join('')).join(''),
-  txt=[...new Set(t.replace(/\s/g,''))].join(''),fs=Object.values(LOOK).flatMap(L=>[[lookW(L),L.font],[400,L.font],[400,L.font2]]).filter(f=>f[1]),key=txt+'|'+fs.join(',');
+function ensureGlyphs(){const t=[$('outText').value,$('wordText').value,$('quoteText').value,...INFO.map(o=>[o.title,o.band,o.time,o.note,o.body,o.sub,o.ref,o.who].join('\n')),typeof sermonRef==='function'?sermonRef():''].join('\n')+Object.values(LOOK).map(L=>[L.head,L.sub,L.footer,L.tag1,L.tag2,L.capRight].join('')).join(''),
+  txt=[...new Set(t.replace(/\s/g,''))].join(''),fs=Object.entries(LOOK).flatMap(([g,L])=>[...FPAIRS[g==='quote'?'word':g].flatMap(([f,w])=>[[lv(L,w,g),lv(L,f,g)],[400,lv(L,f,g)]]),...(g==='info'?[300,500,700].flatMap(w=>[[w,L.font],[w,L.font2]]):[])]).filter(f=>f[1]),key=txt+'|'+fs.join(',');
   if(!txt||key===_glyphKey)return;_glyphKey=key;
   Promise.all(fs.map(([w,f])=>document.fonts.load(`${w} 40px "${f}"`,txt).catch(()=>[]))).then(r=>{if(r.some(a=>a&&a.length&&a.some(ff=>ff.status==='loaded')))renderShots();});}
 function renderShots(){
@@ -4041,8 +4075,8 @@ function wrapTo(lines,font,sp,maxW){const x=wrapTo.c||(wrapTo.c=document.createE
     if(cur)out.push(cur);}
   return out;}
 const infoBoxR=(W,H,L)=>{const[ox,oy]=OFF(L,'box',W,H);return{x:W*.068+ox,y:H*.2+oy,w:W*.864,h:H*.64};};
-const infoCapF=(L,W)=>{const fs=W*L.cSize/100;return{fs,sp:fs*L.spacing/100*.5,font:`400 ${fs}px "${L.font2}", "Noto Sans KR", serif`};};
-const infoBodyF=(L,W)=>{const fs=W*L.bSize/100;return{fs,sp:fs*L.spacing/100,font:`400 ${fs}px "${L.font2}", "Noto Sans KR", serif`};};
+const infoCapF=(L,W)=>{const fs=W*L.cSize/100;return{fs,sp:fs*lv(L,'spacing2','info')/100*.5,font:`${lv(L,'weight2','info')} ${fs}px "${L.font2}", "Noto Sans KR", serif`};};
+const infoBodyF=(L,W)=>{const fs=W*L.bSize/100;return{fs,sp:fs*lv(L,'spacing2','info')/100,font:`${lv(L,'weight2','info')} ${fs}px "${L.font2}", "Noto Sans KR", serif`};};
 // 항목 하나 → 슬라이드 여러 장 (광고·고백문은 빈 줄과 '화면당 줄'로 나눠요)
 function infoScreens(){const out=[],L=LOOK.info,W=1920,H=1080;
   INFO.forEach((it,i)=>{const base={type:'info',ed:'info',ik:it.k,iid:it.id,chunk:IBASE+i,title:infoName(it),item:it,cs:0,ce:0,src:[]};
@@ -4094,10 +4128,10 @@ function drawInfoCap(x,W,H,sc,opt){
     if(it.k==='ad'){const hh=H*.078,bh=Math.max(H*.2,lh*Math.max(1,ls.length)+f.fs*2.4),by=BOT-bh,hy=by-hh,hs=cs*1.15;
       rect(X0,hy,X1-X0,hh,P);rect(X0,by,X1-X0,bh,M);
       T(['# '+(String(it.title||'').trim()||'광고')+page],hs,BW,L.font,TF,pInk,X0+W*.015,hy+hh/2,hs*1.25,'left',hs*L.spacing/100*.5,X1-X0);
-      if(ls.length)T(ls,f.fs,400,L.font2,BF,mInk,X0+pad,by+f.fs*1.2+lh*ls.length/2,lh,'left',f.sp,X1-X0-pad*2);
+      if(ls.length)T(ls,f.fs,lv(L,'weight2','info'),L.font2,BF,mInk,X0+pad,by+f.fs*1.2+lh*ls.length/2,lh,'left',f.sp,X1-X0-pad*2);
       R.push({k:'cbox',x:X0,y:hy,w:X1-X0,h:BOT-hy});}
     else{const ns=cs*1.02,foot=ns*2.6,bh=Math.max(H*.3,lh*Math.max(1,ls.length)+f.fs*2.4+foot),by=BOT-bh,name=String(it.title||'').trim();rect(X0,by,X1-X0,bh,M);
-      if(ls.length)T(ls,f.fs,400,L.font2,BF,mInk,X0+pad*.8,by+(bh-foot)/2+f.fs*.4,lh,'left',f.sp,X1-X0-pad*2);
+      if(ls.length)T(ls,f.fs,lv(L,'weight2','info'),L.font2,BF,mInk,X0+pad*.8,by+(bh-foot)/2+f.fs*.4,lh,'left',f.sp,X1-X0-pad*2);
       if(name||page){const segs=[[name+page,BW]],w=run(segs,ns,mInk,0,0,0,false);run(segs,ns,mInk,X1-pad*.8-w,BOT-foot/2-ns*.15,0);}
       R.push({k:'cbox',x:X0,y:by,w:X1-X0,h:bh});}
   }
@@ -4126,14 +4160,14 @@ function drawInfo(x,W,H,sc,opt){
     const[bx,by]=OFF(L,'iband',W,H),bh=H*.05,top=ty+fs*.58+H*.035+by,b=band(it.band||'',it.time||'',L.bandColor,L.band2Color,0,top,bh,'iband');
     if(b.w)b.draw((al==='left'?axAt(.07):al==='right'?axAt(.07)-b.w:W/2-b.w/2)+bx);
     const ns=W*.0135,nl=String(it.note||'').split('\n').map(l=>l.trim()).filter(Boolean);
-    if(nl.length){const[nx,ny]=OFF(L,'inote',W,H);T({kind:'inote',lines:nl,size:ns,weight:400,family:L.font2,css:BF,color:L.color,sp:0,align:al,ax:axAt(.07)+nx,y0:top+bh+H*.05+ny,lh:ns*1.9,boxW:W*.86,...fx});}
+    if(nl.length){const[nx,ny]=OFF(L,'inote',W,H);T({kind:'inote',lines:nl,size:ns,weight:lv(L,'weight2','info'),family:L.font2,css:BF,color:lv(L,'color2','info'),sp:0,align:al,ax:axAt(.07)+nx,y0:top+bh+H*.05+ny,lh:ns*1.9,boxW:W*.86,...fx});}
     footY=H*.83;
   }else if(it.k==='notice'){
-    const fs=W*L.nSize/100,sp=fs*L.spacing/100,font=`400 ${fs}px ${BF}`,ls=wrapTo(String(it.body||'').split('\n'),font,sp,W*.84),lh=fs*L.lineH;
+    const w2=lv(L,'weight2','info'),c2=lv(L,'color2','info'),fs=W*L.nSize/100,sp=fs*lv(L,'spacing2','info')/100,font=`${w2} ${fs}px ${BF}`,ls=wrapTo(String(it.body||'').split('\n'),font,sp,W*.84),lh=fs*L.lineH;
     const[ox,oy]=OFF(L,'inotice',W,H);
-    T({kind:'inotice',lines:ls,size:fs,weight:400,family:L.font2,css:BF,color:L.color,sp,align:al,ax:axAt(.08)+ox,y0:H*.46-lh*ls.length/2+oy,lh,boxW:W*.84,...fx});
+    T({kind:'inotice',lines:ls,size:fs,weight:w2,family:L.font2,css:BF,color:c2,sp,align:al,ax:axAt(.08)+ox,y0:H*.46-lh*ls.length/2+oy,lh,boxW:W*.84,...fx});
     const ns=W*.0125,nl=String(it.note||'').split('\n').map(l=>l.trim()).filter(Boolean);
-    if(nl.length){const[nx,ny]=OFF(L,'inote',W,H),na=al==='left'?'right':'left';T({kind:'inote',lines:nl,size:ns,weight:400,family:L.font2,css:BF,color:L.color,sp:0,align:na,ax:(na==='left'?W*.05:W*.95)+nx,y0:H*.86-ns*1.7*nl.length+ny,lh:ns*1.7,boxW:W*.4,...fx});}
+    if(nl.length){const[nx,ny]=OFF(L,'inote',W,H),na=al==='left'?'right':'left';T({kind:'inote',lines:nl,size:ns,weight:w2,family:L.font2,css:BF,color:c2,sp:0,align:na,ax:(na==='left'?W*.05:W*.95)+nx,y0:H*.86-ns*1.7*nl.length+ny,lh:ns*1.7,boxW:W*.4,...fx});}
   }else{
     const b=infoBoxR(W,H,L),pad=W*.035,f=infoBodyF(L,W);
     rect(b.x,b.y,b.w,b.h,'#ffffff',L.box/100,H*.022);
@@ -4141,8 +4175,8 @@ function drawInfo(x,W,H,sc,opt){
       [[L.tag2,L.band2Color,b.y-th,500,ts*.16],[L.tag1,L.bandColor,b.y-th*(L.tag2?2:1),700,0]].forEach(([t,c,top,wt,tsp])=>{if(!t)return;x.font=`${wt} ${ts}px ${SANS}`;const tw=spacedW(x,t,tsp)+tp*2;
         rect(right-tw,top,tw,th,c);T({kind:'itag',lines:[t],size:ts,weight:wt,family:'Noto Sans KR',css:SANS,color:'#ffffff',sp:tsp,align:'center',ax:right-tw/2,y0:top+th/2-ts*.6,lh:ts*1.2,boxW:tw});});}
     const hs=W*.026,head=(it.title||'')+(sc.pages>1?`  ${sc.page+1}/${sc.pages}`:'');
-    if(head.trim())T({kind:'ihead',lines:[head],size:hs,weight:TW,family:L.font,css:TF,color:L.boxText,sp:hs*L.spacing/100,align:'left',ax:b.x+pad,y0:b.y+pad*.8,lh:hs*1.2,boxW:b.w-pad*2});
-    T({kind:'ibody',lines:sc.lines,size:f.fs,weight:400,family:L.font2,css:`"${L.font2}", "Noto Sans KR", serif`,color:L.boxText,sp:f.sp,align:'left',ax:b.x+pad,y0:b.y+pad*.8+(head.trim()?hs*1.2+H*.03:0),lh:f.fs*L.lineH,boxW:b.w-pad*2});
+    if(head.trim())T({kind:'ihead',lines:[head],size:hs,weight:TW,family:L.font,css:TF,color:lv(L,'boxTitle','info'),sp:hs*L.spacing/100,align:'left',ax:b.x+pad,y0:b.y+pad*.8,lh:hs*1.2,boxW:b.w-pad*2});
+    T({kind:'ibody',lines:sc.lines,size:f.fs,weight:lv(L,'weight2','info'),family:L.font2,css:`"${L.font2}", "Noto Sans KR", serif`,color:L.boxText,sp:f.sp,align:'left',ax:b.x+pad,y0:b.y+pad*.8+(head.trim()?hs*1.2+H*.03:0),lh:f.fs*L.lineH,boxW:b.w-pad*2});
     footY=Math.min(H*.95,b.y+b.h+H*.055);
   }
   if(L.footerOn&&L.footer){const[fx2,fy]=OFF(L,'footer',W,H);footer={text:L.footer,y:footY+fy,dx:fx2};}
@@ -4250,6 +4284,10 @@ function cfAdd(t,l){const o={t};if(t==='notice')o.l=l||'';CF.push(o);cfKeep();re
   const el=$('cfList').querySelector(`li[data-i="${CF.length-1}"] input`);el?.focus();el?.scrollIntoView({block:'nearest'});}
 $('cfAdd').insertAdjacentHTML('beforeend',Object.entries(CF_KIND).map(([t,[,n]])=>`<button type="button" data-add="${t}">+ ${n}</button>`).join('')+CF_MORE.map(l=>`<button type="button" data-add="notice" data-l="${l}">+ ${l}</button>`).join(''));
 $('cfAdd').querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>cfAdd(b.dataset.add,b.dataset.l));
+// 직접 입력: 아무 순서 이름이나 적고 Enter (예: 성찬, 세례, 찬양대)
+$('cfAdd').insertAdjacentHTML('beforeend','<span class="cfown"><input type="text" id="cfOwn" placeholder="직접 입력 (예: 성찬)" aria-label="순서 이름 직접 입력"><button type="button" id="cfOwnB" aria-label="이 순서 더하기">더하기</button></span>');
+{const go=()=>{const v=$('cfOwn').value.trim();if(!v){$('cfOwn').focus();return;}$('cfOwn').value='';cfAdd('notice',v);const el=$('cfList').querySelector(`li[data-i="${CF.length-1}"] input[data-k="v"]`);el?.focus();};
+  $('cfOwn').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();go();}};$('cfOwnB').onclick=go;}
 $('cfReset').onclick=()=>{const old=CF;CF=CF_DEF.map(o=>({...o}));cfKeep();renderCF();toastUndo('기본 양식으로 돌렸어요',()=>{CF=old;cfKeep();renderCF();});};
 function setContiMode(m){contiMode=m;store.set('contiMode',m);document.querySelectorAll('[data-cm]').forEach(b=>b.setAttribute('aria-selected',b.dataset.cm===m));$('contiFormP').hidden=m!=='form';$('contiPasteP').hidden=m!=='paste';}
 document.querySelectorAll('[data-cm]').forEach(b=>b.onclick=()=>{setContiMode(b.dataset.cm);(b.dataset.cm==='form'?$('cfList').querySelector('input'):$('contiIn'))?.focus();});
@@ -4460,9 +4498,10 @@ function layRegions(x,W,H,lay,lb){const R=[];
   if(lay.box)R.push({k:'box',x:lay.box.x,y:lay.box.y,w:lay.box.w,h:lay.box.h});
   if(lay.footer){const fs=W*.0125,fw=footerWidth(x,W,lay.footer.text);if(fw)R.push({k:'footer',x:W/2-fw/2+(lay.footer.dx||0),y:lay.footer.y-fs,w:fw,h:fs*2});}
   if(lb)R.push({k:'logo',x:lb.x,y:lb.y,w:lb.w,h:lb.h});return R;}
-const REG={lyrics:['text','가사'],title:['layout','곡 제목'],footer:['footer','아래 문구 · 모든 슬라이드'],head:['layout','머리글 · 모든 슬라이드'],sub:['layout','작은 머리글 · 모든 슬라이드'],
+const REG={lyrics:['text','가사'],title:['layout','곡 제목'],footer:['logo','아래 문구 · 모든 슬라이드'],head:['layout','머리글 · 모든 슬라이드'],sub:['layout','작은 머리글 · 모든 슬라이드'],
   ref:['text','본문 제목'],body:['text','본문'],box:['layout','본문 상자'],logo:['logo','로고'],cap:['cap','자막 띠'],capref:['cap','구절 이름'],capright:['cap','띠 위 오른쪽 문구 · 모든 슬라이드'],
   ititle:['text','큰 제목'],iband:['band','띠'],itime:['band','띠 오른쪽'],inote:['body','작은 글'],inotice:['body','안내 글'],ihead:['text','제목'],ibody:['body','글'],itag:['band','머리표 · 모든 슬라이드'],cbox:['look','자막 상자']};
+const REGEL={lyrics:'lyrics',title:'title',body:'body',ref:'ref',head:'head',sub:'head',ititle:'title',ihead:'title',inotice:'body',ibody:'body',inote:'body'}; // 누른 곳 → 바꿀 글자
 let sbLay=null,sbSelK=null;
 function placeSbSel(){const el=$('sbSel'),cv=$('slidebox').querySelector('canvas');const r=sbSelK&&sbLay&&(sbLay.regions||[]).find(x=>x.k===sbSelK);
   if(!r||!$('slidebox').classList.contains('on')){el.hidden=true;return;}const b=cv.getBoundingClientRect(),k=b.width/cv.width,pad=6;
@@ -4472,7 +4511,7 @@ function focusLookSection(key){const rg=$('lookCtl').querySelector(`.rg[data-k="
   setTimeout(()=>{body?.scrollIntoView({behavior:'smooth',block:'center'});body?.classList.add('flash');setTimeout(()=>body?.classList.remove('flash'),1400);},30);}
 $('slidebox').querySelector('canvas').addEventListener('click',e=>{if(!sbLay)return;const cv=e.currentTarget,b=cv.getBoundingClientRect(),k=cv.width/b.width,px=(e.clientX-b.left)*k,py=(e.clientY-b.top)*k;
   const hits=(sbLay.regions||[]).filter(r=>px>=r.x-8&&px<=r.x+r.w+8&&py>=r.y-8&&py<=r.y+r.h+8).sort((a,b)=>a.w*a.h-b.w*b.h);
-  sbSelK=hits[0]?.k||null;placeSbSel();if(sbSelK&&REG[sbSelK])focusLookSection(REG[sbSelK][0]);});
+  sbSelK=hits[0]?.k||null;placeSbSel();const el=sbSelK&&REGEL[sbSelK];if(el){lookElem[lookTab]=el;buildLookUI();focusLookSection('tel');}else if(sbSelK&&REG[sbSelK])focusLookSection(REG[sbSelK][0]);});
 $('slidebox').querySelector('canvas').addEventListener('mousemove',e=>{if(!sbLay)return;const cv=e.currentTarget,b=cv.getBoundingClientRect(),k=cv.width/b.width,px=(e.clientX-b.left)*k,py=(e.clientY-b.top)*k;
   cv.style.cursor=(sbLay.regions||[]).some(r=>px>=r.x-8&&px<=r.x+r.w+8&&py>=r.y-8&&py<=r.y+r.h+8)?'pointer':'default';});
 addEventListener('resize',placeSbSel);
