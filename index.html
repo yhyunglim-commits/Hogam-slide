@@ -1914,6 +1914,12 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
   .rail{display:flex;flex-direction:column}
 }
 @media (max-width:860px){.ptabs .saved{display:none}}
+/* 프로필 · 문의·응원은 옆 메뉴 맨 아래에 늘 붙어 있게 (목록이 길어도 그 위에서만 스크롤) */
+.rail>.railfoot{position:sticky;bottom:0;margin-top:auto;z-index:2;padding-top:8px;background:var(--side,var(--surface));-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--line)}
+.rail .railfoot #meBox{margin:0 12px!important}
+.rail .railfoot .railmail{margin:8px 12px 12px;width:calc(100% - 24px);box-sizing:border-box}
+@media (min-width:1101px){body:not(.railpinned) .rail:not(:hover):not(:focus-within) .railfoot #meBox{margin:0!important}
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .railfoot .railmail{margin:8px auto 12px;width:auto}}
 /* ===== 탭을 맨 위 바로: 크롬·사파리처럼 고른 탭이 아래 편집줄과 이어져요 ===== */
 .pbar{padding-top:0}
 .ribbon{border-top:0}
@@ -1956,8 +1962,10 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
     <div class="railsec" data-sec="lib"><span class="ricon" aria-hidden="true"><i class="ph ph-music-notes" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>곡 보관함</button> <span class="row" style="gap:6px"><span id="libCount"></span><button type="button" class="libopen" id="libOpen">전체 보기</button></span></h4>
       <span class="libsw"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input type="search" class="libsearch" id="libSearch" placeholder="제목·초성·가사 찾기" aria-label="보관함에서 곡 찾기"></span>
       <ul class="rlist" id="libList"></ul></div>
+    <div class="railfoot" id="railFoot">
     <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><span class="megear" aria-hidden="true"><i class="ph-fill ph-gear-six"></i></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="themeBtn" title="화면 밝기 바꾸기">화면: 자동</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
     <button type="button" class="railmail" id="openMail" title="문의 · 협업 · 응원 보내기"><span class="mico" aria-hidden="true"><i class="ph-fill ph-envelope-simple"></i></span><span class="mt2"><b>문의·응원 보내기</b><small>hogamcommunity@gmail.com</small></span></button>
+    </div>
   </aside>
   <div class="scrim" id="scrim"></div>
 
