@@ -4130,7 +4130,7 @@ function drawInfoCap(x,W,H,sc,opt){
     const f=infoCapF(L,W),lh=f.fs*Math.max(1.2,L.lineH-.1),pad=W*.035,ls=sc.lines||[],page=''; // 쪽 번호는 안 붙여요
     if(it.k==='ad'){const hh=H*.078,bh=Math.max(H*.2,lh*Math.max(1,ls.length)+f.fs*2.4),by=BOT-bh,hy=by-hh,hs=cs*1.15;
       rect(X0,hy,X1-X0,hh,P);rect(X0,by,X1-X0,bh,M);
-      T(['# '+(String(it.title||'').trim()||'광고')+page],hs,BW,L.font,TF,pInk,X0+W*.015,hy+hh/2,hs*1.25,'left',hs*L.spacing/100*.5,X1-X0);
+      T([(String(it.title||'').trim()||'광고')+page],hs,BW,L.font,TF,pInk,X0+W*.015,hy+hh/2,hs*1.25,'left',hs*L.spacing/100*.5,X1-X0);
       if(ls.length)T(ls,f.fs,lv(L,'weight2','info'),L.font2,BF,mInk,X0+pad,by+f.fs*1.2+lh*ls.length/2,lh,'left',f.sp,X1-X0-pad*2);
       R.push({k:'cbox',x:X0,y:hy,w:X1-X0,h:BOT-hy});}
     else{const ns=cs*1.02,foot=ns*2.6,bh=Math.max(H*.3,lh*Math.max(1,ls.length)+f.fs*2.4+foot),by=BOT-bh,name=String(it.title||'').trim();rect(X0,by,X1-X0,bh,M);
