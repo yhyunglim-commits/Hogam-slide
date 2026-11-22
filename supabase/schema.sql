@@ -251,20 +251,7 @@ alter table public.signup_attempts enable row level security;
 alter table public.ai_usage        enable row level security;
 alter table public.team_settings   enable row level security;
 
-drop policy if exists "팀원은 팀 설정을 써요" on public.team_settings;
-create policy "팀원은 팀 설정을 써요" on public.team_settings for all using (public.is_member()) with check (public.is_member());
-
-drop policy if exists "팀원은 팀원 목록을 봐요" on public.members;
-create policy "팀원은 팀원 목록을 봐요" on public.members for select using (public.is_member());
-
-drop policy if exists "팀원은 곡 보관함을 써요" on public.songs;
-create policy "팀원은 곡 보관함을 써요" on public.songs for all using (public.is_member()) with check (public.is_member());
-
-drop policy if exists "팀원은 예배 기록을 써요" on public.services;
-create policy "팀원은 예배 기록을 써요" on public.services for all using (public.is_member()) with check (public.is_member());
-
-drop policy if exists "팀원은 편집 기록을 봐요" on public.edit_log;
-create policy "팀원은 편집 기록을 봐요" on public.edit_log for select using (public.is_member());
+-- 누가 무엇을 보고 쓰는지 정하는 규칙은 맨 아래 '6단계'에 모아 뒀어요 (교회 칸이 생긴 뒤라야 만들 수 있어서요).
 
 -- ───────────── 다른 사람이 고친 것을 바로 보기 ─────────────
 do $$ begin
@@ -374,7 +361,52 @@ create index if not exists services_church on public.services (church_id, update
 create index if not exists edit_log_church_at on public.edit_log (church_id, at desc);
 
 alter table public.churches enable row level security;
-drop policy if exists "팀원은 자기 교회를 봐요" on public.churches;
-create policy "팀원은 자기 교회를 봐요" on public.churches for select using (id = public.my_church());
 grant select on public.churches to authenticated;
 grant select, insert, update, delete on public.churches to service_role;
+
+-- ───────────── 6단계 추가 (2026-11-22): 교회별 공간 ② 교회끼리 잠그기 ─────────────
+-- 예배·곡·설정·편집 기록·팀원 목록을 '내가 속한 교회 것'만 보고 쓸 수 있게 해요.
+-- 다른 교회 것을 고치거나, 내 것을 다른 교회로 옮기는 것도 막아요.
+-- '내가 그 교회 팀원인가'로 물어서, 나중에 한 사람이 여러 교회에 속해도 이 규칙은 그대로 써요.
+create or replace function public.in_church(c uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.members where user_id = auth.uid() and church_id = c);
+$$;
+revoke execute on function public.in_church(uuid) from public, anon;
+grant execute on function public.in_church(uuid) to authenticated, service_role;
+
+drop policy if exists "팀원은 팀 설정을 써요"   on public.team_settings;
+drop policy if exists "팀원은 팀원 목록을 봐요" on public.members;
+drop policy if exists "팀원은 곡 보관함을 써요" on public.songs;
+drop policy if exists "팀원은 예배 기록을 써요" on public.services;
+drop policy if exists "팀원은 편집 기록을 봐요" on public.edit_log;
+drop policy if exists "팀원은 자기 교회를 봐요" on public.churches;
+
+drop policy if exists "우리 교회 설정만 써요" on public.team_settings;
+create policy "우리 교회 설정만 써요" on public.team_settings for all
+  using (public.in_church(church_id)) with check (public.in_church(church_id));
+drop policy if exists "우리 교회 곡만 써요" on public.songs;
+create policy "우리 교회 곡만 써요" on public.songs for all
+  using (public.in_church(church_id)) with check (public.in_church(church_id));
+drop policy if exists "우리 교회 예배만 써요" on public.services;
+create policy "우리 교회 예배만 써요" on public.services for all
+  using (public.in_church(church_id)) with check (public.in_church(church_id));
+drop policy if exists "우리 교회 편집 기록만 봐요" on public.edit_log;
+create policy "우리 교회 편집 기록만 봐요" on public.edit_log for select using (public.in_church(church_id));
+drop policy if exists "우리 교회 팀원만 봐요" on public.members;
+create policy "우리 교회 팀원만 봐요" on public.members for select using (public.in_church(church_id));
+drop policy if exists "내가 속한 교회만 봐요" on public.churches;
+create policy "내가 속한 교회만 봐요" on public.churches for select using (public.in_church(id));
+
+-- ───────────── 7단계 추가 (2026-11-22): 교회별 공간 ③ 접속 중 표시를 잠긴 방으로 ─────────────
+-- 화면의 '지금 접속 중인 팀원'은 'online:교회번호' 방을 써요. 그 교회 팀원만 들어와서 보고 알릴 수 있어요.
+-- (예전 방 'hogam-online'은 누구나 들어올 수 있어서 팀원 이름이 밖에서 보였어요)
+drop policy if exists "우리 교회 접속 방만 봐요" on realtime.messages;
+-- 읽기에 broadcast도 넣어야 방에 들어갈 수 있어요 (실시간 서버가 들어올 때 둘 다 확인해요. 2026-11-22 시험에서 확인)
+create policy "우리 교회 접속 방만 봐요" on realtime.messages for select to authenticated
+  using (realtime.messages.extension in ('presence', 'broadcast')
+         and realtime.topic() in (select 'online:' || church_id from public.members where user_id = auth.uid()));
+drop policy if exists "우리 교회 접속 방에만 알려요" on realtime.messages;
+create policy "우리 교회 접속 방에만 알려요" on realtime.messages for insert to authenticated
+  with check (realtime.messages.extension = 'presence'
+              and realtime.topic() in (select 'online:' || church_id from public.members where user_id = auth.uid()));

@@ -5344,10 +5344,10 @@ $('gateForm').onsubmit=async e=>{
   finally{go.disabled=false;go.textContent=label;}
 };
 async function afterLogin(u){
-  const {data:m,error}=await sb.from('members').select('name').eq('user_id',u.id).maybeSingle();
+  const {data:m,error}=await sb.from('members').select('name,church_id').eq('user_id',u.id).maybeSingle();
   if(error){showGate();$('gErr').textContent='서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요';return;}
   if(!m){await sb.auth.signOut();showGate();$('gErr').textContent='팀원 등록이 안 된 계정이에요. 관리자에게 물어봐 주세요';return;}
-  me={id:u.id,name:m.name};$('meName').textContent=me.name;$('meAv').textContent=me.name.slice(0,1);$('meAv').title=`내 계정 · ${me.name}`;
+  me={id:u.id,name:m.name,church:m.church_id};$('meName').textContent=me.name;$('meAv').textContent=me.name.slice(0,1);$('meAv').title=`내 계정 · ${me.name}`;
   hideGate();await bootRemote();
 }
 $('logout').onclick=async()=>{if(!confirm('나갈까요? 다음에 이름과 개인 암호로 다시 들어오면 돼요.'))return;saveSession();await flushSessions();await sb?.auth.signOut();me=null;location.reload();};
@@ -5360,7 +5360,7 @@ $('docTitle').addEventListener('input',fitTitle);addEventListener('resize',fitTi
 // 지금 접속 중인 팀원 (Supabase Realtime presence)
 let pres=null;const TAB=Math.random().toString(36).slice(2,8);
 function startPresence(){if(pres||!sb||!me)return;
-  pres=sb.channel('hogam-online',{config:{presence:{key:me.id+':'+TAB}}});
+  pres=sb.channel('online:'+me.church,{config:{private:true,presence:{key:me.id+':'+TAB}}}); // 우리 교회 팀원만 들어오는 잠긴 방
   pres.on('presence',{event:'sync'},renderOnline).subscribe(st=>{if(st==='SUBSCRIBED')trackMe();});
   addEventListener('beforeunload',()=>{try{pres.untrack();}catch(e){}});}
 function trackMe(){if(pres&&me)pres.track({name:me.name,sess:curSess,at:Date.now(),doing:myDoing}).catch(()=>{});}
@@ -5402,7 +5402,8 @@ function subscribe(){
   if(chan)return;
   chan=sb.channel('hogam-live')
   .on('postgres_changes',{event:'*',schema:'public',table:'songs'},p=>{
-    if(p.eventType==='DELETE')delete LIB[p.old.title];else LIB[p.new.title]=rowToSong(p.new);
+    // 지움 알림은 서버가 교회별로 걸러 주지 못해서 다른 교회 것도 와요. 같은 제목의 우리 곡이 사라지지 않게 걸러요
+    if(p.eventType==='DELETE'){if(p.old.church_id!==me.church)return;delete LIB[p.old.title];}else LIB[p.new.title]=rowToSong(p.new);
     renderLib();if(!$('libDrop').classList.contains('hidden'))renderLibDrop();if($('libbox').classList.contains('on')){renderLibAll();if(!libNew&&!libEdit)renderLibDetail();}})
   .on('postgres_changes',{event:'*',schema:'public',table:'services'},p=>{
     if(p.eventType==='DELETE'){const id=p.old.id;SESS=SESS.filter(x=>x.id!==id);
@@ -5417,7 +5418,7 @@ function subscribe(){
     if(mine)return;if(i>=0)SESS[i]=r;else SESS.unshift(r);renderHist();})
   .on('postgres_changes',{event:'INSERT',schema:'public',table:'edit_log'},()=>{if($('logbox').classList.contains('on'))loadLog();})
   .on('postgres_changes',{event:'UPDATE',schema:'public',table:'edit_log'},()=>{if($('logbox').classList.contains('on'))loadLog();})
-  .on('postgres_changes',{event:'*',schema:'public',table:'team_settings'},p=>{const k=(p.new&&p.new.key)||(p.old&&p.old.key);if(k)teamRemote(k);})
+  .on('postgres_changes',{event:'*',schema:'public',table:'team_settings'},p=>{if(p.eventType==='DELETE'&&p.old.church_id!==me.church)return;const k=(p.new&&p.new.key)||(p.old&&p.old.key);if(k)teamRemote(k);})
   .subscribe();
 }
 
