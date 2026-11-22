@@ -152,6 +152,7 @@ declare
   v_last bigint;
   -- 고치거나 지울 때는 바뀌기 전 모습을 남겨요 (10분 안에 이어 고친 것은 처음 모습이 남아요)
   v_before jsonb := case when tg_op in ('UPDATE','DELETE') then to_jsonb(old) else null end;
+  v_church uuid := case tg_op when 'DELETE' then old.church_id else new.church_id end;
 begin
   if tg_op = 'DELETE' then
     if tg_table_name = 'songs' then v_id := old.title; v_sum := old.title;
@@ -162,7 +163,7 @@ begin
   end if;
   if v_act = 'edit' then
     select id into v_last from public.edit_log
-      where user_id = auth.uid() and target_type = v_type and target_id = v_id
+      where user_id = auth.uid() and church_id = v_church and target_type = v_type and target_id = v_id
         and action in ('edit','create') and at > now() - interval '10 minutes'
       order by at desc limit 1;
     if v_last is not null then
@@ -170,8 +171,8 @@ begin
       return null;
     end if;
   end if;
-  insert into public.edit_log (user_id, name, action, target_type, target_id, summary, before)
-    values (auth.uid(), v_name, v_act, v_type, v_id, v_sum, v_before);
+  insert into public.edit_log (church_id, user_id, name, action, target_type, target_id, summary, before)
+    values (v_church, auth.uid(), v_name, v_act, v_type, v_id, v_sum, v_before);
   return null;
 end $$;
 
@@ -213,13 +214,13 @@ begin
   if not found or r.before is null then return '되돌릴 내용이 없는 기록이에요'; end if;
   b := r.before;
   if r.target_type = 'song' then
-    insert into public.songs (title, result, thumb)
-      values (b->>'title', b->'result', b->>'thumb')
-      on conflict (title) do update set result = excluded.result, thumb = excluded.thumb;
+    insert into public.songs (church_id, title, result, thumb)
+      values (coalesce((b->>'church_id')::uuid, public.my_church()), b->>'title', b->'result', b->>'thumb')
+      on conflict (church_id, title) do update set result = excluded.result, thumb = excluded.thumb;
     return '‘' || (b->>'title') || '’ 곡을 되돌렸어요';
   elsif r.target_type = 'service' then
-    insert into public.services (id, name, text, results, verse_in, b_title, dirty)
-      values (b->>'id', coalesce(b->>'name',''), coalesce(b->>'text',''), coalesce(b->'results','[]'::jsonb),
+    insert into public.services (church_id, id, name, text, results, verse_in, b_title, dirty)
+      values (coalesce((b->>'church_id')::uuid, public.my_church()), b->>'id', coalesce(b->>'name',''), coalesce(b->>'text',''), coalesce(b->'results','[]'::jsonb),
               coalesce(b->>'verse_in',''), coalesce(b->>'b_title',''), coalesce((b->>'dirty')::boolean, false))
       on conflict (id) do update set name = excluded.name, text = excluded.text, results = excluded.results,
         verse_in = excluded.verse_in, b_title = excluded.b_title, dirty = excluded.dirty;
@@ -307,3 +308,73 @@ grant execute on function public.save_service(text, int, text, text, jsonb, text
 grant execute on function public.restore_from_log(bigint) to authenticated;
 grant execute on function public.is_member(), public.my_name() to authenticated, service_role;
 grant execute on function public.ping() to anon, authenticated;
+
+-- ───────────── 5단계 추가 (2026-11-22): 교회별 공간 ① 교회 칸 ─────────────
+-- 서버 하나에 여러 교회가 들어올 준비예요. 지금 있는 것은 모두 옥수교회 것으로 옮겨요.
+-- 이번 단계에서는 화면이 바뀌지 않아요. 교회끼리 서로 못 보게 잠그는 건 다음 단계예요.
+create table if not exists public.churches (
+  id         uuid primary key default gen_random_uuid(),
+  name       text not null,
+  created_at timestamptz not null default now()
+);
+-- 옥수교회는 번호를 고정해 둬요 (이 파일을 여러 번 돌려도 한 번만 들어가게)
+insert into public.churches (id, name) values ('00000000-0000-0000-0000-000000000001', '옥수교회')
+  on conflict (id) do nothing;
+
+alter table public.members       add column if not exists church_id uuid references public.churches;
+alter table public.songs         add column if not exists church_id uuid references public.churches;
+alter table public.services      add column if not exists church_id uuid references public.churches;
+alter table public.team_settings add column if not exists church_id uuid references public.churches;
+alter table public.edit_log      add column if not exists church_id uuid references public.churches;
+-- 교회 표시를 붙이는 건 '고친 것'이 아니라서, 그동안 고친 사람·편집 기록 남기기를 꺼 둬요
+-- (안 끄면 곡마다 이름 없는 '고침' 기록이 생기고 고친 사람·때·판 번호가 바뀌어요. 2026-11-22 실제로 겪음)
+alter table public.songs         disable trigger user;
+alter table public.services      disable trigger user;
+alter table public.team_settings disable trigger user;
+update public.members       set church_id = '00000000-0000-0000-0000-000000000001' where church_id is null;
+update public.songs         set church_id = '00000000-0000-0000-0000-000000000001' where church_id is null;
+update public.services      set church_id = '00000000-0000-0000-0000-000000000001' where church_id is null;
+update public.team_settings set church_id = '00000000-0000-0000-0000-000000000001' where church_id is null;
+update public.edit_log      set church_id = '00000000-0000-0000-0000-000000000001' where church_id is null;
+alter table public.songs         enable trigger user;
+alter table public.services      enable trigger user;
+alter table public.team_settings enable trigger user;
+
+-- 지금 로그인한 사람의 교회
+create or replace function public.my_church() returns uuid
+language sql stable security definer set search_path = public as $$
+  select church_id from public.members where user_id = auth.uid() limit 1;
+$$;
+revoke execute on function public.my_church() from public, anon;
+grant execute on function public.my_church() to authenticated, service_role;
+
+-- 새로 저장하는 것은 서버가 교회를 채워요. 그래서 화면 코드는 그대로 둬요.
+alter table public.songs         alter column church_id set default public.my_church();
+alter table public.services      alter column church_id set default public.my_church();
+alter table public.team_settings alter column church_id set default public.my_church();
+-- 임시: 가입(signup)은 로그인 전이라 교회를 모르니 옥수교회로 넣어요. 3단계(교회 코드로 가입)에서 없애요.
+alter table public.members  alter column church_id set default coalesce(public.my_church(), '00000000-0000-0000-0000-000000000001');
+alter table public.edit_log alter column church_id set default coalesce(public.my_church(), '00000000-0000-0000-0000-000000000001');
+alter table public.members       alter column church_id set not null;
+alter table public.songs         alter column church_id set not null;
+alter table public.services      alter column church_id set not null;
+alter table public.team_settings alter column church_id set not null;
+alter table public.edit_log      alter column church_id set not null;
+
+-- 곡 이름·설정 이름은 교회 안에서만 겹치지 않으면 돼요
+do $$ begin
+  if (select array_length(indkey::int2[], 1) from pg_index where indrelid = 'public.songs'::regclass and indisprimary) = 1 then
+    alter table public.songs drop constraint songs_pkey, add primary key (church_id, title);
+  end if;
+  if (select array_length(indkey::int2[], 1) from pg_index where indrelid = 'public.team_settings'::regclass and indisprimary) = 1 then
+    alter table public.team_settings drop constraint team_settings_pkey, add primary key (church_id, key);
+  end if;
+end $$;
+create index if not exists services_church on public.services (church_id, updated_at desc);
+create index if not exists edit_log_church_at on public.edit_log (church_id, at desc);
+
+alter table public.churches enable row level security;
+drop policy if exists "팀원은 자기 교회를 봐요" on public.churches;
+create policy "팀원은 자기 교회를 봐요" on public.churches for select using (id = public.my_church());
+grant select on public.churches to authenticated;
+grant select, insert, update, delete on public.churches to service_role;
