@@ -2083,7 +2083,6 @@ body{font-family:var(--sans)}
 #gate .gform{max-width:none;margin:0;text-align:center}
 #gate .gkakao{margin:36px auto 0}
 #gate .ginv{max-width:480px;margin:24px auto 0}
-#gate #gOldBtn{margin:12px auto 0}
 #gate #gOld,#gate #gJoin{max-width:400px;margin-left:auto;margin-right:auto;text-align:left}
 #gate #gOld{margin-top:18px}
 #gate #gJoin{margin-top:44px}
@@ -2581,7 +2580,6 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
         <p class="ginv hidden" id="gInv">초대 링크로 오셨어요. 카카오로 시작하면 바로 교회에 들어갈 수 있어요.</p>
         <button class="gkakao" id="gKakao" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3C6.48 3 2 6.54 2 10.9c0 2.83 1.88 5.31 4.71 6.7l-.96 3.53c-.08.3.26.54.52.37l4.2-2.78c.5.06 1 .09 1.53.09 5.52 0 10-3.54 10-7.9S17.52 3 12 3z"/></svg>카카오로 시작하기</button>
         <p class="gerr" id="gErr" role="alert"></p>
-        <button type="button" class="glink" id="gOldBtn" aria-expanded="false">전에 이름과 암호로 들어오던 팀원이에요</button>
         <div id="gOld" class="hidden">
           <label class="gl"><span>이름</span><input id="gName" type="text" maxlength="10" autocomplete="username" placeholder="예) 김목자"></label>
           <label class="gl"><span>개인 암호</span><input id="gPw" type="password" autocomplete="current-password" placeholder="6글자 이상"></label>
@@ -2595,7 +2593,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
         <label class="gl"><span>교회에서 쓸 이름</span><input id="jName" type="text" maxlength="10" autocomplete="off" placeholder="예) 김목자"></label>
         <p class="gerr" id="jErr" role="alert"></p>
         <button class="gpri" id="jGo" type="button">들어가기</button>
-        <button type="button" class="glink" id="jOut">다른 방법으로 들어가기</button>
+        <button type="button" class="glink" id="jOut">처음 화면으로</button>
       </div>
     </div>
   </form>
@@ -3636,8 +3634,8 @@ const FONTS=[
 const fontW=f=>(FONTS.find(x=>x.f===f)||FONTS[0]).w;
 const lookW=L=>+L.weight||fontW(L.font);
 const LOOK_DEF={
-  song:{font:'Noto Sans KR',bgDim:15,logoPos:'off',logoSize:6,size:5,spacing:-6,lineH:1.22,posY:61,title:true,titleSize:1.6,titleGap:7,footer:'OKSU ASSEMBLIES OF GOD CHURCH',footerOn:true,color:'#ffffff',shadowOn:true,shadowAmt:18,strokeOn:false,strokeColor:'#000000',strokeW:4},
-  word:{font:'Nanum Myeongjo',refSpacing:-5,bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,linesAuto:true,box:88,verseGap:false,head:'성경봉독',sub:'BIBLE READING',footer:'OKSU CHURCH ASSEMBLIES OF GOD',footerOn:true,quoteStyle:'body',capMain:'#C25E1D',capLight:'#E8DECB',capRight:'',capHex:'#0E6874',capAlpha:84,capSize:2.5,capBottom:3,capLineH:1.6,capColor:'#ffffff',color:'#1d1d1d',shadowOn:false,shadowAmt:18,strokeOn:false,strokeColor:'#ffffff',strokeW:4}
+  song:{font:'Noto Sans KR',bgDim:15,logoPos:'off',logoSize:6,size:5,spacing:-6,lineH:1.22,posY:61,title:true,titleSize:1.6,titleGap:7,footer:'',footerOn:true,color:'#ffffff',shadowOn:true,shadowAmt:18,strokeOn:false,strokeColor:'#000000',strokeW:4},
+  word:{font:'Nanum Myeongjo',refSpacing:-5,bgDim:25,logoPos:'off',logoSize:6,size:3,spacing:-5,lineH:1.42,maxLines:4,linesAuto:true,box:88,verseGap:false,head:'성경봉독',sub:'BIBLE READING',footer:'',footerOn:true,quoteStyle:'body',capMain:'#C25E1D',capLight:'#E8DECB',capRight:'',capHex:'#0E6874',capAlpha:84,capSize:2.5,capBottom:3,capLineH:1.6,capColor:'#ffffff',color:'#1d1d1d',shadowOn:false,shadowAmt:18,strokeOn:false,strokeColor:'#ffffff',strokeW:4}
 };
 LOOK_DEF.quote={...LOOK_DEF.word};
 // 순서·광고 화면 (표지·안내·광고·고백문)
@@ -3747,7 +3745,7 @@ function buildLookUI(){
     CAPPAIRS.forEach(([n,m,p])=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.title=n;b.setAttribute('aria-label',n);
       b.setAttribute('aria-checked',String(L.capMain||'').toUpperCase()===m&&String(L.capLight||'').toUpperCase()===p);b.style.background=`linear-gradient(135deg,${m} 50%,${p} 50%)`;
       b.onclick=()=>{L.capMain=m;L.capLight=p;saveLook();buildLookUI();};rg.appendChild(b);});g.appendChild(w);};
-  const text=(g,k,ph)=>{const w=document.createElement('label');w.className='lk lkwide';w.innerHTML=`<span>${ph}${allTag(k)}</span>`;const i=document.createElement('input');i.type='text';i.className='lktext';i.placeholder=ph;i.value=T(k)[k]||'';i.oninput=()=>{T(k)[k]=i.value;saveLook();};w.appendChild(i);g.appendChild(w);};
+  const text=(g,k,ph,ex)=>{const w=document.createElement('label');w.className='lk lkwide';w.innerHTML=`<span>${ph}${allTag(k)}</span>`;const i=document.createElement('input');i.type='text';i.className='lktext';i.placeholder=ex||ph;i.value=T(k)[k]||'';i.oninput=()=>{T(k)[k]=i.value;saveLook();};w.appendChild(i);g.appendChild(w);};
   // 사진·로고: 왼쪽은 버튼, 오른쪽은 썸네일
   const upload=(g,k,isLogo)=>{const on=!!MEDIA[k],w=document.createElement('div');w.className='media2 lkwide';
     w.innerHTML=`<div class="mleft"><label class="btn sm"><input type="file" accept="image/*" hidden><i class="ph ph-upload-simple" aria-hidden="true"></i> ${on?(isLogo?'로고 바꾸기':'사진 바꾸기'):(isLogo?'로고 넣기':'사진 넣기')}</label>${on?`<button class="btn sm ghost mx" type="button">지우기</button>`:''}<span class="mhint">${isLogo?'배경이 비치는 투명 PNG가 좋아요':'없으면 곡마다 색 배경'}</span></div>
@@ -3872,7 +3870,7 @@ function buildLookUI(){
     if(MEDIA.logo){const pos=[['off','넣지 않기'],['footer','아래 문구 앞'],['tl','왼쪽 위'],['tr','오른쪽 위'],['br','오른쪽 아래'],['bc','아래 가운데']];
       const r=document.createElement('label');r.className='lk';r.innerHTML=`<span>로고 위치</span><select aria-label="로고 위치">${pos.map(([v,n])=>`<option value="${v}" ${L.logoPos===v?'selected':''}>${n}</option>`).join('')}</select>`;
       r.querySelector('select').onchange=e=>{L.logoPos=e.target.value;saveLook();};s.p.appendChild(r);slider(s.p,'logoSize',true);}
-    sw(s.p,'footerOn','아래 문구 보이기');text(s.p,'footer','아래 문구');}
+    sw(s.p,'footerOn','아래 문구 보이기');text(s.p,'footer','아래 문구','예) 호감교회 · HOGAM CHURCH');}
   // 더보기
   s=sec('more','더보기','ph-dots-three');
   s.p.innerHTML=`<button class="btn sm ghost lkwide" data-copylook title="지금 슬라이드 설정을 글자로 복사해요"><i class="ph ph-copy" aria-hidden="true"></i> 설정 복사</button><button class="btn sm ghost lkwide" data-reset title="다른 화면 종류 설정은 그대로 둬요"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> ${NM[grp].replace(/ 화면$/,'')} 화면만 처음 설정으로</button>`;
@@ -4908,7 +4906,7 @@ $('dlPptx').onclick=async()=>{
         if(tx.align==='center'||tx.align==='right'){const bw=tx.boxW||W*.9;sl.addText(tx.lines.join('\n'),{...opts,align:tx.align,x:(tx.align==='center'?tx.ax-bw/2:tx.ax-bw)*IN,w:bw*IN,y:tx.y0*IN,h:Math.max(boxH,tx.size*1.2)*IN});}
         else sl.addText(tx.lines.join('\n'),{...opts,align:'left',valign:'top',x:tx.ax*IN,w:(tx.boxW||W-tx.ax-W*.04)*IN,y:tx.y0*IN,h:Math.max(boxH,tx.size*1.2)*IN});
       }
-      if(lay.footer){const words=lay.footer.text.trim().split(/\s+/);
+      if(lay.footer?.text.trim()){const words=lay.footer.text.trim().split(/\s+/);
         sl.addText(words.map((w,i)=>({text:w+(i<words.length-1?'   ':''),options:{bold:i===0||i===words.length-1&&words.length>1}})),
           {x:(lay.footer.dx||0)*IN,w:13.333,y:(lay.footer.y-H*.02)*IN,h:H*.04*IN,align:'center',valign:'middle',fontFace:'Noto Sans KR',fontSize:W*.0125*PT,color:'F2F2F2',charSpacing:W*.0125*.62*PT,margin:0});}
     }
@@ -5586,7 +5584,8 @@ const backTo=()=>location.origin+location.pathname;
 $('gKakao').onclick=async()=>{$('gErr').textContent='';
   const {error}=await sb.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:backTo()}});
   if(error)$('gErr').textContent='카카오 로그인을 시작하지 못했어요. 잠시 뒤 다시 해 주세요';};
-$('gOldBtn').onclick=()=>{const open=$('gOld').classList.toggle('hidden')===false;$('gOldBtn').setAttribute('aria-expanded',open);if(open)$('gName').focus();};
+// 옛 로그인(이름+암호)은 따로 알려 준 주소(?old)로 왔을 때만 열어요. 팀원이 모두 카카오를 연결하면 없애요
+$('gOld').classList.toggle('hidden',!new URLSearchParams(location.search).has('old'));
 // 움직임 줄이기 설정이면 소개 영상은 멈춰 두고 직접 재생하게
 function showGate(kind){$('gate').classList.add('on');$('gate').dataset.asked=1;
   const setup=kind==='setup',join=kind==='join';$('gSetup').classList.toggle('hidden',!setup);$('gBody').classList.toggle('hidden',setup);
@@ -5706,7 +5705,7 @@ async function copyInvite(){const {data,error}=await sb.from('churches').select(
   const link=`${backTo()}?join=${data.invite_code}`;
   try{await navigator.clipboard.writeText(link);toast(`초대 링크를 복사했어요. 단톡방에 붙여 넣어 주세요 (코드 ${data.invite_code})`);}
   catch(_){prompt('이 초대 링크를 복사해서 보내 주세요',link);}}
-$('logout').onclick=async()=>{if(!confirm('나갈까요? 다음에 이름과 개인 암호로 다시 들어오면 돼요.'))return;saveSession();await flushSessions();await sb?.auth.signOut();me=null;location.reload();};
+$('logout').onclick=async()=>{const old=!$('linkKakao').hidden;if(!confirm(old?'아직 카카오를 연결하지 않았어요. 나가면 다음에도 이름과 개인 암호로 들어와야 해요. 나갈까요?':'나갈까요? 다음에 카카오로 다시 들어오면 돼요.'))return;saveSession();await flushSessions();await sb?.auth.signOut();me=null;if(old)location.href=backTo()+'?old';else location.reload();};
 
 // 예배 이름 칸을 글자 길이에 맞춰서, 저장 시각이 이름 바로 옆에 붙게
 function fitTitle(){const el=$('docTitle');if(!el)return;const m=fitTitle.m||(fitTitle.m=Object.assign(document.createElement('span'),{style:'position:absolute;visibility:hidden;white-space:pre;left:-9999px;top:0'}));
