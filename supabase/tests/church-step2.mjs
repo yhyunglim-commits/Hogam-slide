@@ -58,7 +58,7 @@ await check('편집 기록: 각자 자기 교회 기록만 보임', async () =>
   onlyChurch(await A.api('edit_log?select=id,church_id&limit=500'), OKSU) || onlyChurch(await B.api('edit_log?select=id,church_id&limit=500'), C2));
 await check('팀원 목록: 각자 자기 교회 팀원만 보임', async () => {
   const a = await A.api('members?select=name,church_id'), b = await B.api('members?select=name,church_id');
-  return onlyChurch(a, OKSU) || onlyChurch(b, C2) || (b.some((m) => m.name === '옥수시험') ? '시험교회에 옥수 팀원 이름이 보임' : '');
+  return onlyChurch(a, OKSU) || onlyChurch(b, C2); // 이름은 교회끼리 겹칠 수 있어서 교회 번호로만 봐요
 });
 await check('교회 목록: 각자 자기 교회만 보임', async () => {
   const a = await A.api('churches?select=id'), b = await B.api('churches?select=id');

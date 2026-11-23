@@ -410,3 +410,73 @@ drop policy if exists "우리 교회 접속 방에만 알려요" on realtime.mes
 create policy "우리 교회 접속 방에만 알려요" on realtime.messages for insert to authenticated
   with check (realtime.messages.extension = 'presence'
               and realtime.topic() in (select 'online:' || church_id from public.members where user_id = auth.uid()));
+
+-- ───────────── 8단계 추가 (2026-11-23): 교회별 공간 ④ 카카오 로그인 + 초대 코드로 교회 들어가기 ─────────────
+-- 로그인은 카카오(또는 옛 팀원의 이름+암호). 로그인한 사람이 초대 코드와 '교회에서 쓸 이름'을 넣으면 그 교회 팀원이 돼요.
+-- 초대 코드: 교회마다 하나. 헷갈리는 글자(0·O·1·I)를 뺀 8글자. 그 교회 팀원만 볼 수 있어요 (churches 규칙).
+create or replace function public.new_invite_code() returns text
+language sql volatile set search_path = public, extensions as $$
+  select string_agg(substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + (get_byte(b, i) % 32), 1), '' order by i)
+    from (select extensions.gen_random_bytes(8) b) x, generate_series(0, 7) i;
+$$;
+alter table public.churches add column if not exists invite_code text;
+update public.churches set invite_code = public.new_invite_code() where invite_code is null;
+alter table public.churches alter column invite_code set default public.new_invite_code();
+alter table public.churches alter column invite_code set not null;
+create unique index if not exists churches_invite_code on public.churches (invite_code);
+
+-- 이름은 교회 안에서만 안 겹치면 돼요 (서버 전체에서 하나만이던 것을 풀어요)
+alter table public.members drop constraint if exists members_name_key;
+create unique index if not exists members_church_name on public.members (church_id, name);
+-- 가입 때 옥수교회로 넣던 임시 기본값을 없애요. 이제 교회는 초대 코드로만 정해져요.
+-- (옛 팀 암호 가입(signup 기능)은 교회를 모르니 저절로 막혀요)
+alter table public.members  alter column church_id drop default;
+alter table public.edit_log alter column church_id set default public.my_church();
+
+-- 초대 코드를 틀린 기록 (join_church만 써요. 화면에서는 볼 수 없어요)
+create table if not exists public.join_attempts (
+  id      bigint generated always as identity primary key,
+  user_id uuid not null,
+  at      timestamptz not null default now()
+);
+create index if not exists join_attempts_user_at on public.join_attempts (user_id, at desc);
+alter table public.join_attempts enable row level security;
+
+-- 교회 들어가기: 맞는 초대 코드 + 2~10글자 이름이면 팀원으로 넣어요.
+-- 틀린 코드는 기록이 남아야 해서 오류를 던지지 않고 {ok:false, error:…}로 돌려줘요.
+create or replace function public.join_church(p_code text, p_name text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare
+  v_uid  uuid := auth.uid();
+  v_ch   public.churches;
+  v_name text := regexp_replace(btrim(coalesce(p_name, '')), '\s+', ' ', 'g');
+begin
+  if v_uid is null then raise exception '먼저 로그인해 주세요'; end if;
+  -- 지금은 한 사람이 한 교회만 (여러 교회는 4단계에서)
+  if exists (select 1 from public.members where user_id = v_uid) then
+    return jsonb_build_object('ok', false, 'error', '이미 교회에 들어가 있어요');
+  end if;
+  if (select count(*) from public.join_attempts where user_id = v_uid and at > now() - interval '15 minutes') >= 5 then
+    return jsonb_build_object('ok', false, 'error', '초대 코드를 여러 번 틀렸어요. 15분 뒤에 다시 해 주세요');
+  end if;
+  select * into v_ch from public.churches where invite_code = upper(regexp_replace(coalesce(p_code, ''), '[^A-Za-z0-9]', '', 'g'));
+  if not found then
+    insert into public.join_attempts (user_id) values (v_uid);
+    delete from public.join_attempts where at < now() - interval '1 day';
+    return jsonb_build_object('ok', false, 'error', '초대 코드가 맞지 않아요');
+  end if;
+  if char_length(v_name) < 2 or char_length(v_name) > 10 then
+    return jsonb_build_object('ok', false, 'error', '이름은 2~10글자로 적어 주세요');
+  end if;
+  begin
+    insert into public.members (user_id, name, church_id) values (v_uid, v_name, v_ch.id);
+  exception when unique_violation then
+    return jsonb_build_object('ok', false, 'error', '이 교회에 같은 이름이 있어요. 이름 뒤에 직분이나 숫자를 붙여 주세요');
+  end;
+  insert into public.edit_log (church_id, user_id, name, action, target_type, target_id, summary)
+    values (v_ch.id, v_uid, v_name, 'join', 'member', v_name, v_name);
+  return jsonb_build_object('ok', true, 'church', v_ch.name);
+end $$;
+revoke execute on function public.join_church(text, text) from public, anon;
+grant execute on function public.join_church(text, text) to authenticated;
+revoke execute on function public.new_invite_code() from public, anon, authenticated;

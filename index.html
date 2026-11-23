@@ -568,6 +568,13 @@ details.look summary{font-size:13px;color:var(--text)}
 .gerr{color:var(--bad);font-size:13px;min-height:18px;margin:10px 0 4px}
 .gcard .btn.big{height:48px;border-radius:24px;font-size:15px}
 .ghint{font-size:13px;color:var(--text3);margin:12px 0 0;line-height:1.55;text-align:center}
+.gcard .btn.gkakao{background:#FEE500;color:rgba(0,0,0,.85);border:0;gap:8px;font-weight:700}
+.gcard .btn.gkakao:hover{background:#F5DC00}
+.glink{background:none;border:0;color:var(--text3);font-size:13px;text-decoration:underline;text-underline-offset:3px;display:block;margin:8px auto 0;padding:6px;cursor:pointer}
+#jCode{text-transform:uppercase;letter-spacing:.08em}
+.ginv{background:var(--amber-soft);color:var(--warn-ink);border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.55;margin:0 0 14px}
+.gjt{margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em}
+.gcard .btn.gold{margin-top:16px}
 .gsetup{background:var(--amber-soft);color:var(--warn-ink);border-radius:16px;padding:14px 16px;font-size:13px;line-height:1.6}
 .logbox{position:fixed;inset:0;z-index:62;background:rgba(3,26,23,.45);display:none;align-items:flex-start;justify-content:center;padding:6vh 16px}
 .logbox.on{display:flex}
@@ -2070,7 +2077,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
       <span class="libsw"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input type="search" class="libsearch" id="libSearch" placeholder="제목·초성·가사 찾기" aria-label="보관함에서 곡 찾기"></span>
       <ul class="rlist" id="libList"></ul></div>
     <div class="railfoot" id="railFoot">
-    <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><span class="megear" aria-hidden="true"><i class="ph-fill ph-gear-six"></i></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="themeBtn" title="화면 밝기 바꾸기">화면: 자동</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
+    <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><span class="megear" aria-hidden="true"><i class="ph-fill ph-gear-six"></i></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="invite">팀원 초대</button><i>·</i><button type="button" id="linkKakao" hidden>카카오 연결</button><i id="linkKakaoSep" hidden>·</i><button type="button" id="themeBtn" title="화면 밝기 바꾸기">화면: 자동</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
     <button type="button" class="railmail" id="openMail" title="문의 · 협업 · 응원 보내기"><span class="mico" aria-hidden="true"><i class="ph-fill ph-envelope-simple"></i></span><span class="mt2"><b>문의·응원 보내기</b><small>hogamcommunity@gmail.com</small></span></button>
     </div>
   </aside>
@@ -2411,13 +2418,27 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
   <form class="gcard" id="gateForm" autocomplete="on" novalidate aria-label="호감슬라이드 로그인">
     <div id="gSetup" class="gsetup hidden">아직 서버 설정이 비어 있어요.<br><b>config.js</b>에 Supabase 주소와 공개 키를 넣어 주세요.</div>
     <div id="gBody">
-      <div class="seg2 gtabs" role="tablist"><button type="button" role="tab" data-m="in" aria-selected="true">들어가기</button><button type="button" role="tab" data-m="up" aria-selected="false">처음이에요</button></div>
-      <label class="gl"><span>이름</span><input id="gName" type="text" maxlength="10" autocomplete="username" placeholder="예) 김목자"></label>
-      <label class="gl"><span>개인 암호</span><input id="gPw" type="password" autocomplete="current-password" placeholder="6글자 이상"></label>
-      <label class="gl gup hidden"><span>팀 암호</span><input id="gCode" type="password" autocomplete="off" placeholder="팀에서 받은 암호"></label>
-      <p class="gerr" id="gErr" role="alert"></p>
-      <button class="btn pri big" id="gGo" type="submit">로그인</button>
-      <p class="ghint" id="gHint">처음 오셨다면 ‘처음이에요’를 누르고 팀 암호를 함께 넣어 주세요.</p>
+      <div id="gStart">
+        <p class="ginv hidden" id="gInv">초대 링크로 오셨어요. 카카오로 시작하면 바로 교회에 들어갈 수 있어요.</p>
+        <button class="btn big gkakao" id="gKakao" type="button"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 3C6.48 3 2 6.54 2 10.9c0 2.83 1.88 5.31 4.71 6.7l-.96 3.53c-.08.3.26.54.52.37l4.2-2.78c.5.06 1 .09 1.53.09 5.52 0 10-3.54 10-7.9S17.52 3 12 3z"/></svg>카카오로 시작하기</button>
+        <p class="gerr" id="gErr" role="alert"></p>
+        <button type="button" class="glink" id="gOldBtn" aria-expanded="false">전에 이름과 암호로 들어오던 팀원이에요</button>
+        <div id="gOld" class="hidden">
+          <label class="gl"><span>이름</span><input id="gName" type="text" maxlength="10" autocomplete="username" placeholder="예) 김목자"></label>
+          <label class="gl"><span>개인 암호</span><input id="gPw" type="password" autocomplete="current-password" placeholder="6글자 이상"></label>
+          <button class="btn pri big gold" id="gGo" type="submit">로그인</button>
+          <p class="ghint">들어온 뒤 ‘카카오 연결’을 한 번 해 두면, 다음부터는 카카오로 들어와요.</p>
+        </div>
+      </div>
+      <div id="gJoin" class="hidden">
+        <h2 class="gjt">교회에 들어가기</h2>
+        <label class="gl"><span>초대 코드</span><input id="jCode" type="text" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="예) AB3DEF7H"></label>
+        <label class="gl"><span>교회에서 쓸 이름</span><input id="jName" type="text" maxlength="10" autocomplete="off" placeholder="예) 김목자"></label>
+        <p class="gerr" id="jErr" role="alert"></p>
+        <button class="btn pri big" id="jGo" type="button">들어가기</button>
+        <p class="ghint">초대 코드는 교회 팀원이 보내 준 링크에 들어 있어요. 이름은 그 교회 사람들에게만 보여요.<br>전에 이름과 암호로 들어오던 분은 아래를 눌러 그 방법으로 들어와 주세요.</p>
+        <button type="button" class="glink" id="jOut">다른 방법으로 들어가기</button>
+      </div>
       <p class="gmail">문의 및 협업 <a href="mailto:hogamcommunity@gmail.com">hogamcommunity@gmail.com</a></p>
     </div>
   </form>
@@ -5312,33 +5333,30 @@ async function fnErrMsg(error,fn){
   if(st)return `‘${fn}’ 기능이 오류를 냈어요 (${st}${j&&(j.msg||j.message)?': '+(j.msg||j.message):''})`;
   return `‘${fn}’ 기능에 연결하지 못했어요. Edge Functions에 올라가 있는지 확인해 주세요`;
 }
-let gMode='in';
-function setGateMode(m){gMode=m;document.querySelectorAll('.gtabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.m===m));
-  document.querySelector('.gup').classList.toggle('hidden',m!=='up');$('gGo').textContent=m==='up'?'팀에 들어가기':'로그인';
-  $('gPw').autocomplete=m==='up'?'new-password':'current-password';$('gErr').textContent='';
-  $('gHint').textContent=m==='up'?'이름과 개인 암호는 다음부터 들어올 때 써요. 팀 암호는 처음 한 번만 넣어요.':'처음 오셨다면 ‘처음이에요’를 누르고 팀 암호를 함께 넣어 주세요.';}
-document.querySelectorAll('.gtabs button').forEach(b=>b.onclick=()=>setGateMode(b.dataset.m));
+// 초대 링크(?join=코드)로 왔으면 코드를 기억해 둬요. 카카오에 다녀오는 동안 주소에서 사라져도 쓸 수 있게
+(()=>{const q=new URLSearchParams(location.search);const c=q.get('join');if(!c)return;store.set('joinCode',c);q.delete('join');
+  history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);})();
+const backTo=()=>location.origin+location.pathname;
+$('gKakao').onclick=async()=>{$('gErr').textContent='';
+  const {error}=await sb.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:backTo()}});
+  if(error)$('gErr').textContent='카카오 로그인을 시작하지 못했어요. 잠시 뒤 다시 해 주세요';};
+$('gOldBtn').onclick=()=>{const open=$('gOld').classList.toggle('hidden')===false;$('gOldBtn').setAttribute('aria-expanded',open);if(open)$('gName').focus();};
 // 움직임 줄이기 설정이면 소개 영상은 멈춰 두고 직접 재생하게
 if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.querySelectorAll('.gvid video').forEach(v=>{v.removeAttribute('autoplay');v.controls=true;v.pause();});
 function showGate(kind){$('gate').classList.add('on');document.querySelectorAll('.gvid video').forEach(v=>{if(v.autoplay)v.play().catch(()=>{});});
-  const setup=kind==='setup';$('gSetup').classList.toggle('hidden',!setup);$('gBody').classList.toggle('hidden',setup);
-  if(!setup)setTimeout(()=>$('gName').focus(),50);}
+  const setup=kind==='setup',join=kind==='join';$('gSetup').classList.toggle('hidden',!setup);$('gBody').classList.toggle('hidden',setup);
+  $('gStart').classList.toggle('hidden',join);$('gJoin').classList.toggle('hidden',!join);$('gInv').classList.toggle('hidden',!store.get('joinCode',null));
+  if(join)setTimeout(()=>($('jCode').value?$('jName'):$('jCode')).focus(),50);}
 function hideGate(){$('gate').classList.remove('on');document.querySelectorAll('.gvid video').forEach(v=>v.pause());}
 $('gateForm').onsubmit=async e=>{
-  e.preventDefault();const name=normName($('gName').value),pw=$('gPw').value,code=$('gCode').value,err=$('gErr');err.textContent='';
+  e.preventDefault();if($('gOld').classList.contains('hidden'))return;const name=normName($('gName').value),pw=$('gPw').value,err=$('gErr');err.textContent='';
   if(name.length<2)return err.textContent='이름을 2글자 이상 적어 주세요';
   if(pw.length<6)return err.textContent='개인 암호는 6글자 이상이에요';
-  if(gMode==='up'&&!code)return err.textContent='팀 암호를 넣어 주세요';
   const go=$('gGo'),label=go.textContent;go.disabled=true;go.innerHTML='<span class="spin"></span> 확인하는 중';
   try{
-    if(gMode==='up'){
-      const {data,error}=await sb.functions.invoke('signup',{body:{name,password:pw,code}});
-      if(error){throw new Error(await fnErrMsg(error,'signup'));}
-      if(data?.error)throw new Error(data.error);
-    }
     const {data,error}=await sb.auth.signInWithPassword({email:nameToEmail(name),password:pw});
-    if(error)throw new Error(gMode==='up'?'등록은 됐지만 들어가지 못했어요. ‘들어가기’로 다시 해 주세요':'이름이나 개인 암호가 맞지 않아요');
-    $('gPw').value='';$('gCode').value='';
+    if(error)throw new Error('이름이나 개인 암호가 맞지 않아요');
+    $('gPw').value='';
     await afterLogin(data.user);
   }catch(x){err.textContent=x.message||String(x);}
   finally{go.disabled=false;go.textContent=label;}
@@ -5346,10 +5364,36 @@ $('gateForm').onsubmit=async e=>{
 async function afterLogin(u){
   const {data:m,error}=await sb.from('members').select('name,church_id').eq('user_id',u.id).maybeSingle();
   if(error){showGate();$('gErr').textContent='서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요';return;}
-  if(!m){await sb.auth.signOut();showGate();$('gErr').textContent='팀원 등록이 안 된 계정이에요. 관리자에게 물어봐 주세요';return;}
-  me={id:u.id,name:m.name,church:m.church_id};$('meName').textContent=me.name;$('meAv').textContent=me.name.slice(0,1);$('meAv').title=`내 계정 · ${me.name}`;
+  if(!m){showJoin(u);return;}
+  // 지금은 한 사람이 한 교회만이라, 교회에 들어와 있으면 기억해 둔 초대 코드는 버려요 (여러 교회는 4단계)
+  me={id:u.id,name:m.name,church:m.church_id};store.set('joinCode',null);$('meName').textContent=me.name;$('meAv').textContent=me.name.slice(0,1);$('meAv').title=`내 계정 · ${me.name}`;
   hideGate();await bootRemote();
+  offerKakaoLink(u);
 }
+// 교회에 아직 안 들어간 사람: 초대 코드와 교회에서 쓸 이름을 받아요
+function showJoin(u){const md=u.user_metadata||{};
+  $('jCode').value=store.get('joinCode',null)||'';if(!$('jName').value)$('jName').value=String(md.name||md.full_name||md.nickname||md.preferred_username||'').trim().slice(0,10);
+  $('jErr').textContent='';showGate('join');
+  $('jGo').onclick=async()=>{const code=$('jCode').value.trim(),name=normName($('jName').value),err=$('jErr');err.textContent='';
+    if(!code)return err.textContent='초대 코드를 넣어 주세요';if(name.length<2)return err.textContent='이름을 2글자 이상 적어 주세요';
+    const go=$('jGo');go.disabled=true;
+    try{const {data,error}=await sb.rpc('join_church',{p_code:code,p_name:name});
+      if(error)throw new Error('서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요');if(!data.ok)throw new Error(data.error);
+      store.set('joinCode',null);toast(`${data.church}에 들어왔어요`);await afterLogin(u);}
+    catch(x){err.textContent=x.message||String(x);}finally{go.disabled=false;}};}
+$('jOut').onclick=async()=>{await sb.auth.signOut();me=null;$('jName').value='';showGate();};
+// 옛 방식(이름+암호)으로 들어온 팀원에게 카카오 연결을 권해요
+const hasKakao=u=>(u.identities||[]).some(i=>i.provider==='kakao');
+async function linkKakao(){const {error}=await sb.auth.linkIdentity({provider:'kakao',options:{redirectTo:backTo()}});
+  if(error)toast(/manual linking/i.test(error.message||'')?'관리자가 카카오 연결을 아직 켜지 않았어요':'카카오 연결을 시작하지 못했어요');}
+function offerKakaoLink(u){const need=!hasKakao(u);$('linkKakao').hidden=!need;$('linkKakaoSep').hidden=!need;
+  if(need)setTimeout(()=>toastUndo('다음부터 카카오로 바로 들어오게 연결해 두세요',linkKakao,'카카오 연결',12000),1500);}
+// 팀원 초대: 우리 교회 초대 링크를 복사해요
+async function copyInvite(){const {data,error}=await sb.from('churches').select('name,invite_code').eq('id',me.church).maybeSingle();
+  if(error||!data?.invite_code)return toast('초대 링크를 불러오지 못했어요');
+  const link=`${backTo()}?join=${data.invite_code}`;
+  try{await navigator.clipboard.writeText(link);toast(`초대 링크를 복사했어요. 단톡방에 붙여 넣어 주세요 (코드 ${data.invite_code})`);}
+  catch(_){prompt('이 초대 링크를 복사해서 보내 주세요',link);}}
 $('logout').onclick=async()=>{if(!confirm('나갈까요? 다음에 이름과 개인 암호로 다시 들어오면 돼요.'))return;saveSession();await flushSessions();await sb?.auth.signOut();me=null;location.reload();};
 
 // 예배 이름 칸을 글자 길이에 맞춰서, 저장 시각이 이름 바로 옆에 붙게
@@ -5452,6 +5496,8 @@ async function loadLog(){
 function openLog(){$('logbox').classList.add('on');$('logList').innerHTML='<div class="empty">불러오는 중…</div>';loadLog();$('logClose').focus();}
 function closeLog(){$('logbox').classList.remove('on');}
 $('openLog').onclick=()=>{closeRail();openLog();};
+$('invite').onclick=()=>{closeRail();copyInvite();};
+$('linkKakao').onclick=()=>{closeRail();linkKakao();};
 // 화면 밝기: 자동(컴퓨터 설정 따라) → 어둡게 → 밝게. 이 브라우저에만 저장해요
 {const NAMES={auto:'자동',dark:'어둡게',light:'밝게'},ORDER=['auto','dark','light'];
   const apply=m=>{if(m==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=m;$('themeBtn').textContent='화면: '+NAMES[m];};
@@ -5462,7 +5508,6 @@ addEventListener('keydown',e=>{if(e.key==='Escape'&&$('logbox').classList.contai
 
 async function initAuth(){
   if(!sb){showGate('setup');return;}
-  setGateMode('in');
   const {data:{session}}=await sb.auth.getSession();
   if(session)await afterLogin(session.user);else showGate();
   sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT'&&me){me=null;showGate();}});
