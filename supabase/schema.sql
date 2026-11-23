@@ -67,13 +67,8 @@ alter table public.services add column if not exists version int not null defaul
 -- 바뀌기 전 내용: 고치거나 지울 때 예전 모습을 남겨서 되돌릴 수 있게 해요.
 alter table public.edit_log add column if not exists before jsonb;
 
--- 팀 암호를 틀린 기록 (signup 기능만 써요. 화면에서는 볼 수 없어요)
-create table if not exists public.signup_attempts (
-  id bigint generated always as identity primary key,
-  ip text,
-  at timestamptz not null default now()
-);
-create index if not exists signup_attempts_at on public.signup_attempts (at desc);
+-- 옛 팀 암호 가입에서 쓰던 표를 지워요 (이제 초대 코드로만 들어와요)
+drop table if exists public.signup_attempts;
 
 -- AI를 쓴 기록 (ai 기능만 써요. 한 사람이 하루 한도를 다 쓰지 않게)
 create table if not exists public.ai_usage (
@@ -246,8 +241,7 @@ alter table public.members  enable row level security;
 alter table public.songs    enable row level security;
 alter table public.services enable row level security;
 alter table public.edit_log enable row level security;
--- 이 두 표는 서버 기능(service_role)만 써요. 규칙을 하나도 두지 않아서 화면에서는 읽지도 쓰지도 못해요.
-alter table public.signup_attempts enable row level security;
+-- 아래 ai_usage 는 서버 기능(service_role)만 써요. 규칙을 하나도 두지 않아서 화면에서는 읽지도 쓰지도 못해요.
 alter table public.ai_usage        enable row level security;
 alter table public.team_settings   enable row level security;
 
@@ -286,7 +280,7 @@ grant select on public.members to authenticated;
 grant select, insert, update, delete on public.members, public.songs, public.services, public.edit_log to service_role;
 grant select, insert, update, delete on public.songs, public.services to authenticated;
 grant select on public.edit_log to authenticated;
-grant select, insert, delete on public.signup_attempts, public.ai_usage to service_role;
+grant select, insert, delete on public.ai_usage to service_role;
 grant select, insert, update, delete on public.team_settings to authenticated, service_role;
 grant usage, select on all sequences in schema public to authenticated, service_role;
 revoke execute on function public.save_service(text, int, text, text, jsonb, text, text, boolean) from public, anon;
@@ -339,7 +333,7 @@ grant execute on function public.my_church() to authenticated, service_role;
 alter table public.songs         alter column church_id set default public.my_church();
 alter table public.services      alter column church_id set default public.my_church();
 alter table public.team_settings alter column church_id set default public.my_church();
--- 임시: 가입(signup)은 로그인 전이라 교회를 모르니 옥수교회로 넣어요. 3단계(교회 코드로 가입)에서 없애요.
+-- 임시: 옛 가입은 교회를 몰라서 옥수교회로 넣었어요. 이 기본값은 8단계에서 없애요.
 alter table public.members  alter column church_id set default coalesce(public.my_church(), '00000000-0000-0000-0000-000000000001');
 alter table public.edit_log alter column church_id set default coalesce(public.my_church(), '00000000-0000-0000-0000-000000000001');
 alter table public.members       alter column church_id set not null;
@@ -429,7 +423,6 @@ create unique index if not exists churches_invite_code on public.churches (invit
 alter table public.members drop constraint if exists members_name_key;
 create unique index if not exists members_church_name on public.members (church_id, name);
 -- 가입 때 옥수교회로 넣던 임시 기본값을 없애요. 이제 교회는 초대 코드로만 정해져요.
--- (옛 팀 암호 가입(signup 기능)은 교회를 모르니 저절로 막혀요)
 alter table public.members  alter column church_id drop default;
 alter table public.edit_log alter column church_id set default public.my_church();
 

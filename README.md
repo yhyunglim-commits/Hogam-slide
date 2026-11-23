@@ -18,8 +18,6 @@
 | Supabase 계정 | 로그인과 저장소 | https://supabase.com (GitHub 계정으로 가입할 수 있어요) |
 | Google 계정 | 악보 읽기 AI 키 | https://aistudio.google.com |
 
-정해 둘 것: **팀 암호** 하나. 팀원이 처음 들어올 때 한 번만 넣는 암호예요.
-
 ---
 
 ## 1단계 · Supabase 프로젝트 만들기
@@ -43,28 +41,21 @@
 2. **Get API key**를 누르고 **Create API key**를 누르세요.
 3. 나온 키(`AIza…`로 시작)를 복사해 두세요.
 
-## 4단계 · 서버 기능 두 개 올리기 (Edge Functions)
+## 4단계 · 서버 기능 올리기 (Edge Functions)
 
 Supabase 왼쪽 메뉴 **Edge Functions**에서 하는 일이에요.
 
-**① signup 기능 (처음 오는 팀원 등록)**
+**① ai 기능 (악보 읽기, 맞춤법 검사)**
 1. **Deploy a new function**을 누르고 **Via Editor**를 고르세요.
-2. 함수 이름을 `signup`으로 적으세요.
-3. 편집기 안의 예시 코드를 모두 지우고, `supabase/functions/signup/index.ts` 내용을 붙여 넣으세요.
-4. **Deploy function**을 누르세요.
-5. 만들어진 signup 함수의 **Details**(설정)에서 **Verify JWT**(JWT 확인)를 **끄고** 저장하세요.
+2. 함수 이름을 `ai`로 적고, 예시 코드를 모두 지운 뒤 `supabase/functions/ai/index.ts` 내용을 붙여 넣어 **Deploy function**을 누르세요.
+3. 만들어진 ai 함수의 **Details**(설정)에서 **Verify JWT**(JWT 확인)를 **끄고** 저장하세요. 팀원인지는 코드가 직접 확인해요.
 
-**② ai 기능 (악보 읽기, 맞춤법 검사)**
-1. 같은 방법으로 이름 `ai`인 함수를 만들고, `supabase/functions/ai/index.ts` 내용을 붙여 넣어 Deploy 하세요.
-2. 이 함수도 **Verify JWT를 끄세요.** 팀원인지는 코드가 직접 확인해요.
-
-**③ 비밀값 넣기**
+**② 비밀값 넣기**
 1. Edge Functions 안의 **Secrets**(비밀값)를 여세요.
-2. 아래 두 개를 추가하고 저장하세요.
+2. 아래 값을 추가하고 저장하세요.
 
 | Name | Value |
 |---|---|
-| `TEAM_CODE` | 정해 둔 팀 암호 |
 | `GEMINI_API_KEY` | 3단계에서 복사한 키 |
 
 > **선택 · Claude로 읽기(유료):** `ANTHROPIC_API_KEY`에 Claude API 키(https://platform.claude.com)를 넣으면 Claude가 먼저 읽고, 안 될 때만 Gemini가 대신해요. 기본 모델은 빠르고 싼 `claude-haiku-5-5`예요. 악보를 더 꼼꼼히 읽게 하려면 `CLAUDE_MODEL`에 `claude-sonnet-5-5`를 넣으세요(곡당 비용은 더 들어요).
@@ -97,11 +88,9 @@ Supabase 왼쪽 메뉴 **Edge Functions**에서 하는 일이에요.
 
 ## 7단계 · 팀원 초대하기
 
-1. 주소와 팀 암호를 팀원에게 알려 주세요.
-2. 각자 주소를 열고 **처음이에요**를 눌러 이름, 개인 암호, 팀 암호를 넣어요.
-3. 다음부터는 **들어가기**에서 이름과 개인 암호만 넣으면 돼요.
-
-맨 먼저 관리자 본인이 같은 방법으로 들어가 보세요.
+1. 내 프로필의 **팀원 초대**를 눌러 초대 링크를 복사하고 팀원에게 보내 주세요.
+2. 팀원은 링크를 열어 카카오로 시작하고, 교회에서 쓸 이름을 적으면 들어와요. (카카오 로그인은 Supabase **Authentication**에서 켜 두어야 해요.)
+3. 다음부터는 카카오로 바로 들어와요.
 
 ---
 
@@ -148,14 +137,6 @@ update public.members set name = '새이름' where name = '옛이름';
 
 **팀원 목록 보기**: Table Editor › `members` 표에 이름과 들어온 날짜가 있어요.
 
-**팀 암호를 바꿀 때**: Edge Functions › Secrets에서 `TEAM_CODE`를 바꾸세요. 이미 들어온 팀원은 그대로 쓸 수 있어요.
-
-**가입이 막혔을 때**: 팀 암호를 한 곳에서 15분에 5번, 전체에서 1시간에 30번 틀리면 가입을 잠시 막아요. 누가 암호를 맞혀 보려는 걸 막는 장치예요. 진짜 팀원이 막혔다면 기다리거나, SQL Editor에서 아래를 실행하면 바로 풀려요.
-
-```sql
-delete from public.signup_attempts;
-```
-
 **화면을 새로 올렸는데 설정 업데이트가 필요할 때**: `supabase/schema.sql`이 바뀌었다면 SQL Editor에 파일 전체를 다시 붙여 넣고 Run 하세요. 여러 번 실행해도 기존 데이터는 그대로예요. `supabase/functions/` 안의 파일이 바뀌었다면 Edge Functions에서 그 기능을 열고 코드를 바꿔 붙인 뒤 Deploy 하세요.
 
 **화면을 고쳐서 다시 올릴 때**: GitHub 저장소에서 `index.html`을 새 파일로 다시 올리면, 1~2분 뒤 주소에 반영돼요.
@@ -168,7 +149,6 @@ delete from public.signup_attempts;
 index.html                         호감슬라이드 화면
 config.js                          Supabase 주소와 공개 키 (5단계)
 supabase/schema.sql                데이터베이스 설정 (2단계)
-supabase/functions/signup/index.ts 팀원 등록 기능 (4단계)
 supabase/functions/ai/index.ts     악보 읽기·맞춤법 검사 기능 (4단계)
 .github/workflows/keepalive.yml    잠들지 않게 깨우기 (자동)
 ```
