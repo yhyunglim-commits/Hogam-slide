@@ -25,7 +25,7 @@ async function login(email) {
   return { api, join: (code, name) => api('rpc/join_church', { method: 'POST', body: { p_code: code, p_name: name } }) };
 }
 const anon = await login(null), B = await login('test3@hogamslide.app'), N4 = await login('test4@hogamslide.app'), N5 = await login('test5@hogamslide.app');
-const [{ invite_code: CODE }] = await B.api('churches?select=invite_code');
+const { code: CODE } = await B.api('rpc/get_invite', { method: 'POST', body: {} });
 if ((await N4.api('churches?select=id')).length) { console.error('test4가 이미 교회에 들어가 있어요. church-join-reset.sql 을 먼저 넣어 주세요'); process.exit(2); }
 
 let fail = 0;
@@ -48,7 +48,7 @@ await check('들어가기 전에는 어느 교회도, 초대 코드도 안 보�
 });
 await check('틀린 초대 코드는 막힘', async () => {
   const r = await N4.join('ZZZZZZZZ', '새교인');
-  if (r.ok || !/맞지 않아요/.test(r.error)) return JSON.stringify(r);
+  if (r.ok || !/맞지 않거나/.test(r.error)) return JSON.stringify(r);
 });
 await check('이름이 너무 짧으면 막힘', async () => {
   const r = await N4.join(CODE, '김');

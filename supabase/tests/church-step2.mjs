@@ -123,7 +123,7 @@ await check('자기 교회 새 예배 저장 · 판 번호 충돌 막기', async
   const c = await B.rpc('save_service', args(a.version)); if (c.ok) return '옛 판으로 덮어쓰기가 막히지 않음';
   const [row] = await B.api(`services?select=church_id&id=eq.${id}`);
   const seenByA = await A.api(`services?select=id&id=eq.${id}`);
-  await B.api(`services?id=eq.${id}`, { method: 'DELETE' });
+  await B.patch(`services?id=eq.${id}`, { deleted_at: new Date().toISOString() }); // 바로 지우기는 닫혀서 휴지통으로
   if (row.church_id !== C2) return `교회 ${row.church_id}`;
   if (seenByA.length) return '옥수교회에서 보임';
 });

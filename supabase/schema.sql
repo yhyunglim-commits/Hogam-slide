@@ -311,6 +311,7 @@ create table if not exists public.churches (
   name       text not null,
   created_at timestamptz not null default now()
 );
+alter table public.churches add column if not exists suspended_at timestamptz; -- 멈춘 교회 (11단계)
 -- 옥수교회는 번호를 고정해 둬요 (이 파일을 여러 번 돌려도 한 번만 들어가게)
 insert into public.churches (id, name) values ('00000000-0000-0000-0000-000000000001', '옥수교회')
   on conflict (id) do nothing;
@@ -350,7 +351,8 @@ create or replace function public.my_church() returns uuid
 language sql stable security definer set search_path = public as $$
   select case when count(*) = 1 then (array_agg(church_id))[1] end
     from public.members
-   where user_id = auth.uid() and (public.req_church() is null or church_id = public.req_church());
+   where user_id = auth.uid() and (public.req_church() is null or church_id = public.req_church())
+     and church_id in (select id from public.churches where suspended_at is null);
 $$;
 create or replace function public.my_name(c uuid) returns text
 language sql stable security definer set search_path = public as $$
@@ -400,7 +402,8 @@ grant select, insert, update, delete on public.churches to service_role;
 -- 화면이 지금 교회를 알리면 그 교회 것만, 안 알리면(실시간 알림은 알릴 수 없어요) 내가 속한 교회 것만 열려요.
 create or replace function public.in_church(c uuid) returns boolean
 language sql stable security definer set search_path = public as $$
-  select exists (select 1 from public.members where user_id = auth.uid() and church_id = c)
+  select exists (select 1 from public.members m join public.churches ch on ch.id = m.church_id
+                  where m.user_id = auth.uid() and m.church_id = c and ch.suspended_at is null)
      and (public.req_church() is null or c = public.req_church());
 $$;
 revoke execute on function public.in_church(uuid) from public, anon;
@@ -443,24 +446,22 @@ drop policy if exists "우리 교회 접속 방만 봐요" on realtime.messages;
 -- 읽기에 broadcast도 넣어야 방에 들어갈 수 있어요 (실시간 서버가 들어올 때 둘 다 확인해요. 2026-11-22 시험에서 확인)
 create policy "우리 교회 접속 방만 봐요" on realtime.messages for select to authenticated
   using (realtime.messages.extension in ('presence', 'broadcast')
-         and realtime.topic() in (select 'online:' || church_id from public.members where user_id = auth.uid()));
+         and realtime.topic() in (select 'online:' || church_id from public.members where user_id = auth.uid() and public.in_church(church_id)));
 drop policy if exists "우리 교회 접속 방에만 알려요" on realtime.messages;
 create policy "우리 교회 접속 방에만 알려요" on realtime.messages for insert to authenticated
   with check (realtime.messages.extension = 'presence'
-              and realtime.topic() in (select 'online:' || church_id from public.members where user_id = auth.uid()));
+              and realtime.topic() in (select 'online:' || church_id from public.members where user_id = auth.uid() and public.in_church(church_id)));
 
 -- ───────────── 8단계 추가 (2026-11-23): 교회별 공간 ④ 카카오 로그인 + 초대 코드로 교회 들어가기 ─────────────
 -- 로그인은 카카오(또는 옛 팀원의 이름+암호). 로그인한 사람이 초대 코드와 '교회에서 쓸 이름'을 넣으면 그 교회 팀원이 돼요.
--- 초대 코드: 교회마다 하나. 헷갈리는 글자(0·O·1·I)를 뺀 8글자. 그 교회 팀원만 볼 수 있어요 (churches 규칙).
+-- 초대 코드: 교회마다 한 번에 하나. 헷갈리는 글자(0·O·1·I)를 뺀 8글자. 그 교회 팀원만 볼 수 있어요 (churches 규칙).
 create or replace function public.new_invite_code() returns text
 language sql volatile set search_path = public, extensions as $$
   select string_agg(substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + (get_byte(b, i) % 32), 1), '' order by i)
     from (select extensions.gen_random_bytes(8) b) x, generate_series(0, 7) i;
 $$;
 alter table public.churches add column if not exists invite_code text;
-update public.churches set invite_code = public.new_invite_code() where invite_code is null;
-alter table public.churches alter column invite_code set default public.new_invite_code();
-alter table public.churches alter column invite_code set not null;
+-- 코드는 '팀원 초대'를 누를 때 생기고 7일 뒤 막혀요 (11단계 get_invite)
 create unique index if not exists churches_invite_code on public.churches (invite_code);
 
 -- 이름은 교회 안에서만 안 겹치면 돼요 (서버 전체에서 하나만이던 것을 풀어요)
@@ -492,11 +493,15 @@ begin
   if (select count(*) from public.join_attempts where user_id = v_uid and at > now() - interval '15 minutes') >= 5 then
     return jsonb_build_object('ok', false, 'error', '초대 코드를 여러 번 틀렸어요. 15분 뒤에 다시 해 주세요');
   end if;
-  select * into v_ch from public.churches where invite_code = upper(regexp_replace(coalesce(p_code, ''), '[^A-Za-z0-9]', '', 'g'));
+  select * into v_ch from public.churches where invite_code = upper(regexp_replace(coalesce(p_code, ''), '[^A-Za-z0-9]', '', 'g'))
+     and invite_expires_at > now() for share; -- 내보내기와 동시에 들어오지 못하게 잠가요
   if not found then
     insert into public.join_attempts (user_id) values (v_uid);
     delete from public.join_attempts where at < now() - interval '1 day';
-    return jsonb_build_object('ok', false, 'error', '초대 코드가 맞지 않아요');
+    return jsonb_build_object('ok', false, 'error', '초대 코드가 맞지 않거나 기한이 지났어요. 새 링크를 받아 주세요');
+  end if;
+  if v_ch.suspended_at is not null then
+    return jsonb_build_object('ok', false, 'error', '지금은 쉬고 있는 교회예요');
   end if;
   if exists (select 1 from public.members where user_id = v_uid and church_id = v_ch.id) then
     return jsonb_build_object('ok', false, 'error', '이미 이 교회에 들어가 있어요');
@@ -524,7 +529,7 @@ do $$ begin
     alter table public.members drop constraint members_pkey, add primary key (user_id, church_id);
   end if;
 end $$;
--- 만든 사람은 관리자로 적어만 둬요 (쓰는 건 다음 단계). 한 사람이 만들 수 있는 교회는 1곳.
+-- 만든 사람은 그 교회 관리자예요. 한 사람이 만들 수 있는 교회는 1곳.
 alter table public.members  add column if not exists role text not null default 'member' check (role in ('member', 'admin'));
 alter table public.churches add column if not exists created_by uuid references auth.users on delete set null;
 create unique index if not exists churches_created_by on public.churches (created_by);
@@ -607,6 +612,7 @@ language plpgsql security definer set search_path = public as $$
 declare v_ch uuid := public.my_church();
 begin
   if v_ch is null then raise exception '팀원만 지울 수 있어요'; end if;
+  if not public.is_admin(v_ch) then raise exception '교회 관리자만 완전히 지울 수 있어요'; end if;
   if not exists (select 1 from public.services where church_id = v_ch and id = p_id and deleted_at is not null) then return false; end if;
   perform public.purge_one(v_ch, p_id, public.my_name(v_ch));
   return true;
@@ -629,3 +635,124 @@ revoke execute on function public.purge_old_trash() from public, anon, authentic
 -- 날마다 새벽 3시 20분(한국)에 서버가 스스로 돌려요
 create extension if not exists pg_cron;
 select cron.schedule('hogam-purge-trash', '20 18 * * *', 'select public.purge_old_trash()');
+
+-- ───────────── 11단계 추가 (2026-11-24): 교회 관리자 · 7일 초대 링크 · 전체 관리자 ─────────────
+-- 초대 코드: 처음 적용할 때 기한 없는 옛 코드는 모두 막아요.
+alter table public.churches alter column invite_code drop not null;
+alter table public.churches alter column invite_code drop default;
+alter table public.churches add column if not exists invite_expires_at timestamptz;
+update public.churches set invite_code = null where invite_expires_at is null and invite_code is not null;
+
+-- 전체 관리자. 화면에서는 읽지도 쓰지도 못하고, SQL Editor에서만 넣어요:
+--   insert into public.super_admins (user_id) values ('계정 번호');
+create table if not exists public.super_admins (user_id uuid primary key references auth.users on delete cascade);
+alter table public.super_admins enable row level security;
+revoke all on public.super_admins from public, anon, authenticated;
+
+create or replace function public.is_super() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.super_admins where user_id = auth.uid());
+$$;
+create or replace function public.is_admin(c uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.in_church(c) and exists (select 1 from public.members where user_id = auth.uid() and church_id = c and role = 'admin');
+$$;
+
+-- 초대 코드 받기 (팀원 모두): 살아 있는 코드가 있으면 그것, 없으면 새로 만들어요.
+create or replace function public.get_invite() returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_ch public.churches;
+begin
+  select * into v_ch from public.churches where id = public.my_church() for update;
+  if not found or not public.in_church(v_ch.id) then raise exception '팀원만 초대할 수 있어요'; end if;
+  if v_ch.invite_code is null or v_ch.invite_expires_at is null or v_ch.invite_expires_at <= now() then
+    update public.churches set invite_code = public.new_invite_code(), invite_expires_at = now() + interval '7 days'
+     where id = v_ch.id returning * into v_ch;
+  end if;
+  return jsonb_build_object('code', v_ch.invite_code, 'expires_at', v_ch.invite_expires_at);
+end $$;
+
+-- 교회 줄을 잠그고 관리 권한을 확인해요. 잠그는 까닭: 두 관리자가 동시에 서로 내려서 관리자가 없어지지 않게.
+create or replace function public.lock_for_admin(p_church uuid) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  perform 1 from public.churches where id = p_church for update;
+  if not found or not (public.is_admin(p_church) or public.is_super()) then raise exception '교회 관리자만 할 수 있어요'; end if;
+end $$;
+
+-- 내보내기: 그 교회에서만 빠져요. 만든 예배·곡은 남고, 초대 링크는 바로 막혀요.
+create or replace function public.remove_member(p_church uuid, p_user uuid) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v public.members;
+begin
+  perform public.lock_for_admin(p_church);
+  if p_user = auth.uid() then return jsonb_build_object('ok', false, 'error', '나 자신은 내보낼 수 없어요'); end if;
+  select * into v from public.members where church_id = p_church and user_id = p_user;
+  if not found then return jsonb_build_object('ok', false, 'error', '이미 나간 팀원이에요'); end if;
+  if v.role = 'admin' and (select count(*) from public.members where church_id = p_church and role = 'admin') = 1 then
+    return jsonb_build_object('ok', false, 'error', '마지막 관리자예요. 다른 관리자를 먼저 세워 주세요');
+  end if;
+  delete from public.members where church_id = p_church and user_id = p_user;
+  update public.churches set invite_code = null, invite_expires_at = null where id = p_church;
+  insert into public.edit_log (church_id, user_id, name, action, target_type, target_id, summary)
+    values (p_church, auth.uid(), coalesce(public.my_name(p_church), '전체 관리자'), 'remove', 'member', v.name, v.name);
+  return jsonb_build_object('ok', true);
+end $$;
+
+create or replace function public.set_admin(p_church uuid, p_user uuid, p_on boolean) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v public.members;
+begin
+  if p_on is null then raise exception '값이 비었어요'; end if;
+  perform public.lock_for_admin(p_church);
+  select * into v from public.members where church_id = p_church and user_id = p_user;
+  if not found then return jsonb_build_object('ok', false, 'error', '이미 나간 팀원이에요'); end if;
+  if (v.role = 'admin') = p_on then return jsonb_build_object('ok', true); end if;
+  if not p_on and (select count(*) from public.members where church_id = p_church and role = 'admin') = 1 then
+    return jsonb_build_object('ok', false, 'error', '마지막 관리자예요. 다른 관리자를 먼저 세워 주세요');
+  end if;
+  update public.members set role = case when p_on then 'admin' else 'member' end where church_id = p_church and user_id = p_user;
+  insert into public.edit_log (church_id, user_id, name, action, target_type, target_id, summary)
+    values (p_church, auth.uid(), coalesce(public.my_name(p_church), '전체 관리자'), case when p_on then 'admin_on' else 'admin_off' end, 'member', v.name, v.name);
+  return jsonb_build_object('ok', true);
+end $$;
+
+-- 전체 관리 화면: 교회 이름·팀원까지만. 예배·곡 내용을 여는 길은 만들지 않아요.
+create or replace function public.super_churches() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.is_super() then raise exception '전체 관리자만 볼 수 있어요'; end if;
+  return (select coalesce(jsonb_agg(jsonb_build_object('id', c.id, 'name', c.name, 'created_at', c.created_at, 'suspended_at', c.suspended_at,
+            'members', (select count(*) from public.members m where m.church_id = c.id)) order by c.created_at), '[]'::jsonb) from public.churches c);
+end $$;
+create or replace function public.super_members(p_church uuid) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.is_super() then raise exception '전체 관리자만 볼 수 있어요'; end if;
+  return (select coalesce(jsonb_agg(jsonb_build_object('user_id', m.user_id, 'name', m.name, 'role', m.role, 'joined_at', m.joined_at) order by m.joined_at), '[]'::jsonb)
+            from public.members m where m.church_id = p_church);
+end $$;
+create or replace function public.set_suspended(p_church uuid, p_on boolean) returns boolean
+language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_super() then raise exception '전체 관리자만 할 수 있어요'; end if;
+  if p_on is null then raise exception '값이 비었어요'; end if;
+  update public.churches set suspended_at = case when p_on then coalesce(suspended_at, now()) end,
+         invite_code = null, invite_expires_at = null where id = p_church;
+  return found;
+end $$;
+
+create or replace function public.clear_old_invites() returns void
+language sql security definer set search_path = public as $$
+  update public.churches set invite_code = null, invite_expires_at = null where invite_expires_at <= now();
+$$;
+revoke execute on function public.clear_old_invites(), public.lock_for_admin(uuid) from public, anon, authenticated;
+revoke execute on function public.is_super(), public.is_admin(uuid), public.get_invite(), public.remove_member(uuid, uuid), public.set_admin(uuid, uuid, boolean),
+  public.super_churches(), public.super_members(uuid), public.set_suspended(uuid, boolean) from public, anon;
+grant execute on function public.is_super(), public.is_admin(uuid), public.get_invite(), public.remove_member(uuid, uuid), public.set_admin(uuid, uuid, boolean),
+  public.super_churches(), public.super_members(uuid), public.set_suspended(uuid, boolean) to authenticated;
+
+-- 예배는 휴지통으로만 지워요. 바로 지우기를 닫아야 '완전히 지우기는 관리자만'이 지켜져요.
+revoke delete on public.services from authenticated;
+
+select cron.schedule('hogam-clear-invites', '25 18 * * *', 'select public.clear_old_invites()');

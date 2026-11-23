@@ -32,7 +32,7 @@ const all = (rows, c) => rows.length && rows.every((x) => x.church_id === c) ? '
 const P = await login((process.env.TEST_P || 'test4') + '@hogamslide.app'), B = (await login('test3@hogamslide.app'))(), A = (await login('test2@hogamslide.app'))();
 const free = P();
 if ((await free.api('churches?select=id')).length) { console.error('church-join-reset.sql 을 먼저 넣어 주세요'); process.exit(2); }
-const [{ invite_code: CODE }] = await B.api('churches?select=invite_code');
+const { code: CODE } = await B.api('rpc/get_invite', { method: 'POST', body: {} });
 let NEW, N, T;
 
 await check('교회 이름·내 이름이 너무 짧으면 못 만듦', async () => {

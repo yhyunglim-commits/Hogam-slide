@@ -10,6 +10,7 @@ begin
   insert into public.churches (id, name) values (c2, '시험교회') on conflict (id) do nothing;
   insert into public.members (user_id, name, church_id) values (a, '옥수시험', '00000000-0000-0000-0000-000000000001') on conflict do nothing;
   insert into public.members (user_id, name, church_id) values (b, '다른교회시험', c2) on conflict do nothing;
+  update public.members set role = 'admin' where user_id in (a, b); -- 완전히 지우기 시험(church-trash)에 관리자가 필요해요
   -- 옥수교회와 같은 제목의 곡을 일부러 넣어요 (제목이 같아도 서로 섞이지 않는지 보려고)
   insert into public.songs (church_id, title, result) values (c2, '시험곡 하나', '{"slides":["시험교회"]}') on conflict do nothing;
   insert into public.services (church_id, id, name) values (c2, 'svc-test-2', '시험교회 예배') on conflict do nothing;

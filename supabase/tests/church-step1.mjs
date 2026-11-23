@@ -65,7 +65,7 @@ await check('예배 저장 · 판 번호 충돌 막기', async () => {
   const b = await rpc('save_service', args(a.version)); if (!b.ok) return '이어 저장 실패';
   const c = await rpc('save_service', args(a.version)); if (c.ok) return '옛 판으로 덮어쓰기가 막히지 않음';
   const [row] = await api(`services?select=church_id&id=eq.${id}`);
-  await api(`services?id=eq.${id}`, { method: 'DELETE' });
+  await api(`services?id=eq.${id}`, { method: 'PATCH', body: { deleted_at: new Date().toISOString() } }); // 바로 지우기는 닫혀서 휴지통으로
   if (row.church_id !== OKSU) return `교회 ${row.church_id}`;
 });
 await check('편집 기록에 교회가 붙음', async () => {

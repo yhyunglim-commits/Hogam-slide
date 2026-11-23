@@ -2234,6 +2234,18 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
 .trashlist b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trashlist small{font-size:12px;color:var(--text3)}
 .trashlist .empty{background:none;justify-content:center;color:var(--text3)}
 @media (max-width:560px){.trashlist li{flex-wrap:wrap}.trashlist .tt{flex-basis:100%}}
+/* 팀원 관리 · 전체 관리 · 나가게 된 교회 */
+.tmlist{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:min(52vh,460px);overflow:auto}
+.tmlist li{border-radius:12px;background:var(--sunken)}
+.tmrow{display:flex;align-items:center;gap:8px;min-height:52px;padding:6px 6px 6px 14px}
+.tmrow .tt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tmrow b{display:flex;align-items:center;gap:6px;font-size:15px;overflow-wrap:anywhere}.tmrow small{font-size:13px;color:var(--text3)}
+.tmtag{flex:none;padding:2px 8px;border-radius:99px;background:var(--pri-soft);color:var(--pri);font-size:12px;font-weight:600;font-style:normal}
+.tmacts{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 12px}.tmacts[hidden]{display:none}
+.tmlist .empty{padding:18px;text-align:center;color:var(--text3)}
+button.tmrow{width:100%;border:0;border-radius:12px;background:none;color:var(--text);font:inherit;text-align:left;cursor:pointer;padding-right:14px}
+.tmsus{display:flex;align-items:center;gap:10px;margin-top:12px}.tmsus p{flex:1;margin:0;font-size:13px;color:var(--text2)}
+.gonedlg p{margin:0 0 14px;font-size:15px;line-height:1.6;color:var(--text2)}.gonedlg .setrows:not(:first-of-type){margin-top:12px}
 /* 설정 창 (프로필을 누르면) */
 .setbox{align-items:center}
 .setcard{width:min(440px,100%)}
@@ -2736,8 +2748,9 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
   <div class="setbody">
     <div class="setme"><span class="av" id="setAv" aria-hidden="true"></span><b id="setName"></b></div>
     <div><h3>화면 밝기</h3><div class="seg2 settheme" role="radiogroup" aria-label="화면 밝기"><button type="button" role="radio" data-th="auto">자동</button><button type="button" role="radio" data-th="light">밝게</button><button type="button" role="radio" data-th="dark">어둡게</button></div></div>
-    <div><h3>교회 · <span id="setChurch"></span></h3><div class="setrows"><button type="button" id="invite"><i class="ph ph-user-plus" aria-hidden="true"></i>팀원 초대</button><button type="button" id="openLog"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>편집 기록</button><button type="button" data-ch="join"><i class="ph ph-sign-in" aria-hidden="true"></i>다른 교회 들어가기</button><button type="button" data-ch="new" id="chMake"><i class="ph ph-plus-circle" aria-hidden="true"></i>새 교회 만들기</button></div></div>
+    <div><h3>교회 · <span id="setChurch"></span></h3><div class="setrows"><button type="button" id="invite"><i class="ph ph-user-plus" aria-hidden="true"></i>팀원 초대</button><button type="button" id="openTeam" hidden><i class="ph ph-users" aria-hidden="true"></i>팀원 관리</button><button type="button" id="openLog"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>편집 기록</button><button type="button" data-ch="join"><i class="ph ph-sign-in" aria-hidden="true"></i>다른 교회 들어가기</button><button type="button" data-ch="new" id="chMake"><i class="ph ph-plus-circle" aria-hidden="true"></i>새 교회 만들기</button></div></div>
     <div><h3>계정</h3><div class="setrows"><button type="button" id="linkKakao" hidden><i class="ph ph-chat-circle" aria-hidden="true"></i>카카오 연결</button><button type="button" id="logout"><i class="ph ph-sign-out" aria-hidden="true"></i>나가기</button></div></div>
+    <div id="setSuper" hidden><h3>호감슬라이드</h3><div class="setrows"><button type="button" id="openSuper"><i class="ph ph-buildings" aria-hidden="true"></i>전체 관리</button></div></div>
   </div></div>
 </div>
 <div class="logbox" id="contibox" role="dialog" aria-modal="true" aria-labelledby="contiTitle">
@@ -2803,6 +2816,19 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
     <label><span>교회에서 쓸 이름</span><input type="text" id="chName2" maxlength="10" autocomplete="off" placeholder="예) 김목자"></label>
     <p class="hint2">교회는 한 사람이 한 곳만 만들 수 있어요.</p>
     <button type="submit" class="btn pri" id="chNewGo">만들기</button></div></form>
+</dialog>
+<dialog class="maildlg chdlg" id="tmDlg" aria-labelledby="tmTitle">
+  <div class="chhead"><button type="button" class="btn ghost ibtn" id="tmBack" aria-label="교회 목록으로" hidden><i class="ph ph-arrow-left" aria-hidden="true"></i></button><h2 id="tmTitle" style="flex:1">팀원 관리</h2><button type="button" class="btn ghost ibtn" id="tmClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
+  <p class="cherr" id="tmErr" role="alert"></p>
+  <div class="tmsus" id="tmSus" hidden><p></p><button type="button" class="btn sm"></button></div>
+  <ul class="tmlist" id="tmList"></ul>
+</dialog>
+<dialog class="maildlg chdlg gonedlg" id="goneDlg" aria-labelledby="goneTitle">
+  <div class="chhead"><h2 id="goneTitle"></h2></div>
+  <p id="goneMsg"></p>
+  <button type="button" class="btn pri" id="goneCopy" hidden style="width:100%;margin-bottom:12px">저장 안 된 글 복사</button>
+  <ul class="chlist" id="goneList"></ul>
+  <div class="setrows"><button type="button" data-ch="join"><i class="ph ph-sign-in" aria-hidden="true"></i>다른 교회 들어가기</button><button type="button" data-ch="new" id="chMake3"><i class="ph ph-plus-circle" aria-hidden="true"></i>새 교회 만들기</button><button type="button" id="goneOut"><i class="ph ph-sign-out" aria-hidden="true"></i>로그아웃</button></div>
 </dialog>
 <div class="toast" id="toast"></div>
 
@@ -4763,6 +4789,8 @@ $('contiHistQ').oninput=renderStartHist;
 function startNew(){if(combinedText().trim()||songs.length)newSessClick();$('docTitle').value=$('contiName').value.trim()||sundayName();fitTitle();saveSession();}
 // 저절로 만들어진 빈 예배는 기록에 안 보여요 (이름을 바꿨으면 보여요)
 const inHist=c=>hasWork(c)||c.name!==sundayName();
+// 빈 예배는 지워도 휴지통 목록에 안 보여요
+const inTrash=r=>!!r.del&&hasWork(r);
 const hasWork=c=>!!(c.text||(c.results&&c.results.length)||c.verseIn);
 function renderStartHist(){const ul=$('contiHistList');if(!ul)return;
   const q=normT($('contiHistQ').value);
@@ -5552,13 +5580,14 @@ async function untrash(id){const t=TRASH.find(x=>x.id===id);if(!t)return;let c={
   TRASH=TRASH.filter(x=>x.id!==id);SESS=SESS.filter(x=>x.id!==id);SESS.unshift(c);store.set('sessions',SESS);
   renderTrash();renderHist();if(startMode)renderStartHist();toast(`‘${c.name}’을 되돌렸어요`);}
 async function purgeTrash(id){const t=TRASH.find(x=>x.id===id);if(!t||!confirm(`‘${t.name}’을 완전히 지울까요? 팀 전체에서 사라지고 되돌릴 수 없어요.`))return;
-  if(sb&&me){const {error}=await sb.rpc('purge_service',{p_id:id});if(error){netErr(error);return;}}
+  if(sb&&me){const {error}=await sb.rpc('purge_service',{p_id:id});if(error){if(/관리자만/.test(error.message||''))toast(error.message);else netErr(error);return;}}
   TRASH=TRASH.filter(x=>x.id!==id);renderTrash();toast('완전히 지웠어요');}
+const canPurge=()=>!sb||!me||me.role==='admin'; // 완전히 지우기는 교회 관리자만 (서버도 막아요)
 function renderTrash(){const b=$('trashOpen');b.hidden=!TRASH.length;b.querySelector('span').textContent=`휴지통 (${TRASH.length})`;
   const ul=$('trashList');ul.innerHTML=TRASH.length?'':'<li class="empty">휴지통이 비었어요</li>';
   [...TRASH].sort((a,b)=>b.del-a.del).forEach(t=>{const left=Math.max(0,Math.ceil(TRASH_DAYS-(Date.now()-t.del)/864e5)),li=document.createElement('li');
-    li.innerHTML=`<div class="tt"><b></b><small>${t.delBy?esc(t.delBy)+' · ':''}${fmtDate(t.del)} 지움 · ${left?left+'일 남음':'곧 지워져요'}</small></div><button type="button" class="btn sm" data-r>되돌리기</button><button type="button" class="btn sm danger" data-p>완전히 지우기</button>`;
-    li.querySelector('b').textContent=t.name;li.querySelector('[data-r]').onclick=()=>untrash(t.id);li.querySelector('[data-p]').onclick=()=>purgeTrash(t.id);ul.appendChild(li);});}
+    li.innerHTML=`<div class="tt"><b></b><small>${t.delBy?esc(t.delBy)+' · ':''}${fmtDate(t.del)} 지움 · ${left?left+'일 남음':'곧 지워져요'}</small></div><button type="button" class="btn sm" data-r>되돌리기</button>${canPurge()?'<button type="button" class="btn sm danger" data-p>완전히 지우기</button>':''}`;
+    li.querySelector('b').textContent=t.name;li.querySelector('[data-r]').onclick=()=>untrash(t.id);const pb=li.querySelector('[data-p]');if(pb)pb.onclick=()=>purgeTrash(t.id);ul.appendChild(li);});}
 function closeTrash(){$('trashbox').classList.remove('on');}
 $('trashOpen').onclick=()=>{closeRail();hideTip();renderTrash();$('trashbox').classList.add('on');$('trashClose').focus();};
 $('trashClose').onclick=closeTrash;$('trashbox').addEventListener('click',e=>{if(e.target.id==='trashbox')closeTrash();});
@@ -5755,7 +5784,7 @@ function renderSteps(){
 /* ======================== 함께 쓰기: 로그인 · 공유 보관함 · 편집 기록 ======================== */
 const nameToEmail=n=>'u'+[...new TextEncoder().encode(n)].map(b=>b.toString(16).padStart(2,'0')).join('')+'@hogamslide.app';
 const normName=n=>String(n||'').trim().replace(/\s+/g,' ');
-function netErr(e){console.warn(e);toast('서버에 저장하지 못했어요. 인터넷 연결을 확인해 주세요');}
+function netErr(e){console.warn(e);checkIn();toast('서버에 저장하지 못했어요. 인터넷 연결을 확인해 주세요');}
 const rowToSong=r=>({title:r.title,result:r.result,thumb:safeImg(r.thumb),saved:Date.parse(r.updated_at),by:r.updated_by_name||'',hymn:r.hymn??null,vby:r.verified_by||null,vat:r.verified_at?Date.parse(r.verified_at):null});
 const rowToSess=r=>({id:r.id,name:r.name,text:r.text,results:r.results||[],verseIn:r.verse_in||'',bTitle:r.b_title||'',dirty:!!r.dirty,created:Date.parse(r.created_at),updated:Date.parse(r.updated_at),by:r.updated_by_name||'',ver:r.version??null,...(r.deleted_at?{del:Date.parse(r.deleted_at),delBy:r.deleted_by_name||''}:{})});
 // 고칠 때마다 1.2초 모아서 서버에 보내요. 나가거나 탭을 닫을 때는 기다리지 않고 바로 보내요.
@@ -5812,7 +5841,7 @@ $('clashKeep').onclick=()=>{
 };
 function flushSessions(){if(saveT){clearTimeout(saveT);saveT=null;saveSession();}return Promise.all(Object.keys(pushC).map(sendSession));}
 addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSessions();});
-async function removeSession(id){if(!sb||!me)return;clearTimeout(pushT[id]);delete pushT[id];delete pushC[id];const {error}=await sb.from('services').delete().eq('id',id);if(error)netErr(error);}
+async function removeSession(id){if(!sb||!me)return;clearTimeout(pushT[id]);delete pushT[id];delete pushC[id];const {error}=await sb.from('services').update({deleted_at:new Date().toISOString()}).eq('id',id);if(error)netErr(error);} // 빈 예배도 휴지통 표시만 (바로 지우기는 서버가 막아요)
 
 
 async function fnErrMsg(error,fn){
@@ -5919,19 +5948,24 @@ $('gateForm').onsubmit=async e=>{
   finally{go.disabled=false;go.textContent=label;}
 };
 async function afterLogin(u){
-  const [{data:ms,error},{data:cs,error:e2}]=await Promise.all([sb.from('members').select('name,church_id').eq('user_id',u.id).order('joined_at'),sb.from('churches').select('*')]);
+  const [{data:ms,error},{data:cs,error:e2}]=await Promise.all([sb.from('members').select('name,church_id,role').eq('user_id',u.id).order('joined_at'),sb.from('churches').select('*')]);
   if(error||e2){showGate();$('gErr').textContent='서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요';return;}
-  if(!ms.length){showJoin(u);return;}
+  const was=inWas(u.id)&&CH&&!ms.some(m=>m.church_id===CH); // 이 사람이 이 브라우저에서 쓰던 교회에서 빠졌을 때
+  if(!ms.length){CHURCHES=[];canMake=!cs.some(c=>c.created_by===u.id);showJoin(u);if(was){inSet('');$('jErr').textContent='쓰던 교회에서 나가게 되었어요. 다시 들어가려면 관리자에게 새 초대 링크를 받아 주세요';}return;}
   CHURCHES=ms.map(m=>({id:m.church_id,my:m.name,...cs.find(c=>c.id===m.church_id)}));canMake=!cs.some(c=>c.created_by===u.id);
-  const pick=ms.find(m=>m.church_id===CH)||ms[ms.length-1];
+  if(was){inSet('');showGone('removed');return;}
+  const open=ms.filter(m=>!CHURCHES.find(c=>c.id===m.church_id)?.suspended_at),now=ms.find(m=>m.church_id===CH);
+  if(!open.length||(now&&!open.includes(now))){showGone('suspended',now?.church_id||ms[0].church_id);return;}
+  const pick=now||open[open.length-1];
   if(pick.church_id!==CH){
     // 이 브라우저에 저장된 것을 교회에 맞게 다시 읽어야 해서 화면을 한 번 새로 열어요
     if(!CH&&pick.church_id===OKSU){CH=OKSU;moveOldStore();}
     if(keepChurch(pick.church_id)){location.reload();return;}
     CH=pick.church_id;}
   keepChurch(CH);
-  me={id:u.id,name:pick.name,church:pick.church_id};$('meName').textContent=me.name;$('meAv').textContent=me.name.slice(0,1);$('meAv').title=`내 계정 · ${me.name}`;renderChurch();
+  me={id:u.id,name:pick.name,church:pick.church_id,role:pick.role};inSet(u.id+':'+me.church);$('meName').textContent=me.name;$('meAv').textContent=me.name.slice(0,1);$('meAv').title=`내 계정 · ${me.name}`;renderChurch();
   hideGate();await bootRemote();
+  sb.rpc('is_super').then(({data})=>{$('setSuper').hidden=data!==true;});
   offerKakaoLink(u);
   const jc=store.get('joinCode',null);if(jc)openInvite(jc); // 이미 들어온 사람이 다른 교회 초대 링크를 눌렀을 때
 }
@@ -5957,12 +5991,12 @@ function offerKakaoLink(u){const need=!hasKakao(u);$('linkKakao').hidden=!need;
   if(was&&!need)return toastUndo('카카오 연결이 끝났어요. 다음부터 카카오로 들어오면 돼요',()=>{},'확인',12000);
   if(was&&AUTH_ERR)return toastUndo(AUTH_ERR==='identity_already_exists'?'이 카카오는 이미 다른 계정에 쓰이고 있어요. 호감에게 알려 주세요':'카카오를 연결하지 못했어요. 다시 해 보고 안 되면 호감에게 알려 주세요',()=>{},'확인',20000);
   if(need)setTimeout(()=>toastUndo('다음부터 카카오로 바로 들어오게 연결해 두세요',linkKakao,'카카오 연결',12000),1500);}
-// 팀원 초대: 우리 교회 초대 링크를 복사해요
-async function copyInvite(){const {data,error}=await sb.from('churches').select('name,invite_code').eq('id',me.church).maybeSingle();
-  if(error||!data?.invite_code)return toast('초대 링크를 불러오지 못했어요');
-  const link=`${backTo()}?join=${data.invite_code}`;
-  try{await navigator.clipboard.writeText(link);toast(`초대 링크를 복사했어요. 단톡방에 붙여 넣어 주세요 (코드 ${data.invite_code})`);}
-  catch(_){prompt('이 초대 링크를 복사해서 보내 주세요',link);}}
+// 팀원 초대: 우리 교회 초대 링크를 복사해요 (7일짜리, 서버가 만들고 지워요)
+async function copyInvite(){const {data,error}=await sb.rpc('get_invite');
+  if(error||!data?.code){checkIn();return toast('초대 링크를 불러오지 못했어요');}
+  const link=`${backTo()}?join=${data.code}`,d=new Date(data.expires_at),until=`${d.getMonth()+1}월 ${d.getDate()}일까지`;
+  try{await navigator.clipboard.writeText(link);toastUndo(`초대 링크를 복사했어요. ${until} 쓸 수 있어요 (코드 ${data.code})`,()=>{},'확인',6000);}
+  catch(_){prompt(`이 초대 링크를 복사해서 보내 주세요 (${until} 쓸 수 있어요)`,link);}}
 $('logout').onclick=async()=>{const old=!$('linkKakao').hidden;if(!confirm(old?'아직 카카오를 연결하지 않았어요. 나가면 다음에도 이름과 개인 암호로 들어와야 해요. 나갈까요?':'나갈까요? 다음에 카카오로 다시 들어오면 돼요.'))return;closeSet();saveSession();await flushSessions();await sb?.auth.signOut();me=null;if(old)location.href=backTo()+'?old';else location.reload();};
 
 // 예배 이름 칸을 글자 길이에 맞춰서, 저장 시각이 이름 바로 옆에 붙게
@@ -6001,10 +6035,10 @@ function renderOnline(){
 let CHURCHES=[],canMake=true;
 function renderChurch(){const c=CHURCHES.find(x=>x.id===me?.church),b=$('churchBtn'),many=CHURCHES.length>1;
   b.hidden=!c;if(!c)return;b.querySelector('b').textContent=c.name||'우리 교회';b.disabled=!many;b.classList.toggle('many',many);
-  b.title=many?'다른 교회로 바꾸기':c.name;$('setChurch').textContent=c.name||'';$('chMake').hidden=$('chMake2').hidden=!canMake;
+  b.title=many?'다른 교회로 바꾸기':c.name;$('setChurch').textContent=c.name||'';$('chMake').hidden=$('chMake2').hidden=!canMake;$('openTeam').hidden=me.role!=='admin';
   $('chList').innerHTML='';CHURCHES.forEach(x=>{const li=document.createElement('li'),bt=document.createElement('button'),on=x.id===me.church;bt.type='button';
-    bt.innerHTML=`<span class="tt"><b></b><small></small></span>${on?'<i class="ph ph-check" aria-label="지금 교회"></i>':''}`;bt.querySelector('b').textContent=x.name;bt.querySelector('small').textContent=x.my;
-    bt.onclick=()=>on?$('chDlg').close():goChurch(x.id,bt);li.appendChild(bt);$('chList').appendChild(li);});}
+    bt.innerHTML=`<span class="tt"><b></b><small></small></span>${on?'<i class="ph ph-check" aria-label="지금 교회"></i>':''}`;bt.querySelector('b').textContent=x.name;bt.querySelector('small').textContent=x.my+(x.suspended_at?' · 쉬고 있어요':'');
+    bt.disabled=!!x.suspended_at;bt.onclick=()=>on?$('chDlg').close():goChurch(x.id,bt);li.appendChild(bt);$('chList').appendChild(li);});}
 // 저장을 다 마쳐야 교회를 바꿔요. 하나라도 저장하지 못하면 바꾸지 않고 알려요
 async function flushAll(){
   if(busy)return'악보를 읽는 중이에요. 끝난 뒤에 바꿔 주세요';
@@ -6050,16 +6084,93 @@ document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>b.dataset.ch==='
 $('chClose').onclick=()=>$('chDlg').close();$('chDlg').addEventListener('click',e=>{if(e.target.id==='chDlg')$('chDlg').close();});
 $('jMake').onclick=openMake;
 
+// ---- 팀원 관리(교회 관리자) · 전체 관리(호감) ----
+const ymd=t=>{const d=new Date(t);return`${d.getFullYear()}. ${d.getMonth()+1}. ${d.getDate()}.`;};
+let TM=null; // {church,name,all:전체 관리에서 열었는지,sus}
+function tmOpen(){closeSet();closeRail();$('tmErr').textContent='';$('tmList').innerHTML='<li class="empty">불러오는 중…</li>';if(!$('tmDlg').open)$('tmDlg').showModal();}
+const tmFail='불러오지 못했어요. 인터넷 연결을 확인해 주세요';
+async function openTeam(t){TM=t;tmOpen();$('tmBack').hidden=!t.all;$('tmTitle').textContent=t.all?t.name:'팀원 관리';
+  $('tmSus').hidden=!t.all;$('tmSus').querySelector('p').textContent=t.sus?'쉬고 있는 교회예요. 팀원이 열 수 없어요.':'멈추면 팀원이 이 교회를 열 수 없어요. 자료는 그대로 있어요.';
+  const sbt=$('tmSus').querySelector('button');sbt.textContent=t.sus?'다시 열기':'교회 멈추기';
+  sbt.onclick=async()=>{if(!t.sus&&!confirm(`‘${t.name}’을 멈출까요? 팀원이 열 수 없게 되고, 다시 열 수 있어요.`))return;
+    sbt.disabled=true;const {data,error}=await sb.rpc('set_suspended',{p_church:t.church,p_on:!t.sus});sbt.disabled=false;
+    if(error||!data)return $('tmErr').textContent='바꾸지 못했어요. 다시 해 주세요';
+    if(t.church===me?.church)await checkIn(true);
+    if(me)openTeam({...t,sus:!t.sus});else $('tmDlg').close();};
+  await tmLoad();}
+async function tmLoad(){const t=TM;
+  const {data,error}=t.all?await sb.rpc('super_members',{p_church:t.church}):await sb.from('members').select('user_id,name,role,joined_at').eq('church_id',t.church).order('joined_at');
+  if(TM!==t)return;const ul=$('tmList');ul.innerHTML='';if(error){$('tmErr').textContent=tmFail;return;}
+  if(!data.length)ul.innerHTML='<li class="empty">팀원이 없어요</li>';
+  data.forEach(m=>{const li=document.createElement('li'),mine=m.user_id===me.id,ad=m.role==='admin';
+    li.innerHTML=`<div class="tmrow"><div class="tt"><b><span></span>${ad?'<i class="tmtag">관리자</i>':''}${mine?'<i class="tmtag">나</i>':''}</b><small>${ymd(m.joined_at)} 들어옴</small></div><button type="button" class="btn ghost ibtn" aria-expanded="false"><i class="ph ph-dots-three" aria-hidden="true"></i></button></div><div class="tmacts" hidden><button type="button" class="btn sm" data-a>${ad?'관리자 내리기':'관리자로 세우기'}</button>${mine?'':'<button type="button" class="btn sm danger" data-x>내보내기</button>'}</div>`;
+    li.querySelector('b span').textContent=m.name;const more=li.querySelector('.ibtn'),acts=li.querySelector('.tmacts');more.setAttribute('aria-label',m.name+' 관리');
+    more.onclick=()=>{const on=acts.hidden;ul.querySelectorAll('.tmacts').forEach(a=>{a.hidden=true;});ul.querySelectorAll('.ibtn').forEach(b=>b.setAttribute('aria-expanded','false'));acts.hidden=!on;more.setAttribute('aria-expanded',String(on));};
+    li.querySelector('[data-a]').onclick=e=>{if(ad&&mine&&!confirm('내 관리자 권한을 내려놓을까요? 다시 받으려면 다른 관리자에게 부탁해야 해요.'))return;
+      tmDo(e.target,'set_admin',{p_church:t.church,p_user:m.user_id,p_on:!ad},ad?`${m.name}님을 관리자에서 내렸어요`:`${m.name}님을 관리자로 세웠어요`,mine);};
+    const x=li.querySelector('[data-x]');if(x)x.onclick=()=>{if(!confirm(`${m.name}님을 내보낼까요? 만든 예배와 곡은 남고, 초대 링크는 막혀요.`))return;
+      tmDo(x,'remove_member',{p_church:t.church,p_user:m.user_id},`${m.name}님을 내보냈어요`);};
+    ul.appendChild(li);});}
+async function tmDo(btn,fn,args,ok,mine){$('tmErr').textContent='';btn.disabled=true;const {data,error}=await sb.rpc(fn,args);btn.disabled=false;
+  if(error){$('tmErr').textContent=/관리자만/.test(error.message||'')?error.message:'바꾸지 못했어요. 다시 해 주세요';checkIn(true);return;}
+  if(!data.ok){$('tmErr').textContent=data.error;return;}
+  toast(ok);if(mine&&args.p_church===me.church){await checkIn(true);if(!TM.all&&me?.role!=='admin'){$('tmDlg').close();return;}}
+  if(me)tmLoad();}
+async function openSuper(){TM=null;tmOpen();$('tmBack').hidden=true;$('tmSus').hidden=true;$('tmTitle').textContent='전체 관리';
+  const {data,error}=await sb.rpc('super_churches');if(TM)return;const ul=$('tmList');ul.innerHTML='';if(error){$('tmErr').textContent=tmFail;return;}
+  data.forEach(c=>{const li=document.createElement('li');li.innerHTML=`<button type="button" class="tmrow"><span class="tt"><b><span></span>${c.suspended_at?'<i class="tmtag">쉬는 중</i>':''}</b><small>팀원 ${c.members}명 · ${ymd(c.created_at)} 만듦</small></span><i class="ph ph-caret-right" aria-hidden="true"></i></button>`;
+    li.querySelector('b span').textContent=c.name;li.querySelector('button').onclick=()=>openTeam({church:c.id,name:c.name,all:true,sus:!!c.suspended_at});ul.appendChild(li);});}
+$('openTeam').onclick=()=>openTeam({church:me.church});$('openSuper').onclick=openSuper;$('tmBack').onclick=openSuper;
+$('tmClose').onclick=()=>$('tmDlg').close();$('tmDlg').addEventListener('click',e=>{if(e.target.id==='tmDlg')$('tmDlg').close();});
+
+// ---- 내보내졌거나 멈춘 교회: 1분마다 · 화면으로 돌아올 때 · 저장이 안 될 때 확인해요 ----
+// 한 컴퓨터를 여럿이 쓸 수 있어서, 이 브라우저에서 누가 어느 교회를 쓰고 있었는지 적어 둬요
+function inSet(v){try{localStorage.setItem('hg_in',v);}catch(e){}}
+function inWas(uid){try{return localStorage.getItem('hg_in')===uid+':'+CH;}catch(e){return false;}}
+let chkAt=0;
+async function checkIn(now){if(!sb||!me||(!now&&Date.now()-chkAt<5000))return;chkAt=Date.now();const my=me;
+  const [a,b]=await Promise.all([sb.from('members').select('name,church_id,role').eq('user_id',my.id),sb.from('churches').select('*')]);
+  if(a.error||b.error||me!==my)return; // 인터넷이 끊긴 것과 나가게 된 것을 헷갈리지 않게
+  // 로그인이 풀리면 목록이 빈 채로 올 수 있어요. 로그인이 살아 있을 때만 판단해요
+  const {data:{session}}=await sb.auth.getSession();if(me!==my||session?.user?.id!==my.id)return;
+  CHURCHES=a.data.map(m=>({id:m.church_id,my:m.name,...b.data.find(c=>c.id===m.church_id)}));
+  const m=a.data.find(x=>x.church_id===my.church),c=b.data.find(x=>x.id===my.church);
+  if(!m)return showGone('removed');if(c?.suspended_at)return showGone('suspended',my.church);
+  if(my.role!==m.role){my.role=m.role;renderTrash();}renderChurch();}
+setInterval(()=>{if(document.visibilityState==='visible')checkIn();},60000);
+addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkIn();});
+function showGone(why,church){
+  const left=[];
+  if(me){saveSession();if(TM)TM=null;
+    const fly={};SESS.forEach(c=>{if(inflight[c.id]>0)fly[c.id]=c;});
+    Object.entries({...fly,...failed,...pushC}).forEach(([id,c])=>left.push(id===curSess?combinedText():c.text));
+    Object.keys(clash).forEach(id=>{if(id===curSess&&!failed[id]&&!pushC[id])left.push(combinedText());});
+    const at=me.church;me=null;Object.keys(pushT).forEach(id=>clearTimeout(pushT[id]));Object.values(TEAM.t).forEach(clearTimeout);TEAM.on=false;
+    sb.removeAllChannels();if(why==='removed')inSet('');church=church||at;}
+  const c=CHURCHES.find(x=>x.id===church),txt=left.filter(Boolean).join('\n\n');
+  ['tmDlg','chDlg'].forEach(i=>{if($(i).open)$(i).close();});closeSet();closeRail();
+  $('goneTitle').textContent=why==='removed'?'이 교회에서 나가게 되었어요':'지금은 쉬고 있는 교회예요';
+  $('goneMsg').textContent=(why==='removed'?'이제 이 교회의 예배와 곡을 열 수 없어요. 다시 들어가려면 관리자에게 새 초대 링크를 받아 주세요.':`${c?.name||'이 교회'}의 자료는 그대로 있어요. 다시 열리면 이어서 쓸 수 있어요.`)+(txt?' 아직 저장하지 못한 글은 지금 복사해 두세요.':'');
+  $('goneCopy').hidden=!txt;$('goneCopy').textContent='저장 안 된 글 복사';$('goneCopy').onclick=async()=>{try{await navigator.clipboard.writeText(txt);$('goneCopy').textContent='복사했어요';}catch(e){prompt('이 글을 복사해 두세요',txt);}};
+  $('chMake3').hidden=!canMake;const ul=$('goneList');ul.innerHTML='';
+  CHURCHES.filter(x=>x.id!==church&&!x.suspended_at).forEach(x=>{const li=document.createElement('li'),bt=document.createElement('button');bt.type='button';
+    bt.innerHTML='<span class="tt"><b></b><small></small></span><i class="ph ph-arrow-right" aria-hidden="true"></i>';bt.querySelector('b').textContent=x.name;bt.querySelector('small').textContent=x.my+' · 이 교회로 가기';
+    bt.onclick=()=>goChurch(x.id,bt);li.appendChild(bt);ul.appendChild(li);});
+  if(!$('goneDlg').open)$('goneDlg').showModal();}
+$('goneDlg').addEventListener('cancel',e=>e.preventDefault());
+$('goneDlg').addEventListener('close',()=>{if(!me)$('goneDlg').showModal();}); // Esc를 두 번 누르면 브라우저가 닫아 버려요
+$('goneOut').onclick=async()=>{await sb.auth.signOut();location.reload();};
+
 let chan=null;
 async function bootRemote(){
   const [sv,sg,tr]=await Promise.all([sb.from('services').select('*').is('deleted_at',null).order('updated_at',{ascending:false}).limit(120),sb.from('songs').select('*'),sb.from('services').select('*').not('deleted_at','is',null)]);
   if(sv.error||sg.error||tr.error){netErr(sv.error||sg.error||tr.error);return;}
-  TRASH=tr.data.map(rowToSess);renderTrash();
+  const gone=new Set(tr.data.map(r=>r.id));TRASH=tr.data.map(rowToSess).filter(inTrash);renderTrash();
   LIB={};sg.data.forEach(r=>{LIB[r.title]=rowToSong(r);});
   const remote=sv.data.map(rowToSess),local=[...SESS];
   // 이 브라우저에만 있던(아직 못 올린) 기록은 올리고, 둘 다 있으면 최근 것을 써요
   // 서버에 올라갔던(판 번호가 있는) 기록이 서버에 없으면 지워진 거라 다시 올리지 않아요
-  local.forEach(l=>{const r=remote.find(x=>x.id===l.id);if(!r){if(l.ver!=null||TRASH.some(x=>x.id===l.id))return;if(l.text||(l.results&&l.results.length)||l.verseIn){remote.unshift(l);pushSession(l);}}
+  local.forEach(l=>{const r=remote.find(x=>x.id===l.id);if(!r){if(l.ver!=null||gone.has(l.id))return;if(l.text||(l.results&&l.results.length)||l.verseIn){remote.unshift(l);pushSession(l);}}
     else if((l.updated||0)>(r.updated||0)+2000){const v=r.ver;Object.assign(r,l);r.ver=l.ver??v;pushSession(r);}});
   SESS=remote;store.set('sessions',SESS);
   if(!SESS.find(x=>x.id===curSess)){const wk=SESS.find(x=>x.name===sundayName());const c=wk||newSessionObj();if(!SESS.includes(c))SESS.unshift(c);curSess=c.id;}
@@ -6079,7 +6190,7 @@ function subscribe(){
       if(id===curSess)toast('다른 팀원이 이 예배 기록을 지웠어요. 지금 화면의 글은 남아 있어요');renderHist();return;}
     if(p.new.church_id!==me.church)return;
     const r=rowToSess(p.new);
-    if(r.del){const had=SESS.some(x=>x.id===r.id);TRASH=[r,...TRASH.filter(x=>x.id!==r.id)];renderTrash();
+    if(r.del){const had=SESS.some(x=>x.id===r.id);TRASH=[...(inTrash(r)?[r]:[]),...TRASH.filter(x=>x.id!==r.id)];renderTrash();
       if(had){clearTimeout(pushT[r.id]);delete pushT[r.id];delete pushC[r.id];SESS=SESS.filter(x=>x.id!==r.id);store.set('sessions',SESS);renderHist();
         if(r.id===curSess)toast(`${r.delBy||'다른 팀원'}님이 이 예배를 휴지통으로 옮겼어요. 지금 화면의 글은 남아 있어요`);}
       return;}
@@ -6100,7 +6211,7 @@ function subscribe(){
 
 // 편집 기록
 const LOG_TXT={'song:create':t=>`‘${t}’ 곡을 보관함에 넣었어요`,'song:edit':t=>`‘${t}’ 곡을 고쳤어요`,'song:delete':t=>`‘${t}’ 곡을 보관함에서 지웠어요`,
-  'service:create':t=>`‘${t}’ 자막을 만들었어요`,'service:edit':t=>`‘${t}’ 자막을 고쳤어요`,'service:restore':n=>`‘${n}’ 예배를 휴지통에서 되돌렸어요`,'service:purge':n=>`‘${n}’ 예배를 완전히 지웠어요`,'service:delete':t=>`‘${t}’ 기록을 지웠어요`,'member:join':()=>'팀에 들어왔어요'};
+  'service:create':t=>`‘${t}’ 자막을 만들었어요`,'service:edit':t=>`‘${t}’ 자막을 고쳤어요`,'service:restore':n=>`‘${n}’ 예배를 휴지통에서 되돌렸어요`,'service:purge':n=>`‘${n}’ 예배를 완전히 지웠어요`,'service:delete':t=>`‘${t}’ 기록을 지웠어요`,'member:join':()=>'팀에 들어왔어요','member:remove':n=>`${n}님을 내보냈어요`,'member:admin_on':n=>`${n}님을 관리자로 세웠어요`,'member:admin_off':n=>`${n}님을 관리자에서 내렸어요`};
 async function loadLog(){
   const box=$('logList');
   // 바뀌기 전 내용(before) 전체는 무거워서, 있는지만 알 수 있게 제목·번호만 받아요

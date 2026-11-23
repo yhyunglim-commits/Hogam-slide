@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: u } = await admin.auth.getUser(token);
     if (!u?.user) return reply({ error: "다시 로그인해 주세요", code: "not_granted" }, 401);
-    const { data: m } = await admin.from("members").select("name").eq("user_id", u.user.id).limit(1); // 여러 교회에 속할 수 있어요
+    const { data: m } = await admin.from("members").select("name, churches!inner(suspended_at)").eq("user_id", u.user.id).is("churches.suspended_at", null).limit(1); // 여러 교회에 속할 수 있어요. 멈춘 교회는 빼요
     if (!m?.length) return reply({ error: "팀원만 쓸 수 있어요", code: "not_granted" }, 403);
 
     // 한 사람이 하루(24시간)에 쓸 수 있는 횟수. Secrets의 AI_DAILY_LIMIT로 바꿀 수 있어요 (기본 200번)
