@@ -58,7 +58,7 @@ Supabase 왼쪽 메뉴 **Edge Functions**에서 하는 일이에요.
 |---|---|
 | `GEMINI_API_KEY` | 3단계에서 복사한 키 |
 
-> **선택 · Claude로 읽기(유료):** `ANTHROPIC_API_KEY`에 Claude API 키(https://platform.claude.com)를 넣으면 Claude가 먼저 읽고, 안 될 때만 Gemini가 대신해요. 기본 모델은 빠르고 싼 `claude-haiku-5-5`예요. 악보를 더 꼼꼼히 읽게 하려면 `CLAUDE_MODEL`에 `claude-sonnet-5-5`를 넣으세요(곡당 비용은 더 들어요).
+> **선택 · Claude로 읽기(유료):** `ANTHROPIC_API_KEY`에 Claude API 키(https://platform.claude.com)를 넣으면 Claude가 먼저 읽고, 안 될 때만 Gemini가 대신해요. 기본 모델은 악보를 꼼꼼히 읽는 `claude-sonnet-5-5`예요. 비용을 줄이려면 `CLAUDE_MODEL`에 `claude-haiku-5-5`를 넣으세요.
 
 > 선택: 다른 Gemini 모델을 쓰고 싶으면 `GEMINI_MODEL`을 추가해요. 비워 두면 `gemini-3.8-flash`를 써요.
 
