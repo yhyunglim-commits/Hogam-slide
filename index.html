@@ -337,7 +337,7 @@ details.look[open] #lookCtl{max-height:38vh;overflow:auto;padding-right:4px}
 .lbbar button{background:rgba(255,255,255,.12);color:#fff;border:0;border-radius:8px;height:32px;padding:0 12px;cursor:pointer;font-size:13px}
 .lbbar button:hover{background:rgba(255,255,255,.2)}
 .lbbar button:disabled{opacity:.35}
-.tip{position:fixed;z-index:65;width:240px;background:#121826;color:#fff;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.55;box-shadow:0 12px 32px rgba(16,24,40,.28);opacity:0;pointer-events:none;transform:translateX(-4px);transition:opacity .12s,transform .12s}
+.tip{position:fixed;z-index:61;width:240px;background:#121826;color:#fff;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.55;box-shadow:0 12px 32px rgba(16,24,40,.28);opacity:0;pointer-events:none;transform:translateX(-4px);transition:opacity .12s,transform .12s}
 .tip.on{opacity:1;transform:none}
 .tip::before{content:"";position:absolute;left:-5px;top:14px;width:10px;height:10px;background:#121826;transform:rotate(45deg)}
 @media (max-width:960px){.tip::before{display:none}}
@@ -1813,12 +1813,12 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 /* 콘티 붙여 넣기 */
 .contic{width:min(680px,100%)}
 /* 첫 화면: 예배 제목 + 콘티 창 + 이전 예배 목록 (뒤 작업 화면은 탭 제목만 남기고 비워 보여요) */
-.contic .cwrap{display:flex;min-height:0;flex:1 1 auto}.contic .cwrap>.cbody{flex:1 1 auto;min-width:0}
+.contic .cwrap{display:flex;min-height:0;flex:1 1 auto}.contic .cmain{display:flex;flex-direction:column;flex:1 1 auto;min-width:0;min-height:0}
 #contibox.start .contic{width:min(1000px,100%)}
 .contic .cstart{display:flex;align-items:center;gap:10px;padding:0 20px 12px;flex-wrap:wrap}
 .contic .cstart label{font-size:13px;font-weight:600;color:var(--text2)}
 .contic .cstart input{flex:1 1 220px;min-width:0;font-size:18px;font-weight:700;padding:8px 12px;border:1px solid var(--line2);border-radius:10px;background:var(--surface);color:var(--text)}
-.contic .chist{flex:0 0 260px;border-left:1px solid var(--line);padding:2px 14px 18px;overflow:auto;min-height:0}
+.contic .chist{flex:0 0 260px;border-right:1px solid var(--line);padding:2px 14px 18px 20px;overflow:auto;min-height:0}
 .contic .chist[hidden]{display:none}
 .contic .chist h3{font-size:13px;font-weight:700;color:var(--text2);margin:0 0 8px}
 .contic .chist ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
@@ -1830,15 +1830,15 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 .contic .chist .tag.wk{background:var(--blue,#007AFF);color:#fff}
 .contic .chist .empty{font-size:13px;color:var(--text3);padding:8px 10px}
 body.starting #v-home>:not(header.doc){visibility:hidden}
-@media (max-width:760px){.contic .cwrap{flex-direction:column}.contic .chist{flex:none;border-left:0;border-bottom:1px solid var(--line);padding:0 20px 10px;margin-bottom:8px;order:-1}
-  #contibox.start .contic{overflow:auto}#contibox.start .contic .cwrap,#contibox.start .contic .cbody,#contibox.start .contic .cpane{flex:none;overflow:visible}#contibox.start .contic .cform{overflow:visible}}
+@media (max-width:760px){.cpick3{grid-template-columns:1fr!important}.contic .cpick3 button{min-height:0;padding:18px 16px;gap:4px}.contic .cwrap{flex-direction:column}.contic .chist{flex:none;border-right:0;border-top:1px solid var(--line);padding:14px 20px 16px;order:1}
+  #contibox.start .contic{overflow:auto}#contibox.start .contic .cwrap,#contibox.start .contic .cmain,#contibox.start .contic .cbody,#contibox.start .contic .cpane{flex:none;overflow:visible}#contibox.start .contic .cform{overflow:visible}}
 .contic .cbody{padding:4px 20px 18px;display:flex;flex-direction:column;gap:10px;min-height:0;flex:1 1 auto;overflow:hidden}
 .contic .clist{overflow:auto;min-height:0;flex:1 1 auto}
 .contic .cfoot{flex:none}
 .contic .hint2{margin:0;font-size:13px;color:var(--text3)}
 .contic textarea{width:100%;box-sizing:border-box;font-size:14px}
 .contic .cfoot{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
-.contic .cfoot #contiApply{margin-left:auto}
+.contic .cfoot>.btn.pri{margin-left:auto}
 .clist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .clist li{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;background:var(--sunken)}
 .clist li.off{opacity:.45}
@@ -1849,17 +1849,27 @@ body.starting #v-home>:not(header.doc){visibility:hidden}
 .clist .ct small.ok{color:#1E8E3E}.clist .ct small.warn{color:#C96F00}
 .rail .newsess.conti{margin-top:6px}
 #contibox{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-body:has(#contibox.on) header.doc{z-index:40!important}
-.cbig{display:flex;flex-direction:column;gap:10px;align-items:center;padding:14px;border:1.5px dashed var(--drop-line);border-radius:14px;background:var(--pri-soft);min-height:0;overflow:auto}
-.cbig.over{border-color:var(--pri);background:var(--drop-h)}
-.contic .cbig textarea,.contic .cbig textarea:focus{border:0!important;outline:0!important;background:transparent!important;box-shadow:none!important}
-.cbig:focus-within{border-color:var(--pri)}
-.contic .cbig textarea{resize:none;font-size:15px;min-height:130px}
-.cpick{cursor:pointer}
-.cfiles{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px;align-self:stretch}.cfiles:empty{display:none}
-.cfiles li{position:relative}.cfiles img{height:92px;border-radius:8px;display:block;border:1px solid var(--line)}
+#contibox{align-items:center}
+#setbox{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+body:has(#contibox.on,#setbox.on) header.doc{z-index:40!important}
+#contiBlank{margin-left:auto;margin-right:-12px}
+#contiHistQ{width:100%;box-sizing:border-box;height:36px;margin-bottom:8px;font-size:14px}
+#contiHomeP:focus{outline:0!important;box-shadow:none!important}
+.cpick3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.cpick3 button{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px;min-height:260px;padding:58px 16px 20px;border:1.5px solid var(--line);border-radius:14px;background:var(--pri-soft);color:var(--text);font:inherit;text-align:center;cursor:pointer;word-break:keep-all}
+.cpick3 button:hover,.cpick3 button:focus-visible,.cpick3 button.over{border-color:var(--pri);background:var(--drop-h)}
+.cpick3 i{font-size:40px;color:var(--pri);margin-bottom:6px}.cpick3 b{font-size:17px;font-weight:700}.cpick3 span{font-size:14px;color:var(--text2);line-height:1.5}.cpick3 small{font-size:12px;color:var(--text3)}
+.cbig{position:relative;display:flex;align-items:center;justify-content:center;min-height:300px;padding:20px;box-sizing:border-box;border:1.5px dashed var(--drop-line);border-radius:14px;background:var(--pri-soft);cursor:pointer;overflow:auto;flex:1 1 auto}
+.cbig:hover,.cbig.over,.cbig:focus-within{border-color:var(--pri)}.cbig.over{background:var(--drop-h)}
+.cbig>input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.cask{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.cask i{font-size:40px;color:var(--pri);margin-bottom:4px}.cask b{font-size:17px;font-weight:700;color:var(--text)}.cask small{font-size:13px;color:var(--text3)}
+.cbig.has .cask{display:none}
+[data-read]:disabled{opacity:.4;cursor:default}
+.cfiles{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:14px;justify-content:center}.cfiles:empty{display:none}
+.cfiles li{position:relative}.cfiles img{height:150px;max-width:220px;object-fit:contain;background:#fff;border-radius:8px;display:block;border:1px solid var(--line)}
 .cfiles button{position:absolute;top:-6px;right:-6px;width:24px;height:24px;border:0;border-radius:50%;background:var(--text);color:var(--surface);cursor:pointer;line-height:1}
-.contic .clinks{display:flex;gap:4px}
+.contic .clinks{display:flex;gap:4px;flex-wrap:wrap;margin-left:-12px}
 .clist .ct{flex:1 1 auto}
 .clist .ct input{width:100%;box-sizing:border-box;border:0;background:transparent;box-shadow:none;padding:2px 4px;margin-left:-4px;height:auto;font-size:14px;font-weight:700}
 .clist .ct input:focus,.clist .ct textarea:focus{background:var(--surface)}
@@ -2184,7 +2194,29 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
 .rail .railtitle .pen{flex:none}
 .rail #meBox{margin:auto 12px 0!important;position:static}
 .rail #meBox+.railmail{margin-top:8px}
-@media (min-width:1101px){.railtop{padding-right:52px}}
+.rfrow{display:flex;align-items:center;gap:4px;padding:8px 12px 12px}
+.rail .railfoot .rfrow .railmail{flex:1 1 auto;min-width:0;width:auto;margin:0}
+.rfrow .pin{position:static;flex:none}
+.rail #meBox{cursor:pointer}
+@media (min-width:1101px){body:not(.railpinned) .rail:not(:hover):not(:focus-within) .rfrow{padding:8px 0 12px;justify-content:center}
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .railfoot .rfrow .railmail{flex:none}}
+@media (max-width:1100px){.rfrow .pin{display:none}}
+/* 설정 창 (프로필을 누르면) */
+.setbox{align-items:center}
+.setcard{width:min(440px,100%)}
+.setbody{padding:4px 20px 20px;display:flex;flex-direction:column;gap:18px;overflow:auto}
+.setme{display:flex;align-items:center;gap:12px}
+.setme .av{width:44px;height:44px;border-radius:50%;background:var(--pri-grad);color:#fff;font-weight:700;display:grid;place-items:center;font-size:18px;flex:none}
+.setme b{font-size:17px}
+.setbody h3{margin:0 0 6px;font-size:13px;font-weight:600;color:var(--text3)}
+.setrows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.setrows>button{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 14px;border:0;background:var(--surface);color:var(--text);font:inherit;font-size:15px;text-align:left;cursor:pointer}
+.setrows>button[hidden]{display:none}
+.setrows{gap:1px;background:var(--line)!important}
+.setrows>button:hover{background:var(--sunken)}
+.setrows>button i{font-size:18px;color:var(--text2)}
+.settheme{display:grid;grid-template-columns:repeat(3,1fr);width:100%;box-sizing:border-box}
+.settheme button{height:36px;font-size:14px}
 .ptabs .saved{margin-left:auto;align-self:center;padding:0 4px 4px}
 @media (min-width:1101px){
   body:not(.railpinned) .rail:not(:hover):not(:focus-within) .railtitle>:not(.ricon),
@@ -2232,7 +2264,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
 </head>
 <body>
 <div class="shell">
-  <aside class="rail" id="rail"><button class="pin" id="railPin" type="button" aria-pressed="false" aria-label="옆 메뉴 늘 펼쳐 두기" title="늘 펼쳐 두기"><i class="ph ph-push-pin" aria-hidden="true"></i></button>
+  <aside class="rail" id="rail">
     <div class="brand"><div class="mk" aria-hidden="true"><img src="brand/logo.svg" alt=""></div><div><b class="brandtx"><span>호감 슬라이드</span><span lang="en" aria-hidden="true">HOGAM SLIDE</span></b></div></div>
     <div class="railtop" id="railTop">
       <div class="railnew" id="railNew"></div>
@@ -2243,8 +2275,8 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
       <span class="libsw"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input type="search" class="libsearch" id="libSearch" placeholder="제목·초성·가사 찾기" aria-label="보관함에서 곡 찾기"></span>
       <ul class="rlist" id="libList"></ul></div>
     <div class="railfoot" id="railFoot">
-    <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><span class="megear" aria-hidden="true"><i class="ph-fill ph-gear-six"></i></span><div class="mt"><b id="meName">로그인 전</b><span><button type="button" id="openLog">편집 기록</button><i>·</i><button type="button" id="invite">팀원 초대</button><i>·</i><button type="button" id="linkKakao" hidden>카카오 연결</button><i id="linkKakaoSep" hidden>·</i><button type="button" id="themeBtn" title="화면 밝기 바꾸기">화면: 자동</button><i>·</i><button type="button" id="logout">나가기</button></span></div></div>
-    <button type="button" class="railmail" id="openMail" title="문의 · 협업 · 응원 보내기"><span class="mico" aria-hidden="true"><i class="ph-fill ph-envelope-simple"></i></span><span class="mt2"><b>문의·응원 보내기</b><small>hogamcommunity@gmail.com</small></span></button>
+    <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><span class="megear" aria-hidden="true"><i class="ph-fill ph-gear-six"></i></span><div class="mt"><b id="meName">로그인 전</b><span>설정</span></div></div>
+    <div class="rfrow"><button type="button" class="railmail" id="openMail" title="문의 · 협업 · 응원 보내기"><span class="mico" aria-hidden="true"><i class="ph-fill ph-envelope-simple"></i></span><span class="mt2"><b>문의·응원 보내기</b><small>hogamcommunity@gmail.com</small></span></button><button class="pin" id="railPin" type="button" aria-pressed="false" aria-label="옆 메뉴 늘 펼쳐 두기" title="늘 펼쳐 두기"><i class="ph ph-push-pin" aria-hidden="true"></i></button></div>
     </div>
   </aside>
   <div class="scrim" id="scrim"></div>
@@ -2660,24 +2692,46 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
   <div class="lcard"><div class="lhead"><h2 id="logTitle">편집 기록</h2><span class="meta" id="logMeta"></span><button class="btn ghost ibtn" id="logClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
   <div class="llist" id="logList"></div></div>
 </div>
+<div class="logbox setbox" id="setbox" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+  <div class="lcard setcard"><div class="lhead"><h2 id="setTitle">설정</h2><button class="btn ghost ibtn" id="setClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
+  <div class="setbody">
+    <div class="setme"><span class="av" id="setAv" aria-hidden="true"></span><b id="setName"></b></div>
+    <div><h3>화면 밝기</h3><div class="seg2 settheme" role="radiogroup" aria-label="화면 밝기"><button type="button" role="radio" data-th="auto">자동</button><button type="button" role="radio" data-th="light">밝게</button><button type="button" role="radio" data-th="dark">어둡게</button></div></div>
+    <div><h3>교회</h3><div class="setrows"><button type="button" id="invite"><i class="ph ph-user-plus" aria-hidden="true"></i>팀원 초대</button><button type="button" id="openLog"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>편집 기록</button></div></div>
+    <div><h3>계정</h3><div class="setrows"><button type="button" id="linkKakao" hidden><i class="ph ph-chat-circle" aria-hidden="true"></i>카카오 연결</button><button type="button" id="logout"><i class="ph ph-sign-out" aria-hidden="true"></i>나가기</button></div></div>
+  </div></div>
+</div>
 <div class="logbox" id="contibox" role="dialog" aria-modal="true" aria-labelledby="contiTitle">
-  <div class="lcard contic"><div class="lhead"><h2 id="contiTitle">콘티 &amp; 예배 순서 넣기</h2><span class="meta" id="contiMeta"></span><button class="btn ghost ibtn" id="contiClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
-    <div class="cstart" id="contiStartTop" hidden><label for="contiName">예배 제목</label><input type="text" id="contiName" autocomplete="off" placeholder="예) 11월 23일 주일예배"></div>
+  <div class="lcard contic"><div class="lhead"><h2 id="contiTitle">지금 예배에 순서 넣기</h2><span class="meta" id="contiMeta"></span><button class="btn ghost ibtn" id="contiClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
     <div class="cwrap">
+    <aside class="chist" id="contiHist" hidden aria-label="이전 예배"><h3>이전 예배</h3><input type="search" id="contiHistQ" placeholder="예배 이름 · 곡 제목" aria-label="이전 예배 찾기" autocomplete="off"><ul id="contiHistList"></ul></aside>
+    <div class="cmain">
+    <div class="cstart" id="contiStartTop" hidden><label for="contiName">예배 제목</label><input type="text" id="contiName" autocomplete="off" placeholder="예) 11월 23일 주일예배"></div>
     <div class="cbody" id="contiStep1">
-      <div class="cpane" id="contiPasteP">
-      <div class="cbig" id="contiDrop">
-        <textarea id="contiIn" rows="6" aria-label="순서지 글" placeholder="카톡 콘티나 순서지 글을 붙여 넣으세요"></textarea>
-        <ul class="cfiles" id="contiFiles"></ul>
-        <label class="btn cpick"><input type="file" id="contiPick" accept="image/*,application/pdf" multiple hidden><i class="ph ph-image" aria-hidden="true"></i><span>순서지·주보 사진 넣기</span></label>
+      <div class="cpane" id="contiHomeP" tabindex="-1">
+      <div class="cpick3">
+        <button type="button" id="contiCardImg"><i class="ph ph-image" aria-hidden="true"></i><b>이미지 넣기</b><span>찬양콘티, 예배순서지를 올려주세요.</span><small>JPG, PDF, PNG</small></button>
+        <button type="button" data-cm="paste"><i class="ph ph-clipboard-text" aria-hidden="true"></i><b>글 붙여넣기</b><span>찬양콘티, 예배순서를 붙여 넣어주세요.</span></button>
+        <button type="button" data-cm="form"><i class="ph ph-pencil-simple-line" aria-hidden="true"></i><b>양식 작성하기</b><span>양식에 따라 직접 작성해주세요.</span></button>
       </div>
+      <div class="cfoot"><button type="button" class="btn ghost" id="contiBlank" hidden>빈 화면으로 시작</button></div>
+      </div>
+      <div class="cpane" id="contiImgP" hidden>
+      <label class="cbig" id="contiDrop"><input type="file" id="contiPick" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" multiple aria-label="찬양콘티, 예배순서지 올리기 (JPG, PDF, PNG)">
+        <span class="cask"><i class="ph ph-image" aria-hidden="true"></i><b>찬양콘티, 예배순서지를 올려주세요.</b><small>JPG, PDF, PNG</small></span>
+        <ul class="cfiles" id="contiFiles"></ul>
+      </label>
       <p class="hint2" id="contiPriv" hidden>사진은 AI에 보내서 읽어요. 헌금 명단이나 연락처는 가리고 넣어 주세요.</p>
-      <div class="cfoot"><span class="clinks"><button type="button" class="btn ghost" data-cm="form">직접 적기</button><button type="button" class="btn ghost" id="contiBlank" hidden>빈 화면으로 시작</button></span><button type="button" class="btn pri" id="contiRead"><i class="ph ph-magic-wand" aria-hidden="true"></i> 읽기</button></div>
+      <div class="cfoot"><span class="clinks"><button type="button" class="btn ghost" data-cm="home"><i class="ph ph-arrow-left" aria-hidden="true"></i> 뒤로</button></span><button type="button" class="btn pri" data-read><i class="ph ph-magic-wand" aria-hidden="true"></i> 읽기</button></div>
+      </div>
+      <div class="cpane" id="contiPasteP" hidden>
+      <textarea id="contiIn" rows="12" aria-label="콘티·순서 글" placeholder="찬양콘티, 예배순서를 붙여 넣어주세요."></textarea>
+      <div class="cfoot"><span class="clinks"><button type="button" class="btn ghost" data-cm="home"><i class="ph ph-arrow-left" aria-hidden="true"></i> 뒤로</button></span><button type="button" class="btn pri" data-read><i class="ph ph-magic-wand" aria-hidden="true"></i> 읽기</button></div>
       </div>
       <div class="cpane" id="contiFormP" hidden>
       <ol class="cform" id="cfList"></ol>
       <select class="cfadd" id="cfAdd" aria-label="줄 더하기"></select>
-      <div class="cfoot"><span class="clinks"><button type="button" class="btn ghost" data-cm="paste"><i class="ph ph-arrow-left" aria-hidden="true"></i> 뒤로</button><button type="button" class="btn ghost" id="cfReset">기본 순서로</button></span><button type="button" class="btn pri" id="cfNext">다음</button></div>
+      <div class="cfoot"><span class="clinks"><button type="button" class="btn ghost" data-cm="home"><i class="ph ph-arrow-left" aria-hidden="true"></i> 뒤로</button><button type="button" class="btn ghost" id="cfReset">기본 순서로</button></span><button type="button" class="btn pri" id="cfNext">다음</button></div>
       </div>
     </div>
     <div class="cbody" id="contiStep2" hidden>
@@ -2685,7 +2739,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
       <ol class="clist" id="contiList"></ol>
       <div class="cfoot"><button type="button" class="btn ghost" id="contiBack"><i class="ph ph-arrow-left" aria-hidden="true"></i> 뒤로</button><label class="ck" id="contiNewL"><input type="checkbox" id="contiNew"><span>새 예배 자막으로 시작</span></label><button type="button" class="btn pri" id="contiApply">넣기</button></div>
     </div>
-    <aside class="chist" id="contiHist" hidden aria-label="이전 예배"><h3>이전 예배</h3><ul id="contiHistList"></ul></aside>
+    </div>
     </div>
   </div>
 </div>
@@ -4007,9 +4061,12 @@ let SLIDE_OV=store.get('slideOv',{});
 {const hd=document.querySelector('header.doc'),br=document.querySelector('.rail .brand'),me=$('meBox'),meHome=me.parentElement,meNext=me.nextSibling,mq=matchMedia('(min-width:1101px)'),av=me.querySelector('.av');
  const place=()=>{if(mq.matches)hd.prepend(br);else $('rail').insertBefore(br,$('railTop'));me.classList.remove('open');setDocH();};
  mq.addEventListener('change',place);place();
- av.setAttribute('role','button');av.tabIndex=0;av.setAttribute('aria-label','내 계정 메뉴');av.removeAttribute('aria-hidden');
- const tog=e=>{if(!mq.matches)return;e.stopPropagation();me.classList.toggle('open');};av.addEventListener('click',tog);me.querySelector('.megear').addEventListener('click',tog);av.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(e);}if(e.key==='Escape')me.classList.remove('open');});
- document.addEventListener('click',e=>{if(!me.contains(e.target))me.classList.remove('open');});}
+ av.setAttribute('role','button');av.tabIndex=0;av.setAttribute('aria-label','설정 열기');av.removeAttribute('aria-hidden');
+ const tog=()=>openSet();me.addEventListener('click',tog);av.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openSet();}});}
+function openSet(){closeRail();hideTip();$('setName').textContent=$('meName').textContent;$('setAv').textContent=$('meAv').textContent;$('setbox').classList.add('on');$('setClose').focus();}
+function closeSet(){$('setbox').classList.remove('on');}
+$('setClose').onclick=closeSet;$('setbox').addEventListener('click',e=>{if(e.target.id==='setbox')closeSet();});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeSet();});
 setTimeout(()=>{lookPrev=lookSnap();},0);
 $('lkUndo').onclick=e=>{e.preventDefault();e.stopPropagation();undoLook();};
 function tabOf(sc){return!sc||sc.type==='song'?'song':sc.type==='info'?'info':sc.ed==='quote'?'quote':'word';}
@@ -4547,7 +4604,7 @@ const CF_DEF=[{t:'cover'},{t:'notice',l:'예배로 부름'},{t:'song'},{t:'song'
 const CF_MORE=['봉헌','간증','보고']; // 자주 쓰는 순서 줄 바로 더하기
 const CF_KIND={song:['s','찬양'],word:['w','본문'],sermon:['i','설교'],notice:['i','순서'],text:['i','고백문'],ad:['i','광고'],cover:['i','표지']};
 const CF_PH={song:'곡 제목 또는 찬송가 번호 (예: 305 나 같은 죄인)',word:'예) 요 3:16-18 · 누가복음 17장 11-19절',sermon:'설교 제목',notice:'맡은 사람 (예: 김철수 장로) · 없으면 비워 두세요',text:'예) 사도신경',ad:'광고 제목 (비우면 “광고”)',cover:'예배 이름 (예: 주일 2부 예배) · 비우면 표지 없이'};
-let CF=(store.get('contiForm',null)||CF_DEF).map(o=>({...o}));let contiMode='paste';
+let CF=(store.get('contiForm',null)||CF_DEF).map(o=>({...o}));let contiMode='home';
 const cfKeep=()=>store.set('contiForm',CF.map(o=>({t:o.t,...(o.l!=null?{l:o.l}:{}),...(o.t==='text'?{v:o.v||''}:{})})));
 function renderCF(){const box=$('cfList');
   box.innerHTML=CF.map((o,i)=>{const[c,n]=CF_KIND[o.t];
@@ -4574,8 +4631,10 @@ function cfAdd(t,l){const o={t};if(t==='notice')o.l=l||'';CF.push(o);cfKeep();re
 $('cfAdd').innerHTML='<option value="">+ 줄 더하기</option>'+Object.entries(CF_KIND).map(([t,[,n]])=>`<option value="${t}">${n==='순서'?'순서 (직접 입력)':n}</option>`).join('')+CF_MORE.map(l=>`<option value="notice:${l}">${l}</option>`).join('');
 $('cfAdd').onchange=()=>{const[t,l]=$('cfAdd').value.split(':');$('cfAdd').value='';if(t)cfAdd(t,l);};
 $('cfReset').onclick=()=>{const old=CF;CF=CF_DEF.map(o=>({...o}));cfKeep();renderCF();toastUndo('기본 양식으로 돌렸어요',()=>{CF=old;cfKeep();renderCF();});};
-function setContiMode(m){contiMode=m;$('contiFormP').hidden=m!=='form';$('contiPasteP').hidden=m!=='paste';}
-document.querySelectorAll('[data-cm]').forEach(b=>b.onclick=()=>{setContiMode(b.dataset.cm);(b.dataset.cm==='form'?$('cfList').querySelector('input'):$('contiIn'))?.focus();});
+const CPANE={home:'contiHomeP',image:'contiImgP',paste:'contiPasteP',form:'contiFormP'};
+function setContiMode(m){contiMode=m;for(const k in CPANE)$(CPANE[k]).hidden=k!==m;contiReady();
+  ({home:$('contiHomeP'),image:$('contiPick'),paste:$('contiIn'),form:$('cfList').querySelector('input')})[m]?.focus();}
+document.querySelectorAll('[data-cm]').forEach(b=>b.onclick=()=>setContiMode(b.dataset.cm));
 // 성경 줄임말: '요 3:16-18', '요한복음 3장 16-18절', '시 23편'
 const BABBR='창 출 레 민 신 수 삿 룻 삼상 삼하 왕상 왕하 대상 대하 스 느 에 욥 시 잠 전 아 사 렘 애 겔 단 호 욜 암 옵 욘 미 나 합 습 학 슥 말 마 막 눅 요 행 롬 고전 고후 갈 엡 빌 골 살전 살후 딤전 딤후 딛 몬 히 약 벧전 벧후 요일 요이 요삼 유 계'.split(' ');
 function parseRefStr(v){const m=String(v||'').replace(/^\s*(본문|성경|말씀)\s*[:：]?\s*/,'').trim().match(/^(.+?)\s*(\d+)\s*(?:장|편|:)?\s*(?:(\d+)\s*절?\s*(?:[-~–]\s*(\d+))?)?\s*절?\s*$/);
@@ -4593,20 +4652,26 @@ function cfToConti(){const out=[];
     else if(o.t==='cover'){if(v)out.push({t:'cover',title:v,on:true});}}
   return out;}
 $('cfNext').onclick=()=>{CONTI=cfToConti();if(!CONTI.length){toast('칸을 하나 이상 채워 주세요');return;}renderConti();$('contiStep1').hidden=true;$('contiStep2').hidden=false;};
-function openConti(){closeRail();$('contibox').classList.add('on');$('contiStep1').hidden=false;$('contiStep2').hidden=true;renderCF();setContiMode('paste');clearContiFiles();contiInert(true);$('contiMeta').textContent='';
-  const has=!!(combinedText().trim()||songs.length);$('contiNew').checked=has;$('contiNewL').hidden=!has;setTimeout(()=>$('contiIn').focus(),30);}
+function openConti(){closeRail();hideTip();$('contibox').classList.add('on');$('contiStep1').hidden=false;$('contiStep2').hidden=true;renderCF();setContiMode('home');clearContiFiles();contiInert(true);$('contiMeta').textContent='';
+  const has=!!(combinedText().trim()||songs.length);$('contiNew').checked=has;$('contiNewL').hidden=!has;setTimeout(()=>$('contiHomeP').focus(),30);}
 // 창이 떠 있는 동안 뒤(위 표시줄·왼쪽 목록)는 흐리고 눌리지 않아요
 function contiInert(on){document.querySelectorAll('#v-home,#rail').forEach(e=>e.inert=on);}
-function closeConti(){$('contibox').classList.remove('on');contiInert(false);if(startMode){startMode=false;document.body.classList.remove('starting');$('contibox').classList.remove('start');$('contiStartTop').hidden=$('contiHist').hidden=$('contiBlank').hidden=true;$('contiTitle').innerHTML='콘티 &amp; 예배 순서 넣기';}}
-// 첫 화면: 로그인하면 늘 떠요. 예배 제목을 적고 콘티를 넣거나, 오른쪽 이전 예배를 눌러 이어서 해요
+function closeConti(){$('contibox').classList.remove('on');contiInert(false);if(startMode){startMode=false;document.body.classList.remove('starting');$('contibox').classList.remove('start');$('contiStartTop').hidden=$('contiHist').hidden=$('contiBlank').hidden=true;$('contiTitle').innerHTML='지금 예배에 순서 넣기';}}
+// 첫 화면: 로그인하면 늘 떠요. 예배 제목을 적고 콘티를 넣거나, 왼쪽 이전 예배를 눌러 이어서 해요
 var startMode=false;
 function openStart(){openConti();startMode=true;document.body.classList.add('starting');$('contibox').classList.add('start');$('contiTitle').textContent='예배 준비하기';
-  $('contiStartTop').hidden=$('contiHist').hidden=$('contiBlank').hidden=false;$('contiNewL').hidden=true;$('contiName').value=sundayName();renderStartHist();}
+  $('contiStartTop').hidden=$('contiHist').hidden=$('contiBlank').hidden=false;$('contiNewL').hidden=true;$('contiName').value=sundayName();$('contiHistQ').value='';renderStartHist();}
+$('contiHistQ').oninput=renderStartHist;
 // 새 예배로 시작: 지금 예배가 비어 있으면 그걸 쓰고, 아니면 새로 만들어요
 function startNew(){if(combinedText().trim()||songs.length)newSessClick();$('docTitle').value=$('contiName').value.trim()||sundayName();fitTitle();saveSession();}
+// 저절로 만들어진 빈 예배는 기록에 안 보여요 (이름을 바꿨으면 보여요)
+const inHist=c=>hasWork(c)||c.name!==sundayName();
+const hasWork=c=>!!(c.text||(c.results&&c.results.length)||c.verseIn);
 function renderStartHist(){const ul=$('contiHistList');if(!ul)return;
-  const list=[...SESS].filter(c=>c.text||(c.results&&c.results.length)||c.verseIn).sort((a,b)=>b.updated-a.updated).slice(0,10);
-  if(!list.length){ul.innerHTML='<li class="empty">아직 기록이 없어요</li>';return;}
+  const q=normT($('contiHistQ').value);
+  let list=[...SESS].filter(hasWork).sort((a,b)=>b.updated-a.updated);
+  list=q?list.filter(c=>[c.name,...(c.results||[]).map(r=>r.title)].some(t=>normT(t).includes(q))):list.slice(0,10);
+  if(!list.length){ul.innerHTML=`<li class="empty">${q?'찾는 예배가 없어요':'아직 기록이 없어요'}</li>`;return;}
   ul.innerHTML='';list.forEach(c=>{const n=(c.results||[]).length,li=document.createElement('li'),b=document.createElement('button');b.type='button';
     const tags=(c.name===sundayName()?'<i class="tag wk">이번 주</i>':'')+(c.by&&me&&c.by!==me.name?`<i class="tag">팀원 ${esc(c.by)}</i>`:'');
     b.innerHTML=`<b></b><small>${tags}${fmtDate(c.updated)} · ${n?`${n}곡`:'곡 없음'}${c.verseIn?' · 말씀':''}</small>`;b.querySelector('b').textContent=c.name;
@@ -4615,18 +4680,29 @@ $('contiBlank').onclick=()=>{startNew();closeConti();setPage('song');toast('새 
 // 순서지·주보 사진: 골라 넣기 · 끌어 넣기 · 붙여 넣기
 let CPG=[];const CPG_MAX=6;
 function clearContiFiles(){CPG.forEach(p=>URL.revokeObjectURL(p.url));CPG=[];renderContiFiles();}
-function renderContiFiles(){$('contiPriv').hidden=!CPG.length;$('contiFiles').innerHTML=CPG.map((p,i)=>`<li><img src="${p.url}" alt="${i+1}번째 사진"><button type="button" data-cx="${i}" aria-label="${i+1}번째 사진 빼기">×</button></li>`).join('');
-  $('contiFiles').querySelectorAll('[data-cx]').forEach(b=>b.onclick=()=>{URL.revokeObjectURL(CPG.splice(+b.dataset.cx,1)[0].url);renderContiFiles();});}
+let contiBusy=false;
+const contiReadBtns=document.querySelectorAll('[data-read]');
+function contiReady(){const ok=contiMode==='image'?CPG.length:$('contiIn').value.trim();contiReadBtns.forEach(b=>b.disabled=contiBusy||!ok);}
+function renderContiFiles(){$('contiPriv').hidden=!CPG.length;$('contiDrop').classList.toggle('has',!!CPG.length);contiReady();$('contiFiles').innerHTML=CPG.map((p,i)=>`<li><img src="${p.url}" alt="${i+1}번째 사진"><button type="button" data-cx="${i}" aria-label="${i+1}번째 사진 빼기">×</button></li>`).join('');
+  $('contiFiles').querySelectorAll('[data-cx]').forEach(b=>b.onclick=e=>{e.preventDefault();URL.revokeObjectURL(CPG.splice(+b.dataset.cx,1)[0].url);renderContiFiles();});}
 async function addContiFiles(files){for(const f of files){try{const pg=await fileToPages(f);if(!pg.length)toast('사진이나 PDF만 넣을 수 있어요');CPG.push(...pg);}catch(e){toast(`${f.name}: ${e.message||e}`);}}
   if(CPG.length>CPG_MAX){CPG.splice(CPG_MAX).forEach(p=>URL.revokeObjectURL(p.url));toast(`사진은 ${CPG_MAX}장까지 읽어요`);}
-  renderContiFiles();}
+  renderContiFiles();if(CPG.length&&contiMode!=='image')setContiMode('image');}
+$('contiCardImg').onclick=()=>CPG.length?setContiMode('image'):$('contiPick').click();
 $('contiPick').onchange=()=>{addContiFiles([...$('contiPick').files]);$('contiPick').value='';};
-['dragenter','dragover'].forEach(e=>$('contiDrop').addEventListener(e,ev=>{ev.preventDefault();$('contiDrop').classList.add('over');}));
-['dragleave','drop'].forEach(e=>$('contiDrop').addEventListener(e,ev=>{ev.preventDefault();$('contiDrop').classList.remove('over');}));
-$('contiDrop').addEventListener('drop',ev=>addContiFiles([...ev.dataTransfer.files]));
-$('contiIn').addEventListener('paste',ev=>{const f=[...(ev.clipboardData?.files||[])];if(f.length){ev.preventDefault();addContiFiles(f);}});
-async function readConti(){const raw=$('contiIn').value.trim(),imgs=CPG.map(p=>p.blob);if(!raw&&!imgs.length){toast('사진이나 글을 먼저 넣어 주세요');return;}
-  const b=$('contiRead');b.disabled=true;const t0=b.innerHTML;b.innerHTML='<span class="spin"></span> 읽는 중…';
+for(const el of[$('contiDrop'),$('contiCardImg')]){
+  ['dragenter','dragover'].forEach(e=>el.addEventListener(e,ev=>{ev.preventDefault();el.classList.add('over');}));
+  ['dragleave','drop'].forEach(e=>el.addEventListener(e,ev=>{ev.preventDefault();el.classList.remove('over');}));
+  el.addEventListener('drop',ev=>addContiFiles([...ev.dataTransfer.files]));}
+$('contiIn').oninput=contiReady;
+// 박스가 열려 있을 때 붙여 넣으면 사진은 박스로, 글은 글 칸으로
+addEventListener('paste',ev=>{if(!$('contibox').classList.contains('on')||$('contiStep1').hidden||contiMode==='form')return;
+  const f=[...(ev.clipboardData?.files||[])];if(f.length){ev.preventDefault();addContiFiles(f);return;}
+  if(['contiIn','contiName'].includes(ev.target.id))return;
+  const t=(ev.clipboardData?.getData('text')||'').trim();if(!t)return;ev.preventDefault();setContiMode('paste');const a=$('contiIn');a.value=[a.value.trim(),t].filter(Boolean).join('\n');contiReady();a.focus();});
+async function readConti(){const img=contiMode==='image',raw=img?'':$('contiIn').value.trim(),imgs=img?CPG.map(p=>p.blob):[]; // 지금 보이는 칸만 읽어요
+  if(!raw&&!imgs.length){toast('사진이나 글을 먼저 넣어 주세요');return;}
+  const b=$(CPANE[contiMode]).querySelector('[data-read]');contiBusy=true;contiReady();const t0=b.innerHTML;b.innerHTML='<span class="spin"></span> 읽는 중…';
   try{const v=await askJSON(contiPrompt(raw,imgs.length),imgs.length?{images:imgs,imgMax:2200}:{modelTier:'simple'});const list=Array.isArray(v)?v:v&&v.items;
     if(!Array.isArray(list)||!list.length)throw{message:'화면으로 만들 항목을 찾지 못했어요. 글을 확인해 주세요.'};
     CONTI=list.filter(o=>o&&['song','word','notice','ad','text','cover','sermon'].includes(o.t)).map(o=>{const x={...o,on:true};
@@ -4635,7 +4711,7 @@ async function readConti(){const raw=$('contiIn').value.trim(),imgs=CPG.map(p=>p
       return x;});
     renderConti();$('contiStep1').hidden=true;$('contiStep2').hidden=false;}
   catch(e){toast(aiErr(e));}
-  finally{b.disabled=false;b.innerHTML=t0;}}
+  finally{contiBusy=false;contiReady();b.innerHTML=t0;}}
 const refOf=o=>`${o.book} ${o.ch}장${o.v1?` ${o.v1}${o.v2&&+o.v2>+o.v1?'-'+o.v2:''}절`:''}`;
 function contiLabel(o){if(o.t==='song')return[o.title+(o.hymn?` (찬송가 ${o.hymn}장)`:''),o.lib?`보관함 ✓ ${o.lib}`:'보관함에 없어요 · 빈 가사 칸을 만들어 둘게요',o.lib?'ok':'warn'];
   if(o.t==='word')return o.bad?[`${o.book||''} ${o.ch||''}`.trim(),'성경 이름을 못 알아봤어요 · 말씀 탭에서 골라 주세요','warn']:[refOf(o),'말씀 탭의 성경 고르기에 넣어요 · 본문은 갓피아에서 붙여 넣어요',''];
@@ -4684,7 +4760,7 @@ function applyConti(){const pick=CONTI.filter(o=>o.on);if(!pick.length){toast('�
   const extra=pick.filter(o=>o.t==='word').length-(wordSet?1:0);
   toast(`콘티를 넣었어요`+(miss.length?` · 보관함에 없는 ${miss.length}곡은 가사나 악보를 넣어 주세요`:'')+(extra>0?` · 본문은 첫 번째만 넣었어요`:''));
   setPage(miss.length?'song':'slides');}
-$('contiClose').onclick=closeConti;$('contiRead').onclick=readConti;$('contiApply').onclick=applyConti;
+$('contiClose').onclick=closeConti;contiReadBtns.forEach(b=>b.onclick=readConti);$('contiApply').onclick=applyConti;
 $('contiBack').onclick=()=>{$('contiStep1').hidden=false;$('contiStep2').hidden=true;};
 $('contibox').addEventListener('click',e=>{if(e.target.id==='contibox')closeConti();});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&$('contibox').classList.contains('on'))closeConti();});
@@ -5337,7 +5413,8 @@ function hideTip(){$('tip').classList.remove('on');}
 function renderHist(){
   if(startMode)renderStartHist();
   const ul=$('histList');ul.innerHTML='';
-  const list=[...SESS].sort((a,b)=>b.updated-a.updated);
+  hideTip(); // 목록을 다시 그리면 마우스가 떠난 걸 몰라서 설명 창이 남아요
+  const list=SESS.filter(inHist).sort((a,b)=>b.updated-a.updated);
   if(!list.length){ul.innerHTML='<li class="empty">아직 기록이 없어요</li>';return;}
   list.forEach(c=>{const li=document.createElement('li');if(c.id===curSess)li.className='on';
     const n=(c.results||[]).length;
@@ -5350,7 +5427,8 @@ function renderHist(){
     li.addEventListener('mouseenter',show);li.addEventListener('focus',show);
     li.addEventListener('mouseleave',hideTip);li.addEventListener('blur',hideTip);
     li.onclick=e=>{if(e.target.closest('.ib'))return;hideTip();if(c.id!==curSess){saveSession();loadSession(c.id);}};
-    li.querySelector('.ib').onclick=()=>{if(!confirm(`‘${c.name}’ 기록을 팀 전체에서 지울까요?`))return;SESS=SESS.filter(x=>x!==c);store.set('sessions',SESS);removeSession(c.id);if(c.id===curSess){const nx=SESS[0]||newSessionObj();if(!SESS.includes(nx))SESS.unshift(nx);loadSession(nx.id);}else renderHist();};
+    li.querySelector('.ib').onclick=()=>{if(!confirm(`‘${c.name}’ 기록을 팀 전체에서 지울까요?`))return;SESS=SESS.filter(x=>x!==c);store.set('sessions',SESS);removeSession(c.id);if(c.id===curSess){const nx=SESS[0]||newSessionObj();if(!SESS.includes(nx))SESS.unshift(nx);loadSession(nx.id);}else renderHist();
+      if(!SESS.some(inHist))openStart();};
     ul.appendChild(li);});
 }
 
@@ -5537,8 +5615,8 @@ $('libQuick').addEventListener('keydown',e=>{const btns=$('libDrop').querySelect
 function renderSteps(){
   const box=$('railNew');if(!box||box.firstChild)return;
   box.innerHTML='<button class="btn sm pri newsess" id="newSess" title="새 예배 자막 만들기"><i class="ph ph-plus" aria-hidden="true"></i><span>새 예배 자막 만들기</span></button>';
-  $('newSess').onclick=newSessClick;
-  box.insertAdjacentHTML('beforeend','<button class="btn sm newsess conti" id="contiOpen" title="순서지 사진이나 카톡 글로 찬양·말씀·순서·광고를 한 번에 채우기"><i class="ph ph-clipboard-text" aria-hidden="true"></i><span>콘티 &amp; 예배 순서 넣기</span></button>');
+  $('newSess').onclick=openStart;
+  box.insertAdjacentHTML('beforeend','<button class="btn sm newsess conti" id="contiOpen" title="순서지 사진이나 카톡 글로 찬양·말씀·순서·광고를 한 번에 채우기"><i class="ph ph-clipboard-text" aria-hidden="true"></i><span>지금 예배에 순서 넣기</span></button>');
   $('contiOpen').onclick=openConti;
 }
 
@@ -5734,7 +5812,7 @@ const hasKakao=u=>(u.identities||[]).some(i=>i.provider==='kakao');
 async function linkKakao(){sessionStorage.setItem('cj_linking','1');const {error}=await sb.auth.linkIdentity({provider:'kakao',options:{redirectTo:backTo()}});
   if(error)sessionStorage.removeItem('cj_linking');
   if(error)toast(/manual linking/i.test(error.message||'')?'관리자가 카카오 연결을 아직 켜지 않았어요':'카카오 연결을 시작하지 못했어요');}
-function offerKakaoLink(u){const need=!hasKakao(u);$('linkKakao').hidden=!need;$('linkKakaoSep').hidden=!need;
+function offerKakaoLink(u){const need=!hasKakao(u);$('linkKakao').hidden=!need;
   const was=sessionStorage.getItem('cj_linking');sessionStorage.removeItem('cj_linking');
   if(was&&!need)return toastUndo('카카오 연결이 끝났어요. 다음부터 카카오로 들어오면 돼요',()=>{},'확인',12000);
   if(was&&AUTH_ERR)return toastUndo(AUTH_ERR==='identity_already_exists'?'이 카카오는 이미 다른 계정에 쓰이고 있어요. 호감에게 알려 주세요':'카카오를 연결하지 못했어요. 다시 해 보고 안 되면 호감에게 알려 주세요',()=>{},'확인',20000);
@@ -5745,7 +5823,7 @@ async function copyInvite(){const {data,error}=await sb.from('churches').select(
   const link=`${backTo()}?join=${data.invite_code}`;
   try{await navigator.clipboard.writeText(link);toast(`초대 링크를 복사했어요. 단톡방에 붙여 넣어 주세요 (코드 ${data.invite_code})`);}
   catch(_){prompt('이 초대 링크를 복사해서 보내 주세요',link);}}
-$('logout').onclick=async()=>{const old=!$('linkKakao').hidden;if(!confirm(old?'아직 카카오를 연결하지 않았어요. 나가면 다음에도 이름과 개인 암호로 들어와야 해요. 나갈까요?':'나갈까요? 다음에 카카오로 다시 들어오면 돼요.'))return;saveSession();await flushSessions();await sb?.auth.signOut();me=null;if(old)location.href=backTo()+'?old';else location.reload();};
+$('logout').onclick=async()=>{const old=!$('linkKakao').hidden;if(!confirm(old?'아직 카카오를 연결하지 않았어요. 나가면 다음에도 이름과 개인 암호로 들어와야 해요. 나갈까요?':'나갈까요? 다음에 카카오로 다시 들어오면 돼요.'))return;closeSet();saveSession();await flushSessions();await sb?.auth.signOut();me=null;if(old)location.href=backTo()+'?old';else location.reload();};
 
 // 예배 이름 칸을 글자 길이에 맞춰서, 저장 시각이 이름 바로 옆에 붙게
 function fitTitle(){const el=$('docTitle');if(!el)return;const m=fitTitle.m||(fitTitle.m=Object.assign(document.createElement('span'),{style:'position:absolute;visibility:hidden;white-space:pre;left:-9999px;top:0'}));
@@ -5846,14 +5924,14 @@ async function loadLog(){
 }
 function openLog(){$('logbox').classList.add('on');$('logList').innerHTML='<div class="empty">불러오는 중…</div>';loadLog();$('logClose').focus();}
 function closeLog(){$('logbox').classList.remove('on');}
-$('openLog').onclick=()=>{closeRail();openLog();};
-$('invite').onclick=()=>{closeRail();copyInvite();};
-$('linkKakao').onclick=()=>{closeRail();linkKakao();};
+$('openLog').onclick=()=>{closeSet();openLog();};
+$('invite').onclick=()=>{closeSet();copyInvite();};
+$('linkKakao').onclick=()=>{closeSet();linkKakao();};
 // 화면 밝기: 자동(컴퓨터 설정 따라) → 어둡게 → 밝게. 이 브라우저에만 저장해요
 {const NAMES={auto:'자동',dark:'어둡게',light:'밝게'},ORDER=['auto','dark','light'];
-  const apply=m=>{if(m==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=m;$('themeBtn').textContent='화면: '+NAMES[m];};
+  const apply=m=>{if(m==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=m;document.querySelectorAll('[data-th]').forEach(b=>{b.setAttribute('aria-checked',b.dataset.th===m);b.setAttribute('aria-selected',b.dataset.th===m);});};
   let mode=store.get('theme','auto');if(!NAMES[mode])mode='auto';apply(mode);
-  $('themeBtn').onclick=()=>{mode=ORDER[(ORDER.indexOf(mode)+1)%3];store.set('theme',mode);apply(mode);toast('화면: '+NAMES[mode]+(mode==='auto'?' (컴퓨터 설정을 따라요)':''));};}$('logClose').onclick=closeLog;
+  document.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{mode=b.dataset.th;store.set('theme',mode);apply(mode);});}$('logClose').onclick=closeLog;
 $('logbox').addEventListener('click',e=>{if(e.target.id==='logbox')closeLog();});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&$('logbox').classList.contains('on'))closeLog();});
 
