@@ -8,7 +8,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-church",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 const reply = (body: unknown, status = 200) =>
@@ -22,8 +22,8 @@ Deno.serve(async (req) => {
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: u } = await admin.auth.getUser(token);
     if (!u?.user) return reply({ error: "다시 로그인해 주세요", code: "not_granted" }, 401);
-    const { data: m } = await admin.from("members").select("name").eq("user_id", u.user.id).maybeSingle();
-    if (!m) return reply({ error: "팀원만 쓸 수 있어요", code: "not_granted" }, 403);
+    const { data: m } = await admin.from("members").select("name").eq("user_id", u.user.id).limit(1); // 여러 교회에 속할 수 있어요
+    if (!m?.length) return reply({ error: "팀원만 쓸 수 있어요", code: "not_granted" }, 403);
 
     // 한 사람이 하루(24시간)에 쓸 수 있는 횟수. Secrets의 AI_DAILY_LIMIT로 바꿀 수 있어요 (기본 200번)
     // (ai_usage 표가 아직 없으면 세지 못하고 그냥 지나가요)

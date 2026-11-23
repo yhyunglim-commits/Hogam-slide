@@ -90,7 +90,8 @@ create table if not exists public.team_settings (
 create or replace function public.stamp_setting() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
-  new.updated_by_name := public.my_name();
+  if tg_op = 'UPDATE' and new.church_id is distinct from old.church_id then raise exception '다른 교회로 옮길 수 없어요'; end if;
+  new.updated_by_name := public.my_name(new.church_id);
   new.updated_at := now();
   return new;
 end $$;
@@ -108,7 +109,7 @@ begin
   if tg_op = 'UPDATE' and new.result is distinct from old.result and new.verified_at is not distinct from old.verified_at then
     new.verified_by := null; new.verified_at := null;           -- 가사가 바뀌었으니 다시 확인해야 해요
   elsif new.verified_at is not null and (tg_op = 'INSERT' or old.verified_at is null or new.verified_at is distinct from old.verified_at) then
-    new.verified_by := public.my_name(); new.verified_at := now(); -- 확인한 사람은 서버가 직접 적어요
+    new.verified_by := public.my_name(new.church_id); new.verified_at := now(); -- 확인한 사람은 서버가 직접 적어요
   elsif new.verified_at is null then
     new.verified_by := null;
   else
@@ -121,7 +122,9 @@ end $$;
 create or replace function public.stamp_editor() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
-  new.updated_by_name := public.my_name();
+  -- 두 교회에 속한 사람이 한 교회 것을 다른 교회로 옮기지 못하게
+  if tg_op = 'UPDATE' and new.church_id is distinct from old.church_id then raise exception '다른 교회로 옮길 수 없어요'; end if;
+  new.updated_by_name := public.my_name(new.church_id);
   new.updated_at := now();
   if tg_op = 'INSERT' then
     new.created_by_name := new.updated_by_name;
@@ -143,11 +146,11 @@ declare
   v_id   text;
   v_sum  text;
   v_act  text := case tg_op when 'INSERT' then 'create' when 'UPDATE' then 'edit' else 'delete' end;
-  v_name text := public.my_name();
   v_last bigint;
   -- 고치거나 지울 때는 바뀌기 전 모습을 남겨요 (10분 안에 이어 고친 것은 처음 모습이 남아요)
   v_before jsonb := case when tg_op in ('UPDATE','DELETE') then to_jsonb(old) else null end;
   v_church uuid := case tg_op when 'DELETE' then old.church_id else new.church_id end;
+  v_name text := public.my_name(v_church);
 begin
   if tg_op = 'DELETE' then
     if tg_table_name = 'songs' then v_id := old.title; v_sum := old.title;
@@ -180,7 +183,8 @@ create or replace function public.save_service(
 language plpgsql security invoker set search_path = public as $$
 declare cur public.services;
 begin
-  if not public.is_member() then raise exception '팀원만 저장할 수 있어요'; end if;
+  -- 여러 교회에 속했는데 어느 교회인지 안 알리면 저장하지 않아요 (엉뚱한 교회에 들어가지 않게)
+  if public.my_church() is null then raise exception '팀원만 저장할 수 있어요'; end if;
   select * into cur from public.services where id = p_id for update;
   if not found then
     insert into public.services (id, name, text, results, verse_in, b_title, dirty)
@@ -204,7 +208,7 @@ create or replace function public.restore_from_log(p_log_id bigint) returns text
 language plpgsql security invoker set search_path = public as $$
 declare r public.edit_log; b jsonb;
 begin
-  if not public.is_member() then raise exception '팀원만 되돌릴 수 있어요'; end if;
+  if public.my_church() is null then raise exception '팀원만 되돌릴 수 있어요'; end if;
   select * into r from public.edit_log where id = p_log_id;
   if not found or r.before is null then return '되돌릴 내용이 없는 기록이에요'; end if;
   b := r.before;
@@ -265,6 +269,9 @@ create or replace function public.reset_password(p_name text, p_new text) return
 language plpgsql security definer set search_path = public, extensions as $$
 declare v_uid uuid;
 begin
+  if (select count(*) from public.members where name = p_name) > 1 then
+    return '같은 이름이 여러 교회에 있어요. Authentication › Users 에서 바꿔 주세요';
+  end if;
   select user_id into v_uid from public.members where name = p_name;
   if v_uid is null then return '그 이름의 팀원이 없어요'; end if;
   update auth.users set encrypted_password = extensions.crypt(p_new, extensions.gen_salt('bf')) where id = v_uid;
@@ -321,11 +328,34 @@ alter table public.songs         enable trigger user;
 alter table public.services      enable trigger user;
 alter table public.team_settings enable trigger user;
 
--- 지금 로그인한 사람의 교회
+-- 화면이 요청마다 'x-church'로 알리는 지금 교회. 안 알리면 null, 이상한 값이면 없는 교회(0번)로 봐요.
+create or replace function public.req_church() returns uuid
+language sql stable set search_path = public as $$
+  select case when h is null or h = '' then null
+              when h ~* '^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$' then h::uuid
+              else '00000000-0000-0000-0000-000000000000'::uuid end
+    from (select nullif(current_setting('request.headers', true), '')::json ->> 'x-church' as h) x;
+$$;
+revoke execute on function public.req_church() from public, anon, authenticated;
+
+-- 지금 로그인한 사람의 지금 교회. 알린 교회의 팀원이 아니면 null.
+-- 안 알렸을 때는 한 교회에만 속한 사람만 그 교회로 봐요 (여러 곳이면 짐작하지 않아요).
 create or replace function public.my_church() returns uuid
 language sql stable security definer set search_path = public as $$
-  select church_id from public.members where user_id = auth.uid() limit 1;
+  select case when count(*) = 1 then (array_agg(church_id))[1] end
+    from public.members
+   where user_id = auth.uid() and (public.req_church() is null or church_id = public.req_church());
 $$;
+create or replace function public.my_name(c uuid) returns text
+language sql stable security definer set search_path = public as $$
+  select name from public.members where user_id = auth.uid() and church_id = c;
+$$;
+create or replace function public.my_name() returns text
+language sql stable security definer set search_path = public as $$
+  select public.my_name(public.my_church());
+$$;
+revoke execute on function public.my_name(uuid) from public, anon;
+grant execute on function public.my_name(uuid) to authenticated, service_role;
 revoke execute on function public.my_church() from public, anon;
 grant execute on function public.my_church() to authenticated, service_role;
 
@@ -361,13 +391,20 @@ grant select, insert, update, delete on public.churches to service_role;
 -- ───────────── 6단계 추가 (2026-11-22): 교회별 공간 ② 교회끼리 잠그기 ─────────────
 -- 예배·곡·설정·편집 기록·팀원 목록을 '내가 속한 교회 것'만 보고 쓸 수 있게 해요.
 -- 다른 교회 것을 고치거나, 내 것을 다른 교회로 옮기는 것도 막아요.
--- '내가 그 교회 팀원인가'로 물어서, 나중에 한 사람이 여러 교회에 속해도 이 규칙은 그대로 써요.
+-- 화면이 지금 교회를 알리면 그 교회 것만, 안 알리면(실시간 알림은 알릴 수 없어요) 내가 속한 교회 것만 열려요.
 create or replace function public.in_church(c uuid) returns boolean
 language sql stable security definer set search_path = public as $$
-  select exists (select 1 from public.members where user_id = auth.uid() and church_id = c);
+  select exists (select 1 from public.members where user_id = auth.uid() and church_id = c)
+     and (public.req_church() is null or c = public.req_church());
 $$;
 revoke execute on function public.in_church(uuid) from public, anon;
 grant execute on function public.in_church(uuid) to authenticated, service_role;
+create or replace function public.belongs_to(c uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.members where user_id = auth.uid() and church_id = c);
+$$;
+revoke execute on function public.belongs_to(uuid) from public, anon;
+grant execute on function public.belongs_to(uuid) to authenticated, service_role;
 
 drop policy if exists "팀원은 팀 설정을 써요"   on public.team_settings;
 drop policy if exists "팀원은 팀원 목록을 봐요" on public.members;
@@ -388,9 +425,10 @@ create policy "우리 교회 예배만 써요" on public.services for all
 drop policy if exists "우리 교회 편집 기록만 봐요" on public.edit_log;
 create policy "우리 교회 편집 기록만 봐요" on public.edit_log for select using (public.in_church(church_id));
 drop policy if exists "우리 교회 팀원만 봐요" on public.members;
-create policy "우리 교회 팀원만 봐요" on public.members for select using (public.in_church(church_id));
+create policy "우리 교회 팀원만 봐요" on public.members for select
+  using (user_id = auth.uid() or public.in_church(church_id)); -- 내 줄은 어느 교회든 (교회 목록)
 drop policy if exists "내가 속한 교회만 봐요" on public.churches;
-create policy "내가 속한 교회만 봐요" on public.churches for select using (public.in_church(id));
+create policy "내가 속한 교회만 봐요" on public.churches for select using (public.belongs_to(id)); -- 교회 목록이라 지금 교회와 상관없이
 
 -- ───────────── 7단계 추가 (2026-11-22): 교회별 공간 ③ 접속 중 표시를 잠긴 방으로 ─────────────
 -- 화면의 '지금 접속 중인 팀원'은 'online:교회번호' 방을 써요. 그 교회 팀원만 들어와서 보고 알릴 수 있어요.
@@ -445,10 +483,6 @@ declare
   v_name text := regexp_replace(btrim(coalesce(p_name, '')), '\s+', ' ', 'g');
 begin
   if v_uid is null then raise exception '먼저 로그인해 주세요'; end if;
-  -- 지금은 한 사람이 한 교회만 (여러 교회는 4단계에서)
-  if exists (select 1 from public.members where user_id = v_uid) then
-    return jsonb_build_object('ok', false, 'error', '이미 교회에 들어가 있어요');
-  end if;
   if (select count(*) from public.join_attempts where user_id = v_uid and at > now() - interval '15 minutes') >= 5 then
     return jsonb_build_object('ok', false, 'error', '초대 코드를 여러 번 틀렸어요. 15분 뒤에 다시 해 주세요');
   end if;
@@ -457,6 +491,9 @@ begin
     insert into public.join_attempts (user_id) values (v_uid);
     delete from public.join_attempts where at < now() - interval '1 day';
     return jsonb_build_object('ok', false, 'error', '초대 코드가 맞지 않아요');
+  end if;
+  if exists (select 1 from public.members where user_id = v_uid and church_id = v_ch.id) then
+    return jsonb_build_object('ok', false, 'error', '이미 이 교회에 들어가 있어요');
   end if;
   if char_length(v_name) < 2 or char_length(v_name) > 10 then
     return jsonb_build_object('ok', false, 'error', '이름은 2~10글자로 적어 주세요');
@@ -468,8 +505,48 @@ begin
   end;
   insert into public.edit_log (church_id, user_id, name, action, target_type, target_id, summary)
     values (v_ch.id, v_uid, v_name, 'join', 'member', v_name, v_name);
-  return jsonb_build_object('ok', true, 'church', v_ch.name);
+  return jsonb_build_object('ok', true, 'church', v_ch.name, 'church_id', v_ch.id);
 end $$;
 revoke execute on function public.join_church(text, text) from public, anon;
 grant execute on function public.join_church(text, text) to authenticated;
 revoke execute on function public.new_invite_code() from public, anon, authenticated;
+
+
+-- ───────────── 9단계 추가 (2026-11-24): 교회별 공간 ⑤ 한 사람이 여러 교회 · 새 교회 만들기 ─────────────
+do $$ begin
+  if (select array_length(indkey::int2[], 1) from pg_index where indrelid = 'public.members'::regclass and indisprimary) = 1 then
+    alter table public.members drop constraint members_pkey, add primary key (user_id, church_id);
+  end if;
+end $$;
+-- 만든 사람은 관리자로 적어만 둬요 (쓰는 건 다음 단계). 한 사람이 만들 수 있는 교회는 1곳.
+alter table public.members  add column if not exists role text not null default 'member' check (role in ('member', 'admin'));
+alter table public.churches add column if not exists created_by uuid references auth.users on delete set null;
+create unique index if not exists churches_created_by on public.churches (created_by);
+
+create or replace function public.create_church(p_church text, p_name text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare
+  v_uid    uuid := auth.uid();
+  v_ch     public.churches;
+  v_church text := regexp_replace(btrim(coalesce(p_church, '')), '\s+', ' ', 'g');
+  v_name   text := regexp_replace(btrim(coalesce(p_name, '')), '\s+', ' ', 'g');
+begin
+  if v_uid is null then raise exception '먼저 로그인해 주세요'; end if;
+  if char_length(v_church) < 2 or char_length(v_church) > 20 then
+    return jsonb_build_object('ok', false, 'error', '교회 이름은 2~20글자로 적어 주세요');
+  end if;
+  if char_length(v_name) < 2 or char_length(v_name) > 10 then
+    return jsonb_build_object('ok', false, 'error', '이름은 2~10글자로 적어 주세요');
+  end if;
+  insert into public.churches (name, created_by) values (v_church, v_uid)
+    on conflict (created_by) do nothing returning * into v_ch;
+  if v_ch.id is null then
+    return jsonb_build_object('ok', false, 'error', '교회는 한 사람이 한 곳만 만들 수 있어요');
+  end if;
+  insert into public.members (user_id, name, church_id, role) values (v_uid, v_name, v_ch.id, 'admin');
+  insert into public.edit_log (church_id, user_id, name, action, target_type, target_id, summary)
+    values (v_ch.id, v_uid, v_name, 'join', 'member', v_name, v_name);
+  return jsonb_build_object('ok', true, 'church', v_ch.name, 'church_id', v_ch.id);
+end $$;
+revoke execute on function public.create_church(text, text) from public, anon;
+grant execute on function public.create_church(text, text) to authenticated;

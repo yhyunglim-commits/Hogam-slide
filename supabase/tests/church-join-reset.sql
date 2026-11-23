@@ -4,5 +4,13 @@ do $$ begin
   if (select count(*) from public.songs) > 50 then raise exception '곡이 너무 많아요. 실제 서버 같아서 멈췄어요'; end if;
 end $$;
 delete from public.members where user_id in (select id from auth.users where email in ('test4@hogamslide.app', 'test5@hogamslide.app'));
+-- church-multi.mjs 가 만든 새 교회도 지워요
+delete from public.edit_log where church_id in (select c.id from public.churches c join auth.users u on u.id = c.created_by where u.email in ('test4@hogamslide.app', 'test5@hogamslide.app'));
+delete from public.songs where church_id in (select c.id from public.churches c join auth.users u on u.id = c.created_by where u.email in ('test4@hogamslide.app', 'test5@hogamslide.app'));
+delete from public.services where church_id in (select c.id from public.churches c join auth.users u on u.id = c.created_by where u.email in ('test4@hogamslide.app', 'test5@hogamslide.app'));
+delete from public.team_settings where church_id in (select c.id from public.churches c join auth.users u on u.id = c.created_by where u.email in ('test4@hogamslide.app', 'test5@hogamslide.app'));
+-- 지울 때 생긴 '지움' 기록까지
+delete from public.edit_log where church_id in (select c.id from public.churches c join auth.users u on u.id = c.created_by where u.email in ('test4@hogamslide.app', 'test5@hogamslide.app'));
+delete from public.churches where created_by in (select id from auth.users where email in ('test4@hogamslide.app', 'test5@hogamslide.app'));
 delete from public.join_attempts where user_id in (select id from auth.users where email in ('test4@hogamslide.app', 'test5@hogamslide.app'));
 select (select count(*) from public.members m join auth.users u on u.id = m.user_id where u.email in ('test4@hogamslide.app', 'test5@hogamslide.app')) 남은_팀원;

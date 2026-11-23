@@ -73,7 +73,7 @@ await check('들어간 일이 편집 기록에 남음', async () => {
   const l = await N4.api('edit_log?select=action,name&action=eq.join&order=at.desc&limit=1');
   if (!l.length || l[0].name !== '옥수시험') return JSON.stringify(l);
 });
-await check('이미 들어간 사람은 또 들어갈 수 없음', async () => {
+await check('이미 들어간 교회에는 또 들어갈 수 없음', async () => {
   const r = await N4.join(CODE, '두번째');
   if (r.ok || !/이미/.test(r.error)) return JSON.stringify(r);
 });
