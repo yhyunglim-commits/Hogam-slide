@@ -159,6 +159,11 @@ begin
     if tg_table_name = 'songs' then v_id := new.title; v_sum := new.title;
     else v_id := new.id; v_sum := new.name; end if;
   end if;
+  -- 휴지통에 넣기·되돌리기는 내용 고치기와 따로 적어요
+  if tg_table_name = 'services' and tg_op = 'UPDATE' then
+    if old.deleted_at is null and new.deleted_at is not null then v_act := 'delete';
+    elsif old.deleted_at is not null and new.deleted_at is null then v_act := 'restore'; end if;
+  end if;
   if v_act = 'edit' then
     select id into v_last from public.edit_log
       where user_id = auth.uid() and church_id = v_church and target_type = v_type and target_id = v_id
@@ -193,10 +198,11 @@ begin
     return jsonb_build_object('ok', true, 'version', cur.version);
   end if;
   if p_base is distinct from cur.version then
-    return jsonb_build_object('ok', false, 'version', cur.version, 'by', cur.updated_by_name, 'at', cur.updated_at);
+    return jsonb_build_object('ok', false, 'version', cur.version, 'by', coalesce(cur.deleted_by_name, cur.updated_by_name), 'at', cur.updated_at, 'trashed', cur.deleted_at is not null);
   end if;
   update public.services
-     set name = p_name, text = p_text, results = p_results, verse_in = p_verse_in, b_title = p_b_title, dirty = p_dirty
+     set name = p_name, text = p_text, results = p_results, verse_in = p_verse_in, b_title = p_b_title, dirty = p_dirty,
+         deleted_at = null -- 휴지통에 있던 것을 '내 글로 저장'하면 되살아나요
    where id = p_id
    returning * into cur;
   return jsonb_build_object('ok', true, 'version', cur.version);
@@ -222,7 +228,7 @@ begin
       values (coalesce((b->>'church_id')::uuid, public.my_church()), b->>'id', coalesce(b->>'name',''), coalesce(b->>'text',''), coalesce(b->'results','[]'::jsonb),
               coalesce(b->>'verse_in',''), coalesce(b->>'b_title',''), coalesce((b->>'dirty')::boolean, false))
       on conflict (id) do update set name = excluded.name, text = excluded.text, results = excluded.results,
-        verse_in = excluded.verse_in, b_title = excluded.b_title, dirty = excluded.dirty;
+        verse_in = excluded.verse_in, b_title = excluded.b_title, dirty = excluded.dirty, deleted_at = null;
     return '‘' || coalesce(b->>'name','예배') || '’ 기록을 되돌렸어요';
   end if;
   return '되돌릴 수 없는 기록이에요';
@@ -550,3 +556,76 @@ begin
 end $$;
 revoke execute on function public.create_church(text, text) from public, anon;
 grant execute on function public.create_church(text, text) to authenticated;
+
+-- ───────────── 10단계 추가 (2026-11-24): 예배 휴지통 ─────────────
+-- 예배를 지우면 휴지통 표시만 해요. 30일이 지나면 편집 기록에 남은 그 예배 내용까지 서버가 지워요.
+alter table public.services add column if not exists deleted_at      timestamptz;
+alter table public.services add column if not exists deleted_by_name text;
+create index if not exists services_trash on public.services (deleted_at) where deleted_at is not null;
+
+-- 지운 때·지운 사람은 서버가 적어요. 휴지통에 넣고 꺼내는 건 '고친 것'이 아니라서 고친 사람·때는 그대로 둬요.
+create or replace function public.stamp_trash() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if tg_op = 'INSERT' then
+    new.deleted_at := null; new.deleted_by_name := null;
+    return new;
+  end if;
+  if new.deleted_at is null then
+    new.deleted_by_name := null;
+  elsif old.deleted_at is null then
+    new.deleted_at := now(); new.deleted_by_name := public.my_name(new.church_id);
+  else
+    new.deleted_at := old.deleted_at; new.deleted_by_name := old.deleted_by_name;
+  end if;
+  if (old.deleted_at is not null or new.deleted_at is not null) -- 두 사람이 연달아 지워도
+     and new.name = old.name and new.text = old.text and new.results = old.results
+     and new.verse_in = old.verse_in and new.b_title = old.b_title then
+    new.updated_at := old.updated_at; new.updated_by_name := old.updated_by_name;
+  end if;
+  return new;
+end $$;
+-- 이름순으로 실행돼서 services_stamp 다음에 돌아요
+drop trigger if exists services_trash on public.services;
+create trigger services_trash before insert or update on public.services for each row execute function public.stamp_trash();
+
+-- 완전히 지우기: 예배와 편집 기록에 남은 그 예배 내용을 지우고, 이름만 한 줄 남겨요 (화면에서는 못 불러요)
+create or replace function public.purge_one(p_church uuid, p_id text, p_name text) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_sum text;
+begin
+  delete from public.services where church_id = p_church and id = p_id and deleted_at is not null returning name into v_sum;
+  if not found then return; end if;
+  delete from public.edit_log where church_id = p_church and target_type = 'service' and target_id = p_id;
+  insert into public.edit_log (church_id, user_id, name, action, target_type, target_id, summary)
+    values (p_church, auth.uid(), p_name, 'purge', 'service', p_id, v_sum);
+end $$;
+revoke execute on function public.purge_one(uuid, text, text) from public, anon, authenticated;
+
+create or replace function public.purge_service(p_id text) returns boolean
+language plpgsql security definer set search_path = public as $$
+declare v_ch uuid := public.my_church();
+begin
+  if v_ch is null then raise exception '팀원만 지울 수 있어요'; end if;
+  if not exists (select 1 from public.services where church_id = v_ch and id = p_id and deleted_at is not null) then return false; end if;
+  perform public.purge_one(v_ch, p_id, public.my_name(v_ch));
+  return true;
+end $$;
+revoke execute on function public.purge_service(text) from public, anon;
+grant execute on function public.purge_service(text) to authenticated;
+
+create or replace function public.purge_old_trash() returns int
+language plpgsql security definer set search_path = public as $$
+declare s record; n int := 0;
+begin
+  for s in select church_id, id from public.services where deleted_at < now() - interval '30 days' loop
+    perform public.purge_one(s.church_id, s.id, '자동 정리');
+    n := n + 1;
+  end loop;
+  return n;
+end $$;
+revoke execute on function public.purge_old_trash() from public, anon, authenticated;
+
+-- 날마다 새벽 3시 20분(한국)에 서버가 스스로 돌려요
+create extension if not exists pg_cron;
+select cron.schedule('hogam-purge-trash', '20 18 * * *', 'select public.purge_old_trash()');

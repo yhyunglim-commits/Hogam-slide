@@ -1850,8 +1850,8 @@ body.starting #v-home>:not(header.doc){visibility:hidden}
 .rail .newsess.conti{margin-top:6px}
 #contibox{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 #contibox{align-items:center}
-#setbox{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-body:has(#contibox.on,#setbox.on) header.doc{z-index:40!important}
+#setbox,#trashbox{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+body:has(#contibox.on,#setbox.on,#trashbox.on) header.doc{z-index:40!important}
 #contiBlank{margin-left:auto;margin-right:-12px}
 #contiHistQ{width:100%;box-sizing:border-box;height:36px;margin-bottom:8px;font-size:14px}
 #contiHomeP:focus{outline:0!important;box-shadow:none!important}
@@ -2201,6 +2201,15 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
 @media (min-width:1101px){body:not(.railpinned) .rail:not(:hover):not(:focus-within) .rfrow{padding:8px 0 12px;justify-content:center}
   body:not(.railpinned) .rail:not(:hover):not(:focus-within) .railfoot .rfrow .railmail{flex:none}}
 @media (max-width:1100px){.rfrow .pin{display:none}}
+/* 휴지통 */
+.trashopen{display:flex;align-items:center;gap:6px;margin:4px 0 0;padding:6px 9px;border:0;border-radius:8px;background:none;color:var(--text3);font:inherit;font-size:13px;cursor:pointer}
+.trashopen[hidden]{display:none}.trashopen:hover{background:var(--sunken);color:var(--text)}
+.trashlist{list-style:none;margin:0;padding:0 20px 18px;overflow:auto;display:flex;flex-direction:column;gap:6px}
+.trashlist li{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:var(--sunken)}
+.trashlist .tt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
+.trashlist b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trashlist small{font-size:12px;color:var(--text3)}
+.trashlist .empty{background:none;justify-content:center;color:var(--text3)}
+@media (max-width:560px){.trashlist li{flex-wrap:wrap}.trashlist .tt{flex-basis:100%}}
 /* 설정 창 (프로필을 누르면) */
 .setbox{align-items:center}
 .setcard{width:min(440px,100%)}
@@ -2270,7 +2279,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
       <div class="railnew" id="railNew"></div>
       <div class="railtitle"><span class="ricon" aria-hidden="true"><i class="ph ph-pencil-simple" aria-hidden="true"></i></span><input class="title" id="docTitle" aria-label="예배 이름"><button class="pen" id="titlePen" type="button" aria-label="예배 이름 고치기" title="예배 이름 고치기"><i class="ph ph-pencil-simple" aria-hidden="true"></i></button></div>
     </div>
-    <div class="railsec" data-sec="hist"><span class="ricon" aria-hidden="true"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>예배 기록</button></h4><ul class="rlist" id="histList"></ul></div>
+    <div class="railsec" data-sec="hist"><span class="ricon" aria-hidden="true"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>예배 기록</button></h4><ul class="rlist" id="histList"></ul><button type="button" class="trashopen" id="trashOpen" hidden><i class="ph ph-trash" aria-hidden="true"></i><span></span></button></div>
     <div class="railsec" data-sec="lib"><span class="ricon" aria-hidden="true"><i class="ph ph-music-notes" aria-hidden="true"></i></span><h4><button class="rfold" type="button" aria-expanded="true"><i class="ph ph-caret-down" aria-hidden="true"></i>곡 보관함</button> <span class="row" style="gap:6px"><span id="libCount"></span><button type="button" class="libopen" id="libOpen">전체 보기</button></span></h4>
       <span class="libsw"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input type="search" class="libsearch" id="libSearch" placeholder="제목·초성·가사 찾기" aria-label="보관함에서 곡 찾기"></span>
       <ul class="rlist" id="libList"></ul></div>
@@ -2691,6 +2700,10 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
 <div class="logbox" id="logbox" role="dialog" aria-modal="true" aria-labelledby="logTitle">
   <div class="lcard"><div class="lhead"><h2 id="logTitle">편집 기록</h2><span class="meta" id="logMeta"></span><button class="btn ghost ibtn" id="logClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
   <div class="llist" id="logList"></div></div>
+</div>
+<div class="logbox setbox" id="trashbox" role="dialog" aria-modal="true" aria-labelledby="trashTitle">
+  <div class="lcard"><div class="lhead"><h2 id="trashTitle">휴지통</h2><span class="meta">30일이 지나면 완전히 지워져요</span><button class="btn ghost ibtn" id="trashClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
+  <ul class="trashlist" id="trashList"></ul></div>
 </div>
 <div class="logbox setbox" id="setbox" role="dialog" aria-modal="true" aria-labelledby="setTitle">
   <div class="lcard setcard"><div class="lhead"><h2 id="setTitle">설정</h2><button class="btn ghost ibtn" id="setClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
@@ -5427,10 +5440,45 @@ function renderHist(){
     li.addEventListener('mouseenter',show);li.addEventListener('focus',show);
     li.addEventListener('mouseleave',hideTip);li.addEventListener('blur',hideTip);
     li.onclick=e=>{if(e.target.closest('.ib'))return;hideTip();if(c.id!==curSess){saveSession();loadSession(c.id);}};
-    li.querySelector('.ib').onclick=()=>{if(!confirm(`‘${c.name}’ 기록을 팀 전체에서 지울까요?`))return;SESS=SESS.filter(x=>x!==c);store.set('sessions',SESS);removeSession(c.id);if(c.id===curSess){const nx=SESS[0]||newSessionObj();if(!SESS.includes(nx))SESS.unshift(nx);loadSession(nx.id);}else renderHist();
-      if(!SESS.some(inHist))openStart();};
+    li.querySelector('.ib').onclick=()=>trashSession(c);
     ul.appendChild(li);});
 }
+
+// ---- 휴지통: 지우면 여기로 와요. 30일 뒤 서버가 완전히 지워요 ----
+let TRASH=[];const TRASH_DAYS=30;
+function dropSess(id){SESS=SESS.filter(x=>x.id!==id);store.set('sessions',SESS);
+  if(id===curSess){const nx=[...SESS].sort((a,b)=>b.updated-a.updated)[0]||newSessionObj();if(!SESS.includes(nx))SESS.unshift(nx);loadSession(nx.id);}else renderHist();}
+async function trashSession(c){
+  if(c.id===curSess)saveSession();
+  if(!hasWork(c)){dropSess(c.id);if(sb&&me)removeSession(c.id);if(!SESS.some(inHist))openStart();return;} // 빈 예배는 남길 것이 없어요
+  if(sb&&me){
+    if(clash[c.id]){toast('먼저 위 노란 안내에서 어느 글로 저장할지 골라 주세요');return;}
+    // 아직 안 보낸 글이 있으면 먼저 저장해야 휴지통에 마지막 글이 남아요
+    if(pushC[c.id])sendSession(c.id);await chain[c.id];
+    if(clash[c.id]){toast('먼저 위 노란 안내에서 어느 글로 저장할지 골라 주세요');return;}
+    const {data,error}=await sb.from('services').update({deleted_at:new Date().toISOString()}).eq('id',c.id).select('version,deleted_by_name');
+    if(error||!data.length){netErr(error||'휴지통에 넣지 못함');return;}
+    c.ver=data[0].version;}
+  if(!TRASH.some(x=>x.id===c.id))TRASH.unshift({...c,del:Date.now(),delBy:me?.name||''});
+  dropSess(c.id);renderTrash();toastUndo('휴지통으로 옮겼어요',()=>untrash(c.id));
+  if(!SESS.some(inHist))openStart();}
+async function untrash(id){const t=TRASH.find(x=>x.id===id);if(!t)return;let c={...t,del:null,delBy:null};
+  if(sb&&me){const {data,error}=await sb.from('services').update({deleted_at:null}).eq('id',id).select('*');
+    if(error||!data.length){netErr(error||'되돌리지 못함');return;}c=rowToSess(data[0]);}
+  TRASH=TRASH.filter(x=>x.id!==id);SESS=SESS.filter(x=>x.id!==id);SESS.unshift(c);store.set('sessions',SESS);
+  renderTrash();renderHist();if(startMode)renderStartHist();toast(`‘${c.name}’을 되돌렸어요`);}
+async function purgeTrash(id){const t=TRASH.find(x=>x.id===id);if(!t||!confirm(`‘${t.name}’을 완전히 지울까요? 팀 전체에서 사라지고 되돌릴 수 없어요.`))return;
+  if(sb&&me){const {error}=await sb.rpc('purge_service',{p_id:id});if(error){netErr(error);return;}}
+  TRASH=TRASH.filter(x=>x.id!==id);renderTrash();toast('완전히 지웠어요');}
+function renderTrash(){const b=$('trashOpen');b.hidden=!TRASH.length;b.querySelector('span').textContent=`휴지통 (${TRASH.length})`;
+  const ul=$('trashList');ul.innerHTML=TRASH.length?'':'<li class="empty">휴지통이 비었어요</li>';
+  [...TRASH].sort((a,b)=>b.del-a.del).forEach(t=>{const left=Math.max(0,Math.ceil(TRASH_DAYS-(Date.now()-t.del)/864e5)),li=document.createElement('li');
+    li.innerHTML=`<div class="tt"><b></b><small>${t.delBy?esc(t.delBy)+' · ':''}${fmtDate(t.del)} 지움 · ${left?left+'일 남음':'곧 지워져요'}</small></div><button type="button" class="btn sm" data-r>되돌리기</button><button type="button" class="btn sm danger" data-p>완전히 지우기</button>`;
+    li.querySelector('b').textContent=t.name;li.querySelector('[data-r]').onclick=()=>untrash(t.id);li.querySelector('[data-p]').onclick=()=>purgeTrash(t.id);ul.appendChild(li);});}
+function closeTrash(){$('trashbox').classList.remove('on');}
+$('trashOpen').onclick=()=>{closeRail();hideTip();renderTrash();$('trashbox').classList.add('on');$('trashClose').focus();};
+$('trashClose').onclick=closeTrash;$('trashbox').addEventListener('click',e=>{if(e.target.id==='trashbox')closeTrash();});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeTrash();});
 
 // 곡 보관함 — 읽은 곡은 제목별로 저장해 두고 다시 쓰기
 let LIB={};
@@ -5625,7 +5673,7 @@ const nameToEmail=n=>'u'+[...new TextEncoder().encode(n)].map(b=>b.toString(16).
 const normName=n=>String(n||'').trim().replace(/\s+/g,' ');
 function netErr(e){console.warn(e);toast('서버에 저장하지 못했어요. 인터넷 연결을 확인해 주세요');}
 const rowToSong=r=>({title:r.title,result:r.result,thumb:safeImg(r.thumb),saved:Date.parse(r.updated_at),by:r.updated_by_name||'',hymn:r.hymn??null,vby:r.verified_by||null,vat:r.verified_at?Date.parse(r.verified_at):null});
-const rowToSess=r=>({id:r.id,name:r.name,text:r.text,results:r.results||[],verseIn:r.verse_in||'',bTitle:r.b_title||'',dirty:!!r.dirty,created:Date.parse(r.created_at),updated:Date.parse(r.updated_at),by:r.updated_by_name||'',ver:r.version??null});
+const rowToSess=r=>({id:r.id,name:r.name,text:r.text,results:r.results||[],verseIn:r.verse_in||'',bTitle:r.b_title||'',dirty:!!r.dirty,created:Date.parse(r.created_at),updated:Date.parse(r.updated_at),by:r.updated_by_name||'',ver:r.version??null,...(r.deleted_at?{del:Date.parse(r.deleted_at),delBy:r.deleted_by_name||''}:{})});
 // 고칠 때마다 1.2초 모아서 서버에 보내요. 나가거나 탭을 닫을 때는 기다리지 않고 바로 보내요.
 // 저장할 때 내가 본 판 번호(c.ver)를 함께 보내요. 그사이 다른 사람이 고쳤으면 서버가 막고, 위에 고를 수 있는 안내를 띄워요.
 const pushT={},pushC={},inflight={},clash={};let noRpc=false;
@@ -5650,7 +5698,7 @@ async function doSend(c){
       const {data,error}=await sb.rpc('save_service',{p_id:row.id,p_base:c.ver??null,p_name:row.name,p_text:row.text,p_results:row.results,p_verse_in:row.verse_in,p_b_title:row.b_title,p_dirty:row.dirty});
       if(!error){
         if(data&&data.ok){c.ver=data.version;store.set('sessions',SESS);}
-        else if(data){clash[id]={by:data.by||'다른 팀원',version:data.version};showClash();}
+        else if(data){clash[id]={by:data.by||'다른 팀원',version:data.version,trashed:data.trashed};showClash();}
         return;
       }
       // 서버에 아직 새 저장 기능(2단계 SQL)이 없으면 예전 방식으로 저장해요
@@ -5662,7 +5710,7 @@ async function doSend(c){
 // 다른 사람이 먼저 고쳐서 내 저장이 막혔을 때
 function showClash(){
   const b=$('clashBanner'),k=clash[curSess];if(!k){b.classList.add('hidden');return;}
-  $('clashMsg').textContent=`${k.by}님이 이 예배 자막을 먼저 고쳤어요. 내가 고친 글은 아직 서버에 저장되지 않았어요.`;
+  $('clashMsg').textContent=k.trashed?`${k.by}님이 이 예배를 휴지통으로 옮겼어요. ‘내 글로 저장’을 누르면 되살아나요.`:`${k.by}님이 이 예배 자막을 먼저 고쳤어요. 내가 고친 글은 아직 서버에 저장되지 않았어요.`;
   b.classList.remove('hidden');
 }
 $('clashCopy').onclick=()=>copy(combinedText());
@@ -5859,12 +5907,14 @@ function renderOnline(){
 }
 let chan=null;
 async function bootRemote(){
-  const [sv,sg]=await Promise.all([sb.from('services').select('*').order('updated_at',{ascending:false}).limit(120),sb.from('songs').select('*')]);
-  if(sv.error||sg.error){netErr(sv.error||sg.error);return;}
+  const [sv,sg,tr]=await Promise.all([sb.from('services').select('*').is('deleted_at',null).order('updated_at',{ascending:false}).limit(120),sb.from('songs').select('*'),sb.from('services').select('*').not('deleted_at','is',null)]);
+  if(sv.error||sg.error||tr.error){netErr(sv.error||sg.error||tr.error);return;}
+  TRASH=tr.data.map(rowToSess);renderTrash();
   LIB={};sg.data.forEach(r=>{LIB[r.title]=rowToSong(r);});
   const remote=sv.data.map(rowToSess),local=[...SESS];
   // 이 브라우저에만 있던(아직 못 올린) 기록은 올리고, 둘 다 있으면 최근 것을 써요
-  local.forEach(l=>{const r=remote.find(x=>x.id===l.id);if(!r){if(l.text||(l.results&&l.results.length)||l.verseIn){remote.unshift(l);pushSession(l);}}
+  // 서버에 올라갔던(판 번호가 있는) 기록이 서버에 없으면 지워진 거라 다시 올리지 않아요
+  local.forEach(l=>{const r=remote.find(x=>x.id===l.id);if(!r){if(l.ver!=null||TRASH.some(x=>x.id===l.id))return;if(l.text||(l.results&&l.results.length)||l.verseIn){remote.unshift(l);pushSession(l);}}
     else if((l.updated||0)>(r.updated||0)+2000){const v=r.ver;Object.assign(r,l);r.ver=l.ver??v;pushSession(r);}});
   SESS=remote;store.set('sessions',SESS);
   if(!SESS.find(x=>x.id===curSess)){const wk=SESS.find(x=>x.name===sundayName());const c=wk||newSessionObj();if(!SESS.includes(c))SESS.unshift(c);curSess=c.id;}
@@ -5879,9 +5929,15 @@ function subscribe(){
     if(p.eventType==='DELETE'){if(p.old.church_id!==me.church)return;delete LIB[p.old.title];}else LIB[p.new.title]=rowToSong(p.new);
     renderLib();if(!$('libDrop').classList.contains('hidden'))renderLibDrop();if($('libbox').classList.contains('on')){renderLibAll();if(!libNew&&!libEdit)renderLibDetail();}})
   .on('postgres_changes',{event:'*',schema:'public',table:'services'},p=>{
-    if(p.eventType==='DELETE'){const id=p.old.id;SESS=SESS.filter(x=>x.id!==id);
+    if(p.eventType==='DELETE'){const id=p.old.id;if(TRASH.some(x=>x.id===id)){TRASH=TRASH.filter(x=>x.id!==id);renderTrash();}if(!SESS.some(x=>x.id===id))return;SESS=SESS.filter(x=>x.id!==id);
       if(id===curSess)toast('다른 팀원이 이 예배 기록을 지웠어요. 지금 화면의 글은 남아 있어요');renderHist();return;}
-    const r=rowToSess(p.new),i=SESS.findIndex(x=>x.id===r.id),cur=SESS[i];
+    const r=rowToSess(p.new);
+    if(r.del){const had=SESS.some(x=>x.id===r.id);TRASH=[r,...TRASH.filter(x=>x.id!==r.id)];renderTrash();
+      if(had){clearTimeout(pushT[r.id]);delete pushT[r.id];delete pushC[r.id];SESS=SESS.filter(x=>x.id!==r.id);store.set('sessions',SESS);renderHist();
+        if(r.id===curSess)toast(`${r.delBy||'다른 팀원'}님이 이 예배를 휴지통으로 옮겼어요. 지금 화면의 글은 남아 있어요`);}
+      return;}
+    if(TRASH.some(x=>x.id===r.id)){TRASH=TRASH.filter(x=>x.id!==r.id);renderTrash();}
+    const i=SESS.findIndex(x=>x.id===r.id),cur=SESS[i];
     // 내가 방금 저장한 것이 돌아온 것인지: 판 번호로 확인해요 (같은 사람이 다른 탭에서 고친 것도 알아봐요)
     const mine=r.ver!=null?((cur&&cur.ver!=null&&r.ver<=cur.ver)||(inflight[r.id]>0&&r.by===me?.name)):p.new.updated_by_name===me?.name;
     if(r.id===curSess){
@@ -5897,7 +5953,7 @@ function subscribe(){
 
 // 편집 기록
 const LOG_TXT={'song:create':t=>`‘${t}’ 곡을 보관함에 넣었어요`,'song:edit':t=>`‘${t}’ 곡을 고쳤어요`,'song:delete':t=>`‘${t}’ 곡을 보관함에서 지웠어요`,
-  'service:create':t=>`‘${t}’ 자막을 만들었어요`,'service:edit':t=>`‘${t}’ 자막을 고쳤어요`,'service:delete':t=>`‘${t}’ 기록을 지웠어요`,'member:join':()=>'팀에 들어왔어요'};
+  'service:create':t=>`‘${t}’ 자막을 만들었어요`,'service:edit':t=>`‘${t}’ 자막을 고쳤어요`,'service:restore':n=>`‘${n}’ 예배를 휴지통에서 되돌렸어요`,'service:purge':n=>`‘${n}’ 예배를 완전히 지웠어요`,'service:delete':t=>`‘${t}’ 기록을 지웠어요`,'member:join':()=>'팀에 들어왔어요'};
 async function loadLog(){
   const box=$('logList');
   // 바뀌기 전 내용(before) 전체는 무거워서, 있는지만 알 수 있게 제목·번호만 받아요
