@@ -2366,8 +2366,8 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
       </div>
       <div class="sfmt" id="songFmt"></div>
       <div class="banner hidden" id="regenBanner">
-        <span>양식이 바뀌었어요. 자막을 직접 고친 곡이 있어요.</span>
-        <span class="row"><button class="btn sm" id="regenNo">고친 곡은 그대로, 나머지만 새 양식</button><button class="btn sm pri" id="regenYes">모두 새 양식으로</button></span>
+        <span>양식이 바뀌었어요.</span>
+        <span class="row"><button class="btn sm ghost" id="fmtBack" title="양식과 줄 나눔을 바꾸기 전으로 돌려요">되돌리기</button><button class="btn sm" id="fmtOnce" title="이 예배에만 써요">이번만 저장</button><button class="btn sm pri" id="fmtKeep" title="다음 예배에도 써요. 우리 교회 팀원 모두에게 바뀌어요">양식으로 저장</button></span>
       </div>
       <div class="banner hidden" id="libBanner">
         <span id="libBannerMsg"></span>
@@ -2572,14 +2572,14 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
         <p class="lead" style="margin-top:12px">말씀 화면의 글꼴·색·상자는 슬라이드 미리보기 옆 ‘슬라이드 설정 › 말씀 화면’에서 바꿔요.</p>
         </div>
         <div class="row" id="fmtSongSave" style="margin-top:14px">
-          <button class="btn pri" id="saveMine">팀 양식으로 저장</button>
+          <button class="btn pri" id="saveMine">양식 목록에 저장</button>
                   </div>
         <div class="status" id="fmtStatus"></div>
       </div>
       <div>
         <div id="fmtSongRight">
         <div class="panel"><h2>미리보기</h2><p class="lead">예시 두 곡을 지금 양식으로 만든 모습이에요.</p><pre class="prev" id="fmtPreview"></pre></div>
-        <div class="panel"><h2>팀 양식</h2><ul class="mine" id="mineList"></ul></div>
+        <div class="panel"><h2>저장한 양식</h2><ul class="mine" id="mineList"></ul></div>
         </div>
         <div id="fmtWordRight" hidden>
         <div class="panel"><h2>미리보기</h2><p class="lead">예시 본문을 지금 말씀 설정으로 정리한 모습이에요.</p><pre class="prev" id="wordFmtPreview"></pre></div>
@@ -2824,9 +2824,9 @@ const safeImg=u=>typeof u==='string'&&/^data:image\/(png|jpe?g|webp|gif);base64,
    슬라이드 모양·곡 색·자막 양식·말씀 설정·저장한 양식·배경 사진·로고를 팀 서버(team_settings)에 두고,
    누가 바꾸면 모두의 화면에 바로 반영해요. 이 브라우저에도 같이 저장해서, 서버에 못 닿아도 마지막 설정으로 열려요. */
 const TEAM_KEYS=['look','songColors','fmt','bset','mine','media.song','media.word','media.quote','media.logo','media.info','infoLib'];
-const TEAM={on:false,t:{},bad:{},local:{},applying:false};
+const TEAM={on:false,t:{},bad:{},ready:false,local:{},applying:false};
 function teamVal(k){
-  if(k==='look')return LOOK;if(k==='songColors')return songColors;if(k==='infoLib')return ILIB;if(k==='fmt')return FMT;if(k==='mine')return mine;
+  if(k==='look')return LOOK;if(k==='songColors')return songColors;if(k==='infoLib')return ILIB;if(k==='fmt')return DEF;if(k==='mine')return mine;
   if(k==='bset')return{max:BSET.max,nums:BSET.nums,heads:BSET.heads,auto:BSET.auto};
   if(k.startsWith('media.'))return MEDIA[k.slice(6)]||null;
 }
@@ -2844,7 +2844,9 @@ function teamApply(k,v){
     if(k==='look'&&v){LOOK=mkLook(v);store.set('look',LOOK);lookPrev=lookSnap();
       buildLookUI();Promise.all([loadFont(LOOK.song.font),loadFont(LOOK.word.font),loadFont(LOOK.quote.font),loadFont(LOOK.info.font,lookW(LOOK.info)),loadFont(LOOK.info.font2)]).then(()=>{renderShots();lookChanged();});}
     else if(k==='songColors'){songColors=v&&typeof v==='object'?v:{};store.set('songColors',songColors);renderShots();}
-    else if(k==='fmt'&&v){useFormat(v);}
+    else if(k==='fmt'&&v){const boot=!TEAM.ready;DEF=normFmt(v);store.set('fmt',DEF);
+      // 열 때는 우리 교회 양식으로 다시 읽어요. 쓰는 중에 팀원이 바꾸면 지금 예배는 그대로 두고 다음 예배부터 써요
+      if(!SFMT&&(boot||!results.length)&&!fmtUndo){FMT=DEF;if(boot&&curS())loadSession(curSess);else{fillForm();renderFmtPreview();renderPresets();}}}
     else if(k==='bset'&&v){Object.assign(BSET,{max:+v.max||BSET.max,nums:!!v.nums,heads:!!v.heads,auto:!!v.auto});store.set('bset2',BSET);fillBible();renderVerse();rewrapWord();}
     else if(k==='mine'){mine=Array.isArray(v)?v.filter(m=>m&&m.f):[];store.set('mine',mine);renderMine();}
     else if(k==='infoLib'){ILIB=Array.isArray(v)?v.filter(o=>o&&o.title):[];store.set('infoLib',ILIB);renderInfoEd();}
@@ -2863,7 +2865,7 @@ async function bootTeam(){
     const v=have.get(k);
     if(JSON.stringify(v)!==JSON.stringify(local)){if(first&&local!=null)mineBefore.push([k,JSON.parse(JSON.stringify(local))]);teamApply(k,v);}
   }
-  store.set('teamSynced',true);
+  store.set('teamSynced',true);TEAM.ready=true;
   // 이 컴퓨터에서 처음 팀 설정을 받을 때, 이 컴퓨터 설정이 달랐으면 고를 수 있게 해요 (방송실 PC 설정을 팀 설정으로 올릴 때)
   if(mineBefore.length)toastUndo('팀 슬라이드 설정을 불러왔어요',()=>{
     if(!confirm('이 컴퓨터에 있던 슬라이드 설정·사진·양식으로 팀 설정을 바꿀까요? 팀 전체 화면이 바뀌어요.'))return;
@@ -2961,7 +2963,9 @@ function fmtDesc(f){
   p.push(f.endMark?`끝 ${f.endMark}`:f.slideGap?'빈 줄 구분':'구분 없음');
   if(f.labels)p.push('절 이름');return p.join(', ');
 }
-let FMT=normFmt(store.get('fmt',PRESETS[0].f));
+// DEF: 우리 교회가 늘 쓰는 양식 · SFMT: 이 예배에만 쓰는 양식(없으면 null) · FMT: 지금 쓰는 양식
+let DEF=normFmt(store.get('fmt',PRESETS[0].f)),SFMT=null,FMT=DEF;
+const sameFmt=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 
 /* ---- 곡 데이터 → 텍스트 ---- */
 // song: {title, sections:[{label, slides:[[..]]}], linesUsed, charsUsed}
@@ -3232,13 +3236,13 @@ function orderChanged(send){
   if(!done.length&&!results.length)return;
   results=done.map(s=>s.result);store.set('results',results);
   const t=$('outText').value.trim();if(!send&&!t)return;
-  if(!t||!dirty){setOutput(allText(results,FMT),true);return;}
-  setOutput(mergeOutput(results),true);dirty=true;store.set('dirty',true);
+  if(!t||!dirty){setOutput(allText(results,FMT));return;}
+  setOutput(mergeOutput(results));dirty=true;store.set('dirty',true);
 }
 // 자막 결과를 다시 만들 때, 이미 있는 곡(직접 고친 글 포함)과 말씀은 그대로 두고
 // 새 곡만 지금 순서 자리에 끼워 넣어요. 목록에서 뺀 곡은 빠져요.
-function mergeOutput(list,oldF){
-  const gap='\n'+'\n'.repeat(FMT.songGap),chunks=songChunks();mergeOutput.kept=0;
+function mergeOutput(list){
+  const gap='\n'+'\n'.repeat(FMT.songGap),chunks=songChunks();
   const norm=x=>String(x||'').replace(/^\d+\.\s*/,'').replace(/\/\/\s*$/,'').replace(/\s+/g,'').trim();
   const firstLine=c=>c.split('\n').find(l=>l.trim())||'';
   const wordIdx=new Set(parseScreens().filter(sc=>sc.type==='word').map(sc=>sc.chunk));
@@ -3247,9 +3251,7 @@ function mergeOutput(list,oldF){
     const gen=songText(r,FMT,i),gl=gen.split('\n').filter(l=>l.trim());
     const keys=[norm(r.title),norm(gl[0]),norm(gl[1])].filter(Boolean);
     const j=chunks.findIndex((c,k)=>!used.has(k)&&!wordIdx.has(k)&&(()=>{const f=norm(firstLine(c)),sec=norm((c.split('\n').filter(l=>l.trim())[1])||'');return keys.includes(f)||(gl[1]&&norm(gl[1])===sec&&norm(gl[0])===f);})());
-    if(j>=0&&oldF){used.add(j);const clean=x=>x.replace(/^\d+\.\s*/,'').replace(/[ \t]+$/gm,'').trim();
-      if(clean(chunks[j])===clean(songText(r,oldF,i)))songOut.push(gen);else{mergeOutput.kept++;songOut.push(chunks[j]);}}
-    else if(j>=0){used.add(j);let c=chunks[j];if(FMT.numberSongs&&FMT.titleMode==='song')c=c.replace(/^\d+\.\s*/,`${i+1}. `);songOut.push(c);}
+    if(j>=0){used.add(j);let c=chunks[j];if(FMT.numberSongs&&FMT.titleMode==='song')c=c.replace(/^\d+\.\s*/,`${i+1}. `);songOut.push(c);}
     else songOut.push(gen);
   });
   // 말씀은 원래 자리(곡 앞이었으면 앞, 아니면 뒤)에 그대로
@@ -3394,11 +3396,8 @@ $('convertBtn').onclick=async()=>{
 /* ======================== 2. 검사·복사 ======================== */
 let results=store.get('results',[]);
 let dirty=store.get('dirty',false);
-let genFmt=store.get('genFmt',null); // 찬양 자막을 마지막으로 만들 때 쓴 양식
-function setOutput(t,force){
-  if(dirty&&!force){$('regenBanner').classList.remove('hidden');return;}
-  $('outText').value=t;dirty=false;store.set('dirty',false);store.set('out',t);$('regenBanner').classList.add('hidden');
-  genFmt=FMT;store.set('genFmt',genFmt);
+function setOutput(t){
+  $('outText').value=t;dirty=false;store.set('dirty',false);store.set('out',t);
   issues=[];renderIssues();refreshOutMeta();
 }
 $('outText').value=store.get('out','');
@@ -3409,12 +3408,16 @@ function isWordChunk(c){const ls=c.split('\n').map(l=>l.trim()).filter(Boolean);
 const QMARK='〔인용〕 ';
 // 순서·광고 항목은 저장 글에 '〔순서〕 {…}' 한 줄로 들어가요 (빈 줄이 없어서 다른 덩어리와 안 섞여요)
 const IMARK='〔순서〕 ',IBASE=30000;
+// 이 예배에만 쓰는 양식도 저장 글 끝에 한 줄로 들어가요
+const FMARK='〔양식〕 ',FMRE=/^〔양식〕 (\{.*\})$/m;
+function textFmt(t){const m=String(t||'').match(FMRE);if(!m)return null;try{return normFmt(JSON.parse(m[1]));}catch(e){return null;}}
 const IKIND={cover:{n:'표지',ic:'ph-flag-banner'},sermon:{n:'설교',ic:'ph-microphone-stage'},notice:{n:'안내',ic:'ph-megaphone-simple'},ad:{n:'광고',ic:'ph-newspaper'},text:{n:'고백문',ic:'ph-scroll'}};
-function splitCombined(t){t=String(t||'');if(!t.trim())return{song:'',word:'',quote:'',info:[]};
+function splitCombined(t){t=String(t||'').replace(FMRE,'').trimEnd();if(!t.trim())return{song:'',word:'',quote:'',info:[]};
   const all=t.split(gapRe()).filter(x=>x.trim()),isI=c=>c.trimStart().startsWith(IMARK.trim()),ch=all.filter(c=>!isI(c)),isQ=c=>c.trimStart().startsWith(QMARK.trim());
   const info=all.filter(isI).map(c=>{try{const o=JSON.parse(c.trimStart().slice(IMARK.trim().length));return o&&IKIND[o.k]?o:null;}catch(e){return null;}}).filter(Boolean);
   return{info,song:ch.filter(c=>!isQ(c)&&!isWordChunk(c)).join(gapStr()),word:ch.filter(c=>!isQ(c)&&isWordChunk(c)).join(gapStr()),quote:ch.filter(isQ).map(c=>c.trimStart().replace(QMARK.trim(),'').replace(/^ /,'')).join(gapStr())};}
-function combinedText(){const q=($('quoteText')?.value||'').trim();return[$('outText').value.trim(),$('wordText').value.trim(),q?q.split(gapRe()).filter(x=>x.trim()).map(c=>QMARK+c.trimStart()).join(gapStr()):'',...INFO.map(o=>IMARK+JSON.stringify(o))].filter(Boolean).join(gapStr());}
+function combinedText(){const q=($('quoteText')?.value||'').trim(),a=[$('outText').value.trim(),$('wordText').value.trim(),q?q.split(gapRe()).filter(x=>x.trim()).map(c=>QMARK+c.trimStart()).join(gapStr()):'',...INFO.map(o=>IMARK+JSON.stringify(o))].filter(Boolean);
+  return a.length?[...a,...(SFMT?[FMARK+JSON.stringify(SFMT)]:[])].join(gapStr()):'';}
 function wordChunks(){const t=$('wordText').value.trim();return t?t.split(gapRe()).filter(x=>x.trim()):[];}
 function autosizeWord(){const t=$('wordText');if(!t.offsetParent)return;t.style.height='auto';t.style.height=Math.max(t.scrollHeight+2,140)+'px';}
 function refreshWordMeta(){const q=WMODE==='q',ta=$(q?'quoteText':'wordText'),n=(q?quoteChunks():wordChunks()).length,l=ta.value.trim()?ta.value.trim().split('\n').length:0;$('wordCount').textContent=n?`${q?'구절':'본문'} ${n}개 · ${l}줄`:'';autosizeWord();}
@@ -3434,12 +3437,33 @@ function gotoWordLineOld(n){const ta=$('wordText'),ls=ta.value.split('\n');if(n<
   const lh=parseFloat(getComputedStyle(ta).lineHeight)||26,y=ta.getBoundingClientRect().top+scrollY+10+n*lh,doch=document.querySelector('.doc')?.offsetHeight||104;
   scrollTo({top:Math.max(0,y-doch-(innerHeight-doch)/3),behavior:'smooth'});}
 $('outText').addEventListener('input',()=>{dirty=true;store.set('dirty',true);clearTimeout(window._sv);window._sv=setTimeout(()=>store.set('out',$('outText').value),400);refreshOutMeta();});
-// 모두 새 양식으로: 고친 가사 글자는 곡 데이터에 이미 들어가 있어서, 줄만 새로 나눠요
-$('regenYes').onclick=()=>{setOutput(allText(results,FMT),true);toast('모든 곡을 지금 양식으로 다시 나눴어요');};
-// 고친 곡은 그대로: 처음 만든 모습과 똑같은 곡만 새 양식으로 바꿔요
-$('regenNo').onclick=()=>{const t=mergeOutput(results,genFmt||normFmt(BASE));
-  const kept=mergeOutput.kept||0;setOutput(t,true);dirty=kept>0;store.set('dirty',dirty);genFmt=FMT;store.set('genFmt',genFmt);
-  toast(kept?`직접 고친 ${kept}곡은 그대로 두고 나머지를 바꿨어요`:'모든 곡을 지금 양식으로 바꿨어요');};
+// ---- 양식 바꾸기: 바꾸면 바로 이 예배에 써 보고, 이번만 쓸지 우리 교회 양식으로 저장할지 골라요 ----
+// 고친 가사 글자는 곡 데이터에 이미 들어가 있어서 줄만 새로 나눠요. 되돌리기는 바꾸기 전 글을 그대로 돌려놔요
+let fmtUndo=null;
+let fmtMap=null; // 바꾸기 직전의 곡 덩어리: [{c:글, r:곡 데이터 또는 null, extra:곡 데이터로 못 만드는 줄}]
+function catchSongs(){clearTimeout(window._ls);syncEdits(); // 방금 고친 글을 곡 데이터에 먼저 옮겨요
+  const by=new Map(readEditedSongs().map(x=>[x.chunk,x.r]));
+  return songChunks().map((c,k)=>{const r=by.get(k)||null;if(!r)return{c,r};
+    const made=new Set(songText(r,FMT,results.indexOf(r)).split('\n').map(l=>l.trim()));
+    return{c,r,extra:c.split('\n').map(l=>l.trim()).filter(l=>l&&!made.has(l))};});}
+// 지금 양식으로 줄을 다시 나눠요. 곡 데이터로 못 만드는 글이 있는 덩어리는 한 글자도 잃지 않게 그대로 둬요
+function remake(map){const bare=x=>x.replace(/\s|\/\//g,'').replace(/^\d+\./,'');let kept=0;
+  const t=map.map(({c,r,extra})=>{if(!r)return c;const n=songText(r,FMT,results.indexOf(r)),b=bare(n);
+    if(extra.every(l=>b.includes(bare(l))))return n;kept++;return c;}).join(gapStr());
+  setOutput(t);if(kept){dirty=true;store.set('dirty',true);toast(`직접 고친 ${kept}곡은 글이 사라지지 않게 그대로 뒀어요`);}}
+function changeFmt(f){if(!fmtMap)fmtMap=catchSongs();if(!fmtUndo)fmtUndo={f:FMT,s:SFMT,t:$('outText').value,d:dirty,after:null};
+  FMT=f;SFMT=sameFmt(FMT,DEF)?null:FMT;$('regenBanner').classList.toggle('hidden',sameFmt(FMT,fmtUndo.f));}
+function applyFmt(){if(fmtMap&&fmtMap.length)remake(fmtMap);fmtMap=null;if(fmtUndo)fmtUndo.after=$('outText').value;scheduleSave();
+  if(fmtUndo&&sameFmt(FMT,fmtUndo.f))undoFmt();}
+function endFmt(){fmtUndo=null;$('regenBanner').classList.add('hidden');}
+function undoFmt(){const u=fmtUndo;if(!u)return;clearTimeout(window._fr);fmtMap=null;endFmt();const asIs=u.after==null||$('outText').value===u.after,map=asIs?null:catchSongs();FMT=u.f;SFMT=u.s;
+  // 바꾼 뒤에 글을 더 고쳤으면 그 글을 지우지 않고 옛 양식으로 줄만 다시 나눠요
+  if(asIs){setOutput(u.t);dirty=u.d;store.set('dirty',dirty);}else remake(map);
+  fillForm();renderFmtPreview();renderPresets();scheduleSave();}
+$('fmtBack').onclick=()=>{undoFmt();toast('바꾸기 전으로 되돌렸어요');};
+function finishFmt(){clearTimeout(window._fr);if(fmtMap)applyFmt();endFmt();}
+$('fmtOnce').onclick=()=>{finishFmt();saveSession();toast('이 예배에만 이 양식을 써요');};
+$('fmtKeep').onclick=()=>{finishFmt();DEF=FMT;SFMT=null;store.set('fmt',DEF);teamSet('fmt');saveSession();toast('양식으로 저장했어요. 다음 예배에도 써요');};
 // ---- 자막 결과에서 직접 고친 가사 → 곡 데이터와 팀 곡 보관함에 반영 ----
 // 결과 글을 고치면 그 곡의 가사 데이터도 같이 바꿔 두고(양식을 바꿔 다시 만들어도 유지),
 // 보관함에 있는 곡이면 "보관함에도 저장" 버튼을 보여 줘요.
@@ -3465,7 +3489,7 @@ function readEditedSongs(){
       else if(!sections.length||(!labRe&&sections[sections.length-1].label!==guess))sections.push({label:guess,slides:[]});
       sections[sections.length-1].slides.push(lines);
     });
-    if(sections.length)out.push({r,sections});
+    if(sections.length)out.push({r,sections,chunk:g[0].chunk});
   });
   return out;
 }
@@ -3561,7 +3585,7 @@ function removeChunk(i){
   const ch=songChunks();if(i<0||i>=ch.length)return;
   if(!dirty&&results.length===ch.length){results.splice(i,1);store.set('results',results);
     const doneSongs=songs.filter(s=>s.status==='done'&&s.result);if(doneSongs[i])doneSongs[i].status='idle';renderSongs();
-    setOutput(allText(results,FMT),true);}
+    setOutput(allText(results,FMT));}
   else{ch.splice(i,1);const ta=$('outText');ta.value=ch.join('\n'+'\n'.repeat(FMT.songGap));dirty=true;store.set('dirty',true);store.set('out',ta.value);issues=[];renderIssues();refreshOutMeta();}
   toast(`${i+1}번을 결과에서 지웠어요`);
 }
@@ -3962,7 +3986,7 @@ function buildLookUI(){
    const set=v=>{v=Math.min(mx,Math.max(mn,Math.round(+v)));if(isNaN(v))return;nb.value=v;
      if(isW){if(wHead){WOV[wHead]={max:v};store.set('wordOv',WOV);rewrapWord(wHead);renderWCharCtl();}else if(grp==='quote'){QMAX=v;store.set('quoteMax',QMAX);rewrapWord();renderWCharCtl();}else setWordMax(v,false);}
      else if(songIdx>=0){const rr=results[songIdx],f=ffmt(rr,FMT);rr.fmtOv={lines:f.lines,maxChars:v};store.set('results',results);const c2=songChunks();if(c2.length===results.length){c2[songIdx]=songText(rr,FMT,songIdx);const ta=$('outText');ta.value=c2.join(gapStr());ta.dispatchEvent(new Event('input',{bubbles:true}));}renderSongFmt();}
-     else{useFormat({...FMT,maxChars:v});if(!$('regenBanner').classList.contains('hidden')){setOutput(allText(results,FMT),true);}}
+     else useFormat({...FMT,maxChars:v});
      setTimeout(()=>{if($('slidebox').classList.contains('on')){sbList=songGroups().flatMap(g=>g.items.map(s=>({s,si:g.songIdx||0})));drawSlide();}},250);};
    nb.onchange=()=>set(nb.value);dn.onclick=()=>set(cur()-1);up.onclick=()=>set(cur()+1);g.appendChild(r);};
   // 말씀·참고 구절: 글자 크기에 맞춰 한 줄 글자 수·화면당 줄 자동 (기본) / 직접 정하기
@@ -4455,7 +4479,7 @@ function renderSongFmt(){const box=$('songFmt');if(!box)return;const ch=songChun
     ${own?'<button type="button" class="btn sm ghost" data-reset>기본 양식으로</button>':''}`;
   const apply=ov=>{if(ov)r.fmtOv=ov;else delete r.fmtOv;store.set('results',results);
     const c2=songChunks();if(c2.length===results.length){c2[songTab]=songText(r,FMT,songTab);const ta=$('outText');ta.value=c2.join(gapStr());ta.dispatchEvent(new Event('input',{bubbles:true}));}
-    else setOutput(allText(results,FMT),true);
+    else setOutput(allText(results,FMT));
     toast(ov?`${songTab+1}번 곡만 한 화면 ${ov.lines}줄 · 한 줄 ${ov.maxChars}자로 바꿨어요`:`${songTab+1}번 곡을 기본 양식으로 돌렸어요`);renderSongFmt();};
   box.querySelector('[data-l]').onchange=e=>apply({lines:+e.target.value,maxChars:f.maxChars});
   box.querySelector('[data-m]').onchange=e=>{const v=Math.min(30,Math.max(6,+e.target.value||f.maxChars));apply({lines:f.lines,maxChars:v});};
@@ -5150,7 +5174,7 @@ function renderOutFmt(){
   let cur=opts.find(o=>same(o.f)&&o.f.name===FMT.name)||opts.find(o=>same(o.f));
   sel.innerHTML=(cur?'':`<option value="cur" selected>${esc(FMT.name)} (지금)</option>`)+
     `<optgroup label="추천 양식">${opts.filter(o=>o.v[0]==='p').map(o=>`<option value="${o.v}"${cur===o?' selected':''}>${esc(o.f.name)}</option>`).join('')}</optgroup>`+
-    (mine.length?`<optgroup label="팀 양식">${opts.filter(o=>o.v[0]==='m').map(o=>`<option value="${o.v}"${cur===o?' selected':''}>${esc(o.f.name)}</option>`).join('')}</optgroup>`:'')+
+    (mine.length?`<optgroup label="저장한 양식">${opts.filter(o=>o.v[0]==='m').map(o=>`<option value="${o.v}"${cur===o?' selected':''}>${esc(o.f.name)}</option>`).join('')}</optgroup>`:'')+
     '<option value="edit">양식 설정 열기…</option>';
   sel._opts=opts;$('outLines').value=FMT.lines;$('outMax').value=FMT.maxChars;
 }
@@ -5177,14 +5201,13 @@ $('outFmt').addEventListener('change',e=>{
 $('outLines').addEventListener('change',e=>useFormat({...FMT,lines:+e.target.value}));
 $('outMax').addEventListener('change',e=>useFormat({...FMT,maxChars:+e.target.value||FMT.maxChars}));
 function useFormat(f,msg){
-  FMT=normFmt(f);store.set('fmt',FMT);teamSet('fmt');fillForm();renderFmtPreview();renderPresets();
-  if(results.length)setOutput(allText(results,FMT));
+  changeFmt(normFmt(f));fillForm();renderFmtPreview();renderPresets();applyFmt();
   if(msg)toast(msg);
 }
 document.querySelectorAll('#v-formats input,#v-formats select,#v-formats textarea').forEach(el=>el.addEventListener('input',()=>{
-  FMT=readForm();store.set('fmt',FMT);teamSet('fmt');renderFmtChip();$('fCustomTitle').classList.toggle('hidden',FMT.titleMode!=='custom');
+  changeFmt(readForm());renderFmtChip();$('fCustomTitle').classList.toggle('hidden',FMT.titleMode!=='custom');
   $('curFmtName').textContent=FMT.name;$('curFmtDesc').textContent=fmtDesc(FMT);renderFmtPreview();
-  clearTimeout(window._fr);window._fr=setTimeout(()=>{if(results.length)setOutput(allText(results,FMT));renderPresets();},500);
+  clearTimeout(window._fr);window._fr=setTimeout(()=>{applyFmt();renderPresets();},500);
 }));
 function renderFmtPreview(){$('fmtPreview').textContent=allText(SAMPLE,FMT);}
 // 자막 양식 창: 양식 다듬기 / 추천받기
@@ -5197,22 +5220,22 @@ $('openFmt').onclick=()=>openFmt('formats');$('fmtClose').onclick=closeFmt;
 $('fmtbox').addEventListener('click',e=>{if(e.target.id==='fmtbox')closeFmt();});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&$('fmtbox').classList.contains('on'))closeFmt();});
 
-// 팀 양식: 팀이 저장해 둔 자막 양식 목록 (팀 서버의 mine 설정에 함께 저장돼요)
+// 저장한 양식: 팀이 저장해 둔 자막 양식 목록 (팀 서버의 mine 설정에 함께 저장돼요)
 let mine=store.get('mine',[]).filter(m=>m&&m.f);
 function saveMineList(){store.set('mine',mine);teamSet('mine');renderMine();renderOutFmt();}
 function renderMine(){
   renderOutFmt();const ul=$('mineList');ul.innerHTML='';
-  if(!mine.length){ul.innerHTML='<li class="empty">아직 저장한 양식이 없어요. 왼쪽에서 다듬고 ‘팀 양식으로 저장’을 누르세요.</li>';return;}
+  if(!mine.length){ul.innerHTML='<li class="empty">아직 저장한 양식이 없어요. 왼쪽에서 다듬고 ‘양식 목록에 저장’을 누르세요.</li>';return;}
   mine.forEach(m=>{const li=document.createElement('li');
     li.innerHTML=`<span><b>${esc(m.f.name)}</b><br><span class="hint">${esc(fmtDesc(normFmt(m.f)))}</span></span><span class="row"><button class="btn sm" data-u>쓰기</button><button class="btn sm ghost" data-d>지우기</button></span>`;
     li.querySelector('[data-u]').onclick=()=>useFormat(m.f,`‘${m.f.name}’ 양식으로 바꿨어요`);
-    li.querySelector('[data-d]').onclick=()=>{if(!confirm(`팀 양식 ‘${m.f.name}’을 지울까요?`))return;mine=mine.filter(x=>x!==m);saveMineList();};
+    li.querySelector('[data-d]').onclick=()=>{if(!confirm(`저장한 양식 ‘${m.f.name}’을 지울까요?`))return;mine=mine.filter(x=>x!==m);saveMineList();};
     ul.appendChild(li);});
 }
 $('saveMine').onclick=()=>{
   const f=readForm(),ex=mine.find(m=>m.f.name===f.name);
   if(ex)ex.f=f;else mine.unshift({id:'fmt-'+Date.now().toString(36),f});saveMineList();
-  $('fmtStatus').className='status';$('fmtStatus').textContent=`‘${f.name}’을 팀 양식으로 저장했어요.`;
+  $('fmtStatus').className='status';$('fmtStatus').textContent=`‘${f.name}’을 양식 목록에 저장했어요.`;
 };
 
 /* ======================== 4. 양식 추천 ======================== */
@@ -5453,13 +5476,14 @@ function saveSession(){
 }
 function loadSession(id){
   const c=SESS.find(x=>x.id===id);if(!c)return;
+  clearTimeout(window._fr);fmtMap=null;endFmt();SFMT=textFmt(c.text);FMT=SFMT||DEF;fillForm();renderFmtPreview();renderPresets();
   curSess=id;store.set('curSess',id);
   $('docTitle').value=c.name;results=c.results||[];store.set('results',results);
   songs.forEach(s=>s.pages.forEach(p=>URL.revokeObjectURL(p.url)));
   songs=results.map(r=>newSong({mode:'lib',title:r.title,result:r,thumb:LIB[r.title]?.thumb,status:'done'}));
   {const sp=splitCombined(c.text);$('outText').value=sp.song;$('wordText').value=sp.word;$('quoteText').value=sp.quote;store.set('out',sp.song);store.set('wordOut',sp.word);store.set('quoteOut',sp.quote);renderQuoteChips();INFO=sp.info;infoSel=0;renderInfoAll();}dirty=!!c.dirty;store.set('dirty',dirty);refreshWordMeta();
   $('verseIn').value=c.verseIn||'';$('bTitle').value=c.bTitle||'';BSET.title=c.bTitle||'';
-  issues=[];checked=false;exported=false;$('regenBanner').classList.add('hidden');libPend=[];libSkipKey={};$('libBanner').classList.add('hidden');
+  issues=[];checked=false;exported=false;libPend=[];libSkipKey={};$('libBanner').classList.add('hidden');
   renderSongs();renderIssues();refreshOutMeta();renderVerse();renderHist();
   $('savedAt').textContent=`저장됨 · ${fmtTime(c.updated)}`;fitTitle();closeRail();scrollTo(0,0);trackMe();showClash();
 }
