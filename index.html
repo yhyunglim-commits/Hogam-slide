@@ -2201,6 +2201,23 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
 @media (min-width:1101px){body:not(.railpinned) .rail:not(:hover):not(:focus-within) .rfrow{padding:8px 0 12px;justify-content:center}
   body:not(.railpinned) .rail:not(:hover):not(:focus-within) .railfoot .rfrow .railmail{flex:none}}
 @media (max-width:1100px){.rfrow .pin{display:none}}
+/* 교회 */
+.churchbtn{display:flex;align-items:center;gap:8px;min-width:0;padding:4px 6px;border:0;border-radius:10px;background:none;color:var(--text);font:inherit;text-align:left}
+.churchbtn[hidden]{display:none}.churchbtn .ci{flex:none;width:28px;height:28px;display:grid;place-items:center;font-size:18px;color:var(--text2)}
+.churchbtn b{flex:1 1 auto;min-width:0;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.churchbtn .cc{flex:none;display:none;color:var(--text3)}.churchbtn.many{cursor:pointer}.churchbtn.many .cc{display:block}.churchbtn.many:hover{background:var(--sunken)}
+@media (min-width:1101px){body:not(.railpinned) .rail:not(:hover):not(:focus-within) .churchbtn>:not(.ci){display:none}
+  body:not(.railpinned) .rail:not(:hover):not(:focus-within) .churchbtn{width:40px;padding:4px 6px;justify-content:center}}
+.chdlg{z-index:99}.chhead{display:flex;align-items:center;justify-content:space-between}.chhead h2{margin:0}
+.cherr{margin:6px 0 10px;font-size:14px;color:#C5321F}.cherr:empty{margin:0 0 10px}
+:root[data-theme=dark] .cherr{color:#FF8A7A}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .cherr{color:#FF8A7A}}
+.chdlg form>div{display:flex;flex-direction:column;gap:12px}.chdlg form>div[hidden]{display:none}
+.chdlg label span{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px}.chdlg label input{width:100%;box-sizing:border-box;height:42px;font-size:16px}
+.chdlg .btn.pri{height:42px;justify-content:center}
+.chdlg .hint2{margin:0;font-size:13px;color:var(--text3)}
+.chlist{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:6px}
+.chlist button{width:100%;display:flex;align-items:center;gap:8px;padding:10px 14px;border:0;border-radius:12px;background:var(--sunken);color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.chlist button:disabled{opacity:.5}.chlist .tt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}.chlist small{color:var(--text3);font-size:13px}.chlist i{color:var(--pri);font-size:18px}
 /* 휴지통 */
 .trashopen{display:flex;align-items:center;gap:6px;margin:4px 0 0;padding:6px 9px;border:0;border-radius:8px;background:none;color:var(--text3);font:inherit;font-size:13px;cursor:pointer}
 .trashopen[hidden]{display:none}.trashopen:hover{background:var(--sunken);color:var(--text)}
@@ -2276,6 +2293,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
   <aside class="rail" id="rail">
     <div class="brand"><div class="mk" aria-hidden="true"><img src="brand/logo.svg" alt=""></div><div><b class="brandtx"><span>호감 슬라이드</span><span lang="en" aria-hidden="true">HOGAM SLIDE</span></b></div></div>
     <div class="railtop" id="railTop">
+      <button type="button" class="churchbtn" id="churchBtn" hidden><span class="ci" aria-hidden="true"><i class="ph ph-church"></i></span><b></b><i class="ph ph-caret-up-down cc" aria-hidden="true"></i></button>
       <div class="railnew" id="railNew"></div>
       <div class="railtitle"><span class="ricon" aria-hidden="true"><i class="ph ph-pencil-simple" aria-hidden="true"></i></span><input class="title" id="docTitle" aria-label="예배 이름"><button class="pen" id="titlePen" type="button" aria-label="예배 이름 고치기" title="예배 이름 고치기"><i class="ph ph-pencil-simple" aria-hidden="true"></i></button></div>
     </div>
@@ -2643,6 +2661,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
         <label class="gl"><span>교회에서 쓸 이름</span><input id="jName" type="text" maxlength="10" autocomplete="off" placeholder="예) 김목자"></label>
         <p class="gerr" id="jErr" role="alert"></p>
         <button class="gpri" id="jGo" type="button">들어가기</button>
+        <button type="button" class="glink" id="jMake">초대 코드가 없나요? 새 교회 만들기</button>
         <button type="button" class="glink" id="jOut">처음 화면으로</button>
       </div>
     </div>
@@ -2710,7 +2729,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
   <div class="setbody">
     <div class="setme"><span class="av" id="setAv" aria-hidden="true"></span><b id="setName"></b></div>
     <div><h3>화면 밝기</h3><div class="seg2 settheme" role="radiogroup" aria-label="화면 밝기"><button type="button" role="radio" data-th="auto">자동</button><button type="button" role="radio" data-th="light">밝게</button><button type="button" role="radio" data-th="dark">어둡게</button></div></div>
-    <div><h3>교회</h3><div class="setrows"><button type="button" id="invite"><i class="ph ph-user-plus" aria-hidden="true"></i>팀원 초대</button><button type="button" id="openLog"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>편집 기록</button></div></div>
+    <div><h3>교회 · <span id="setChurch"></span></h3><div class="setrows"><button type="button" id="invite"><i class="ph ph-user-plus" aria-hidden="true"></i>팀원 초대</button><button type="button" id="openLog"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>편집 기록</button><button type="button" data-ch="join"><i class="ph ph-sign-in" aria-hidden="true"></i>다른 교회 들어가기</button><button type="button" data-ch="new" id="chMake"><i class="ph ph-plus-circle" aria-hidden="true"></i>새 교회 만들기</button></div></div>
     <div><h3>계정</h3><div class="setrows"><button type="button" id="linkKakao" hidden><i class="ph ph-chat-circle" aria-hidden="true"></i>카카오 연결</button><button type="button" id="logout"><i class="ph ph-sign-out" aria-hidden="true"></i>나가기</button></div></div>
   </div></div>
 </div>
@@ -2763,6 +2782,21 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
     <label class="ck"><input type="checkbox" id="libOk"><span>확인된 곡만</span></label></div>
   <div class="libsplit"><ul class="liblist" id="libAll"></ul><div class="libdetail" id="libDetail"></div></div></div>
 </div>
+<dialog class="maildlg chdlg" id="chDlg" aria-labelledby="chTitle">
+  <div class="chhead"><h2 id="chTitle">교회</h2><button type="button" class="btn ghost ibtn" id="chClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
+  <p class="cherr" id="chErr" role="alert"></p>
+  <div id="chPick"><ul class="chlist" id="chList"></ul>
+    <div class="setrows"><button type="button" data-ch="join"><i class="ph ph-sign-in" aria-hidden="true"></i>다른 교회 들어가기</button><button type="button" data-ch="new" id="chMake2"><i class="ph ph-plus-circle" aria-hidden="true"></i>새 교회 만들기</button></div></div>
+  <form id="chJoinF"><div id="chJoin" hidden>
+    <label><span>초대 코드</span><input type="text" id="chCode" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="예) AB3DEF7H"></label>
+    <label><span>교회에서 쓸 이름</span><input type="text" id="chName1" maxlength="10" autocomplete="off" placeholder="예) 김목자"></label>
+    <button type="submit" class="btn pri" id="chJoinGo">들어가기</button></div></form>
+  <form id="chNewF"><div id="chNew" hidden>
+    <label><span>교회 이름</span><input type="text" id="chName" maxlength="20" autocomplete="off" placeholder="예) 호감교회"></label>
+    <label><span>교회에서 쓸 이름</span><input type="text" id="chName2" maxlength="10" autocomplete="off" placeholder="예) 김목자"></label>
+    <p class="hint2">교회는 한 사람이 한 곳만 만들 수 있어요.</p>
+    <button type="submit" class="btn pri" id="chNewGo">만들기</button></div></form>
+</dialog>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -2770,7 +2804,18 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2200);}
 let curPage=null; // 지금 보는 탭 페이지: song · word · slides (setPage에서 정해요)
-const store={get(k,d){try{const v=localStorage.getItem('cj_'+k);return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){try{localStorage.setItem('cj_'+k,JSON.stringify(v));return true;}catch(e){return false;}}};
+// 지금 교회: 탭마다 따로 기억하고(sessionStorage), 새 탭은 마지막에 쓰던 교회로 열어요
+let CH=null;try{CH=sessionStorage.getItem('cj_church')||localStorage.getItem('cj_lastChurch')||null;}catch(e){}
+const OKSU='00000000-0000-0000-0000-000000000001';
+// 개인 취향만 교회와 상관없이 같이 쓰고, 나머지는 교회마다 따로 저장해요 (교회 것이 섞이지 않게)
+const MY_KEYS=new Set(['theme','railPinned','joinCode','folds','rail_hist','rail_lib','lkOpen','shotZoom']);
+const storeKey=k=>'cj_'+(CH&&!MY_KEYS.has(k)?`c:${CH}:`:'')+k;
+const store={get(k,d){try{const v=localStorage.getItem(storeKey(k));return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){try{localStorage.setItem(storeKey(k),JSON.stringify(v));return true;}catch(e){return false;}}};
+function keepChurch(id){try{sessionStorage.setItem('cj_church',id);localStorage.setItem('cj_lastChurch',id);return sessionStorage.getItem('cj_church')===id;}catch(e){return false;}}
+// 교회를 나누기 전에 저장된 것은 옥수교회 것이에요. 옥수교회 팀원이 처음 열 때 한 번 옮겨요
+function moveOldStore(){Object.keys(localStorage).filter(k=>k.startsWith('cj_')&&!k.startsWith('cj_c:')&&k!=='cj_lastChurch'&&!MY_KEYS.has(k.slice(3))).forEach(k=>{
+  const v=localStorage.getItem(k),n=`cj_c:${OKSU}:`+k.slice(3);if(localStorage.getItem(n)!=null)return;
+  localStorage.removeItem(k);try{localStorage.setItem(n,v);}catch(e){localStorage.setItem(k,v);}});}
 let WMODE=store.get('wmode','w')==='q'?'q':'w'; // 말씀 탭: 설교 본문(w) · 참고 구절(q)
 // 데이터베이스에서 온 썸네일은 그림 주소(data:image/…)일 때만 써요
 const safeImg=u=>typeof u==='string'&&/^data:image\/(png|jpe?g|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(u)?u:null;
@@ -2779,7 +2824,7 @@ const safeImg=u=>typeof u==='string'&&/^data:image\/(png|jpe?g|webp|gif);base64,
    슬라이드 모양·곡 색·자막 양식·말씀 설정·저장한 양식·배경 사진·로고를 팀 서버(team_settings)에 두고,
    누가 바꾸면 모두의 화면에 바로 반영해요. 이 브라우저에도 같이 저장해서, 서버에 못 닿아도 마지막 설정으로 열려요. */
 const TEAM_KEYS=['look','songColors','fmt','bset','mine','media.song','media.word','media.quote','media.logo','media.info','infoLib'];
-const TEAM={on:false,t:{},local:{},applying:false};
+const TEAM={on:false,t:{},bad:{},local:{},applying:false};
 function teamVal(k){
   if(k==='look')return LOOK;if(k==='songColors')return songColors;if(k==='infoLib')return ILIB;if(k==='fmt')return FMT;if(k==='mine')return mine;
   if(k==='bset')return{max:BSET.max,nums:BSET.nums,heads:BSET.heads,auto:BSET.auto};
@@ -2788,9 +2833,10 @@ function teamVal(k){
 // 이 브라우저에서 바꿨을 때: 0.6초 모아서 팀 서버로 보내요
 function teamSet(k){
   if(TEAM.applying)return;TEAM.local[k]=Date.now();if(!TEAM.on)return;
-  clearTimeout(TEAM.t[k]);TEAM.t[k]=setTimeout(async()=>{TEAM.local[k]=Date.now();
-    const {error}=await sb.from('team_settings').upsert({key:k,value:teamVal(k)});if(error)netErr(error);},600);
+  clearTimeout(TEAM.t[k]);TEAM.t[k]=setTimeout(()=>teamSend(k),600);
 }
+async function teamSend(k){clearTimeout(TEAM.t[k]);delete TEAM.t[k];TEAM.local[k]=Date.now();
+  const {error}=await sb.from('team_settings').upsert({key:k,value:teamVal(k)});if(error){TEAM.bad[k]=1;netErr(error);}else delete TEAM.bad[k];}
 // 팀 서버의 값을 이 화면에 반영해요
 function teamApply(k,v){
   TEAM.applying=true;
@@ -3017,7 +3063,14 @@ const CFG_OK=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&!/여기에/.test(CFG.S
 // 카카오에서 돌아올 때 주소에 붙은 실패 이유. 서버 연결이 주소를 지우기 전에 먼저 읽어요
 const AUTH_ERR=(()=>{const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.slice(1)),c=q.get('error_code')||h.get('error_code')||q.get('error')||h.get('error')||'';
   if(c){const e=['error','error_code','error_description','sb'];e.forEach(k=>q.delete(k));setTimeout(()=>history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')),0);}return c;})();
-const sb=(window.supabase&&CFG_OK)?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
+// 표를 읽고 쓰는 요청마다 지금 교회를 알려요(x-church). 서버가 그 교회 팀원인지 확인해요
+let sending=0;
+async function churchFetch(url,o={}){const u=String(url?.url||url),db=u.includes('/rest/v1/');
+  if(!db)return fetch(url,o);
+  const h=new Headers(o.headers||{});if(CH)h.set('x-church',CH);
+  const w=o.method&&!['GET','HEAD'].includes(o.method);if(w)sending++;
+  try{return await fetch(url,{...o,headers:h});}finally{if(w)sending--;}}
+const sb=(window.supabase&&CFG_OK)?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY,{global:{fetch:churchFetch}}):null;
 let me=null;
 function blobToB64(b){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(b);});}
 async function sample(prompt,opts={}){
@@ -5684,11 +5737,11 @@ function pushSession(c){
   pushT[c.id]=setTimeout(()=>sendSession(c.id),1200);
 }
 // 같은 예배의 저장은 한 줄로 차례대로 보내요 (앞 저장의 판 번호를 받은 뒤에 다음 저장을 보내야 해서)
-const chain={};
+const chain={},failed={}; // failed: 서버에 저장하지 못한 예배
 function sendSession(id){
   const c=pushC[id];clearTimeout(pushT[id]);delete pushT[id];delete pushC[id];if(!c||!sb||!me)return Promise.resolve();
   inflight[id]=(inflight[id]||0)+1;
-  return chain[id]=(chain[id]||Promise.resolve()).then(()=>doSend(c)).catch(netErr).finally(()=>{inflight[id]--;});
+  return chain[id]=(chain[id]||Promise.resolve()).then(()=>doSend(c)).catch(e=>{failed[id]=c;netErr(e);}).finally(()=>{inflight[id]--;});
 }
 async function doSend(c){
   const id=c.id;if(clash[id]||!sb||!me)return;c.by=me.name;
@@ -5697,12 +5750,12 @@ async function doSend(c){
     if(!noRpc){
       const {data,error}=await sb.rpc('save_service',{p_id:row.id,p_base:c.ver??null,p_name:row.name,p_text:row.text,p_results:row.results,p_verse_in:row.verse_in,p_b_title:row.b_title,p_dirty:row.dirty});
       if(!error){
-        if(data&&data.ok){c.ver=data.version;store.set('sessions',SESS);}
+        if(data&&data.ok){delete failed[id];c.ver=data.version;store.set('sessions',SESS);}
         else if(data){clash[id]={by:data.by||'다른 팀원',version:data.version,trashed:data.trashed};showClash();}
         return;
       }
       // 서버에 아직 새 저장 기능(2단계 SQL)이 없으면 예전 방식으로 저장해요
-      if(error.code==='PGRST202'||/save_service/.test(error.message||''))noRpc=true;else{netErr(error);return;}
+      if(error.code==='PGRST202'||/save_service/.test(error.message||''))noRpc=true;else{failed[id]=c;netErr(error);return;}
     }
     const {error}=await sb.from('services').upsert(row);if(error)netErr(error);
   }
@@ -5835,13 +5888,21 @@ $('gateForm').onsubmit=async e=>{
   finally{go.disabled=false;go.textContent=label;}
 };
 async function afterLogin(u){
-  const {data:m,error}=await sb.from('members').select('name,church_id').eq('user_id',u.id).maybeSingle();
-  if(error){showGate();$('gErr').textContent='서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요';return;}
-  if(!m){showJoin(u);return;}
-  // 지금은 한 사람이 한 교회만이라, 교회에 들어와 있으면 기억해 둔 초대 코드는 버려요 (여러 교회는 4단계)
-  me={id:u.id,name:m.name,church:m.church_id};store.set('joinCode',null);$('meName').textContent=me.name;$('meAv').textContent=me.name.slice(0,1);$('meAv').title=`내 계정 · ${me.name}`;
+  const [{data:ms,error},{data:cs,error:e2}]=await Promise.all([sb.from('members').select('name,church_id').eq('user_id',u.id).order('joined_at'),sb.from('churches').select('*')]);
+  if(error||e2){showGate();$('gErr').textContent='서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요';return;}
+  if(!ms.length){showJoin(u);return;}
+  CHURCHES=ms.map(m=>({id:m.church_id,my:m.name,...cs.find(c=>c.id===m.church_id)}));canMake=!cs.some(c=>c.created_by===u.id);
+  const pick=ms.find(m=>m.church_id===CH)||ms[ms.length-1];
+  if(pick.church_id!==CH){
+    // 이 브라우저에 저장된 것을 교회에 맞게 다시 읽어야 해서 화면을 한 번 새로 열어요
+    if(!CH&&pick.church_id===OKSU){CH=OKSU;moveOldStore();}
+    if(keepChurch(pick.church_id)){location.reload();return;}
+    CH=pick.church_id;}
+  keepChurch(CH);
+  me={id:u.id,name:pick.name,church:pick.church_id};$('meName').textContent=me.name;$('meAv').textContent=me.name.slice(0,1);$('meAv').title=`내 계정 · ${me.name}`;renderChurch();
   hideGate();await bootRemote();
   offerKakaoLink(u);
+  const jc=store.get('joinCode',null);if(jc)openInvite(jc); // 이미 들어온 사람이 다른 교회 초대 링크를 눌렀을 때
 }
 // 교회에 아직 안 들어간 사람: 초대 코드와 교회에서 쓸 이름을 받아요
 function showJoin(u){const md=u.user_metadata||{};
@@ -5905,6 +5966,59 @@ function renderOnline(){
   bar.innerHTML=shown.map((o,i)=>`<span class="oav${o.sess.includes(curSess)?' same':''}" tabindex="0" style="background:${avColor(o.name)};z-index:${10-i}" data-tip="${esc(tip(o))}" aria-label="${esc(tip(o))}">${esc(o.name.slice(0,1))}</span>`).join('')
     +(rest.length?`<span class="oav more" tabindex="0" data-tip="${esc(rest.map(o=>o.name).join(', '))}" aria-label="${esc(rest.map(o=>o.name).join(', '))}">+${rest.length}</span>`:'');
 }
+// ---- 교회 고르기 · 다른 교회 들어가기 · 새 교회 만들기 ----
+let CHURCHES=[],canMake=true;
+function renderChurch(){const c=CHURCHES.find(x=>x.id===me?.church),b=$('churchBtn'),many=CHURCHES.length>1;
+  b.hidden=!c;if(!c)return;b.querySelector('b').textContent=c.name||'우리 교회';b.disabled=!many;b.classList.toggle('many',many);
+  b.title=many?'다른 교회로 바꾸기':c.name;$('setChurch').textContent=c.name||'';$('chMake').hidden=$('chMake2').hidden=!canMake;
+  $('chList').innerHTML='';CHURCHES.forEach(x=>{const li=document.createElement('li'),bt=document.createElement('button'),on=x.id===me.church;bt.type='button';
+    bt.innerHTML=`<span class="tt"><b></b><small></small></span>${on?'<i class="ph ph-check" aria-label="지금 교회"></i>':''}`;bt.querySelector('b').textContent=x.name;bt.querySelector('small').textContent=x.my;
+    bt.onclick=()=>on?$('chDlg').close():goChurch(x.id,bt);li.appendChild(bt);$('chList').appendChild(li);});}
+// 저장을 다 마쳐야 교회를 바꿔요. 하나라도 저장하지 못하면 바꾸지 않고 알려요
+async function flushAll(){
+  if(busy)return'악보를 읽는 중이에요. 끝난 뒤에 바꿔 주세요';
+  saveSession();Object.entries(failed).forEach(([id,c])=>{if(!clash[id])pushC[id]=c;});
+  await flushSessions();await Promise.all(Object.values(chain));
+  if(TEAM.on)await Promise.all([...new Set([...Object.keys(TEAM.t),...Object.keys(TEAM.bad)])].map(teamSend));
+  for(let i=0;sending&&i<100;i++)await new Promise(r=>setTimeout(r,100));
+  if(Object.keys(clash).length)return'팀원과 겹친 글이 있어요. 위 노란 안내에서 먼저 골라 주세요';
+  if(sending||Object.keys(failed).length||Object.keys(TEAM.bad).length)return'서버에 저장하지 못해서 교회를 바꾸지 않았어요. 인터넷 연결을 확인해 주세요';
+  return'';}
+async function goChurch(id,bt){if(bt)bt.disabled=true;
+  const why=me?await flushAll().catch(()=>'서버에 저장하지 못해서 교회를 바꾸지 않았어요'):'';
+  if(why){if(bt)bt.disabled=false;$('chErr').textContent=why;return false;}
+  if(songs.some(x=>!x.result&&(x.pages.length||x.text))&&!confirm('아직 자막에 넣지 않은 악보나 가사가 있어요. 교회를 바꾸면 사라져요. 바꿀까요?')){if(bt)bt.disabled=false;return false;}
+  if(!keepChurch(id)){if(bt)bt.disabled=false;$('chErr').textContent='이 브라우저가 저장을 막고 있어서 바꿀 수 없어요';return false;}
+  location.reload();return true;}
+function chMode(m){$('chPick').hidden=m!=='pick';$('chJoin').hidden=m!=='join';$('chNew').hidden=m!=='new';$('chErr').textContent='';
+  $('chTitle').textContent=m==='pick'?'교회':m==='join'?'다른 교회 들어가기':'새 교회 만들기';if(!$('chDlg').open)$('chDlg').showModal();
+  ({join:$('chCode').value?$('chName1'):$('chCode'),new:$('chName')})[m]?.focus();}
+const myName=()=>me?.name||$('jName').value||'';
+function openJoin(code=''){closeSet();closeRail();$('chCode').value=code;$('chName1').value=myName();chMode('join');}
+function openMake(){closeSet();closeRail();$('chName').value='';$('chName2').value=myName();chMode('new');}
+function openInvite(code){const k=String(code).replace(/[^A-Za-z0-9]/g,'').toUpperCase(),c=CHURCHES.find(x=>x.invite_code===k);store.set('joinCode',null);
+  if(c){if(c.id===me.church)toast(`이미 ${c.name}에 들어와 있어요`);else{closeConti();chMode('pick');$('chErr').textContent=`이미 ${c.name}에 들어와 있어요. 아래에서 고르면 바꿔요`;}return;}
+  closeConti();openJoin(k);}
+async function chSend(btn,fn,args){const err=$('chErr');err.textContent='';btn.disabled=true;
+  try{
+    // 새 교회로 옮기기 전에 지금 교회 것을 먼저 저장해요
+    if(me){const why=await flushAll();if(why)throw new Error(why);}
+    const {data,error}=await sb.rpc(fn,args);
+    if(error)throw new Error('서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요');if(!data.ok)throw new Error(data.error);
+    store.set('joinCode',null);if(fn==='create_church')canMake=false;
+    await goChurch(data.church_id);
+  }catch(x){err.textContent=x.message||String(x);}finally{btn.disabled=false;}}
+$('chJoinF').onsubmit=e=>{e.preventDefault();const code=$('chCode').value.trim(),name=normName($('chName1').value);
+  if(!code)return $('chErr').textContent='초대 코드를 넣어 주세요';if(name.length<2)return $('chErr').textContent='이름을 2글자 이상 적어 주세요';
+  chSend($('chJoinGo'),'join_church',{p_code:code,p_name:name});};
+$('chNewF').onsubmit=e=>{e.preventDefault();const church=normName($('chName').value),name=normName($('chName2').value);
+  if(church.length<2)return $('chErr').textContent='교회 이름을 2글자 이상 적어 주세요';if(name.length<2)return $('chErr').textContent='이름을 2글자 이상 적어 주세요';
+  chSend($('chNewGo'),'create_church',{p_church:church,p_name:name});};
+$('churchBtn').onclick=()=>{closeRail();hideTip();chMode('pick');};
+document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>b.dataset.ch==='join'?openJoin():openMake());
+$('chClose').onclick=()=>$('chDlg').close();$('chDlg').addEventListener('click',e=>{if(e.target.id==='chDlg')$('chDlg').close();});
+$('jMake').onclick=openMake;
+
 let chan=null;
 async function bootRemote(){
   const [sv,sg,tr]=await Promise.all([sb.from('services').select('*').is('deleted_at',null).order('updated_at',{ascending:false}).limit(120),sb.from('songs').select('*'),sb.from('services').select('*').not('deleted_at','is',null)]);
@@ -5926,11 +6040,13 @@ function subscribe(){
   chan=sb.channel('hogam-live')
   .on('postgres_changes',{event:'*',schema:'public',table:'songs'},p=>{
     // 지움 알림은 서버가 교회별로 걸러 주지 못해서 다른 교회 것도 와요. 같은 제목의 우리 곡이 사라지지 않게 걸러요
-    if(p.eventType==='DELETE'){if(p.old.church_id!==me.church)return;delete LIB[p.old.title];}else LIB[p.new.title]=rowToSong(p.new);
+    if((p.eventType==='DELETE'?p.old:p.new).church_id!==me.church)return; // 두 교회에 속하면 두 곳 알림이 다 와요
+    if(p.eventType==='DELETE'){delete LIB[p.old.title];}else LIB[p.new.title]=rowToSong(p.new);
     renderLib();if(!$('libDrop').classList.contains('hidden'))renderLibDrop();if($('libbox').classList.contains('on')){renderLibAll();if(!libNew&&!libEdit)renderLibDetail();}})
   .on('postgres_changes',{event:'*',schema:'public',table:'services'},p=>{
     if(p.eventType==='DELETE'){const id=p.old.id;if(TRASH.some(x=>x.id===id)){TRASH=TRASH.filter(x=>x.id!==id);renderTrash();}if(!SESS.some(x=>x.id===id))return;SESS=SESS.filter(x=>x.id!==id);
       if(id===curSess)toast('다른 팀원이 이 예배 기록을 지웠어요. 지금 화면의 글은 남아 있어요');renderHist();return;}
+    if(p.new.church_id!==me.church)return;
     const r=rowToSess(p.new);
     if(r.del){const had=SESS.some(x=>x.id===r.id);TRASH=[r,...TRASH.filter(x=>x.id!==r.id)];renderTrash();
       if(had){clearTimeout(pushT[r.id]);delete pushT[r.id];delete pushC[r.id];SESS=SESS.filter(x=>x.id!==r.id);store.set('sessions',SESS);renderHist();
@@ -5947,7 +6063,7 @@ function subscribe(){
     if(mine)return;if(i>=0)SESS[i]=r;else SESS.unshift(r);renderHist();})
   .on('postgres_changes',{event:'INSERT',schema:'public',table:'edit_log'},()=>{if($('logbox').classList.contains('on'))loadLog();})
   .on('postgres_changes',{event:'UPDATE',schema:'public',table:'edit_log'},()=>{if($('logbox').classList.contains('on'))loadLog();})
-  .on('postgres_changes',{event:'*',schema:'public',table:'team_settings'},p=>{if(p.eventType==='DELETE'&&p.old.church_id!==me.church)return;const k=(p.new&&p.new.key)||(p.old&&p.old.key);if(k)teamRemote(k);})
+  .on('postgres_changes',{event:'*',schema:'public',table:'team_settings'},p=>{if((p.eventType==='DELETE'?p.old:p.new).church_id!==me.church)return;const k=(p.new&&p.new.key)||(p.old&&p.old.key);if(k)teamRemote(k);})
   .subscribe();
 }
 
