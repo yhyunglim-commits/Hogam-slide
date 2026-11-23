@@ -2042,7 +2042,6 @@ body{font-family:var(--sans)}
 #gate .gv-rot span{grid-area:1/1;opacity:0;translate:0 40px;scale:.96;transition:opacity .35s,translate .6s cubic-bezier(.34,1.5,.64,1),scale .6s cubic-bezier(.34,1.5,.64,1);pointer-events:none}
 #gate .gv-rot span.on{opacity:1;translate:0 0;scale:1}
 #gate .gv-rot span.off{opacity:0;translate:0 -28px;transition:opacity .25s,translate .3s ease-in}
-#gate .gv-hero .gv-lead{margin:20px 0 32px;font-size:18px;line-height:1.65;color:var(--sub)}
 #gate .gkakao{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:58px;padding:0 30px;border:0;border-radius:999px;background:#FEE500;color:rgba(0,0,0,.86);font-weight:700;font-size:17px;transition:transform .15s}
 #gate .gkakao:active{transform:scale(.98)}
 #gate .gkakao svg{width:21px;height:21px}
@@ -2050,134 +2049,96 @@ body{font-family:var(--sans)}
 #gate .glink:hover{color:var(--sub)}
 #gate .gkakao:focus-visible,#gate .glink:focus-visible{outline:3px solid #A994E8;outline-offset:3px}
 #gate .gv-vis{display:flex;flex-direction:column;gap:18px}
-#gate .gv-float{position:relative;height:540px}
-#gate .gv-float::before{content:"";position:absolute;inset:6% 4% 4% 10%;border-radius:40px;background:linear-gradient(135deg,var(--peach),var(--lilac) 55%,var(--sky))}
-#gate .gv-chip{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:14px;box-shadow:var(--shadow);font-size:14px;font-weight:700}
-#gate .gv-hd{display:flex;align-items:center;gap:8px;margin:2px 2px 10px}
-#gate .gv-hd b{display:grid;place-items:center;width:24px;height:24px;border-radius:8px;font-size:13px;font-weight:800}
-#gate .gv-s1 .gv-hd b{background:var(--peach2)}
-#gate .gv-s2 .gv-hd b{background:var(--sky2)}
-#gate .gv-s3 .gv-hd b{background:var(--lilac2)}
-#gate .gv-st{display:flex;align-items:center;gap:5px;margin:10px 2px 0;font-size:12.5px;font-weight:600;color:var(--muted);min-height:18px}
-#gate .gv-st svg{width:14px;height:14px;color:#3BB273}
-#gate .gv-s1{left:0;top:2%;width:250px}
-#gate .gv-s2{right:0;top:12%;width:272px}
-#gate .gv-s3{left:16%;bottom:0;width:300px;padding:12px}
-#gate .gv-bd{position:relative}
-#gate .gv-s1 .gv-bd{height:122px}
-#gate .gv-s2 .gv-bd{height:140px}
-#gate .gv-s3 .gv-bd{aspect-ratio:16/9}
-#gate .gv-pn{position:absolute;inset:0;display:none}
-#gate .gv-float[data-scene="0"] .gv-pn[data-s="0"],#gate .gv-float[data-scene="1"] .gv-pn[data-s="1"],#gate .gv-float[data-scene="2"] .gv-pn[data-s="2"]{display:block}
-#gate .gv-float.swap .gv-chip{opacity:0;scale:.88}
-#gate .gv-chip{transition:scale .45s var(--pop),box-shadow .3s,opacity .25s}
-#gate .gv-sheet{position:relative;border-radius:14px;overflow:hidden;background:#FFFDF9;border:1px solid #F1EBE3}
-#gate .gv-sheet svg{display:block;width:100%;height:auto}
-#gate .gv-scan{position:absolute;left:0;right:0;top:-30%;height:30%;background:linear-gradient(180deg,transparent,rgba(169,148,232,.35) 70%,rgba(139,135,224,.9) 100%);opacity:0}
-#gate .gv-s1.go .gv-scan{animation:gScan 1.7s ease-in-out}
-@keyframes gScan{0%{top:-30%;opacity:1}100%{top:100%;opacity:1}}
-#gate .gv-lyr{height:100%;box-sizing:border-box;border-radius:14px;background:var(--fill);padding:12px 14px;font-size:13.5px;font-weight:600;line-height:1.62;color:var(--ink);white-space:pre-wrap;overflow:hidden}
-#gate .gv-lyr .cur{display:inline-block;width:2px;height:1.05em;margin-left:1px;vertical-align:-2px;background:#8B87E0;animation:gBlink .8s steps(2) infinite}
-#gate .gv-lyr .gv-mk{color:#A994E8}
-@keyframes gBlink{50%{opacity:0}}
-#gate .gv-sl{position:absolute;inset:0;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#8B87E0,#A994E8);color:#fff;display:grid;place-items:center;text-align:center}
-#gate .gv-sl p{grid-area:1/1;margin:0;color:#fff;font-size:19px;line-height:1.5;font-weight:800;text-shadow:0 1px 8px rgba(60,40,140,.25);opacity:0;scale:.85;transition:opacity .25s,scale .5s var(--pop)}
-#gate .gv-sl p.on{opacity:1;scale:1}
-#gate .gv-sl .gv-wait{font-size:13px;font-weight:600;opacity:.75;scale:1}
-#gate .gv-sl .gv-wait.off{opacity:0}
-#gate .gv-sl p small{display:block;font-size:12.5px;font-weight:600;opacity:.85}
-#gate .gv-ord{margin:0;padding:0;list-style:none;font-size:12.5px;font-weight:600;color:var(--ink)}
-#gate .gv-ord li{display:flex;align-items:center;gap:7px;height:20px;opacity:0;translate:-8px 0;transition:opacity .25s,translate .45s var(--pop)}
-#gate .gv-ord li.in{opacity:1;translate:0 0}
-#gate .gv-ord li i{width:6px;height:6px;border-radius:50%;background:#C9BBF5;flex:none}
-#gate .gv-ord li em{font-style:normal;color:var(--muted);font-weight:500}
-#gate .gv-th{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 8px}
-#gate .gv-th div{opacity:0;scale:.5;transition:opacity .2s,scale .5s var(--pop)}
-#gate .gv-th div.in{opacity:1;scale:1}
-#gate .gv-th span{display:grid;place-items:center;aspect-ratio:16/9;border-radius:8px;background:linear-gradient(135deg,#8B87E0,#A994E8)}
-#gate .gv-th span::before{content:"";width:55%;height:4px;border-radius:2px;background:rgba(255,255,255,.9);box-shadow:0 7px 0 -0.5px rgba(255,255,255,.65)}
-#gate .gv-th .w span{background:linear-gradient(135deg,#7FB2F0,#9CC8FF)}
-#gate .gv-th .b span{background:linear-gradient(135deg,#F2A98A,#FFC4A8)}
-#gate .gv-th small{display:block;margin-top:3px;text-align:center;font-size:11px;font-weight:600;color:var(--sub)}
-#gate .gv-ls{margin:0;padding:0;list-style:none}
-#gate .gv-ls li{display:flex;align-items:center;gap:9px;height:30px;padding:0 8px;border-radius:10px;font-size:12.5px;font-weight:600;transition:background .3s}
-#gate .gv-ls li span{width:34px;aspect-ratio:16/9;border-radius:4px;background:linear-gradient(135deg,#8B87E0,#A994E8);flex:none}
-#gate .gv-ls li.w span{background:linear-gradient(135deg,#7FB2F0,#9CC8FF)}
-#gate .gv-ls li.b span{background:linear-gradient(135deg,#F2A98A,#FFC4A8)}
-#gate .gv-ls li.cur{background:var(--lilac)}
-#gate .gv-ls li.cur::after{content:"";margin-left:auto;width:7px;height:7px;border-radius:50%;background:#F0506E;box-shadow:0 0 0 3px rgba(240,80,110,.2)}
-#gate .gv-cast{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
-#gate .gv-cbtn{position:relative;display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:var(--lilac2);color:#5A4FCF;transition:background .3s,color .3s,scale .4s var(--pop)}
-#gate .gv-cbtn svg{width:30px;height:30px}
-#gate .gv-cbtn.on{background:#7F7BE0;color:#fff}
-#gate .gv-cbtn.press{scale:.86}
-#gate .gv-cbtn::before,#gate .gv-cbtn::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #A994E8;opacity:0}
-#gate .gv-cbtn.on::before{animation:gRing 1.6s ease-out infinite}
-#gate .gv-cbtn.on::after{animation:gRing 1.6s ease-out .8s infinite}
-@keyframes gRing{0%{opacity:.8;scale:1}100%{opacity:0;scale:1.7}}
-#gate .gv-nav{display:flex;gap:8px}
-#gate .gv-nav span{padding:5px 12px;border-radius:999px;background:var(--fill);font-size:12px;font-weight:700;color:var(--sub);transition:background .2s,color .2s,scale .35s var(--pop)}
-#gate .gv-nav span.hit{background:#7F7BE0;color:#fff;scale:1.12}
-#gate .gv-room{position:absolute;inset:0;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#2B2645,#1C182E)}
-#gate .gv-room .gv-scr{position:absolute;left:14%;right:14%;top:9%;aspect-ratio:16/9;border-radius:6px;background:linear-gradient(135deg,#8B87E0,#A994E8);box-shadow:0 0 0 3px #3A3458,0 0 40px rgba(169,148,232,.45);display:grid;place-items:center;text-align:center;color:#fff}
-#gate .gv-room .gv-scr p{grid-area:1/1;margin:0;color:#fff;font-size:13px;line-height:1.45;font-weight:800;opacity:0;scale:.85;transition:opacity .2s,scale .45s var(--pop)}
-#gate .gv-room .gv-scr p.on{opacity:1;scale:1}
-#gate .gv-room .gv-scr p small{display:block;font-size:9.5px;font-weight:600;opacity:.85}
-#gate .gv-room .gv-pews{position:absolute;left:0;right:0;bottom:0;height:22%;display:flex;justify-content:space-around;align-items:flex-end;padding:0 6%}
-#gate .gv-room .gv-pews i{width:15px;height:22px;border-radius:8px 8px 3px 3px;background:#120F1F;position:relative}
-#gate .gv-room .gv-pews i::before{content:"";position:absolute;left:3px;top:-9px;width:9px;height:9px;border-radius:50%;background:#120F1F}
-#gate .gv-room .gv-live{position:absolute;z-index:2;left:8px;top:8px;display:flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff;font-size:10.5px;font-weight:700;opacity:0;transition:opacity .3s}
-#gate .gv-room .gv-live::before{content:"";width:6px;height:6px;border-radius:50%;background:#F0506E}
-#gate .gv-room.on .gv-live{opacity:1}
-#gate .gv-room:not(.on) .gv-scr{background:#3A3458;box-shadow:0 0 0 3px #3A3458}
-#gate .gv-scenes{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-#gate .gv-scenes span{padding:7px 14px;border-radius:999px;background:var(--fill);color:var(--muted);font-size:13px;font-weight:700;transition:background .3s,color .3s}
-#gate .gv-scenes span.on{background:var(--ink);color:#fff}
-#gate .gv-chip{--pop:cubic-bezier(.34,1.6,.64,1);animation:gPop .7s var(--pop) backwards,var(--bob)}
-#gate .gv-chip.act{scale:1.06;box-shadow:0 0 0 3px #CDBFF7,var(--shadow)}
-#gate .gv-s1{--bob:gBobA 4.2s ease-in-out .9s infinite;animation-delay:.15s,.9s}
-#gate .gv-s2{--bob:gBobB 5s ease-in-out 1.1s infinite;animation-delay:.35s,1.1s}
-#gate .gv-s3{--bob:gBobC 4.6s ease-in-out 1.3s infinite;animation-delay:.55s,1.3s}
-@keyframes gPop{0%{opacity:0;scale:.6;translate:0 30px}100%{opacity:1;scale:1;translate:0 0}}
-@keyframes gBobA{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(1deg)}}
-@keyframes gBobB{0%,100%{transform:translateY(0) rotate(1.5deg)}50%{transform:translateY(-10px) rotate(-1deg)}}
-@keyframes gBobC{0%,100%{transform:translateY(0) rotate(.5deg)}50%{transform:translateY(-8px) rotate(-1.5deg)}}
-#gate .gv-dots i{display:inline-block;width:4px;height:4px;margin-left:3px;border-radius:50%;background:currentColor;animation:gDot 1s ease-in-out infinite}
-#gate .gv-dots i:nth-child(2){animation-delay:.15s}
-#gate .gv-dots i:nth-child(3){animation-delay:.3s}
-@keyframes gDot{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
 #gate .gfoot{margin:96px 0 0;padding:24px 0 40px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--muted)}
 #gate .gfoot a{color:var(--sub);font-weight:600;text-decoration:none}
 @media (max-width:860px){
 #gate .gwrap{padding:0 20px}
 #gate .gtop{padding:18px 0}
 #gate .gv-hero{grid-template-columns:minmax(0,1fr);min-height:0;padding:24px 0 20px;gap:28px}
-#gate .gv-hero .gv-lead{font-size:17px}
 #gate .gkakao{width:100%}
-#gate .gv-float{height:540px}
-#gate .gv-s1{width:190px;top:0}
-#gate .gv-s2{width:205px;top:96px}
-#gate .gv-s1 .gv-bd{height:94px}
-#gate .gv-s2 .gv-bd{height:128px}
-#gate .gv-lyr{font-size:12px;padding:10px 12px}
-#gate .gv-s3{width:260px;left:0}
-#gate .gv-sl p{font-size:15px}
-#gate .gv-ord{font-size:11px}
-#gate .gv-ord li{height:15.5px}
-#gate .gv-ls li{height:23px;font-size:11px}
-#gate .gv-ls li span{width:26px}
-#gate .gv-th{gap:5px}
-#gate .gv-th small{font-size:10px}
-#gate .gv-cbtn{width:54px;height:54px}
-#gate .gv-scenes span{font-size:12px;padding:6px 11px}
-}
-@media (prefers-reduced-motion:reduce){
-#gate .gv-chip,#gate .gv-chip *,#gate .gv-cbtn::before,#gate .gv-cbtn::after{animation:none!important;transition:none!important}
 }
 
-#gate .gv-chip{display:block}
 #gate .gv-inq input[type=text]{height:50px}
 #gate .glink{margin:14px 0 0;text-decoration:none}
+/* 첫 화면 워크플로우: 실제 앱 화면 사진(brand/first) 세 장이 차례로 이어져요 */
+#gate .gv-hero{display:block;min-height:0;text-align:center;padding:22px 0 56px}
+#gate .gv-hero h1{font-size:clamp(34px,8.6vw,40px);margin-top:28px}
+#gate .gv-rot{justify-items:center}
+#gate .gform{max-width:none;margin:0;text-align:center}
+#gate .gkakao{margin:36px auto 0}
+#gate .ginv{max-width:480px;margin:24px auto 0}
+#gate #gOldBtn{margin:12px auto 0}
+#gate #gOld,#gate #gJoin{max-width:400px;margin-left:auto;margin-right:auto;text-align:left}
+#gate #gOld{margin-top:18px}
+#gate #gJoin{margin-top:44px}
+#gate .gv-vis{display:block;margin:56px auto 0;text-align:left;max-width:430px}
+#gate .gvw-stp{display:flex;gap:6px;margin:0 0 14px;padding:0;list-style:none;counter-reset:gvw;line-height:1.2}
+#gate .gvw-stp li{counter-increment:gvw;flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:12px;font-weight:700;letter-spacing:-.04em;color:#6f6a80;transition:color .3s}
+#gate .gvw-stp b{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e9e7f1;color:#6f6a80;font-size:12px;letter-spacing:0;transition:background .2s,color .2s,box-shadow .2s}
+#gate .gvw-stp b::before{content:counter(gvw)}
+#gate .gvw-stp small{display:block;margin-top:1px;font-size:12px;font-weight:500;color:#6f6a80;white-space:nowrap}
+#gate .gvw-stp li.is-on{color:#1B57D6}
+#gate .gvw-stp li.is-on b{background:#2476ee;color:#fff;box-shadow:0 0 0 4px rgba(53,134,247,.18)}
+#gate .gvw-stp li.is-on small{color:#1B57D6}
+#gate .gvw-stp li.is-did{color:#22203a}
+#gate .gvw-stp li.is-did b{background:#1f9d63;color:#fff}
+#gate .gvw-stp li.is-did b::before{content:"✓"}
+#gate .gvw-stp li.is-did small{color:#187a4e}
+#gate .gvw-fr{position:relative;aspect-ratio:387/548;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px rgba(20,18,40,.08),0 24px 60px rgba(20,18,40,.16)}
+#gate .gvw-fr img{display:block;width:100%;height:auto}
+#gate .gvw-fr img:not([src]){visibility:hidden}
+#gate .gvw-pg{position:absolute;inset:0;opacity:0;background:#fff;transition:opacity .12s}
+#gate .gvw-fr[data-p="0"] .gvw-pa,#gate .gvw-fr[data-p="1"] .gvw-pb,#gate .gvw-fr[data-p="2"] .gvw-pc{opacity:1}
+#gate .gvw-a{position:absolute;inset:0;opacity:0}
+#gate .gvw-fr[data-a="0"] .gvw-a0,#gate .gvw-fr[data-a="1"] .gvw-a1,#gate .gvw-fr[data-a="2"] .gvw-a2,#gate .gvw-fr[data-a="3"] .gvw-a3{opacity:1}
+#gate .gvw-ft{position:absolute;left:0;right:0;bottom:0;background:#fff}
+#gate .gvw-f1{position:absolute;inset:0;opacity:0}
+#gate .gvw-fr[data-a="3"] .gvw-f1{opacity:1}
+#gate #gvwPr{position:absolute;left:67.5%;width:28.2%;top:37%;height:42%;border-radius:8px;opacity:0;background:rgba(0,40,120,.35);box-shadow:0 0 0 5px rgba(0,122,255,.3);transition:opacity .1s}
+#gate #gvwPr.is-on{opacity:1}
+#gate .gvw-fr .gvw-fly{position:absolute;width:27%;left:66%;top:105%;border-radius:4px;box-shadow:0 10px 26px rgba(20,18,40,.3);rotate:5deg}
+#gate .gvw-fr .gvw-fly.is-go{top:12%;left:36.5%;rotate:-2deg;transition:top .6s cubic-bezier(.3,.8,.3,1),left .6s,rotate .6s}
+#gate .gvw-fr .gvw-fly.is-gone{scale:.25;opacity:0;transition:scale .2s,opacity .2s}
+#gate .gvw-b1,#gate .gvw-c1{position:absolute;inset:0;background:#fff;opacity:0}
+#gate .gvw-fr[data-b="1"] .gvw-b1,#gate .gvw-fr[data-c="1"] .gvw-c1{opacity:1}
+#gate #gvwCv i{position:absolute;left:11%;right:7%;height:4.95%;background:#fff}
+#gate #gvwCv i.is-ty{border-left:2px solid #2f7af0;animation:gvwTy .24s linear forwards}
+#gate #gvwCv i.is-dn{display:none}
+@keyframes gvwTy{to{left:55%}}
+#gate .gvw-c1{display:flex;flex-direction:column}
+#gate .gvw-cw{flex:1;position:relative;overflow:hidden;margin:0 4%}
+#gate .gvw-cs{transition:transform .4s cubic-bezier(.65,0,.2,1)}
+#gate .gvw-cs .gvw-s{opacity:0;translate:0 16px;transition:opacity .25s,translate .25s;border-radius:8px;margin:0 0 10px}
+#gate .gvw-cs .gvw-s.is-in{opacity:1;translate:none}
+#gate .gvw-cn{display:none}
+@media (min-width:861px){
+#gate .gv-mb{display:none}
+#gate .gv-hero h1{font-size:min(74px,5.9vw);line-height:1.15;white-space:nowrap;margin-top:44px}
+#gate .gkakao{margin-top:44px}
+#gate .gv-vis{margin-top:66px;max-width:min(1116px,max(1000px,calc((100svh - 490px)*2.12 + 128px)))}
+#gate .gvw-stp{gap:64px}
+#gate .gvw-stp li{flex-direction:row;justify-content:center;gap:8px;text-align:left;font-size:14px}
+#gate .gvw-fr{display:grid;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr) 64px minmax(0,1fr);align-items:center;aspect-ratio:auto;overflow:visible;background:none;box-shadow:none;border-radius:0}
+#gate .gvw-pg{position:relative;inset:auto;aspect-ratio:387/548;opacity:.5;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1px rgba(20,18,40,.08),0 10px 30px rgba(20,18,40,.08);transition:opacity .4s}
+#gate .gvw-fr .gvw-pa,#gate .gvw-fr:not([data-w="0"]) .gvw-pb,#gate .gvw-fr[data-w="2"] .gvw-pc,#gate .gvw-fr[data-w="3"] .gvw-pc{opacity:1}
+#gate .gvw-fr[data-w="0"] .gvw-pb,#gate .gvw-fr[data-w="0"] .gvw-pc,#gate .gvw-fr[data-w="1"] .gvw-pc{opacity:.5}
+#gate .gvw-pg::after{content:"";position:absolute;inset:0;z-index:5;border:3px solid #3586F7;border-radius:20px;clip-path:inset(0 100% 0 0);pointer-events:none;transition:clip-path .7s cubic-bezier(.4,0,.3,1),border-color .5s}
+#gate .gvw-fr .gvw-pa::after,#gate .gvw-fr:not([data-w="0"]) .gvw-pb::after,#gate .gvw-fr[data-w="2"] .gvw-pc::after,#gate .gvw-fr[data-w="3"] .gvw-pc::after{clip-path:inset(0)}
+#gate .gvw-fr[data-w="1"] .gvw-pa::after,#gate .gvw-fr[data-w="2"] .gvw-pa::after,#gate .gvw-fr[data-w="2"] .gvw-pb::after{border-color:#a9cbfb}
+#gate .gvw-fr[data-w="0"] .gvw-pa,#gate .gvw-fr[data-w="1"] .gvw-pb,#gate .gvw-fr[data-w="2"] .gvw-pc{box-shadow:0 20px 54px rgba(27,87,214,.2)}
+#gate .gvw-cn{display:block;position:relative;height:4px;background:#dcd9e6}
+#gate .gvw-cn::after{content:"";position:absolute;inset:0;transform:scaleX(0);transform-origin:0 50%;background:linear-gradient(90deg,#a9cbfb,#3586F7)}
+#gate .gvw-cn.is-go::after{animation:gvwLn .75s cubic-bezier(.45,0,.4,1) forwards}
+#gate .gvw-cn.is-dn::after{transform:none}
+#gate .gvw-cn::before{content:"";position:absolute;z-index:2;top:-7px;left:0;width:18px;height:18px;margin-left:-9px;border-radius:50%;opacity:0;background:radial-gradient(closest-side,#fff,#6EB1FF 40%,rgba(53,134,247,0))}
+#gate .gvw-cn.is-go::before{animation:gvwHd .75s cubic-bezier(.45,0,.4,1)}
+#gate .gvw-cn.is-dn{overflow:hidden}
+#gate .gvw-cn.is-dn::before{animation:gvwFl 1.6s linear infinite;top:0;height:4px;width:60%;border-radius:0;margin:0;opacity:1;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent)}
+}
+@keyframes gvwLn{to{transform:none}}
+@keyframes gvwHd{0%{left:0;opacity:0}15%,90%{opacity:1}100%{left:100%;opacity:0}}
+@keyframes gvwFl{from{left:-60%}to{left:100%}}
+@media (prefers-reduced-motion:reduce){#gate .gvw-cn::before{display:none}}
 /* ===== 말씀 탭: 설교 본문 / 참고 구절 큰 전환 단추 ===== */
 #pgWord>.wmode{grid-column:1/-1;display:flex;gap:6px;padding:5px;background:var(--surface);border-radius:16px;box-shadow:0 0 0 1px var(--line);width:max-content;max-width:100%}
 .wmode button{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 22px;border:0;border-radius:12px;background:transparent;font:inherit;font-size:16px;font-weight:700;color:var(--text3);cursor:pointer;white-space:nowrap}
@@ -2602,7 +2563,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
 <div class="gate on" id="gate">
  <div class="gv-sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
  <div class="gwrap">
-  <header class="gtop"><img src="brand/logo.svg" alt="">호감슬라이드
+  <header class="gtop"><img src="brand/logo.svg" alt=""><span class="brandtx"><span>호감슬라이드</span><span lang="en" aria-hidden="true">HOGAMSLIDE</span></span>
     <button class="gv-ask" type="button" id="gAsk" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5z"/><path d="M8.5 8.5h7M8.5 11.5h4.5"/></svg>문의·협업</button>
   </header>
   <section class="gv-hero">
@@ -2610,8 +2571,7 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
     <div id="gSetup" class="gsetup hidden">아직 서버 설정이 비어 있어요.<br><b>config.js</b>에 Supabase 주소와 공개 키를 넣어 주세요.</div>
     <div id="gBody">
       <div id="gStart">
-        <h1 class="gv-rot"><span class="on">예배를 돕고,<br>교회를 세우다</span><span>악보를 넣으면<br>슬라이드가 만들어져요</span><span>5분 만에 완성하는<br>호감슬라이드</span><span>순서만 입력해도<br>자동으로 완성</span></h1>
-        <p class="gv-lead">악보를 넣으면 가사가, 순서를 넣으면 슬라이드가<br>만들어지고, 예배 때 바로 스크린에 띄워요.</p>
+        <h1 class="gv-rot"><span class="on">예배를 돕고, <br class="gv-mb">교회를 세우다</span><span>악보를 넣으면 <br class="gv-mb">슬라이드가 만들어져요</span><span>5분 만에 완성하는 <br class="gv-mb">호감슬라이드</span><span>순서만 입력해도 <br class="gv-mb">자동으로 완성</span></h1>
         <p class="ginv hidden" id="gInv">초대 링크로 오셨어요. 카카오로 시작하면 바로 교회에 들어갈 수 있어요.</p>
         <button class="gkakao" id="gKakao" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3C6.48 3 2 6.54 2 10.9c0 2.83 1.88 5.31 4.71 6.7l-.96 3.53c-.08.3.26.54.52.37l4.2-2.78c.5.06 1 .09 1.53.09 5.52 0 10-3.54 10-7.9S17.52 3 12 3z"/></svg>카카오로 시작하기</button>
         <p class="gerr" id="gErr" role="alert"></p>
@@ -2634,34 +2594,15 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
       </div>
     </div>
   </form>
-    <div class="gv-vis">
-    <div class="gv-float" data-scene="0" id="gvFl" aria-hidden="true">
-      <div class="gv-chip gv-s1" id="gvS1"><div class="gv-hd"><b>1</b><span class="gv-tt"></span></div><div class="gv-bd">
-        <div class="gv-pn" data-s="0"><div class="gv-sheet"><svg viewBox="0 0 220 120" aria-hidden="true"><g stroke="#CFC6BC" stroke-width="1">
-<path d="M10 14h200M10 20h200M10 26h200M10 32h200M10 38h200"/><path d="M10 66h200M10 72h200M10 78h200M10 84h200M10 90h200"/></g>
-<path d="M10 12v28M210 12v28M10 64v28M210 64v28M110 14v24M110 66v24" stroke="#BDB3A8" stroke-width="1.2"/>
-<g fill="#3A3150"><ellipse cx="30" cy="29" rx="4.2" ry="3.2"/><ellipse cx="48" cy="26" rx="4.2" ry="3.2"/><ellipse cx="66" cy="23" rx="4.2" ry="3.2"/><ellipse cx="88" cy="26" rx="4.2" ry="3.2"/>
-<ellipse cx="128" cy="20" rx="4.2" ry="3.2"/><ellipse cx="148" cy="23" rx="4.2" ry="3.2"/><ellipse cx="168" cy="29" rx="4.2" ry="3.2"/><ellipse cx="190" cy="26" rx="4.2" ry="3.2"/>
-<ellipse cx="30" cy="78" rx="4.2" ry="3.2"/><ellipse cx="50" cy="75" rx="4.2" ry="3.2"/><ellipse cx="70" cy="72" rx="4.2" ry="3.2"/><ellipse cx="90" cy="78" rx="4.2" ry="3.2"/>
-<ellipse cx="130" cy="81" rx="4.2" ry="3.2"/><ellipse cx="150" cy="75" rx="4.2" ry="3.2"/><ellipse cx="170" cy="72" rx="4.2" ry="3.2"/><ellipse cx="192" cy="78" rx="4.2" ry="3.2"/></g>
-<g stroke="#3A3150" stroke-width="1.3"><path d="M34 29V10M52 26V7M70 23V4M92 26V7M132 20V1M152 23V4M172 29V10M194 26V7M34 78V59M54 75V56M74 72V53M94 78V59M134 81V62M154 75V56M174 72V53M196 78V59"/></g>
-<g fill="#DCD3C9"><rect x="22" y="45" width="16" height="5" rx="2.5"/><rect x="41" y="45" width="16" height="5" rx="2.5"/><rect x="59" y="45" width="16" height="5" rx="2.5"/><rect x="81" y="45" width="16" height="5" rx="2.5"/><rect x="121" y="45" width="16" height="5" rx="2.5"/><rect x="141" y="45" width="16" height="5" rx="2.5"/><rect x="161" y="45" width="16" height="5" rx="2.5"/><rect x="183" y="45" width="16" height="5" rx="2.5"/>
-<rect x="22" y="97" width="16" height="5" rx="2.5"/><rect x="43" y="97" width="16" height="5" rx="2.5"/><rect x="63" y="97" width="16" height="5" rx="2.5"/><rect x="83" y="97" width="16" height="5" rx="2.5"/><rect x="123" y="97" width="16" height="5" rx="2.5"/><rect x="143" y="97" width="16" height="5" rx="2.5"/><rect x="163" y="97" width="16" height="5" rx="2.5"/><rect x="185" y="97" width="16" height="5" rx="2.5"/></g></svg><i class="gv-scan"></i></div></div>
-        <div class="gv-pn" data-s="1"><ul class="gv-ord" id="gvOrd"></ul></div>
-        <div class="gv-pn" data-s="2"><ul class="gv-ls" id="gvLs"></ul></div>
-      </div><div class="gv-st"></div></div>
-      <div class="gv-chip gv-s2" id="gvS2"><div class="gv-hd"><b>2</b><span class="gv-tt"></span></div><div class="gv-bd">
-        <div class="gv-pn" data-s="0"><div class="gv-lyr" id="gvLyr"></div></div>
-        <div class="gv-pn" data-s="1"><div class="gv-th" id="gvTh"></div></div>
-        <div class="gv-pn" data-s="2"><div class="gv-cast"><span class="gv-cbtn" id="gvCbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2.5"/><path d="M9 20h6M12 16v4"/></svg></span><div class="gv-nav"><span>이전</span><span id="gvNx">다음</span></div></div></div>
-      </div><div class="gv-st"></div></div>
-      <div class="gv-chip gv-s3" id="gvS3"><div class="gv-hd"><b>3</b><span class="gv-tt"></span></div><div class="gv-bd">
-        <div class="gv-pn" data-s="0"><div class="gv-sl" id="gvSl"><p class="gv-wait on" id="gvWait">슬라이드가 만들어져요</p></div></div>
-        <div class="gv-pn" data-s="1"><div class="gv-sl" id="gvSl1"></div></div>
-        <div class="gv-pn" data-s="2"><div class="gv-room" id="gvRoom"><span class="gv-live">송출 중</span><div class="gv-scr" id="gvScr"></div><div class="gv-pews"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
-      </div><div class="gv-st"></div></div>
-    </div>
-    <div class="gv-scenes" id="gvScenes" aria-hidden="true"><span class="on">악보 → 슬라이드</span><span>예배 순서 → 슬라이드</span><span>스크린에 바로 송출</span></div>
+    <div class="gv-vis" aria-hidden="true">
+      <ol class="gvw-stp" id="gvwStp"><li><b></b><div>악보 첨부<small></small></div></li><li><b></b><div>가사 자동 입력<small></small></div></li><li><b></b><div>슬라이드 자동 완성<small></small></div></li></ol>
+      <div class="gvw-fr" id="gvwFr" data-p="0" data-w="0" data-a="0" data-b="0" data-c="0">
+        <div class="gvw-pg gvw-pa"><img class="gvw-a gvw-a0" data-src="brand/first/a0.jpg" alt=""><img class="gvw-a gvw-a1" data-src="brand/first/a1.jpg" alt=""><img class="gvw-a gvw-a2" data-src="brand/first/a2.jpg" alt=""><img class="gvw-a gvw-a3" data-src="brand/first/a3.jpg" alt=""><div class="gvw-ft"><img class="" data-src="brand/first/f0.jpg" alt=""><img class="gvw-f1" data-src="brand/first/f1.jpg" alt=""><u id="gvwPr"></u></div><img class="gvw-fly" data-src="brand/first/score.jpg" alt=""></div>
+        <div class="gvw-cn" id="gvwN1"></div>
+        <div class="gvw-pg gvw-pb"><img class="" data-src="brand/first/b0.jpg" alt=""><div class="gvw-b1"><img class="" data-src="brand/first/b1.jpg" alt=""><div id="gvwCv"></div></div></div>
+        <div class="gvw-cn" id="gvwN2"></div>
+        <div class="gvw-pg gvw-pc"><img class="" data-src="brand/first/ce.jpg" alt=""><div class="gvw-c1"><img class="" data-src="brand/first/c0.jpg" alt=""><div class="gvw-cw"><div class="gvw-cs"><img class="gvw-s" data-src="brand/first/s1.jpg" alt=""><img class="gvw-s" data-src="brand/first/s2.jpg" alt=""><img class="gvw-s" data-src="brand/first/s3.jpg" alt=""></div></div></div></div>
+      </div>
     </div>
   </section>
   <footer class="gfoot">
@@ -5589,77 +5530,40 @@ function showGate(kind){$('gate').classList.add('on');
   $('gStart').classList.toggle('hidden',join);$('gJoin').classList.toggle('hidden',!join);$('gInv').classList.toggle('hidden',!store.get('joinCode',null));
   if(join)setTimeout(()=>($('jCode').value?$('jName'):$('jCode')).focus(),50);}
 function hideGate(){$('gate').classList.remove('on');}
-/* ---- 첫 화면 움직임: 제목 4문장 · 오른쪽 세 장면 · 문의·협업 창 (첫 화면이 닫히면 쉬어요) ---- */
+/* ---- 첫 화면 움직임: 제목 4문장 · 워크플로우 세 단계 · 문의·협업 창 (첫 화면이 닫히면 쉬어요) ---- */
 {const T=[...document.querySelectorAll('.gv-rot span')];let k=0;
  if(!matchMedia('(prefers-reduced-motion:reduce)').matches)setInterval(()=>{if(!document.getElementById('gate').classList.contains('on'))return;const a=T[k];a.classList.replace('on','off');setTimeout(()=>a.classList.remove('off'),400);k=(k+1)%T.length;T[k].classList.add('on')},3200);}
-// 오른쪽: 세 장면이 차례로 돌아요. 가사·설교 제목은 호감이 지은 예시 문장이에요 (실제 곡 가사·성경 본문 아님)
+// 워크플로우: 악보 첨부 → 가사 자동 입력 → 슬라이드 자동 완성. 예시 곡은 호감이 지은 것 (실제 곡 가사 아님)
 {
-  const $=id=>document.getElementById(id),fl=$('gvFl'),C=[$('gvS1'),$('gvS2'),$('gvS3')];
-  const tt=C.map(c=>c.querySelector('.gv-tt')),st=C.map(c=>c.querySelector('.gv-st')),pills=[...$('gvScenes').children];
-  const ok='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-  const dots='<span class="gv-dots"><i></i><i></i><i></i></span>';
-  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  const act=(i)=>C.forEach((c,k)=>c.classList.toggle('act',k===i));
-  const TT=[['악보 사진','가사 자동 입력','가사 슬라이드'],['예배 순서','자동으로 만들기','슬라이드 완성'],['오늘 예배 슬라이드','화면 송출','예배당 스크린']];
-  const mkP=(box,rows,cls)=>rows.map(([a,b])=>{const p=document.createElement('p');if(cls)p.className=cls;p.innerHTML=a+'<small>'+b+'</small>';box.appendChild(p);return p});
-  const showIn=(ps,n)=>ps.forEach((p,i)=>p.classList.toggle('on',i===n));
-  // 장면 0
-  const L=[['아침 햇살 비추듯','주님 사랑 내게 와'],['나의 작은 노래로','주를 높이 찬양해'],['오늘도 주와 함께','기쁨으로 걸어가']];
-  const sl=$('gvSl'),wait=$('gvWait'),lyr=$('gvLyr');
-  const P0=L.map(([a,b])=>{const p=document.createElement('p');p.innerHTML=a+'<br>'+b;sl.appendChild(p);return p});
-  const text=L.map(([a,b])=>a+'\n'+b+' //').join('\n');
-  const paint=k=>{lyr.innerHTML=text.slice(0,k).replace(/\/\//g,'<span class="gv-mk">//</span>')+'<i class="cur"></i>'};
-  // 장면 1
-  const O=[['예배의 부름',''],['찬양','아침 햇살'],['대표기도',''],['성경봉독','요 3:16'],['설교','빛 가운데로'],['축도','']];
-  const kind=['','','','w','','b'],tl=['부름','찬양','기도','말씀','설교','축도'];
-  const ord=$('gvOrd'),th=$('gvTh');
-  const LI=O.map(([a,b])=>{const li=document.createElement('li');li.innerHTML='<i></i>'+a+(b?' <em>'+b+'</em>':'');ord.appendChild(li);return li});
-  const TH=tl.map((t,i)=>{const d=document.createElement('div');d.className=kind[i];d.innerHTML='<span></span><small>'+t+'</small>';th.appendChild(d);return d});
-  const P1=mkP($('gvSl1'),[['주일 예배','2026년 11월 29일'],['성경봉독','요한복음 3장 16절'],['설교','빛 가운데로 걸어가요'],['축도','○○○ 목사']]);
-  // 장면 2
-  const R=[['예배의 부름',''],['찬양 · 아침 햇살',''],['성경봉독','w'],['축도','b']];
-  const ls=$('gvLs'),cb=$('gvCbtn'),nx=$('gvNx'),room=$('gvRoom');
-  const RL=R.map(([a,k])=>{const li=document.createElement('li');li.className=k;li.innerHTML='<span></span>'+a;ls.appendChild(li);return li});
-  const P2=mkP($('gvScr'),[['예배의 부름','다 함께 일어나 주를 찬양합니다'],['아침 햇살 비추듯','주님 사랑 내게 와'],['성경봉독','요한복음 3장 16절'],['축도','○○○ 목사']]);
-  const setScene=n=>{fl.dataset.scene=n;TT[n].forEach((t,i)=>tt[i].textContent=t);pills.forEach((p,i)=>p.classList.toggle('on',i===n))};
-  async function scene0(){
-    showIn(P0,-1);wait.classList.remove('off');paint(0);st[0].innerHTML='악보 읽는 중'+dots;st[1].textContent='가사가 저절로 채워지고';st[2].textContent='두 줄씩 한 화면';
-    await sleep(500);act(0);C[0].classList.add('go');await sleep(1800);C[0].classList.remove('go');st[0].innerHTML=ok+'가사 6줄 찾음';
-    act(1);st[1].innerHTML='자동으로 채우는 중'+dots;
-    for(let k=1;k<=text.length;k++){paint(k);await sleep(text[k-1]==='\n'?150:50)}
-    st[1].innerHTML=ok+'입력 끝';await sleep(400);act(2);wait.classList.add('off');
-    for(let n=0;n<P0.length;n++){showIn(P0,n);st[2].textContent='가사 슬라이드 '+(n+1)+' / 3';await sleep(1400)}
-  }
-  async function scene1(){
-    LI.forEach(l=>l.classList.remove('in'));TH.forEach(t=>t.classList.remove('in'));showIn(P1,-1);
-    st[0].textContent='순서만 적으면';st[1].textContent='슬라이드가 저절로';st[2].textContent='순서대로 완성';
-    await sleep(500);act(0);st[1].innerHTML='만드는 중'+dots;
-    for(let i=0;i<LI.length;i++){LI[i].classList.add('in');await sleep(260);TH[i].classList.add('in');await sleep(220)}
-    st[0].innerHTML=ok+'순서 6개';act(1);st[1].innerHTML=ok+'슬라이드 6장 완성';await sleep(900);
-    act(2);for(let n=0;n<P1.length;n++){showIn(P1,n);st[2].textContent='순서대로 완성 '+(n+1)+' / 4';await sleep(1300)}
-  }
-  async function scene2(){
-    RL.forEach(r=>r.classList.remove('cur'));cb.classList.remove('on');room.classList.remove('on');showIn(P2,-1);
-    st[0].textContent='보여 줄 슬라이드';st[1].textContent='한 번 누르면';st[2].textContent='예배당 스크린';
-    await sleep(500);act(1);cb.classList.add('press');await sleep(260);cb.classList.remove('press');cb.classList.add('on');room.classList.add('on');
-    st[1].innerHTML='<span style="color:#F0506E">●</span> 스크린에 나가는 중';
-    for(let n=0;n<RL.length;n++){
-      if(n){nx.classList.add('hit');setTimeout(()=>nx.classList.remove('hit'),300)}
-      act(n%2?2:0);RL.forEach((r,i)=>r.classList.toggle('cur',i===n));showIn(P2,n);st[2].textContent='예배당 스크린 '+(n+1)+' / 4';C[2].classList.add('act');
-      await sleep(1600);
-    }
-  }
-  const S=[scene0,scene1,scene2];
-  if(matchMedia('(prefers-reduced-motion:reduce)').matches){setScene(0);paint(text.length);wait.classList.add('off');showIn(P0,0);st[0].innerHTML=ok+'가사 6줄 찾음';st[1].innerHTML=ok+'입력 끝';st[2].textContent='가사 슬라이드 1 / 3';}
-  else (async function loop(){
-    for(let n=0;;n=(n+1)%3){
-      while(!document.getElementById('gate').classList.contains('on'))await sleep(1000);
-      setScene(n);await S[n]();act(-1);await sleep(700);
-      fl.classList.add('swap');await sleep(320);setScene((n+1)%3);fl.classList.remove('swap');
+  const $=id=>document.getElementById(id),z=ms=>new Promise(r=>setTimeout(r,ms)),gate=$('gate'),fr=$('gvwFr'),st=[...$('gvwStp').children],cs=fr.querySelector('.gvw-cs'),sl=[...fr.querySelectorAll('.gvw-s')],fly=fr.querySelector('.gvw-fly'),pr=$('gvwPr');
+  // 글자 가림판: 실제 자막 사진(387×548, 첫 줄 290, 줄 높이 27) 위 9줄을 한 줄씩 열어요
+  const cov=Array.from({length:9},(_,n)=>{const d=document.createElement('i');d.style.top=(290+n*27)/548*100+'%';$('gvwCv').appendChild(d);return d});
+  const say=(n,t)=>st[n].querySelector('small').textContent=t,A=n=>fr.dataset.a=n,shift=n=>cs.style.transform=`translateY(${-n*100/3}%)`;
+  const pass=async n=>{const e=$('gvwN'+n);e.className='gvw-cn is-go';await z(750);e.className='gvw-cn is-dn'};
+  const step=n=>{fr.dataset.p=Math.min(n,2);fr.dataset.w=n;st.forEach((e,i)=>{e.classList.toggle('is-on',i===n);e.classList.toggle('is-did',i<n)})};
+  const reset=()=>{$('gvwN1').className=$('gvwN2').className='gvw-cn';say(0,'악보를 올려요');say(1,'기다리는 중');say(2,'기다리는 중');fr.dataset.b=fr.dataset.c=0;A(0);cov.forEach(c=>c.className='');sl.forEach(e=>e.classList.remove('is-in'));cs.style.transition='none';shift(0);cs.offsetWidth;cs.style.transition='';fly.className='gvw-fly'};
+  const open=()=>gate.classList.contains('on');
+  reset();step(0);
+  (async()=>{
+    // 이미 로그인한 사람은 첫 화면이 바로 닫히니 사진을 받지 않아요
+    do await z(400);while(!open());
+    const im=[...fr.querySelectorAll('img[data-src]')];im.forEach(e=>e.src=e.dataset.src);
+    await Promise.all(im.map(e=>e.decode().catch(()=>{})));
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches){step(3);say(0,'다 읽었어요');say(1,'6줄 입력 완료');say(2,'3장 완성');$('gvwN1').className=$('gvwN2').className='gvw-cn is-dn';A(3);fr.dataset.b=fr.dataset.c=1;fly.className='gvw-fly is-gone';cov.forEach(c=>c.className='is-dn');sl.forEach(e=>e.classList.add('is-in'));return}
+    for(;;){
+      while(!open()||document.hidden)await z(1000);
+      reset();step(0);await z(350);
+      fly.classList.add('is-go');await z(600);A(1);await z(200);fly.classList.add('is-gone');await z(200);A(2);say(0,'악보를 읽는 중');await z(1200);A(3);say(0,'다 읽었어요');await z(700);
+      pr.className='is-on';await z(320);pr.className='';await pass(1);
+      step(1);say(1,'가사를 넣는 중');await z(250);fr.dataset.b=1;await z(150);
+      for(const c of cov){c.className='is-ty';await z(240);c.className='is-dn'}
+      say(1,'6줄 입력 완료');await z(450);await pass(2);
+      step(2);say(2,'슬라이드를 만드는 중');await z(250);fr.dataset.c=1;await z(150);
+      for(let n=0;n<3;n++){shift(n<2?0:1);sl[n].classList.add('is-in');say(2,`${n+1} / 3장`);await z(700)}
+      say(2,'3장 완성');step(3);await z(1600);
     }
   })();
 }
-
 
 // 문의·협업: 지금은 적은 내용을 메일 앱으로 넘겨요 (서버에 저장하지 않음)
 {
