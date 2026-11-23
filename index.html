@@ -249,9 +249,16 @@ label.fl{display:block;font-size:13px;color:var(--text2);font-weight:500;margin:
 .banner{background:var(--warn-soft);border:1px solid var(--warn-line);border-radius:var(--rs);padding:8px 12px;font-size:13px;margin:12px 16px 0;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .hl{position:relative;background:var(--surface);border-radius:var(--rs)}
 .hl .back,#outText{font-family:var(--sans);font-size:15px;line-height:1.8;padding:10px 12px 10px 38px;border:1px solid var(--line2);border-radius:var(--rs);white-space:pre-wrap;overflow-wrap:break-word;word-break:normal;letter-spacing:0;margin:0;box-sizing:border-box;width:100%}
-.hl .back{position:absolute;inset:0;color:transparent;pointer-events:none;border-color:transparent;overflow:hidden}
-.hl .back mark{background:rgba(181,71,8,.14);color:transparent;border-radius:2px}
+.hl .back{position:absolute;inset:0;color:var(--text);pointer-events:none;border-color:transparent;overflow:hidden}
+.hl .back mark{background:rgba(181,71,8,.14);color:inherit;border-radius:2px}
 .hl .back mark.on{background:var(--mark);box-shadow:0 0 0 2px var(--mark)}
+/* 글자는 뒤판(.back)이 그려요: 입력 칸 글자는 비워 두고 커서·선택만 보여서 제목 줄에 색을 줄 수 있어요 */
+#outText{-webkit-text-fill-color:transparent}
+#outText::placeholder{-webkit-text-fill-color:var(--text3)}
+#outText::selection{background:rgba(0,122,255,.28)}
+.hl .back .tl{color:#2B6FD6}
+:root[data-theme=dark] .hl .back .tl{color:#7FB5FF}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .hl .back .tl{color:#7FB5FF}}
 #outText{position:relative;display:block;background:transparent;resize:none;overflow:hidden;min-height:260px}
 @media (min-width:1101px){#resPanel{position:sticky;top:calc(var(--doch,104px) + 8px);z-index:4}#resultSec.closed #resPanel{position:static}}
 .edscroll{max-height:calc(100vh - var(--doch,104px) - 200px);min-height:280px;overflow:auto;border-radius:var(--rs);overscroll-behavior:contain}
@@ -3539,9 +3546,9 @@ function paintHL(){
     if(b>a)marks[x.line]={a,b,k};
   });
   if(goLine>=0&&goLine<ls.length&&!marks[goLine]&&ls[goLine])marks[goLine]={a:0,b:ls[goLine].length,k:-1};
-  const back=$('hlBack');
-  back.innerHTML=ls.map((l,i)=>{const m=marks[i];if(!m)return '<b class="lm"></b>'+esc(l);
-    return '<b class="lm"></b>'+esc(l.slice(0,m.a))+(m.k<0?`<mark class="go">`:`<mark data-k="${m.k}"${m.k===hotIssue?' class="on"':''}>`)+esc(l.slice(m.a,m.b))+'</mark>'+esc(l.slice(m.b));}).join('\n')+'\n<b class="lm"></b> ';
+  const back=$('hlBack'),tls=new Set(parseText($('outText').value,'song',0).map(x=>x.tl)); // 제목 줄은 색을 달리 보여 줘요
+  back.innerHTML=ls.map((l,i)=>{const m=marks[i],o=tls.has(i)?'<span class="tl">':'',c=o&&'</span>';if(!m)return '<b class="lm"></b>'+o+esc(l)+c;
+    return '<b class="lm"></b>'+o+esc(l.slice(0,m.a))+(m.k<0?`<mark class="go">`:`<mark data-k="${m.k}"${m.k===hotIssue?' class="on"':''}>`)+esc(l.slice(m.a,m.b))+'</mark>'+esc(l.slice(m.b))+c;}).join('\n')+'\n<b class="lm"></b> ';
   setTimeout(applySongWindow,0);
   // 줄 옆 번호
   const gut=$('hlNums');gut.innerHTML='';
@@ -3766,7 +3773,7 @@ function parseText(text,ed,base){
       if(f.titleMode!=='none'&&(f.titleWhere==='every'||bi===0)&&lines.length>1){title=lines[0];lines=lines.slice(1);bl2=bl2.slice(1);}
       if(f.labels&&lines.length>1){const re=new RegExp('^'+f.labelStyle.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace('\\{label\\}','(.{1,8})').replace('{label}','(.{1,8})')+'$');if(re.test(lines[0])){lines=lines.slice(1);bl2=bl2.slice(1);}}
       if(title)songTitle=title.replace(/^\d+\.\s*/,'');
-      screens.push({type:'song',ed,chunk:base+ci,title:f.titleMode==='none'?'':(title?title.replace(/^\d+\.\s*/,''):songTitle),lines,line:bl[0].i,src:bl.map(o=>o.i),lsrc:bl2.map(o=>o.i),keep:(bi===0&&title&&blocks.length>1&&f.titleWhere!=='every')?bl[0].i:-1,cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});
+      screens.push({type:'song',ed,chunk:base+ci,title:f.titleMode==='none'?'':(title?title.replace(/^\d+\.\s*/,''):songTitle),tl:title?bl[0].i:-1,lines,line:bl[0].i,src:bl.map(o=>o.i),lsrc:bl2.map(o=>o.i),keep:(bi===0&&title&&blocks.length>1&&f.titleWhere!=='every')?bl[0].i:-1,cs:ch.lines[0].i,ce:ch.lines[ch.lines.length-1].i});
     });
   });
   return screens;
