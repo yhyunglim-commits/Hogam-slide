@@ -2936,6 +2936,9 @@ addEventListener('hashchange',route);
 /* ======================== 서버 연결 (Supabase · Gemini) ======================== */
 const CFG=window.HOGAM_CONFIG||{};
 const CFG_OK=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&!/여기에/.test(CFG.SUPABASE_URL+CFG.SUPABASE_ANON_KEY));
+// 카카오에서 돌아올 때 주소에 붙은 실패 이유. 서버 연결이 주소를 지우기 전에 먼저 읽어요
+const AUTH_ERR=(()=>{const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.slice(1)),c=q.get('error_code')||h.get('error_code')||q.get('error')||h.get('error')||'';
+  if(c){const e=['error','error_code','error_description','sb'];e.forEach(k=>q.delete(k));setTimeout(()=>history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')),0);}return c;})();
 const sb=(window.supabase&&CFG_OK)?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
 let me=null;
 function blobToB64(b){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(b);});}
@@ -5695,9 +5698,13 @@ function showJoin(u){const md=u.user_metadata||{};
 $('jOut').onclick=async()=>{await sb.auth.signOut();me=null;$('jName').value='';showGate();};
 // 옛 방식(이름+암호)으로 들어온 팀원에게 카카오 연결을 권해요
 const hasKakao=u=>(u.identities||[]).some(i=>i.provider==='kakao');
-async function linkKakao(){const {error}=await sb.auth.linkIdentity({provider:'kakao',options:{redirectTo:backTo()}});
+async function linkKakao(){sessionStorage.setItem('cj_linking','1');const {error}=await sb.auth.linkIdentity({provider:'kakao',options:{redirectTo:backTo()}});
+  if(error)sessionStorage.removeItem('cj_linking');
   if(error)toast(/manual linking/i.test(error.message||'')?'관리자가 카카오 연결을 아직 켜지 않았어요':'카카오 연결을 시작하지 못했어요');}
 function offerKakaoLink(u){const need=!hasKakao(u);$('linkKakao').hidden=!need;$('linkKakaoSep').hidden=!need;
+  const was=sessionStorage.getItem('cj_linking');sessionStorage.removeItem('cj_linking');
+  if(was&&!need)return toastUndo('카카오 연결이 끝났어요. 다음부터 카카오로 들어오면 돼요',()=>{},'확인',12000);
+  if(was&&AUTH_ERR)return toastUndo(AUTH_ERR==='identity_already_exists'?'이 카카오는 이미 다른 계정에 쓰이고 있어요. 호감에게 알려 주세요':'카카오를 연결하지 못했어요. 다시 해 보고 안 되면 호감에게 알려 주세요',()=>{},'확인',20000);
   if(need)setTimeout(()=>toastUndo('다음부터 카카오로 바로 들어오게 연결해 두세요',linkKakao,'카카오 연결',12000),1500);}
 // 팀원 초대: 우리 교회 초대 링크를 복사해요
 async function copyInvite(){const {data,error}=await sb.from('churches').select('name,invite_code').eq('id',me.church).maybeSingle();
@@ -5820,7 +5827,7 @@ addEventListener('keydown',e=>{if(e.key==='Escape'&&$('logbox').classList.contai
 async function initAuth(){
   if(!sb){showGate('setup');return;}
   const {data:{session}}=await sb.auth.getSession();
-  if(session)await afterLogin(session.user);else showGate();
+  if(session)await afterLogin(session.user);else{showGate();if(AUTH_ERR)$('gErr').textContent='카카오 로그인이 끝나지 않았어요. 다시 해 주세요';}
   sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT'&&me){me=null;showGate();}});
 }
 
