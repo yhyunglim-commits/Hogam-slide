@@ -312,9 +312,9 @@ create table if not exists public.churches (
   created_at timestamptz not null default now()
 );
 alter table public.churches add column if not exists suspended_at timestamptz; -- 멈춘 교회 (11단계)
--- 옥수교회는 번호를 고정해 둬요 (이 파일을 여러 번 돌려도 한 번만 들어가게)
-insert into public.churches (id, name) values ('00000000-0000-0000-0000-000000000001', '옥수교회')
-  on conflict (id) do nothing;
+-- 처음 만드는 서버에만 넣어요. 교회가 하나라도 있으면 안 넣어요 (실제 서버의 옛 옥수교회는 2026-11-25에 지웠으니 되살아나지 않게)
+insert into public.churches (id, name) select '00000000-0000-0000-0000-000000000001', '옥수교회'
+  where not exists (select 1 from public.churches);
 
 alter table public.members       add column if not exists church_id uuid references public.churches;
 alter table public.songs         add column if not exists church_id uuid references public.churches;
