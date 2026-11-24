@@ -2244,7 +2244,35 @@ body[data-wmode=q] #colWord>.qadd{border-top:0;margin-top:0}
 .tmacts{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 12px}.tmacts[hidden]{display:none}
 .tmlist .empty{padding:18px;text-align:center;color:var(--text3)}
 button.tmrow{width:100%;border:0;border-radius:12px;background:none;color:var(--text);font:inherit;text-align:left;cursor:pointer;padding-right:14px}
-.tmsus{display:flex;align-items:center;gap:10px;margin-top:12px}.tmsus p{flex:1;margin:0;font-size:13px;color:var(--text2)}
+/* 전체 관리 카드 (호감) */
+.spdlg{width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:var(--canvas);color:var(--text);word-break:keep-all;font-variant-numeric:tabular-nums}
+.spwrap{max-width:1320px;margin:auto;padding:calc(18px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(48px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sphead{display:flex;align-items:center;gap:8px;margin-bottom:12px}.sphead h2{flex:1;min-width:0;margin:0;font-size:22px;line-height:1.3;overflow-wrap:anywhere;outline:none;box-shadow:none!important}
+.sphead .ibtn{width:40px;height:40px}.spok{margin:0;font-size:14px;color:var(--ok)}.spok:not(:empty),.spdlg .cherr:not(:empty){margin-bottom:10px}
+#spHome,#spOne,#spPane{display:grid;gap:16px;min-width:0}#spHome>*,#spOne>*,#spPane>*{min-width:0}#spHome[hidden],#spOne[hidden]{display:none}#spOne{max-width:640px;margin:auto}
+.spsum{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-radius:14px;box-shadow:var(--card-edge)}
+.spsum div{padding:14px 18px;border-left:1px solid var(--line)}.spsum div:first-child{border-left:0}
+.spsum span{display:block;font-size:13px;color:var(--text2)}.spsum b{font-size:24px;line-height:1.3}.spsum small{margin-left:4px;font-size:13px;color:var(--text2)}
+.sptools{display:flex;flex-wrap:wrap;gap:10px}.sptools input{flex:1 1 220px;max-width:340px;min-width:0;height:42px;padding:0 12px;font-size:16px;border:1px solid var(--line);border-radius:10px;background:var(--field);color:var(--text)}
+.spseg{display:flex;padding:3px;border-radius:11px;background:var(--chip)}
+.spseg button{flex:1;min-height:36px;padding:0 13px;border:0;border-radius:8px;background:none;color:var(--text2);font-size:14px;white-space:nowrap;cursor:pointer}
+.spseg button[aria-pressed=true]{background:var(--surface);color:var(--text);font-weight:600;box-shadow:var(--card-edge)}
+.spgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:14px}
+.spcard{display:flex;flex-direction:column;gap:14px;min-width:0;padding:18px;border:0;border-radius:16px;background:var(--surface);color:var(--text);box-shadow:var(--card-edge);font:inherit;text-align:left;cursor:pointer}
+.spcard:hover{box-shadow:0 0 0 1.5px var(--pri)}
+.sptop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.sptop b{font-size:17px;line-height:1.35;overflow-wrap:anywhere}
+.sptag{flex:none;padding:2px 9px;border-radius:99px;background:var(--ok-soft);color:var(--ok);font-size:12px;font-weight:600}.sptag.off{background:var(--chip);color:var(--text2)}
+.spfacts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 8px}.spfacts small{display:block;font-size:12px;color:var(--text2)}.spfacts b{font-size:15px}
+.spneed{margin-top:auto;padding:8px 11px;border-radius:10px;background:var(--sunken);color:var(--text2);font-size:13px}.spneed.w{background:var(--warn-soft);color:var(--warn-ink);font-weight:600}
+.spempty{grid-column:1/-1;margin:0;padding:48px 0;text-align:center;color:var(--text2)}
+.spbox{padding:4px 16px;border-radius:14px;background:var(--surface);box-shadow:var(--card-edge)}
+.sprow{display:flex;align-items:center;gap:12px;min-height:48px;padding:6px 0;border-top:1px solid var(--line)}.sprow:first-child{border-top:0}.sprow>span:not(.sptag){flex:1}.sprow>b{margin-left:auto}.sprow b{text-align:right;font-weight:600;overflow-wrap:anywhere;min-width:0}
+#spPane h3{margin:4px 0 -8px;font-size:14px;color:var(--text2)}#spPane textarea{width:100%;box-sizing:border-box;min-height:110px;padding:10px 12px;font:inherit;font-size:16px;border:1px solid var(--line);border-radius:10px;background:var(--field);color:var(--text);resize:vertical}
+#spPane .tmlist{max-height:none;margin:0}#spPane .tmlist li{background:var(--surface);box-shadow:var(--card-edge)}
+.spacts{display:flex;flex-wrap:wrap;gap:8px}.spacts .btn{height:40px;padding:0 16px;font-size:14px}.spnote{margin:0;font-size:13px;color:var(--text2)}
+.spbars{display:flex;align-items:flex-end;gap:5px;height:90px;padding-top:12px}.spbars i{flex:1;min-height:2px;border-radius:4px 4px 0 0;background:var(--pri)}
+.spax{display:flex;justify-content:space-between;padding:5px 0 12px;font-size:12px;color:var(--text2)}
+@media (max-width:700px){.spsum{grid-template-columns:1fr 1fr}.spsum div{padding:12px 14px}.spsum div:nth-child(3){border-left:0}.spsum div:nth-child(n+3){border-top:1px solid var(--line)}.sptools input{max-width:none;flex-basis:100%}#spFlt{flex:1}#spFlt button{padding:0 6px}}
 .gonedlg p{margin:0 0 14px;font-size:15px;line-height:1.6;color:var(--text2)}.gonedlg .setrows:not(:first-of-type){margin-top:12px}
 /* 설정 창 (프로필을 누르면) */
 .setbox{align-items:center}
@@ -2818,10 +2846,21 @@ button.tmrow{width:100%;border:0;border-radius:12px;background:none;color:var(--
     <button type="submit" class="btn pri" id="chNewGo">만들기</button></div></form>
 </dialog>
 <dialog class="maildlg chdlg" id="tmDlg" aria-labelledby="tmTitle">
-  <div class="chhead"><button type="button" class="btn ghost ibtn" id="tmBack" aria-label="교회 목록으로" hidden><i class="ph ph-arrow-left" aria-hidden="true"></i></button><h2 id="tmTitle" style="flex:1">팀원 관리</h2><button type="button" class="btn ghost ibtn" id="tmClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
+  <div class="chhead"><h2 id="tmTitle">팀원 관리</h2><button type="button" class="btn ghost ibtn" id="tmClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
   <p class="cherr" id="tmErr" role="alert"></p>
-  <div class="tmsus" id="tmSus" hidden><p></p><button type="button" class="btn sm"></button></div>
   <ul class="tmlist" id="tmList"></ul>
+</dialog>
+<dialog class="spdlg" id="spDlg" aria-labelledby="spTitle">
+  <div class="spwrap">
+    <div class="sphead"><button type="button" class="btn ghost ibtn" id="spBack" aria-label="교회 목록으로" hidden><i class="ph ph-arrow-left" aria-hidden="true"></i></button><h2 id="spTitle" tabindex="-1">전체 관리</h2><button type="button" class="btn ghost ibtn" id="spClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
+    <p class="cherr" id="spErr" role="alert"></p><p class="spok" id="spOk" role="status"></p>
+    <div id="spHome">
+      <div class="spsum" id="spSum"></div>
+      <div class="sptools"><input type="search" id="spQ" placeholder="교회 이름 찾기" aria-label="교회 이름 찾기"><div class="spseg" id="spFlt" role="group" aria-label="거르기"></div></div>
+      <div class="spgrid" id="spGrid"></div>
+    </div>
+    <div id="spOne" hidden><div class="spseg" id="spTabs" role="group" aria-label="교회 관리"></div><div id="spPane"></div></div>
+  </div>
 </dialog>
 <dialog class="maildlg chdlg gonedlg" id="goneDlg" aria-labelledby="goneTitle">
   <div class="chhead"><h2 id="goneTitle"></h2></div>
@@ -3100,12 +3139,12 @@ const CFG_OK=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&!/여기에/.test(CFG.S
 // 카카오에서 돌아올 때 주소에 붙은 실패 이유. 서버 연결이 주소를 지우기 전에 먼저 읽어요
 const AUTH_ERR=(()=>{const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.slice(1)),c=q.get('error_code')||h.get('error_code')||q.get('error')||h.get('error')||'';
   if(c){const e=['error','error_code','error_description','sb'];e.forEach(k=>q.delete(k));setTimeout(()=>history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')),0);}return c;})();
-// 표를 읽고 쓰는 요청마다 지금 교회를 알려요(x-church). 서버가 그 교회 팀원인지 확인해요
+// 표를 읽고 쓰거나 AI를 부를 때마다 지금 교회를 알려요(x-church). 서버가 그 교회 팀원인지 확인해요
 let sending=0;
-async function churchFetch(url,o={}){const u=String(url?.url||url),db=u.includes('/rest/v1/');
-  if(!db)return fetch(url,o);
+async function churchFetch(url,o={}){const u=String(url?.url||url),db=u.includes('/rest/v1/'),fn=u.includes('/functions/v1/ai');
+  if(!db&&!fn)return fetch(url,o);
   const h=new Headers(o.headers||{});if(CH)h.set('x-church',CH);
-  const w=o.method&&!['GET','HEAD'].includes(o.method);if(w)sending++;
+  const w=db&&o.method&&!['GET','HEAD'].includes(o.method);if(w)sending++;
   try{return await fetch(url,{...o,headers:h});}finally{if(w)sending--;}}
 const sb=(window.supabase&&CFG_OK)?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY,{global:{fetch:churchFetch}}):null;
 let me=null;
@@ -6086,21 +6125,15 @@ $('jMake').onclick=openMake;
 
 // ---- 팀원 관리(교회 관리자) · 전체 관리(호감) ----
 const ymd=t=>{const d=new Date(t);return`${d.getFullYear()}. ${d.getMonth()+1}. ${d.getDate()}.`;};
-let TM=null; // {church,name,all:전체 관리에서 열었는지,sus}
-function tmOpen(){closeSet();closeRail();$('tmErr').textContent='';$('tmList').innerHTML='<li class="empty">불러오는 중…</li>';if(!$('tmDlg').open)$('tmDlg').showModal();}
+let TM=null; // {church,name,all:전체 관리에서 열었는지}
+const tmUl=t=>$(t.all?'spTeam':'tmList'),tmErr=m=>{$(TM?.all?'spErr':'tmErr').textContent=m;};
 const tmFail='불러오지 못했어요. 인터넷 연결을 확인해 주세요';
-async function openTeam(t){TM=t;tmOpen();$('tmBack').hidden=!t.all;$('tmTitle').textContent=t.all?t.name:'팀원 관리';
-  $('tmSus').hidden=!t.all;$('tmSus').querySelector('p').textContent=t.sus?'쉬고 있는 교회예요. 팀원이 열 수 없어요.':'멈추면 팀원이 이 교회를 열 수 없어요. 자료는 그대로 있어요.';
-  const sbt=$('tmSus').querySelector('button');sbt.textContent=t.sus?'다시 열기':'교회 멈추기';
-  sbt.onclick=async()=>{if(!t.sus&&!confirm(`‘${t.name}’을 멈출까요? 팀원이 열 수 없게 되고, 다시 열 수 있어요.`))return;
-    sbt.disabled=true;const {data,error}=await sb.rpc('set_suspended',{p_church:t.church,p_on:!t.sus});sbt.disabled=false;
-    if(error||!data)return $('tmErr').textContent='바꾸지 못했어요. 다시 해 주세요';
-    if(t.church===me?.church)await checkIn(true);
-    if(me)openTeam({...t,sus:!t.sus});else $('tmDlg').close();};
-  await tmLoad();}
-async function tmLoad(){const t=TM;
+async function openTeam(t){TM=t;if(!t.all){closeSet();closeRail();if(!$('tmDlg').open)$('tmDlg').showModal();}
+  tmErr('');tmUl(t).innerHTML='<li class="empty">불러오는 중…</li>';await tmLoad();}
+async function tmLoad(){const t=TM;if(!t)return;
   const {data,error}=t.all?await sb.rpc('super_members',{p_church:t.church}):await sb.from('members').select('user_id,name,role,joined_at').eq('church_id',t.church).order('joined_at');
-  if(TM!==t)return;const ul=$('tmList');ul.innerHTML='';if(error){$('tmErr').textContent=tmFail;return;}
+  const ul=tmUl(t);if(TM!==t||!ul)return;ul.innerHTML='';if(error){tmErr(tmFail);return;}
+  if(t.all&&spCur?.id===t.church){const ad=data.filter(m=>m.role==='admin');spCur.members=data.length;spCur.admins=ad.length;if(spD)spD.admins=ad.map(m=>m.name);}
   if(!data.length)ul.innerHTML='<li class="empty">팀원이 없어요</li>';
   data.forEach(m=>{const li=document.createElement('li'),mine=m.user_id===me.id,ad=m.role==='admin';
     li.innerHTML=`<div class="tmrow"><div class="tt"><b><span></span>${ad?'<i class="tmtag">관리자</i>':''}${mine?'<i class="tmtag">나</i>':''}</b><small>${ymd(m.joined_at)} 들어옴</small></div><button type="button" class="btn ghost ibtn" aria-expanded="false"><i class="ph ph-dots-three" aria-hidden="true"></i></button></div><div class="tmacts" hidden><button type="button" class="btn sm" data-a>${ad?'관리자 내리기':'관리자로 세우기'}</button>${mine?'':'<button type="button" class="btn sm danger" data-x>내보내기</button>'}</div>`;
@@ -6111,16 +6144,65 @@ async function tmLoad(){const t=TM;
     const x=li.querySelector('[data-x]');if(x)x.onclick=()=>{if(!confirm(`${m.name}님을 내보낼까요? 만든 예배와 곡은 남고, 초대 링크는 막혀요.`))return;
       tmDo(x,'remove_member',{p_church:t.church,p_user:m.user_id},`${m.name}님을 내보냈어요`);};
     ul.appendChild(li);});}
-async function tmDo(btn,fn,args,ok,mine){$('tmErr').textContent='';btn.disabled=true;const {data,error}=await sb.rpc(fn,args);btn.disabled=false;
-  if(error){$('tmErr').textContent=/관리자만/.test(error.message||'')?error.message:'바꾸지 못했어요. 다시 해 주세요';checkIn(true);return;}
-  if(!data.ok){$('tmErr').textContent=data.error;return;}
-  toast(ok);if(mine&&args.p_church===me.church){await checkIn(true);if(!TM.all&&me?.role!=='admin'){$('tmDlg').close();return;}}
-  if(me)tmLoad();}
-async function openSuper(){TM=null;tmOpen();$('tmBack').hidden=true;$('tmSus').hidden=true;$('tmTitle').textContent='전체 관리';
-  const {data,error}=await sb.rpc('super_churches');if(TM)return;const ul=$('tmList');ul.innerHTML='';if(error){$('tmErr').textContent=tmFail;return;}
-  data.forEach(c=>{const li=document.createElement('li');li.innerHTML=`<button type="button" class="tmrow"><span class="tt"><b><span></span>${c.suspended_at?'<i class="tmtag">쉬는 중</i>':''}</b><small>팀원 ${c.members}명 · ${ymd(c.created_at)} 만듦</small></span><i class="ph ph-caret-right" aria-hidden="true"></i></button>`;
-    li.querySelector('b span').textContent=c.name;li.querySelector('button').onclick=()=>openTeam({church:c.id,name:c.name,all:true,sus:!!c.suspended_at});ul.appendChild(li);});}
-$('openTeam').onclick=()=>openTeam({church:me.church});$('openSuper').onclick=openSuper;$('tmBack').onclick=openSuper;
+async function tmDo(btn,fn,args,ok,mine){const t=TM;tmErr('');btn.disabled=true;const {data,error}=await sb.rpc(fn,args);btn.disabled=false;
+  if(TM===t){if(error)tmErr(/관리자만/.test(error.message||'')?error.message:'바꾸지 못했어요. 다시 해 주세요');else if(!data.ok)tmErr(data.error);}
+  if(error){checkIn(true);return;}
+  if(!data.ok)return;
+  if(t.all)$('spOk').textContent=ok;else toast(ok);
+  if(mine&&args.p_church===me.church){await checkIn(true);if(!t.all&&me?.role!=='admin'){$('tmDlg').close();return;}}
+  if(me&&TM===t)tmLoad();}
+// 전체 관리: 교회 카드 → 정보 · 사용 · 팀원. 서버가 숫자와 이름만 줘요
+let SP=[],spF='all',spCur=null,spTab='info',spD=null,spN=0;
+const spNum=n=>Number(n||0).toLocaleString('ko'),spSize=b=>{b=Number(b||0);return b<1024?b+'B':b<1048576?Math.round(b/1024)+'KB':(b/1048576).toFixed(1)+'MB';};
+const kday=t=>Math.floor((new Date(t).getTime()+324e5)/864e5),spAgo=t=>Math.max(0,kday(Date.now())-kday(t)); // 한국 날짜로 며칠 전
+const spLast=c=>{if(!c.last_used)return'아직 없음';const d=spAgo(c.last_used);return d?d+'일 전':'오늘';};
+function spNeed(c){if(c.suspended_at)return'';if(!c.admins)return'관리자가 없어요';const d=spAgo(c.last_used||c.created_at);return d>30?`${d}일 동안 쓰지 않았어요`:'';}
+const SPF={all:['전체',()=>true],need:['확인 필요',c=>!!spNeed(c)],off:['쉬는 중',c=>!!c.suspended_at]};
+const spTag=c=>`<span class="sptag${c.suspended_at?' off':''}">${c.suspended_at?'쉬는 중':'사용 중'}</span>`;
+async function openSuper(){closeSet();closeRail();spF='all';$('spQ').value='';if(!$('spDlg').open)$('spDlg').showModal();await spHome();}
+async function spHome(){const n=++spN;TM=null;spCur=null;$('spTitle').textContent='전체 관리';$('spBack').hidden=true;$('spOne').hidden=true;$('spHome').hidden=false;$('spErr').textContent=$('spOk').textContent='';
+  if(!SP.length)$('spGrid').innerHTML='<p class="spempty">불러오는 중…</p>';
+  const {data,error}=await sb.rpc('super_churches');if(n!==spN)return;
+  if(error){SP=[];$('spSum').innerHTML=$('spFlt').innerHTML=$('spGrid').innerHTML='';$('spErr').textContent=tmFail;return;}
+  SP=data;spDraw();}
+function spDraw(){
+  $('spSum').innerHTML=[['전체 교회',SP.length,'곳'],['이번 주 쓴 교회',SP.filter(c=>c.last_used&&spAgo(c.last_used)<7).length,'곳'],['이번 달 AI',SP.reduce((a,c)=>a+Number(c.ai_month),0),'번'],['확인 필요',SP.filter(spNeed).length,'곳']].map(x=>`<div><span>${x[0]}</span><b>${spNum(x[1])}</b><small>${x[2]}</small></div>`).join('');
+  $('spFlt').innerHTML=Object.keys(SPF).map(k=>`<button type="button" data-f="${k}" aria-pressed="${k===spF}">${SPF[k][0]} ${SP.filter(SPF[k][1]).length}</button>`).join('');
+  const q=$('spQ').value.trim(),g=$('spGrid');g.innerHTML='';
+  const L=SP.filter(c=>SPF[spF][1](c)&&c.name.includes(q)).sort((a,b)=>!!spNeed(b)-!!spNeed(a)||!!a.suspended_at-!!b.suspended_at||new Date(b.last_used||0)-new Date(a.last_used||0));
+  if(!L.length)g.innerHTML='<p class="spempty">맞는 교회가 없어요</p>';
+  L.forEach(c=>{const b=document.createElement('button'),w=spNeed(c);b.type='button';b.className='spcard';
+    b.innerHTML=`<span class="sptop"><b></b>${spTag(c)}</span><span class="spfacts">${[['팀원',spNum(c.members)+'명'],['예배',spNum(c.services)+'개'],['마지막 사용',spLast(c)],['이번 달 AI',spNum(c.ai_month)+'번'],['오늘 AI',spNum(c.ai_today)+'번'],['용량',spSize(c.bytes)]].map(x=>`<span><small>${x[0]}</small><b>${x[1]}</b></span>`).join('')}</span><span class="spneed${w?' w':''}">${w||'확인할 일 없음'}</span>`;
+    b.querySelector('b').textContent=c.name;b.onclick=()=>spOpen(c);g.appendChild(b);});}
+async function spOpen(c){const n=++spN;spCur=c;spTab='info';spD=null;$('spTitle').textContent=c.name;$('spBack').hidden=false;$('spHome').hidden=true;$('spOne').hidden=false;$('spErr').textContent=$('spOk').textContent='';
+  $('spDlg').scrollTop=0;spPane();$('spTitle').focus();
+  const [a,b]=await Promise.all([sb.rpc('super_church',{p_church:c.id}),sb.rpc('super_members',{p_church:c.id})]);if(n!==spN)return;
+  if(a.error||b.error){$('spErr').textContent=tmFail;$('spPane').innerHTML='';return;}
+  spD={...a.data,admins:b.data.filter(m=>m.role==='admin').map(m=>m.name)};spPane();}
+function spPane(){const c=spCur,row=(a,b)=>`<div class="sprow"><span>${a}</span><b>${b}</b></div>`,p=$('spPane');TM=null;
+  $('spTabs').innerHTML=[['info','정보'],['use','사용'],['team','팀원']].map(x=>`<button type="button" data-t="${x[0]}" aria-pressed="${x[0]===spTab}">${x[1]}</button>`).join('');
+  if(spTab==='team'){p.innerHTML='<ul class="tmlist" id="spTeam"></ul>';openTeam({church:c.id,name:c.name,all:true});return;}
+  if(!spD){p.innerHTML='<p class="spempty">불러오는 중…</p>';return;}
+  if(spTab==='use'){const k=spD.ai_days.map(Number),mx=Math.max(...k),B=spD.bytes;
+    p.innerHTML=`<div class="spbox">${row('이번 달 AI',spNum(c.ai_month)+'번')+row('오늘 AI',spNum(c.ai_today)+'번')+row('마지막 사용',spLast(c))}</div><h3>최근 14일 AI 사용</h3><div class="spbox"><div class="spbars" role="img" aria-label="최근 14일 AI 사용, 가장 많은 날 ${mx}번">${k.map(x=>`<i style="height:${mx?x/mx*100:0}%" title="${x}번"></i>`).join('')}</div><div class="spax"><span>13일 전</span><span>가장 많은 날 ${spNum(mx)}번</span><span>오늘</span></div></div><h3>용량 (어림)</h3><div class="spbox">${[['배경 사진 · 로고','media'],['예배','services'],['곡','songs'],['설정','settings'],['편집 기록','log']].map(x=>row(x[0],spSize(B[x[1]]))).join('')+row('모두',spSize(c.bytes))}</div>`;return;}
+  p.innerHTML=`<div class="spbox"><div class="sprow"><span>상태</span>${spTag(c)}</div>${row('만든 날',ymd(c.created_at))+row('관리자','')+row('팀원',spNum(c.members)+'명')+row('예배 · 곡',`${spNum(c.services)}개 · ${spNum(c.songs)}곡`)}</div><h3>호감 메모</h3><textarea id="spMemo" maxlength="2000" aria-label="호감 메모" placeholder="호감만 보는 메모"></textarea><div class="spacts"><button type="button" class="btn pri" id="spSave">메모 저장</button><button type="button" class="btn${c.suspended_at?'':' danger'}" id="spSus">${c.suspended_at?'다시 열기':'교회 멈추기'}</button></div><p class="spnote">${c.suspended_at?'쉬고 있는 교회예요. 팀원이 열 수 없어요.':'멈추면 팀원이 이 교회를 열 수 없어요. 자료는 그대로 있어요.'} 예배와 곡의 내용은 호감에게도 보이지 않아요.</p>`;
+  p.querySelectorAll('.sprow b')[1].textContent=spD.admins.join(', ')||'없음';const ta=$('spMemo');ta.value=spD.draft??spD.memo;ta.oninput=()=>{if(spD)spD.draft=ta.value;};
+  $('spSave').onclick=async e=>{const d=spD,v=ta.value,bt=e.target;bt.disabled=true;$('spErr').textContent=$('spOk').textContent='';const {error}=await sb.rpc('super_set_memo',{p_church:c.id,p_memo:v});bt.disabled=false;
+    if(!error){d.memo=v;if(d.draft===v)delete d.draft;}
+    if(spD===d)$(error?'spErr':'spOk').textContent=error?'저장하지 못했어요. 다시 해 주세요':'메모를 저장했어요';};
+  $('spSus').onclick=async e=>{const on=!c.suspended_at;if(on&&!confirm(`‘${c.name}’을 멈출까요? 팀원이 열 수 없게 되고, 다시 열 수 있어요.`))return;
+    e.target.disabled=true;$('spErr').textContent=$('spOk').textContent='';const {data,error}=await sb.rpc('set_suspended',{p_church:c.id,p_on:on});e.target.disabled=false;
+    if(error||!data){if(spCur===c)$('spErr').textContent='바꾸지 못했어요. 다시 해 주세요';return;}
+    c.suspended_at=on?new Date().toISOString():null;if(c.id===me?.church)await checkIn(true);
+    if(me&&spCur===c){spPane();$('spOk').textContent=on?'교회를 멈췄어요':'교회를 다시 열었어요';}};}
+const spLeave=()=>!spD||spD.draft===undefined||spD.draft===spD.memo||confirm('저장하지 않은 메모가 있어요. 그냥 나갈까요?');
+$('spBack').onclick=()=>{if(spLeave()){spD=null;spHome();}};$('spQ').oninput=spDraw;
+$('spFlt').onclick=e=>{const b=e.target.closest('button');if(b){spF=b.dataset.f;spDraw();$('spFlt').querySelector(`[data-f=${spF}]`).focus();}};
+$('spTabs').onclick=e=>{const b=e.target.closest('button');if(b){spTab=b.dataset.t;$('spErr').textContent=$('spOk').textContent='';spPane();$('spTabs').querySelector(`[data-t=${spTab}]`).focus();}};
+$('spClose').onclick=()=>{if(spLeave())$('spDlg').close();};
+$('spDlg').addEventListener('cancel',e=>{e.preventDefault();if(spCur)$('spBack').click();else $('spDlg').close();});
+$('spDlg').addEventListener('close',()=>{spN++;TM=null;spCur=null;spD=null;});
+$('openTeam').onclick=()=>openTeam({church:me.church});$('openSuper').onclick=openSuper;
 $('tmClose').onclick=()=>$('tmDlg').close();$('tmDlg').addEventListener('click',e=>{if(e.target.id==='tmDlg')$('tmDlg').close();});
 
 // ---- 내보내졌거나 멈춘 교회: 1분마다 · 화면으로 돌아올 때 · 저장이 안 될 때 확인해요 ----
@@ -6148,7 +6230,7 @@ function showGone(why,church){
     const at=me.church;me=null;Object.keys(pushT).forEach(id=>clearTimeout(pushT[id]));Object.values(TEAM.t).forEach(clearTimeout);TEAM.on=false;
     sb.removeAllChannels();if(why==='removed')inSet('');church=church||at;}
   const c=CHURCHES.find(x=>x.id===church),txt=left.filter(Boolean).join('\n\n');
-  ['tmDlg','chDlg'].forEach(i=>{if($(i).open)$(i).close();});closeSet();closeRail();
+  ['tmDlg','spDlg','chDlg'].forEach(i=>{if($(i).open)$(i).close();});closeSet();closeRail();
   $('goneTitle').textContent=why==='removed'?'이 교회에서 나가게 되었어요':'지금은 쉬고 있는 교회예요';
   $('goneMsg').textContent=(why==='removed'?'이제 이 교회의 예배와 곡을 열 수 없어요. 다시 들어가려면 관리자에게 새 초대 링크를 받아 주세요.':`${c?.name||'이 교회'}의 자료는 그대로 있어요. 다시 열리면 이어서 쓸 수 있어요.`)+(txt?' 아직 저장하지 못한 글은 지금 복사해 두세요.':'');
   $('goneCopy').hidden=!txt;$('goneCopy').textContent='저장 안 된 글 복사';$('goneCopy').onclick=async()=>{try{await navigator.clipboard.writeText(txt);$('goneCopy').textContent='복사했어요';}catch(e){prompt('이 글을 복사해 두세요',txt);}};

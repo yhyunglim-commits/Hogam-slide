@@ -756,3 +756,107 @@ grant execute on function public.is_super(), public.is_admin(uuid), public.get_i
 revoke delete on public.services from authenticated;
 
 select cron.schedule('hogam-clear-invites', '25 18 * * *', 'select public.clear_old_invites()');
+
+-- ───────────── 12단계 추가 (2026-11-24): 전체 관리 카드 · 교회별 AI 횟수 · 용량 ─────────────
+-- 누가 썼는지(ai_usage)는 3일, 교회별 하루 횟수(ai_daily)는 13개월만 남겨요. 지난 사용은 교회를 몰라서 0부터 세요.
+alter table public.ai_usage add column if not exists church_id uuid references public.churches on delete cascade;
+create table if not exists public.ai_daily (
+  church_id uuid not null references public.churches on delete cascade,
+  day       date not null,             -- 한국 날짜
+  n         int not null default 0,
+  last_at   timestamptz not null default now(),
+  primary key (church_id, day)
+);
+alter table public.ai_daily enable row level security;
+revoke all on public.ai_daily from public, anon, authenticated;
+-- 호감만 보는 메모. churches 는 팀원도 볼 수 있어서 따로 둬요.
+create table if not exists public.church_memos (
+  church_id uuid primary key references public.churches on delete cascade,
+  memo      text not null default '',
+  updated_at timestamptz not null default now()
+);
+alter table public.church_memos enable row level security;
+revoke all on public.church_memos from public, anon, authenticated;
+
+-- AI를 쓸 때 ai 함수(service_role)만 불러요. 교회를 안 알렸으면 한 교회에만 속한 사람만 그 교회로 봐요.
+create or replace function public.ai_church(p_user uuid, p_church uuid) returns uuid
+language sql stable security definer set search_path = public as $$
+  select case when count(*) = 1 then (array_agg(m.church_id))[1] end
+    from public.members m join public.churches c on c.id = m.church_id
+   where m.user_id = p_user and c.suspended_at is null and (p_church is null or m.church_id = p_church);
+$$;
+create or replace function public.log_ai(p_user uuid, p_church uuid) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.ai_usage (user_id, church_id) values (p_user, p_church);
+  insert into public.ai_daily (church_id, day, n) values (p_church, (now() at time zone 'Asia/Seoul')::date, 1)
+    on conflict (church_id, day) do update set n = ai_daily.n + 1, last_at = now();
+end $$;
+create or replace function public.clear_old_ai() returns void
+language sql security definer set search_path = public as $$
+  delete from public.ai_usage where at < now() - interval '3 days';
+  delete from public.ai_daily where day < (now() at time zone 'Asia/Seoul')::date - interval '13 months';
+$$;
+
+-- 마지막 사용: 그 교회 사람이 남긴 편집 기록과 AI 사용 중 가장 최근 (교회 밖 전체 관리자가 한 일은 빼요)
+create or replace function public.church_last_used(c uuid) returns timestamptz
+language sql stable security definer set search_path = public as $$
+  select greatest(
+    (select max(l.at) from public.edit_log l where l.church_id = c and l.user_id is not null
+        and not (l.user_id in (select user_id from public.super_admins)
+                 and l.user_id not in (select user_id from public.members where church_id = c))),
+    (select max(d.last_at) from public.ai_daily d where d.church_id = c));
+$$;
+-- 용량(바이트, 어림): 저장된 칸의 크기를 더해요. 내용은 내보내지 않아요.
+create or replace function public.church_bytes(c uuid) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object(
+    'media',    (select coalesce(sum(pg_column_size(value)), 0) from public.team_settings where church_id = c and key like 'media.%'),
+    'settings', (select coalesce(sum(pg_column_size(value)), 0) from public.team_settings where church_id = c and key not like 'media.%'),
+    'services', (select coalesce(sum(coalesce(pg_column_size(text), 0) + coalesce(pg_column_size(results), 0) + coalesce(pg_column_size(verse_in), 0)), 0) from public.services where church_id = c),
+    'songs',    (select coalesce(sum(coalesce(pg_column_size(result), 0) + coalesce(pg_column_size(thumb), 0)), 0) from public.songs where church_id = c),
+    'log',      (select coalesce(sum(coalesce(pg_column_size(before), 0) + coalesce(pg_column_size(summary), 0)), 0) from public.edit_log where church_id = c));
+$$;
+
+-- 전체 관리 화면: 숫자와 이름만. 새 칸을 넣으면 supabase/tests/church-admin.sql 의 허용 목록도 같이 고쳐요.
+create or replace function public.super_churches() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_today date := (now() at time zone 'Asia/Seoul')::date;
+begin
+  if not public.is_super() then raise exception '전체 관리자만 볼 수 있어요'; end if;
+  return (select coalesce(jsonb_agg(jsonb_build_object('id', c.id, 'name', c.name, 'created_at', c.created_at, 'suspended_at', c.suspended_at,
+            'members',  (select count(*) from public.members m where m.church_id = c.id),
+            'admins',   (select count(*) from public.members m where m.church_id = c.id and m.role = 'admin'),
+            'services', (select count(*) from public.services s where s.church_id = c.id and s.deleted_at is null),
+            'songs',    (select count(*) from public.songs s where s.church_id = c.id),
+            'ai_month', (select coalesce(sum(d.n), 0) from public.ai_daily d where d.church_id = c.id and d.day >= date_trunc('month', v_today)),
+            'ai_today', (select coalesce(sum(d.n), 0) from public.ai_daily d where d.church_id = c.id and d.day = v_today),
+            'bytes',    (select sum(v::bigint) from jsonb_each_text(public.church_bytes(c.id)) x(k, v)),
+            'last_used', public.church_last_used(c.id)) order by c.created_at), '[]'::jsonb) from public.churches c);
+end $$;
+create or replace function public.super_church(p_church uuid) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_today date := (now() at time zone 'Asia/Seoul')::date;
+begin
+  if not public.is_super() then raise exception '전체 관리자만 볼 수 있어요'; end if;
+  return jsonb_build_object(
+    'memo',  coalesce((select memo from public.church_memos where church_id = p_church), ''),
+    'bytes', public.church_bytes(p_church),
+    'ai_days', (select jsonb_agg(coalesce(d.n, 0) order by g.i desc) from generate_series(0, 13) g(i)
+                  left join public.ai_daily d on d.church_id = p_church and d.day = v_today - g.i));
+end $$;
+create or replace function public.super_set_memo(p_church uuid, p_memo text) returns boolean
+language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_super() then raise exception '전체 관리자만 할 수 있어요'; end if;
+  if p_memo is null or char_length(p_memo) > 2000 then raise exception '메모는 2000글자까지 적을 수 있어요'; end if;
+  insert into public.church_memos (church_id, memo) values (p_church, p_memo)
+    on conflict (church_id) do update set memo = excluded.memo, updated_at = now();
+  return true;
+end $$;
+revoke execute on function public.ai_church(uuid, uuid), public.log_ai(uuid, uuid), public.clear_old_ai(), public.church_last_used(uuid), public.church_bytes(uuid) from public, anon, authenticated;
+grant execute on function public.ai_church(uuid, uuid), public.log_ai(uuid, uuid) to service_role;
+revoke execute on function public.super_church(uuid), public.super_set_memo(uuid, text) from public, anon;
+grant execute on function public.super_church(uuid), public.super_set_memo(uuid, text) to authenticated;
+
+select cron.schedule('hogam-clear-ai', '30 18 * * *', 'select public.clear_old_ai()');

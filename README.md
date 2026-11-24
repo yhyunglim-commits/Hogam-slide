@@ -127,7 +127,7 @@ select public.reset_password('김목자', '새암호1234');
 
 **관리자를 세우거나 내릴 때**: 같은 **팀원 관리**에서 해요. 교회를 만든 사람이 처음 관리자이고, 마지막 관리자는 내릴 수 없어요. **휴지통의 완전히 지우기**도 관리자만 할 수 있어요.
 
-**전체 관리자를 넣을 때**: 서비스 운영자 한 사람만 넣어요. Authentication › Users에서 계정 번호(User UID)를 복사해 SQL Editor에서 실행하면, 설정 창에 **전체 관리**가 생겨요. 예배·곡 내용은 볼 수 없어요.
+**전체 관리자를 넣을 때**: 서비스 운영자 한 사람만 넣어요. Authentication › Users에서 계정 번호(User UID)를 복사해 SQL Editor에서 실행하면, 설정 창에 **전체 관리**가 생겨요. 교회 카드에서 팀원 수·AI 횟수·용량(어림)·마지막 사용을 보고, 메모·팀원 관리·교회 멈추기를 해요. 예배·곡 내용은 볼 수 없어요.
 
 ```sql
 insert into public.super_admins (user_id) values ('계정 번호') on conflict do nothing;

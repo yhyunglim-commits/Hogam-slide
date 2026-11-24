@@ -22,17 +22,20 @@ Deno.serve(async (req) => {
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: u } = await admin.auth.getUser(token);
     if (!u?.user) return reply({ error: "다시 로그인해 주세요", code: "not_granted" }, 401);
-    const { data: m } = await admin.from("members").select("name, churches!inner(suspended_at)").eq("user_id", u.user.id).is("churches.suspended_at", null).limit(1); // 여러 교회에 속할 수 있어요. 멈춘 교회는 빼요
-    if (!m?.length) return reply({ error: "팀원만 쓸 수 있어요", code: "not_granted" }, 403);
+    // 화면이 알린 지금 교회(x-church)의 팀원인지. 안 알리면 한 교회에만 속한 사람만 돼요. 멈춘 교회는 빼요
+    const h = req.headers.get("x-church") ?? "";
+    if (h && !/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(h)) return reply({ error: "교회를 다시 골라 주세요", code: "not_granted" }, 403);
+    const { data: church, error: cErr } = await admin.rpc("ai_church", { p_user: u.user.id, p_church: h || null });
+    if (cErr) return reply({ error: "서버가 교회를 확인하지 못했어요. 잠시 뒤에 다시 해 주세요" }, 500);
+    if (!church) return reply({ error: "이 교회 팀원만 쓸 수 있어요. 새로고침한 뒤 다시 해 주세요", code: "not_granted" }, 403);
 
     // 한 사람이 하루(24시간)에 쓸 수 있는 횟수. Secrets의 AI_DAILY_LIMIT로 바꿀 수 있어요 (기본 200번)
-    // (ai_usage 표가 아직 없으면 세지 못하고 그냥 지나가요)
     const limit = Number(Deno.env.get("AI_DAILY_LIMIT") ?? "200") || 200;
     const { count: used } = await admin.from("ai_usage").select("id", { count: "exact", head: true })
       .eq("user_id", u.user.id).gte("at", new Date(Date.now() - 24 * 3600_000).toISOString());
     if ((used ?? 0) >= limit) return reply({ error: `오늘 AI를 ${limit}번 써서 더 쓸 수 없어요. 내일 다시 해 주세요`, code: "rate_limited" }, 429);
-    await admin.from("ai_usage").insert({ user_id: u.user.id });
-    if (Math.random() < 0.02) await admin.from("ai_usage").delete().lt("at", new Date(Date.now() - 3 * 86400_000).toISOString()); // 가끔 오래된 기록 지우기
+    const { error: lErr } = await admin.rpc("log_ai", { p_user: u.user.id, p_church: church });
+    if (lErr) console.error("log_ai", lErr.message);
 
     const { prompt, images = [], tier } = await req.json();
 

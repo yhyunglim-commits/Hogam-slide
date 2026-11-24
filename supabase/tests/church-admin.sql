@@ -12,6 +12,10 @@ begin
   insert into public.members (user_id, name, church_id, role) values ((u||1)::uuid,'관리자',ca::uuid,'admin'), ((u||2)::uuid,'팀원',ca::uuid,'member'), ((u||4)::uuid,'남관리자',cb::uuid,'admin');
   insert into public.super_admins values ((u||5)::uuid);
   insert into public.services (church_id, id, name, text) values (ca::uuid,'adm-1','예배','내용'), (ca::uuid,'adm-2','예배2','내용');
+  insert into public.services (church_id, id, name, text) values (cb::uuid,'adm-3','비밀예배','비밀내용');
+  insert into public.songs (church_id, title, result) values (cb::uuid,'비밀제목','{"t":"비밀가사"}');
+  insert into public.team_settings (church_id, key, value) values (cb::uuid,'media.song','"비밀사진"');
+  -- 관리시험B 는 오래 안 쓴 교회로: 위에서 생긴 기록(user_id 없음)은 사용으로 안 세요
   for t in select * from (values
     -- 누구(0=서버), 교회, 무엇, 바라는 것, 이름
     (2,ca,'select get_invite()->>''code''','________','팀원도 초대 링크를 만듦'),
@@ -66,7 +70,55 @@ begin
     (2,ca,'select set_admin(''{a}'',''{u}2'',false)','ERR:%','멈춘 교회는 교회 관리자도 관리 못 함'),
     (5,'','select set_suspended(''{a}'',false)','true','다시 열기'),
     (2,ca,'select count(*) from services','1','다시 열면 그대로 보임'),
-    (-1,'','select get_invite()','ERR:%permission%','로그인 안 하면 못 부름')
+    (-1,'','select get_invite()','ERR:%permission%','로그인 안 하면 못 부름'),
+    -- 12단계
+    (0,'','select ai_church(''{u}4'',''{b}'')::text','{b}','AI: 알린 교회의 팀원'),
+    (0,'','select ai_church(''{u}4'',null)::text','{b}','AI: 안 알려도 한 교회뿐이면 그 교회'),
+    (0,'','select (ai_church(''{u}4'',''{a}'') is null)::text','true','AI: 남의 교회 번호로는 못 씀'),
+    (0,'','with x as (insert into members (user_id,name,church_id) values (''{u}4'',''두곳'',''{a}'') returning 1) select count(*) from x','1','(두 교회에 속하게)'),
+    (0,'','select (ai_church(''{u}4'',null) is null)::text','true','AI: 두 교회인데 안 알리면 짐작 안 함'),
+    (0,'','select (ai_church(''{u}4'',''{a}''))::text','{a}','AI: 두 교회면 알린 교회로'),
+    (5,'','select ((select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''last_used'' is null)::text','true','쓴 적 없으면 마지막 사용이 비어 있음'),
+    (0,'','select log_ai(''{u}4'',''{b}'')::text','%','(AI 한 번)'),
+    (0,'','select log_ai(''{u}4'',''{b}'')::text','%','(AI 두 번)'),
+    (5,'','select (select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''ai_month''','2','교회별 이번 달 AI 횟수'),
+    (5,'','select (select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''ai_today''','2','교회별 오늘 AI 횟수'),
+    (5,'','select (select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{a}'')->>''ai_month''','0','다른 교회 횟수는 안 늘어남'),
+    (5,'','select super_church(''{b}'')->''ai_days''->>13','2','최근 14일의 마지막 칸은 오늘'),
+    (5,'','select jsonb_array_length(super_church(''{b}'')->''ai_days'')','14','최근 14일'),
+    (5,'','select ((select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''last_used'' is not null)::text','true','AI를 쓰면 마지막 사용이 생김'),
+    (0,'','with x as (update ai_daily set last_at=now()-interval ''40 days'' where church_id=''{b}'' returning 1) select count(*) from x','1','(오래전으로)'),
+    (5,'','select set_admin(''{b}'',''{u}4'',true)->>''ok''','true','(전체 관리자가 손댐)'),
+    (0,'','insert into edit_log (church_id,user_id,name,action,target_type) values (''{b}'',''{u}5'',''전체 관리자'',''remove'',''member'') returning action','remove','(전체 관리자 기록)'),
+    (5,'','select (((select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''last_used'')::timestamptz < now()-interval ''39 days'')::text','true','교회 밖 전체 관리자가 한 일은 사용이 아님'),
+    (5,'','select (select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''members''','1','팀원 수'),
+    (5,'','select (select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''admins''','1','관리자 수'),
+    (5,'','select (select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''services''','1','예배 수'),
+    (5,'','select (select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''songs''','1','곡 수'),
+    (0,'','with x as (update services set deleted_at=now() where id=''adm-3'' returning 1) select count(*) from x','1','(휴지통에)'),
+    (5,'','select (select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''services''','0','휴지통 예배는 안 셈'),
+    (5,'','select ((select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''bytes'')::bigint = (select sum(v::bigint) from jsonb_each_text(super_church(''{b}'')->''bytes'') x(k,v))','true','용량은 나눈 것의 합'),
+    (5,'','select ((super_church(''{b}'')->''bytes''->>''media'')::int > 0)::text','true','사진 용량을 셈'),
+    (5,'','select (super_churches()::text || super_church(''{b}'')::text) like ''%비밀%''','false','예배·곡·사진 내용은 안 나옴'),
+    (5,'','select string_agg(k, '','' order by k) from jsonb_object_keys((select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')) k','admins,ai_month,ai_today,bytes,created_at,id,last_used,members,name,services,songs,suspended_at','내보내는 칸은 허용 목록뿐'),
+    (5,'','select string_agg(k, '','' order by k) from jsonb_object_keys(super_church(''{b}'')) k','ai_days,bytes,memo','자세히도 허용 목록뿐'),
+    (5,'','select super_set_memo(''{b}'',''호감메모'')','true','메모 저장'),
+    (5,'','select super_church(''{b}'')->>''memo''','호감메모','메모 읽기'),
+    (5,'','select super_set_memo(''{b}'',repeat(''가'',2001))','ERR:%2000%','메모는 2000글자까지'),
+    (4,cb,'select super_set_memo(''{b}'',''x'')','ERR:%전체 관리자만%','교회 관리자는 메모를 못 씀'),
+    (4,cb,'select super_church(''{b}'')','ERR:%전체 관리자만%','교회 관리자는 자세히를 못 봄'),
+    (4,cb,'select count(*) from church_memos','ERR:%permission%','메모 표를 못 봄'),
+    (4,cb,'select count(*) from ai_daily','ERR:%permission%','AI 횟수 표를 못 봄'),
+    (4,cb,'select log_ai(''{u}4'',''{b}'')','ERR:%permission%','AI 횟수를 스스로 못 적음'),
+    (4,cb,'select church_bytes(''{a}'')','ERR:%permission%','용량 기능을 바로 못 부름'),
+    (-1,'','select super_church(''{b}'')','ERR:%permission%','로그인 안 하면 자세히를 못 봄'),
+    (0,'','with x as (update ai_usage set at=now()-interval ''4 days'' where church_id=''{b}'' returning 1) select count(*) from x','2','(나흘 전으로)'),
+    (0,'','select clear_old_ai()::text','%','(날마다 정리)'),
+    (0,'','select count(*) from ai_usage where church_id=''{b}''','0','누가 썼는지는 3일 뒤 지움'),
+    (0,'','select n::text from ai_daily where church_id=''{b}''','2','교회별 횟수는 남음'),
+    (0,'','with x as (update ai_daily set day=day-400 where church_id=''{b}'' returning 1) select count(*) from x','1','(400일 전으로)'),
+    (0,'','select clear_old_ai()::text','%','(날마다 정리)'),
+    (0,'','select count(*) from ai_daily where church_id=''{b}''','0','13개월 지난 횟수는 지움')
   ) as x(who, church, sql, want, label) loop
     perform set_config('request.jwt.claims', case when t.who > 0 then json_build_object('sub', u || t.who, 'role', 'authenticated')::text else '' end, true);
     perform set_config('request.jwt.claim.sub', case when t.who > 0 then u || t.who else '' end, true);
@@ -80,7 +132,7 @@ begin
     if got in ('t','f') then got := case got when 't' then 'true' else 'false' end; end if;
     if t.want = '________' then code := got; end if;
     n := n + 1;
-    if got is null or got not like t.want then
+    if got is null or got not like replace(replace(t.want, '{a}', ca), '{b}', cb) then
       if not (got is null and t.want = '%') then bad := bad || E'\n실패 · ' || t.label || ' · ' || coalesce(got, '(빈 값)'); end if;
     end if;
   end loop;
