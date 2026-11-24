@@ -83,11 +83,14 @@ await check('다른 교회가 곡을 지우면 알림에 그 교회 번호가 �
   const a = socket();
   const r = await a.join('hogam-live', { postgres_changes: [{ event: '*', schema: 'public', table: 'songs' }] }, tA);
   if (r.status !== 'ok') { a.close(); return JSON.stringify(r); }
-  await sleep(1500);
+  // 쉬던 서버는 알림을 켜는 데 시간이 걸려요. 준비됐다는 신호를 기다려요 (2026-11-25 한 번 늦어서 실패)
+  for (let t = 0; t < 20000 && !a.got.some((m) => m.event === 'system' && m.payload?.status === 'ok' && m.payload?.extension === 'postgres_changes'); t += 200) await sleep(200);
+  await sleep(1000);
   const B = rest(tB), title = '실시간 시험곡 ' + Date.now();
   await B('songs', { method: 'POST', body: { title, result: { slides: [] } } });
   await B(`songs?title=eq.${encodeURIComponent(title)}`, { method: 'DELETE' });
-  await sleep(2500);
+  for (let t = 0; t < 10000 && !a.got.some((m) => m.event === 'postgres_changes' && m.payload.data.type === 'DELETE'); t += 200) await sleep(200);
+  await sleep(1000);
   const ev = a.got.filter((m) => m.event === 'postgres_changes').map((m) => m.payload.data);
   a.close();
   if (ev.some((d) => d.type !== 'DELETE')) return '다른 교회의 넣기·고치기 알림이 옴';
