@@ -2272,6 +2272,16 @@ button.tmrow{width:100%;border:0;border-radius:12px;background:none;color:var(--
 .spacts{display:flex;flex-wrap:wrap;gap:8px}.spacts .btn{height:40px;padding:0 16px;font-size:14px}.spnote{margin:0;font-size:13px;color:var(--text2)}
 .spbars{display:flex;align-items:flex-end;gap:5px;height:90px;padding-top:12px}.spbars i{flex:1;min-height:2px;border-radius:4px 4px 0 0;background:var(--pri)}
 .spax{display:flex;justify-content:space-between;padding:5px 0 12px;font-size:12px;color:var(--text2)}
+#spHome .spcard .spm,.tmuse .spm{display:grid;gap:4px;font-size:13px}.spm>span:first-child{display:flex;justify-content:space-between;gap:8px;color:var(--text2)}.sptr{display:block;height:6px;border-radius:9px;background:var(--chip);overflow:hidden}.sptr i{display:block;height:100%;border-radius:9px;background:var(--pri)}.sptr i.hi{background:var(--amber)}
+.sprow b small{display:block;font-weight:400;font-size:12px;color:var(--text2)}
+.aileft{align-self:center;padding:4px 10px;border-radius:99px;background:var(--chip);color:var(--text2);font-size:13px;font-weight:600;line-height:1.4}.aileft.lo{background:var(--warn-soft);color:var(--warn-ink)}.aileft.no{background:var(--bad-soft);color:var(--bad)}.aileft[hidden],.aimore[hidden]{display:none!important}
+.aimore{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 0;padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn-ink);font-size:14px;word-break:keep-all}.aimore span{flex:1 1 220px}.pf>.aimore{flex:1 0 100%;box-sizing:border-box;margin:0}.pf:has(>.aimore:not([hidden])){flex-wrap:wrap}
+.tmuse .btn{justify-self:start}
+.tmuse{display:grid;gap:10px;margin-top:10px;padding:12px 14px;border-radius:12px;background:var(--sunken)}.tmuse[hidden]{display:none}.tmuse p{margin:0;font-size:13px;color:var(--text2)}
+.sprow label{flex:1}.sprow input[type=number]{width:96px;height:40px;padding:0 10px;text-align:right;font-size:16px;border:1px solid var(--line);border-radius:9px;background:var(--field);color:var(--text)}.sprow em{width:26px;font-style:normal;color:var(--text2)}
+.spnew{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-radius:14px;background:var(--pri-soft);color:var(--pri-ink);font-weight:600}.spnew .btn{height:38px;padding:0 14px}
+.spbadge{margin-left:auto;min-width:22px;padding:0 6px;border-radius:99px;background:#D70015;color:#fff;font-style:normal;font-size:13px;font-weight:700;line-height:22px;text-align:center}.spbadge[hidden],.spdot[hidden]{display:none!important}
+#meBox{position:relative}.spdot{position:absolute;left:34px;top:6px;width:10px!important;height:10px;border-radius:50%;background:#D70015;box-shadow:0 0 0 2px var(--surface);z-index:1}
 @media (max-width:700px){.spsum{grid-template-columns:1fr 1fr}.spsum div{padding:12px 14px}.spsum div:nth-child(3){border-left:0}.spsum div:nth-child(n+3){border-top:1px solid var(--line)}.sptools input{max-width:none;flex-basis:100%}#spFlt{flex:1}#spFlt button{padding:0 6px}}
 .gonedlg p{margin:0 0 14px;font-size:15px;line-height:1.6;color:var(--text2)}.gonedlg .setrows:not(:first-of-type){margin-top:12px}
 /* 설정 창 (프로필을 누르면) */
@@ -2349,7 +2359,7 @@ button.tmrow{width:100%;border:0;border-radius:12px;background:none;color:var(--
       <span class="libsw"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input type="search" class="libsearch" id="libSearch" placeholder="제목·초성·가사 찾기" aria-label="보관함에서 곡 찾기"></span>
       <ul class="rlist" id="libList"></ul></div>
     <div class="railfoot" id="railFoot">
-    <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><span class="megear" aria-hidden="true"><i class="ph-fill ph-gear-six"></i></span><div class="mt"><b id="meName">로그인 전</b><span>설정</span></div></div>
+    <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><i class="spdot" id="spDot" role="img" aria-label="새 교회가 있어요" hidden></i><span class="megear" aria-hidden="true"><i class="ph-fill ph-gear-six"></i></span><div class="mt"><b id="meName">로그인 전</b><span>설정</span></div></div>
     <div class="rfrow"><button type="button" class="railmail" id="openMail" title="문의 · 협업 · 응원 보내기"><span class="mico" aria-hidden="true"><i class="ph-fill ph-envelope-simple"></i></span><span class="mt2"><b>문의·응원 보내기</b><small>hogamcommunity@gmail.com</small></span></button><button class="pin" id="railPin" type="button" aria-pressed="false" aria-label="옆 메뉴 늘 펼쳐 두기" title="늘 펼쳐 두기"><i class="ph ph-push-pin" aria-hidden="true"></i></button></div>
     </div>
   </aside>
@@ -2778,7 +2788,7 @@ button.tmrow{width:100%;border:0;border-radius:12px;background:none;color:var(--
     <div><h3>화면 밝기</h3><div class="seg2 settheme" role="radiogroup" aria-label="화면 밝기"><button type="button" role="radio" data-th="auto">자동</button><button type="button" role="radio" data-th="light">밝게</button><button type="button" role="radio" data-th="dark">어둡게</button></div></div>
     <div><h3>교회 · <span id="setChurch"></span></h3><div class="setrows"><button type="button" id="invite"><i class="ph ph-user-plus" aria-hidden="true"></i>팀원 초대</button><button type="button" id="openTeam" hidden><i class="ph ph-users" aria-hidden="true"></i>팀원 관리</button><button type="button" id="openLog"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>편집 기록</button><button type="button" data-ch="join"><i class="ph ph-sign-in" aria-hidden="true"></i>다른 교회 들어가기</button><button type="button" data-ch="new" id="chMake"><i class="ph ph-plus-circle" aria-hidden="true"></i>새 교회 만들기</button></div></div>
     <div><h3>계정</h3><div class="setrows"><button type="button" id="linkKakao" hidden><i class="ph ph-chat-circle" aria-hidden="true"></i>카카오 연결</button><button type="button" id="logout"><i class="ph ph-sign-out" aria-hidden="true"></i>나가기</button></div></div>
-    <div id="setSuper" hidden><h3>호감슬라이드</h3><div class="setrows"><button type="button" id="openSuper"><i class="ph ph-buildings" aria-hidden="true"></i>전체 관리</button></div></div>
+    <div id="setSuper" hidden><h3>호감슬라이드</h3><div class="setrows"><button type="button" id="openSuper"><i class="ph ph-buildings" aria-hidden="true"></i>전체 관리<em class="spbadge" id="spBadge" hidden></em></button></div></div>
   </div></div>
 </div>
 <div class="logbox" id="contibox" role="dialog" aria-modal="true" aria-labelledby="contiTitle">
@@ -2848,6 +2858,7 @@ button.tmrow{width:100%;border:0;border-radius:12px;background:none;color:var(--
 <dialog class="maildlg chdlg" id="tmDlg" aria-labelledby="tmTitle">
   <div class="chhead"><h2 id="tmTitle">팀원 관리</h2><button type="button" class="btn ghost ibtn" id="tmClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
   <p class="cherr" id="tmErr" role="alert"></p>
+  <div class="tmuse" id="tmUse" hidden></div>
   <ul class="tmlist" id="tmList"></ul>
 </dialog>
 <dialog class="spdlg" id="spDlg" aria-labelledby="spTitle">
@@ -2908,7 +2919,10 @@ function teamSet(k){
   clearTimeout(TEAM.t[k]);TEAM.t[k]=setTimeout(()=>teamSend(k),600);
 }
 async function teamSend(k){clearTimeout(TEAM.t[k]);delete TEAM.t[k];TEAM.local[k]=Date.now();
-  const {error}=await sb.from('team_settings').upsert({key:k,value:teamVal(k)});if(error){TEAM.bad[k]=1;netErr(error);}else delete TEAM.bad[k];}
+  const {error}=await sb.from('team_settings').upsert({key:k,value:teamVal(k)});
+  if(error&&/저장 공간/.test(error.message||'')){delete TEAM.bad[k];toastUndo(error.message,()=>{},'확인',9000);
+    const {data,error:e2}=await sb.from('team_settings').select('value').eq('key',k).maybeSingle();if(!e2)teamApply(k,data?.value??null);return;}
+  if(error){TEAM.bad[k]=1;netErr(error);}else delete TEAM.bad[k];}
 // 팀 서버의 값을 이 화면에 반영해요
 function teamApply(k,v){
   TEAM.applying=true;
@@ -3153,17 +3167,37 @@ async function sample(prompt,opts={}){
   if(!sb)throw{message:'서버 설정(config.js)이 아직 비어 있어요.'};
   const images=[];
   for(const b0 of (opts.images||[])){let x=b0;if(x.size>350e3)x=await smaller(x,opts.imgMax||1600);images.push({mime:x.type||'image/jpeg',data:await blobToB64(x)});}
-  const {data,error}=await sb.functions.invoke('ai',{body:{prompt,images,tier:opts.modelTier}});
+  const {data,error}=await sb.functions.invoke('ai',{body:{prompt,images,tier:opts.modelTier,job:opts.job?.id,kind:opts.job?.kind}});aiLeft();
   if(error){let code;try{code=(await error.context.clone().json()).code;}catch(e){}throw{message:await fnErrMsg(error,'ai'),code};}
   if(data?.error)throw{message:data.error,code:data.code};
   return{text:data?.text||''};
 }
+// AI 작업 하나(악보 1곡 · 주보 1번 · 맞춤법 1번): 안에서 여러 번 불러도 서버가 1번으로 세요
+const aiJob=kind=>({kind,id:crypto.randomUUID()});
 const ready=Promise.resolve();
 setTimeout(()=>{updateConvertBtn();renderMine();},0);
 function aiErr(e){return e?.message||String(e);}
 function parseJSON(t){if(!t)return null;t=t.replace(/```(?:json)?/g,'');const a=Math.min(...['{','['].map(c=>{const i=t.indexOf(c);return i<0?1e9:i;}));
   const b=Math.max(t.lastIndexOf('}'),t.lastIndexOf(']'));if(a>=1e9||b<0)return null;try{return JSON.parse(t.slice(a,b+1));}catch(e){return null;}}
 async function askJSON(prompt,opts={}){const r=await sample(prompt,{modelTier:'complex',...opts});const v=parseJSON(r.text);if(v==null)throw{message:'AI 답을 읽지 못했어요. 한 번 더 눌러 주세요.'};return v;}
+
+// ---- AI 남은 횟수: 팀원 모두 봐요. 서버가 아직 모르면(옛 서버) 아무것도 안 보여요 ----
+let AIQ=null,aiAt=0;
+async function aiLeft(now){if(!sb||!me)return;const my=me;if(!now)await new Promise(r=>setTimeout(r,800));if(me!==my)return;aiAt=Date.now();const n=aiAt;
+  const {data,error}=await sb.rpc('ai_left');if(me!==my||n!==aiAt)return;AIQ=error||!data?null:data;aiDraw();}
+async function aiOut(){if(AIQ&&AIQ.left<=0)await aiLeft(true);return!!AIQ&&AIQ.left<=0;}
+function aiDraw(){const q=AIQ,need=busy?0:pendingSongs().length;
+  document.querySelectorAll('.aileft').forEach(e=>{e.hidden=!q;if(!q)return;e.className='aileft'+(q.left<=0?' no':q.left<=10?' lo':'');
+    e.textContent=q.left>0?`이번 달 AI ${q.left}번 남음`+(e.dataset.n&&need?` · ${need}번 써요`:''):q.limit?'이번 달 AI를 다 썼어요':'AI가 꺼져 있어요';});
+  document.querySelectorAll('.aimore').forEach(e=>{e.hidden=!q||q.left>0;if(e.hidden)return;const ad=me?.role==='admin';
+    e.querySelector('span').textContent=(q.limit?`다음 달 1일에 ${q.limit}번이 다시 생겨요.`:'')+' 붙여 넣은 가사는 지금도 화면에서 줄을 나눌 수 있어요.';e.querySelector('button').textContent=ad?'더 필요해요':'관리자에게 요청하기';});}
+function aiMore(){const c=CHURCHES.find(x=>x.id===me?.church)?.name||'';
+  if(me?.role!=='admin'){copy(`호감슬라이드의 이번 달 AI를 다 썼어요. 더 쓸 수 있게 호감에게 알려 주세요. (${c})`);return;}
+  const b=$('mailBody');if(!b.value.trim())b.value=`AI 횟수가 더 필요해요.\n교회: ${c}\n한 달에 쓰고 싶은 횟수: `;document.querySelector('#mailKind [data-k=문의]')?.click();$('mailDlg').showModal();b.focus();}
+setTimeout(()=>{const mk=n=>{const e=document.createElement('span');e.className='aileft';e.hidden=true;if(n)e.dataset.n=1;return e;},box=()=>{const d=document.createElement('div');d.className='aimore';d.hidden=true;d.innerHTML='<span></span><button type="button" class="btn"></button>';d.querySelector('button').onclick=aiMore;return d;};
+  const cb=$('convertBtn');cb.parentElement.prepend(mk(1));cb.closest('.pf').prepend(box());
+  document.querySelectorAll('#contibox [data-read]').forEach(b=>{b.before(mk());b.closest('.cfoot').before(box());});aiDraw();},0);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-aiAt>60000)aiLeft(true);});
 
 /* ======================== 1. 악보 변환 ======================== */
 let songs=[];let seq=1;
@@ -3346,7 +3380,7 @@ function updateConvertBtn(){
   const ok=pendingSongs();
   const b=$('convertBtn');b.disabled=!ok.length||busy;
   b.disabled=busy||(!ok.length&&!songs.some(s=>s.result));b.innerHTML=busy?'<span class="spin"></span> 읽는 중':'찬양 자막에 넣기';
-  $('stopRead').classList.toggle('hidden',!busy);
+  $('stopRead').classList.toggle('hidden',!busy);aiDraw();
   renderSteps();
 }
 
@@ -3398,7 +3432,7 @@ function convErr(e){
   return e?.message||String(e);
 }
 async function convertOne(s,f,expand){
-  s.status='work';s.msg='';s.notes=[];renderSongs();
+  s.status='work';s.msg='';s.notes=[];renderSongs();const job=aiJob('score');
   try{
     let res;
     {
@@ -3406,13 +3440,13 @@ async function convertOne(s,f,expand){
       // 1차: 보통 크기, 2차: 이미지를 줄이고 다시
       for(const attempt of [1,2]){
         try{
-          const opts={};
+          const opts={job};
           if(s.mode==='score')opts.images=attempt===1?s.pages.map(p=>p.blob):await Promise.all(s.pages.map(p=>smaller(p.blob,1400)));
           if(attempt===2)opts.modelTier='default';
           v=await askJSON(convPrompt(s,f,expand),opts);
           if(!v||!Array.isArray(v.sections)||!v.sections.length)throw{message:'악보에서 가사를 찾지 못했어요. 가사가 보이게 찍혔는지 확인해 주세요.'};
           lastErr=null;break;
-        }catch(e){lastErr=e;v=null;if(['not_granted','rate_limited'].includes(e?.code))break;}
+        }catch(e){lastErr=e;v=null;if(['not_granted','rate_limited','quota'].includes(e?.code))break;}
       }
       // 붙여 넣은 가사는 AI가 바쁘거나 한도가 끝나도, 이 화면의 줄바꿈 엔진으로 나눠서 쓸 수 있게 해요
       if(lastErr&&s.mode==='text'&&lastErr.code!=='not_granted'){
@@ -3434,8 +3468,11 @@ async function convertOne(s,f,expand){
 // 악보를 올리면 바로 읽어 두고, '찬양 자막에 넣기'를 누르면 찬양 자막에 넣어요
 async function readSongs(){
   if(busy)return;
-  const todo=pendingSongs();if(!todo.length)return;
-  busy=true;updateConvertBtn();const st=$('convStatus');st.className='status';
+  let todo=pendingSongs();if(!todo.length)return;
+  busy=true;updateConvertBtn();aiSkip=0;
+  // 남은 횟수만큼 앞에서부터. 붙여 넣은 가사는 횟수가 없어도 화면에서 줄을 나눠요
+  await aiLeft(true);if(AIQ){let n=AIQ.left;const all=todo;todo=all.filter(s=>n>0?(n--,true):s.mode==='text');aiSkip=all.length-todo.length;}
+  if(!todo.length){busy=false;updateConvertBtn();return;}const st=$('convStatus');st.className='status';
   const f=FMT,expand=$('optExpand').checked;let n=0;
   // 두 곡씩 동시에 읽어요 (무료 사용량 한도 안에서)
   const q=[...todo],show=()=>{st.textContent=`${todo.length}곡 중 ${n}곡 읽음`;};show();
@@ -3451,18 +3488,19 @@ async function readSongs(){
   st.textContent=failed?`${failed}곡을 읽지 못했어요. 그 곡의 ‘다시 시도’를 눌러 주세요.`:ok?`${ok}곡 다 읽었어요. ‘찬양 자막에 넣기’를 눌러 주세요.`:'';
 }
 // 읽기 멈추기: 남은 곡은 읽지 않고, 읽던 곡은 '읽기 전'으로 돌려요
-let readGen=0,readQ=null;
-$('stopRead').onclick=()=>{if(!busy)return;readGen++;if(readQ)readQ.length=0;
+let readGen=0,readQ=null,aiSkip=0;
+$('stopRead').onclick=()=>{if(!busy)return;readGen++;aiSkip=0;if(readQ)readQ.length=0;
   songs.forEach(s=>{if(s.status==='work'){s.status='idle';s.result=null;s.msg='';}});
   busy=false;updateConvertBtn();renderSongs();
   const st=$('convStatus');st.className='status';st.textContent='읽기를 멈췄어요. ‘찬양 자막에 넣기’를 누르면 남은 곡부터 다시 읽어요.';
   toast('악보 읽기를 멈췄어요');};
 $('convertBtn').onclick=async()=>{
   if(busy)return;
-  if(pendingSongs().length){const g=readGen;await readSongs();if(readGen!==g+1||busy)return;}
-  if(!songs.some(s=>s.result)){toast('넣을 곡이 없어요');return;}
+  if(pendingSongs().length){const g=readGen;await readSongs();if(busy||(readGen!==g+1&&!aiSkip))return;}else aiSkip=0;
+  const skip=aiSkip;aiSkip=0;
+  if(!songs.some(s=>s.result)){toast(skip?'이번 달 AI를 다 써서 읽지 못했어요':'넣을 곡이 없어요');return;}
   orderChanged(true);$('convStatus').textContent='';setFold('resPanel',true);
-  toast('찬양 자막에 넣었어요');
+  toast(skip?`찬양 자막에 넣었어요. AI 횟수가 모자라 ${skip}곡은 남겨 뒀어요`:'찬양 자막에 넣었어요');
 };
 
 /* ======================== 2. 검사·복사 ======================== */
@@ -3692,6 +3730,7 @@ function lint(){
 async function aiCheck(text){
   const numbered=text.split('\n').map((l,i)=>`${i+1}| ${l}`).join('\n');
   const titles=[...new Set(results.map(r=>r.title).filter(Boolean))];
+  const job=aiJob('spell');
   const cand=await askJSON(`당신은 한국어 교정 전문가이자 교회 찬양 자막 감수자입니다. 아래는 예배 자막 텍스트입니다 (형식: "줄번호| 내용").
 ${titles.length?`포함된 찬양: ${titles.join(', ')}. 이 곡들의 널리 알려진 가사를 알고 있다면, 악보 인식 과정에서 글자가 잘못 읽힌 곳(비슷한 모양의 글자 혼동, 받침 누락, 음절 누락·중복)을 찾는 데 활용하세요.\n`:''}성경 본문(절 번호로 시작하는 줄)은 대한성서공회 새번역 표기를 기준으로 보세요.
 
@@ -3710,7 +3749,7 @@ ${titles.length?`포함된 찬양: ${titles.join(', ')}. 이 곡들의 널리 �
 JSON 배열만 출력, 없으면 []:
 [{"line":줄번호,"before":"원문 그대로","after":"고친 글","type":"오타|맞춤법|띄어쓰기","reason":"20자 안쪽 이유"}]
 
-${numbered}`);
+${numbered}`,{job});
   const ls=text.split('\n');
   let list=(Array.isArray(cand)?cand:[]).map(x=>({line:(+x.line||1)-1,before:String(x.before??''),after:String(x.after??''),type:String(x.type||'맞춤법'),reason:String(x.reason||'')}))
     .filter(x=>x.before&&x.before!==x.after&&x.before.replace(/\s/g,'')!==''&&!(x.before.trim()===x.after.trim()));
@@ -3724,7 +3763,7 @@ ${numbered}`);
 - 고친 글이 더 나은 형태가 있으면 "after"에 바로잡아 주세요
 JSON 배열만 출력: [{"id":번호,"keep":true,"after":"최종 고친 글"}]
 
-${list.map((x,i)=>`${i}) 줄: "${ls[x.line]}"\n   "${x.before}" → "${x.after}" (${x.type}: ${x.reason})`).join('\n')}`,{modelTier:'default'});
+${list.map((x,i)=>`${i}) 줄: "${ls[x.line]}"\n   "${x.before}" → "${x.after}" (${x.type}: ${x.reason})`).join('\n')}`,{job,modelTier:'default'});
   const keep=new Map((Array.isArray(v)?v:[]).filter(y=>y&&y.keep).map(y=>[+y.id,y]));
   return list.map((x,i)=>{const y=keep.get(i);return y?{...x,kind:'sp',after:y.after?String(y.after):x.after}:null;}).filter(x=>x&&x.after!==x.before);
 }
@@ -4866,8 +4905,10 @@ addEventListener('paste',ev=>{if(!$('contibox').classList.contains('on')||$('con
   const t=(ev.clipboardData?.getData('text')||'').trim();if(!t)return;ev.preventDefault();setContiMode('paste');const a=$('contiIn');a.value=[a.value.trim(),t].filter(Boolean).join('\n');contiReady();a.focus();});
 async function readConti(){const img=contiMode==='image',raw=img?'':$('contiIn').value.trim(),imgs=img?CPG.map(p=>p.blob):[]; // 지금 보이는 칸만 읽어요
   if(!raw&&!imgs.length){toast('사진이나 글을 먼저 넣어 주세요');return;}
+  if(await aiOut()){toast('이번 달 AI를 다 썼어요');return;}
+  const job=aiJob('bulletin');
   const b=$(CPANE[contiMode]).querySelector('[data-read]');contiBusy=true;contiReady();const t0=b.innerHTML;b.innerHTML='<span class="spin"></span> 읽는 중…';
-  try{const v=await askJSON(contiPrompt(raw,imgs.length),imgs.length?{images:imgs,imgMax:2200}:{modelTier:'simple'});const list=Array.isArray(v)?v:v&&v.items;
+  try{const v=await askJSON(contiPrompt(raw,imgs.length),imgs.length?{job,images:imgs,imgMax:2200}:{job,modelTier:'simple'});const list=Array.isArray(v)?v:v&&v.items;
     if(!Array.isArray(list)||!list.length)throw{message:'화면으로 만들 항목을 찾지 못했어요. 글을 확인해 주세요.'};
     CONTI=list.filter(o=>o&&['song','word','notice','ad','text','cover','sermon'].includes(o.t)).map(o=>{const x={...o,on:true};
       if(x.t==='song')x.lib=contiLib(x.title,x.hymn)?.title||null;
@@ -5339,7 +5380,7 @@ $('recBtn').onclick=async()=>{
 고려할 점: 화면 크기와 거리에 따른 한 줄 글자 수, 회중 연령, 프로그램이 텍스트를 슬라이드로 나누는 방식(PowerPoint 개요·이지워십·ProPresenter는 빈 줄 구분이 편함, 방송 하단 자막은 1줄), 찬양팀과 공유 여부.
 환경: 프로그램=${$('rApp').value}, 화면=${$('rScreen').value}, 회중=${$('rPeople').value}, 작업 방식=${$('rTeam').value}${$('rMore').value.trim()?`, 기타=${$('rMore').value.trim()}`:''}
 ${FMT_GUIDE}
-JSON만 출력: {"format":${FMT_SCHEMA},"reason":"이 환경에 왜 맞는지 2~3문장, 쉬운 말로"}`,{modelTier:'default'});
+JSON만 출력: {"format":${FMT_SCHEMA},"reason":"이 환경에 왜 맞는지 2~3문장, 쉬운 말로"}`,{job:aiJob('format'),modelTier:'default'});
     showAIFormat($('recOut'),normFmt(v.format),v.reason);st.textContent='';
   }catch(e){st.className='status err';st.textContent='추천하지 못했어요: '+aiErr(e);}
   finally{b.disabled=false;}
@@ -5355,7 +5396,7 @@ ${FMT_GUIDE}
 JSON만 출력: {"format":${FMT_SCHEMA},"reason":"찾아낸 규칙을 한두 문장으로"}
 
 [예시]
-${ex}`,{modelTier:'default'});
+${ex}`,{job:aiJob('format'),modelTier:'default'});
     const f=normFmt({...v.format,name:v.format?.name||'예시로 만든 양식'});showAIFormat($('exOut'),f,v.reason);st.textContent='';
   }catch(e){st.className='status err';st.textContent='만들지 못했어요: '+aiErr(e);}
   finally{b.disabled=false;}
@@ -6004,7 +6045,7 @@ async function afterLogin(u){
   keepChurch(CH);
   me={id:u.id,name:pick.name,church:pick.church_id,role:pick.role};inSet(u.id+':'+me.church);$('meName').textContent=me.name;$('meAv').textContent=me.name.slice(0,1);$('meAv').title=`내 계정 · ${me.name}`;renderChurch();
   hideGate();await bootRemote();
-  sb.rpc('is_super').then(({data})=>{$('setSuper').hidden=data!==true;});
+  sb.rpc('is_super').then(({data})=>{$('setSuper').hidden=data!==true;spBadge();});aiLeft(true);
   offerKakaoLink(u);
   const jc=store.get('joinCode',null);if(jc)openInvite(jc); // 이미 들어온 사람이 다른 교회 초대 링크를 눌렀을 때
 }
@@ -6129,7 +6170,9 @@ let TM=null; // {church,name,all:전체 관리에서 열었는지}
 const tmUl=t=>$(t.all?'spTeam':'tmList'),tmErr=m=>{$(TM?.all?'spErr':'tmErr').textContent=m;};
 const tmFail='불러오지 못했어요. 인터넷 연결을 확인해 주세요';
 async function openTeam(t){TM=t;if(!t.all){closeSet();closeRail();if(!$('tmDlg').open)$('tmDlg').showModal();}
-  tmErr('');tmUl(t).innerHTML='<li class="empty">불러오는 중…</li>';await tmLoad();}
+  tmErr('');tmUl(t).innerHTML='<li class="empty">불러오는 중…</li>';if(!t.all)tmUse(t);await tmLoad();}
+async function tmUse(t){const u=$('tmUse');u.hidden=true;const {data:d,error}=await sb.rpc('church_usage');if(TM!==t||error||!d)return;
+  u.innerHTML=spM('이번 달 AI',d.ai_month,d.ai_limit,n=>spNum(n)+'번')+spM('팀원',d.members,d.member_limit,n=>spNum(n)+'명')+spM('용량',d.bytes,d.mb_limit*1048576,spSize)+'<button type="button" class="btn">더 필요해요</button>';u.querySelector('button').onclick=()=>{$('tmDlg').close();aiMore();};u.hidden=false;}
 async function tmLoad(){const t=TM;if(!t)return;
   const {data,error}=t.all?await sb.rpc('super_members',{p_church:t.church}):await sb.from('members').select('user_id,name,role,joined_at').eq('church_id',t.church).order('joined_at');
   const ul=tmUl(t);if(TM!==t||!ul)return;ul.innerHTML='';if(error){tmErr(tmFail);return;}
@@ -6150,13 +6193,20 @@ async function tmDo(btn,fn,args,ok,mine){const t=TM;tmErr('');btn.disabled=true;
   if(!data.ok)return;
   if(t.all)$('spOk').textContent=ok;else toast(ok);
   if(mine&&args.p_church===me.church){await checkIn(true);if(!t.all&&me?.role!=='admin'){$('tmDlg').close();return;}}
-  if(me&&TM===t)tmLoad();}
+  if(me&&TM===t){tmLoad();if(!t.all)tmUse(t);}}
 // 전체 관리: 교회 카드 → 정보 · 사용 · 팀원. 서버가 숫자와 이름만 줘요
+const AIK={score:'악보·가사 읽기',bulletin:'주보·순서 읽기',spell:'맞춤법',format:'자막 양식',other:'기타'};
 let SP=[],spF='all',spCur=null,spTab='info',spD=null,spN=0;
 const spNum=n=>Number(n||0).toLocaleString('ko'),spSize=b=>{b=Number(b||0);return b<1024?b+'B':b<1048576?Math.round(b/1024)+'KB':(b/1048576).toFixed(1)+'MB';};
 const kday=t=>Math.floor((new Date(t).getTime()+324e5)/864e5),spAgo=t=>Math.max(0,kday(Date.now())-kday(t)); // 한국 날짜로 며칠 전
 const spLast=c=>{if(!c.last_used)return'아직 없음';const d=spAgo(c.last_used);return d?d+'일 전':'오늘';};
-function spNeed(c){if(c.suspended_at)return'';if(!c.admins)return'관리자가 없어요';const d=spAgo(c.last_used||c.created_at);return d>30?`${d}일 동안 쓰지 않았어요`:'';}
+const spPct=(v,l)=>l>0?v/l:1;
+const spM=(l,v,x,f)=>{const p=x>0?spPct(v,x):0;return`<span class="spm"><span><span>${l}</span><span>${x>0?f(v)+' / '+f(x):'꺼짐'}</span></span><span class="sptr"><i class="${p>=.8?'hi':''}" style="width:${Math.min(100,p*100)}%"></i></span></span>`;};
+// 새 교회 알림: 전체 관리 단추의 숫자와 내 이름 옆 점
+async function spBadge(){if($('setSuper').hidden){$('spDot').hidden=true;return;}const {data,error}=await sb.rpc('super_new_count');if(error)return;$('spBadge').textContent=data;$('spBadge').hidden=$('spDot').hidden=!data;}
+setInterval(()=>{if(sb&&me&&document.visibilityState==='visible'&&!$('setSuper').hidden)spBadge();},300000);
+function spNeed(c){if(c.is_new)return'새로 만들어졌어요';if(c.suspended_at)return'';if(!c.admins)return'관리자가 없어요';const d=spAgo(c.last_used||c.created_at);if(c.ai_limit&&c.ai_month>=c.ai_limit)return'이번 달 AI를 다 썼어요';if(c.bytes>=c.mb_limit*1048576)return'용량이 찼어요';if(c.members>=c.member_limit)return'팀원이 다 찼어요';
+  if(c.ai_limit&&c.ai_month>=c.ai_limit*.8)return'AI를 80% 넘게 썼어요';return d>30?`${d}일 동안 쓰지 않았어요`:'';}
 const SPF={all:['전체',()=>true],need:['확인 필요',c=>!!spNeed(c)],off:['쉬는 중',c=>!!c.suspended_at]};
 const spTag=c=>`<span class="sptag${c.suspended_at?' off':''}">${c.suspended_at?'쉬는 중':'사용 중'}</span>`;
 async function openSuper(){closeSet();closeRail();spF='all';$('spQ').value='';if(!$('spDlg').open)$('spDlg').showModal();await spHome();}
@@ -6169,10 +6219,10 @@ function spDraw(){
   $('spSum').innerHTML=[['전체 교회',SP.length,'곳'],['이번 주 쓴 교회',SP.filter(c=>c.last_used&&spAgo(c.last_used)<7).length,'곳'],['이번 달 AI',SP.reduce((a,c)=>a+Number(c.ai_month),0),'번'],['확인 필요',SP.filter(spNeed).length,'곳']].map(x=>`<div><span>${x[0]}</span><b>${spNum(x[1])}</b><small>${x[2]}</small></div>`).join('');
   $('spFlt').innerHTML=Object.keys(SPF).map(k=>`<button type="button" data-f="${k}" aria-pressed="${k===spF}">${SPF[k][0]} ${SP.filter(SPF[k][1]).length}</button>`).join('');
   const q=$('spQ').value.trim(),g=$('spGrid');g.innerHTML='';
-  const L=SP.filter(c=>SPF[spF][1](c)&&c.name.includes(q)).sort((a,b)=>!!spNeed(b)-!!spNeed(a)||!!a.suspended_at-!!b.suspended_at||new Date(b.last_used||0)-new Date(a.last_used||0));
+  const L=SP.filter(c=>SPF[spF][1](c)&&c.name.includes(q)).sort((a,b)=>!!b.is_new-!!a.is_new||!!spNeed(b)-!!spNeed(a)||!!a.suspended_at-!!b.suspended_at||new Date(b.last_used||0)-new Date(a.last_used||0));
   if(!L.length)g.innerHTML='<p class="spempty">맞는 교회가 없어요</p>';
   L.forEach(c=>{const b=document.createElement('button'),w=spNeed(c);b.type='button';b.className='spcard';
-    b.innerHTML=`<span class="sptop"><b></b>${spTag(c)}</span><span class="spfacts">${[['팀원',spNum(c.members)+'명'],['예배',spNum(c.services)+'개'],['마지막 사용',spLast(c)],['이번 달 AI',spNum(c.ai_month)+'번'],['오늘 AI',spNum(c.ai_today)+'번'],['용량',spSize(c.bytes)]].map(x=>`<span><small>${x[0]}</small><b>${x[1]}</b></span>`).join('')}</span><span class="spneed${w?' w':''}">${w||'확인할 일 없음'}</span>`;
+    b.innerHTML=`<span class="sptop"><b></b>${spTag(c)}</span><span class="spfacts">${[['팀원',`${spNum(c.members)} / ${spNum(c.member_limit)}명`],['예배',spNum(c.services)+'개'],['마지막 사용',spLast(c)],['곡',spNum(c.songs)+'개'],['오늘 AI',spNum(c.ai_today)+'번'],['만든 날',ymd(c.created_at).slice(2)]].map(x=>`<span><small>${x[0]}</small><b>${x[1]}</b></span>`).join('')}</span>${spM('이번 달 AI',c.ai_month,c.ai_limit,n=>spNum(n)+'번')}${spM('용량',c.bytes,c.mb_limit*1048576,spSize)}<span class="spneed${w?' w':''}">${w||'확인할 일 없음'}</span>`;
     b.querySelector('b').textContent=c.name;b.onclick=()=>spOpen(c);g.appendChild(b);});}
 async function spOpen(c){const n=++spN;spCur=c;spTab='info';spD=null;$('spTitle').textContent=c.name;$('spBack').hidden=false;$('spHome').hidden=true;$('spOne').hidden=false;$('spErr').textContent=$('spOk').textContent='';
   $('spDlg').scrollTop=0;spPane();$('spTitle').focus();
@@ -6180,13 +6230,27 @@ async function spOpen(c){const n=++spN;spCur=c;spTab='info';spD=null;$('spTitle'
   if(a.error||b.error){$('spErr').textContent=tmFail;$('spPane').innerHTML='';return;}
   spD={...a.data,admins:b.data.filter(m=>m.role==='admin').map(m=>m.name)};spPane();}
 function spPane(){const c=spCur,row=(a,b)=>`<div class="sprow"><span>${a}</span><b>${b}</b></div>`,p=$('spPane');TM=null;
-  $('spTabs').innerHTML=[['info','정보'],['use','사용'],['team','팀원']].map(x=>`<button type="button" data-t="${x[0]}" aria-pressed="${x[0]===spTab}">${x[1]}</button>`).join('');
+  $('spTabs').innerHTML=[['info','정보'],['use','사용'],['team','팀원'],['limit','제한']].map(x=>`<button type="button" data-t="${x[0]}" aria-pressed="${x[0]===spTab}">${x[1]}</button>`).join('');
   if(spTab==='team'){p.innerHTML='<ul class="tmlist" id="spTeam"></ul>';openTeam({church:c.id,name:c.name,all:true});return;}
   if(!spD){p.innerHTML='<p class="spempty">불러오는 중…</p>';return;}
+  if(spTab==='limit'){const F=[['ai_limit','한 달 AI','번',0,5000,50],['member_limit','팀원 (관리자 포함)','명',1,200,5],['mb_limit','용량','MB',1,5000,100]],d=spD;
+    p.innerHTML=`<div class="spbox">${F.map(f=>`<div class="sprow"><label for="sp_${f[0]}">${f[1]}</label><input type="number" inputmode="numeric" id="sp_${f[0]}" min="${f[3]}" max="${f[4]}" value="${c[f[0]]}"><em>${f[2]}</em></div>`).join('')}</div><div class="spacts"><button type="button" class="btn pri" id="spLim">제한 저장</button><button type="button" class="btn" id="spLimBase">기본값으로</button></div><p class="spnote">기본값은 AI 50번 · 팀원 5명 · 용량 100MB예요. AI를 0으로 하면 꺼져요. 넘어도 있던 팀원은 그대로이고, 예배와 곡은 저장돼요.</p><h3>호감이 바꾼 기록 (1년)</h3><div class="spbox" id="spHist"></div>`;
+    $('spHist').innerHTML=d.history.length?d.history.map(()=>'<div class="sprow"><span></span><b></b></div>').join(''):'<div class="sprow"><span>아직 없음</span></div>';
+    d.history.forEach((x,i)=>{const w=$('spHist').children[i];w.querySelector('span').textContent=x.what;w.querySelector('b').textContent=ymd(x.at);});
+    $('spLimBase').onclick=()=>F.forEach(f=>{$('sp_'+f[0]).value=f[5];});
+    $('spLim').onclick=async e=>{$('spErr').textContent=$('spOk').textContent='';const v={};
+      for(const f of F){const t=$('sp_'+f[0]).value.trim(),n=Number(t);if(!t||!Number.isInteger(n)||n<f[3]||n>f[4]){$('spErr').textContent=`${f[1]}: ${f[3]}~${spNum(f[4])} 사이 숫자로 적어 주세요`;return;}v[f[0]]=n;}
+      const bt=e.target;bt.disabled=true;const {data,error}=await sb.rpc('super_set_limits',{p_church:c.id,p_ai:v.ai_limit,p_members:v.member_limit,p_mb:v.mb_limit});
+      if(error||!data){bt.disabled=false;if(spCur===c)$('spErr').textContent='바꾸지 못했어요. 다시 해 주세요';return;}
+      Object.assign(c,v);const r2=await sb.rpc('super_church',{p_church:c.id});bt.disabled=false;if(spD!==d)return;if(!r2.error)d.history=r2.data.history;
+      if(spTab==='limit'){spPane();$('spOk').textContent='제한을 바꿨어요';}};return;}
   if(spTab==='use'){const k=spD.ai_days.map(Number),mx=Math.max(...k),B=spD.bytes;
-    p.innerHTML=`<div class="spbox">${row('이번 달 AI',spNum(c.ai_month)+'번')+row('오늘 AI',spNum(c.ai_today)+'번')+row('마지막 사용',spLast(c))}</div><h3>최근 14일 AI 사용</h3><div class="spbox"><div class="spbars" role="img" aria-label="최근 14일 AI 사용, 가장 많은 날 ${mx}번">${k.map(x=>`<i style="height:${mx?x/mx*100:0}%" title="${x}번"></i>`).join('')}</div><div class="spax"><span>13일 전</span><span>가장 많은 날 ${spNum(mx)}번</span><span>오늘</span></div></div><h3>용량 (어림)</h3><div class="spbox">${[['배경 사진 · 로고','media'],['예배','services'],['곡','songs'],['설정','settings'],['편집 기록','log']].map(x=>row(x[0],spSize(B[x[1]]))).join('')+row('모두',spSize(c.bytes))}</div>`;return;}
-  p.innerHTML=`<div class="spbox"><div class="sprow"><span>상태</span>${spTag(c)}</div>${row('만든 날',ymd(c.created_at))+row('관리자','')+row('팀원',spNum(c.members)+'명')+row('예배 · 곡',`${spNum(c.services)}개 · ${spNum(c.songs)}곡`)}</div><h3>호감 메모</h3><textarea id="spMemo" maxlength="2000" aria-label="호감 메모" placeholder="호감만 보는 메모"></textarea><div class="spacts"><button type="button" class="btn pri" id="spSave">메모 저장</button><button type="button" class="btn${c.suspended_at?'':' danger'}" id="spSus">${c.suspended_at?'다시 열기':'교회 멈추기'}</button></div><p class="spnote">${c.suspended_at?'쉬고 있는 교회예요. 팀원이 열 수 없어요.':'멈추면 팀원이 이 교회를 열 수 없어요. 자료는 그대로 있어요.'} 예배와 곡의 내용은 호감에게도 보이지 않아요.</p>`;
+    p.innerHTML=`<div class="spbox">${row('이번 달 AI',spNum(c.ai_month)+'번')+row('오늘 AI',spNum(c.ai_today)+'번')+row('마지막 사용',spLast(c))}</div><h3>최근 14일 AI 사용</h3><div class="spbox"><div class="spbars" role="img" aria-label="최근 14일 AI 사용, 가장 많은 날 ${mx}번">${k.map(x=>`<i style="height:${mx?x/mx*100:0}%" title="${x}번"></i>`).join('')}</div><div class="spax"><span>13일 전</span><span>가장 많은 날 ${spNum(mx)}번</span><span>오늘</span></div></div><h3>이번 달 무엇에 썼나</h3><div class="spbox">${(spD.ai_kinds||[]).map(x=>row(AIK[x.kind]||'기타',`${spNum(x.n)}번<small>Claude ${spNum(x.claude_in)} / ${spNum(x.claude_out)}<br>Gemini ${spNum(x.gemini_in)} / ${spNum(x.gemini_out)}</small>`)).join('')||row('아직 없음','')}</div><p class="spnote">작은 글씨는 보낸 양 / 받은 양(토큰)이에요. 가사와 사진 내용은 남기지 않아요.</p><h3>용량 (어림)</h3><div class="spbox">${[['배경 사진 · 로고','media'],['예배','services'],['곡','songs'],['설정','settings'],['편집 기록','log']].map(x=>row(x[0],spSize(B[x[1]]))).join('')+row('모두',spSize(c.bytes))}</div>`;return;}
+  p.innerHTML=`${c.is_new?'<div class="spnew"><span>새로 만들어진 교회예요</span><button type="button" class="btn pri" id="spSeen">확인했어요</button></div>':''}<div class="spbox"><div class="sprow"><span>상태</span>${spTag(c)}</div>${row('만든 날',ymd(c.created_at))+row('관리자','')+row('팀원',spNum(c.members)+'명')+row('예배 · 곡',`${spNum(c.services)}개 · ${spNum(c.songs)}곡`)}</div><h3>호감 메모</h3><textarea id="spMemo" maxlength="2000" aria-label="호감 메모" placeholder="호감만 보는 메모"></textarea><div class="spacts"><button type="button" class="btn pri" id="spSave">메모 저장</button><button type="button" class="btn${c.suspended_at?'':' danger'}" id="spSus">${c.suspended_at?'다시 열기':'교회 멈추기'}</button></div><p class="spnote">${c.suspended_at?'쉬고 있는 교회예요. 팀원이 열 수 없어요.':'멈추면 팀원이 이 교회를 열 수 없어요. 자료는 그대로 있어요.'} 예배와 곡의 내용은 호감에게도 보이지 않아요.</p>`;
   p.querySelectorAll('.sprow b')[1].textContent=spD.admins.join(', ')||'없음';const ta=$('spMemo');ta.value=spD.draft??spD.memo;ta.oninput=()=>{if(spD)spD.draft=ta.value;};
+  if($('spSeen'))$('spSeen').onclick=async e=>{const bt=e.target;bt.disabled=true;$('spErr').textContent=$('spOk').textContent='';const {error}=await sb.rpc('super_seen',{p_church:c.id});bt.disabled=false;
+    if(error){if(spCur===c)$('spErr').textContent='바꾸지 못했어요. 다시 해 주세요';return;}
+    c.is_new=false;spBadge();if(spCur===c&&spTab==='info')spPane();};
   $('spSave').onclick=async e=>{const d=spD,v=ta.value,bt=e.target;bt.disabled=true;$('spErr').textContent=$('spOk').textContent='';const {error}=await sb.rpc('super_set_memo',{p_church:c.id,p_memo:v});bt.disabled=false;
     if(!error){d.memo=v;if(d.draft===v)delete d.draft;}
     if(spD===d)$(error?'spErr':'spOk').textContent=error?'저장하지 못했어요. 다시 해 주세요':'메모를 저장했어요';};
@@ -6195,10 +6259,12 @@ function spPane(){const c=spCur,row=(a,b)=>`<div class="sprow"><span>${a}</span>
     if(error||!data){if(spCur===c)$('spErr').textContent='바꾸지 못했어요. 다시 해 주세요';return;}
     c.suspended_at=on?new Date().toISOString():null;if(c.id===me?.church)await checkIn(true);
     if(me&&spCur===c){spPane();$('spOk').textContent=on?'교회를 멈췄어요':'교회를 다시 열었어요';}};}
+async function spHist(){const c=spCur,d=spD;if(!d)return;const {data,error}=await sb.rpc('super_church',{p_church:c.id});if(error||spD!==d||JSON.stringify(d.history)===JSON.stringify(data.history))return;
+  d.history=data.history;if(spTab==='limit'&&!$('spPane').contains(document.activeElement))spPane();}
 const spLeave=()=>!spD||spD.draft===undefined||spD.draft===spD.memo||confirm('저장하지 않은 메모가 있어요. 그냥 나갈까요?');
 $('spBack').onclick=()=>{if(spLeave()){spD=null;spHome();}};$('spQ').oninput=spDraw;
 $('spFlt').onclick=e=>{const b=e.target.closest('button');if(b){spF=b.dataset.f;spDraw();$('spFlt').querySelector(`[data-f=${spF}]`).focus();}};
-$('spTabs').onclick=e=>{const b=e.target.closest('button');if(b){spTab=b.dataset.t;$('spErr').textContent=$('spOk').textContent='';spPane();$('spTabs').querySelector(`[data-t=${spTab}]`).focus();}};
+$('spTabs').onclick=e=>{const b=e.target.closest('button');if(b){spTab=b.dataset.t;$('spErr').textContent=$('spOk').textContent='';spPane();if(spTab==='limit')spHist();$('spTabs').querySelector(`[data-t=${spTab}]`).focus();}};
 $('spClose').onclick=()=>{if(spLeave())$('spDlg').close();};
 $('spDlg').addEventListener('cancel',e=>{e.preventDefault();if(spCur)$('spBack').click();else $('spDlg').close();});
 $('spDlg').addEventListener('close',()=>{spN++;TM=null;spCur=null;spD=null;});

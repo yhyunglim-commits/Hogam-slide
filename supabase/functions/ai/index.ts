@@ -14,7 +14,16 @@ const cors = {
 const reply = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
+// 부르고 나면 쓴 양(토큰)을 적고, 답을 못 받았으면 잡아 둔 한 번을 돌려줘요
+type Hold = { end?: () => Promise<void>; got?: boolean; by?: string; tin?: number; tout?: number };
 Deno.serve(async (req) => {
+  const hold: Hold = {};
+  const res = await handle(req, hold);
+  if (hold.end) await hold.end().catch((e) => console.error("ai_end", e));
+  return res;
+});
+
+async function handle(req: Request, hold: Hold): Promise<Response> {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   try {
     // 팀원만 쓸 수 있어요
@@ -34,10 +43,15 @@ Deno.serve(async (req) => {
     const { count: used } = await admin.from("ai_usage").select("id", { count: "exact", head: true })
       .eq("user_id", u.user.id).gte("at", new Date(Date.now() - 24 * 3600_000).toISOString());
     if ((used ?? 0) >= limit) return reply({ error: `오늘 AI를 ${limit}번 써서 더 쓸 수 없어요. 내일 다시 해 주세요`, code: "rate_limited" }, 429);
-    const { error: lErr } = await admin.rpc("log_ai", { p_user: u.user.id, p_church: church });
-    if (lErr) console.error("log_ai", lErr.message);
-
-    const { prompt, images = [], tier } = await req.json();
+    const { prompt, images = [], tier, job, kind } = await req.json();
+    const uuid = /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
+    const { data: slot, error: lErr } = await admin.rpc("ai_begin", { p_user: u.user.id, p_church: church, p_job: uuid.test(job ?? "") ? job : null, p_kind: String(kind ?? "") });
+    if (lErr || !slot) return reply({ error: "서버가 AI 횟수를 확인하지 못했어요. 잠시 뒤에 다시 해 주세요" }, 500);
+    if (!slot.ok) return reply({ error: slot.error, code: slot.code }, 403);
+    hold.end = async () => {
+      const { error } = await admin.rpc("ai_end", { p_job: slot.job, p_ok: !!hold.got, p_by: hold.by ?? "", p_in: hold.tin ?? 0, p_out: hold.tout ?? 0 });
+      if (error) console.error("ai_end", error.message);
+    };
 
     // ── Claude 먼저 (키가 있을 때만) ──
     const ak = Deno.env.get("ANTHROPIC_API_KEY");
@@ -54,6 +68,7 @@ Deno.serve(async (req) => {
         const cj = await cr.json().catch(() => ({}));
         if (cr.ok) {
           const text = (cj?.content ?? []).filter((b: { type: string }) => b.type === "text").map((b: { text: string }) => b.text).join("");
+          hold.got = !!text.trim(); hold.by = "claude"; hold.tin = cj?.usage?.input_tokens; hold.tout = cj?.usage?.output_tokens;
           return reply({ text, by: "claude" });
         }
         if (![429, 500, 529, 503].includes(cr.status)) break; // 키 오류 같은 문제면 바로 Gemini로
@@ -117,8 +132,10 @@ Deno.serve(async (req) => {
     if (!r.ok && busy(r.status, lastMsg)) return reply({ error: "Google AI가 지금 붐벼서 답하지 못했어요. 1~2분 뒤 ‘다시 시도’를 눌러 주세요", code: "busy" }, 503);
     if (!r.ok) return reply({ error: lastMsg || "AI가 답하지 못했어요" }, 502);
     const text = (j?.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? "").join("");
+    const um = j?.usageMetadata;
+    hold.got = !!text.trim(); hold.by = "gemini"; hold.tin = um?.promptTokenCount; hold.tout = (um?.candidatesTokenCount ?? 0) + (um?.thoughtsTokenCount ?? 0);
     return reply({ text });
   } catch (_e) {
     return reply({ error: "AI 요청을 처리하지 못했어요" }, 500);
   }
-});
+}
