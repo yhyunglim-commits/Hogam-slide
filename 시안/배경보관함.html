@@ -1,0 +1,84 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>호감슬라이드 배경 보관함 시안</title>
+<style>
+/* 배치: 왼쪽 탭과 배경 그림 / 오른쪽 내 가사를 얹은 미리보기와 쓸 곳 */
+:root{--bg:#F5F5F7;--surface:#fff;--sunken:#F7F7F9;--line:#E1E1E6;--text:#1D1D1F;--text2:#4B4B50;--text3:#6E6E73;--pri:#006FE6;--pri-soft:#E8F2FF;--warn:#FFF4E0;--warn-ink:#7A4A00;
+--sans:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1E20;--surface:#2A2A2D;--sunken:#252528;--line:#3A3A3E;--text:#F5F5F7;--text2:#C7C7CC;--text3:#A0A0A6;--pri:#2D8FFF;--pri-soft:#173252;--warn:#3D2C12;--warn-ink:#FFCC80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1E1E20;--surface:#2A2A2D;--sunken:#252528;--line:#3A3A3E;--text:#F5F5F7;--text2:#C7C7CC;--text3:#A0A0A6;--pri:#2D8FFF;--pri-soft:#173252;--warn:#3D2C12;--warn-ink:#FFCC80;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font:14px/1.5 var(--sans);padding-block:16px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:14px}
+h1,h2,h3,p{margin:0}h1{font-size:17px}h2{font-size:16px}h3{font-size:13px;color:var(--text2)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.push{margin-left:auto}.hint{color:var(--text3);font-size:13px}
+button,.up{font:500 13px var(--sans);color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:8px;min-height:34px;padding:0 13px;cursor:pointer}
+button.pri{background:#006FE6;border-color:#006FE6;color:#fff}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.win{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.head,.foot{padding:12px 18px}.head{border-bottom:1px solid var(--line)}.foot{border-top:1px solid var(--line)}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 400px}
+.lib{padding:16px 18px;display:grid;gap:14px;align-content:start;min-width:0}
+.tabs button{border-color:transparent;background:none}.tabs button[aria-pressed=true]{background:var(--pri-soft);border-color:var(--pri)}
+.sea{display:grid;gap:8px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.grid button{padding:4px;display:grid;gap:4px;text-align:left;min-height:0;font-size:12px}
+.grid button[aria-pressed=true]{border-color:var(--pri);box-shadow:0 0 0 2px var(--pri)}
+canvas{display:block;width:100%;aspect-ratio:16/9;border-radius:5px}
+.list{display:grid;gap:18px;max-height:500px;overflow:auto;padding:3px}
+.side{padding:16px 18px;background:var(--sunken);display:grid;gap:16px;align-content:start;min-width:0}
+.g{display:grid;gap:8px}label.c{display:flex;gap:8px;align-items:center}
+input[type=range]{width:100%}
+.warn{background:var(--warn);color:var(--warn-ink);border-radius:8px;padding:9px 12px;font-size:13px}
+@media(max-width:860px){.cols{grid-template-columns:minmax(0,1fr)}.side{order:-1}.push{margin-left:0}}
+</style>
+<div class="wrap">
+  <div class="row"><h1>배경 보관함</h1><span class="hint">시안 · 그림은 자리만 채운 예시예요</span></div>
+  <section class="win" aria-labelledby="wt">
+    <div class="head row"><h2 id="wt">배경 고르기</h2><span class="hint">11월 29일 주일예배</span></div>
+    <div class="cols">
+      <div class="lib"><div class="row tabs" id="tabs" role="group" aria-label="종류"></div><div class="list" id="list"></div></div>
+      <div class="side">
+        <canvas id="pv" width="1280" height="720" aria-label="내 가사를 얹은 미리보기"></canvas>
+        <div class="row"><button id="pvP" aria-label="이전 화면">←</button><span class="hint" id="pvT"></span><button id="pvN" aria-label="다음 화면">→</button></div>
+        <div class="warn" id="warn" hidden>배경이 밝아서 흰 글씨가 잘 안 보일 수 있어요. ‘어둡게’를 올려 보세요.</div>
+        <label class="g" for="dim"><h3>사진 어둡게 <span id="dimT"></span></h3><input type="range" id="dim" min="0" max="80" value="15"></label>
+        <div class="g" role="radiogroup" aria-label="쓸 곳"><h3>쓸 곳 (이번 예배에만)</h3><div class="g" id="scope"></div></div>
+      </div>
+    </div>
+    <div class="foot row"><span class="hint" id="msg" role="status">다른 예배와 지난 예배는 그대로예요.</span><button class="push" id="undo">원래 배경으로</button><button class="pri" id="go">이 배경 쓰기</button></div>
+  </section>
+</div>
+<script>
+const $=i=>document.getElementById(i);
+// [이름, 종류, 절기, 위 색, 아래 색, 빛 색]
+const B=[['대림 촛불','절기','대림절','#2b1b4d','#5b3b86','#f3b65e'],['기다림의 새벽','절기','대림절','#17203f','#54518f','#c9b8ff'],['보랏빛 밤','절기','대림절','#1d1433','#44276a','#a67be0'],
+['베들레헴의 별','절기','성탄절','#0d1f3d','#24507a','#ffe9a8'],['성탄의 빛','절기','성탄절','#3c1420','#8a2b32','#ffd58a'],
+['잿빛 길','절기','사순절','#2c2833','#5b5167','#b9a7d6'],['부활의 아침','절기','부활절','#f6d9a8','#f4b183','#fff6dc'],['백합','절기','부활절','#dfeee6','#a9cdb9','#ffffff'],
+['성령의 불','절기','성령강림절','#4a1010','#b5391e','#ffb14e'],['황금 들녘','절기','추수감사절','#5a3a12','#b8802d','#ffdf8f'],['새해 첫빛','절기','송구영신','#13264a','#d48a63','#ffe1b0'],
+['고요한 물','찬양','','#12324a','#2c6b80','#9fe0e8'],['숲의 빛','찬양','','#16321f','#3f6b3f','#d7f29b'],['저녁 하늘','찬양','','#2c2350','#b86a6a','#ffcba4'],
+['따뜻한 종이','말씀','','#4b4035','#80705d','#e8d9c0'],['깊은 초록','말씀','','#1c2b22','#3d5242','#a9c7a6'],
+['우리 예배당 (예시)','우리 교회','','#39424f','#7d8794','#f1e6d0']];
+const T=['추천','절기','찬양','말씀','우리 교회'],SEASON='대림절';
+const L=[['찬양 1 · 만복의 근원 하나님',['만복의 근원 하나님','온 백성 찬송 드리고']],['찬양 1 · 만복의 근원 하나님',['저 천사여 찬송하세','찬송 성부 성자 성령']],['찬양 2 · 곧 오소서 임마누엘',['곧 오소서 임마누엘','오 구하소서 이스라엘']]];
+let tab='추천',sel=0,pg=2,scope='song';
+function paint(c,b,dim,t){const x=c.getContext('2d'),W=c.width,H=c.height,g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,b[3]);g.addColorStop(1,b[4]);x.fillStyle=g;x.fillRect(0,0,W,H);
+  for(const[a,y,r]of[[.72,.3,.5],[.2,.85,.4]]){const q=x.createRadialGradient(W*a,H*y,0,W*a,H*y,W*r);q.addColorStop(0,b[5]+'cc');q.addColorStop(1,b[5]+'00');x.fillStyle=q;x.fillRect(0,0,W,H);}
+  x.fillStyle=`rgba(0,0,0,${dim/100})`;x.fillRect(0,0,W,H);
+  if(t){x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=W*.006;x.font=`700 ${W*.05}px "Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif`;t.forEach((l,i)=>x.fillText(l,W/2,H*.56+(i-.5)*W*.07));x.shadowBlur=0;}}
+function bright(b){const n=parseInt(b[3].slice(1),16),m=parseInt(b[4].slice(1),16),l=v=>.299*(v>>16)+.587*(v>>8&255)+.114*(v&255);return(l(n)+l(m))/2*(1-$('dim').value/100);}
+function view(){const b=B[sel],s=L[pg];paint($('pv'),b,+$('dim').value,s[1]);$('pvT').textContent=s[0];$('dimT').textContent=$('dim').value+'%';$('warn').hidden=bright(b)<140;}
+function card(i){const b=B[i],k=document.createElement('button'),c=document.createElement('canvas');c.width=320;c.height=180;paint(c,b,0);k.append(c,b[0]);k.setAttribute('aria-pressed',i===sel);k.onclick=()=>{sel=i;list();view();};return k;}
+function sec(t,ids){const d=document.createElement('div'),h=document.createElement('h3'),g=document.createElement('div');d.className='sea';g.className='grid';h.textContent=t;ids.forEach(i=>g.append(card(i)));d.append(h,g);$('list').append(d);}
+function list(){const top=$('list').scrollTop;$('list').textContent='';const ids=f=>B.map((b,i)=>i).filter(i=>f(B[i]));
+  [...$('tabs').children].forEach(b=>b.setAttribute('aria-pressed',b.textContent===tab));
+  if(tab==='추천'){sec(`곧 ${SEASON}이에요 (11월 29일부터)`,ids(b=>b[2]===SEASON));sec('그다음 성탄절',ids(b=>b[2]==='성탄절'));sec('찬양에 많이 쓰는 배경',ids(b=>b[1]==='찬양'));}
+  else if(tab==='절기')[...new Set(B.map(b=>b[2]).filter(Boolean))].forEach(s=>sec(s,ids(b=>b[2]===s)));
+  else sec(tab==='우리 교회'?'우리 교회가 올린 배경':tab,ids(b=>b[1]===tab));
+  if(tab==='우리 교회'){const u=document.createElement('button');u.textContent='+ 사진 올리기';u.onclick=()=>$('msg').textContent='시안이라 올라가지 않아요. 올린 사진만 교회 용량 50MB에 들어가요.';$('list').append(u);}
+  $('list').scrollTop=top;}
+T.forEach(t=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{tab=t;$('list').scrollTop=0;list();};$('tabs').append(b);});
+[['song','이 곡만'],['songs','찬양 전체'],['word','말씀 전체'],['all','예배 전체']].forEach(([v,t])=>{const l=document.createElement('label');l.className='c';l.innerHTML=`<input type="radio" name="sc" id="sc-${v}" ${v===scope?'checked':''}>${t}`;l.firstChild.onchange=()=>{scope=v;};$('scope').append(l);});
+$('dim').oninput=view;$('pvP').onclick=()=>{pg=(pg+L.length-1)%L.length;view();};$('pvN').onclick=()=>{pg=(pg+1)%L.length;view();};
+$('go').onclick=()=>$('msg').textContent=`‘${B[sel][0]}’ 배경을 ${{song:'이 곡에만',songs:'찬양 전체에',word:'말씀 전체에',all:'예배 전체에'}[scope]} 썼어요 (시안)`;
+$('undo').onclick=()=>$('msg').textContent='고른 곳을 원래 배경으로 돌렸어요 (시안)';
+list();view();
+</script>

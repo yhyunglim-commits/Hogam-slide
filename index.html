@@ -2393,6 +2393,20 @@ body.szing,body.szing *{user-select:none!important;-webkit-user-select:none!impo
 body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
 #dlLive{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:64px;height:54px;border:0;border-radius:10px;background:var(--bad-soft);color:var(--bad);font:700 13px var(--sans);cursor:pointer;white-space:nowrap}
 #dlLive i{font-size:24px;color:var(--bad)}#dlLive:hover:not(:disabled){filter:brightness(.96)}#dlLive:disabled{opacity:.4;cursor:default}
+/* ---- 배경 보관함 ---- */
+.mandlg.bgdlg{width:min(1120px,calc(100vw - 32px))}.bgdlg h2 small{font-size:13px;font-weight:400;color:var(--text3);margin-left:6px}
+.bgcols{display:grid;grid-template-columns:minmax(0,1fr) 380px;height:min(540px,calc(100vh - 230px));min-height:0}.bgcols>*{overflow:auto;min-width:0}
+.bglist{padding:4px 20px 20px 24px}.bglist h3{font-size:13px;color:var(--text2);margin:16px 0 8px}
+.bggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.bgit{position:relative}
+.bgit>button:first-child{display:grid;gap:5px;width:100%;padding:4px 4px 6px;border:0;border-radius:9px;background:none;font:inherit;font-size:12px;color:var(--text2);text-align:left;cursor:pointer}.bgit>button:first-child:hover{background:var(--glass)}
+.bgit>button[aria-pressed=true]{box-shadow:0 0 0 3px var(--pri);color:var(--text)}.bgit img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px;background:var(--sunken)}
+.bgit .bgdel{position:absolute;right:9px;top:9px;width:26px;height:26px;border:0;border-radius:50%;background:rgba(0,0,0,.62);color:#fff;cursor:pointer}
+.bgup{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}.bgup .hint{margin:0}
+.bgside{padding:16px 20px;background:var(--sunken);display:grid;gap:14px;align-content:start}.bgside canvas{width:100%;aspect-ratio:16/9;border-radius:7px;background:#000;display:block}
+.bgpg{display:flex;align-items:center;justify-content:space-between;gap:8px}.bgpg .hint{margin:0;text-align:center}
+.bgf{display:grid;gap:8px;border:0;margin:0;padding:0;font-size:14px}.bgf legend,.bgf>span{font-size:13px;font-weight:600;color:var(--text2);padding:0 0 4px}.bgf input[type=range]{width:100%}.bgf .c{display:flex;gap:8px;align-items:center}
+.bgbt{display:flex;gap:8px}#lookCtl .bgopen{width:100%;margin-top:8px}
+@media(max-width:860px){.bgcols{grid-template-columns:minmax(0,1fr);height:auto;overflow:auto}.bgcols>*{overflow:visible}.bgside{order:-1}}
 /* ---- 다른 형식으로 내려받기 ---- */
 .dmdlg .manhead{padding-bottom:14px}
 .dmcols{display:grid;grid-template-columns:190px 260px minmax(0,1fr);height:min(440px,calc(100vh - 190px));min-height:0}
@@ -2993,6 +3007,13 @@ body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
 <dialog class="mandlg dmdlg" id="dmDlg" aria-labelledby="dmT"><div class="manhead"><div><h2 id="dmT">다른 형식으로 내려받기</h2><button type="button" class="btn ghost ibtn" id="dmX" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div></div>
 <div class="dmcols"><div class="dmkinds" id="dmKinds"></div><div class="dmopts" id="dmOpts"></div><div class="dmout" id="dmOut" tabindex="0" aria-label="결과 미리보기"></div></div>
 <div class="dmfoot"><span class="hint" id="dmSum" role="status"></span><button type="button" class="btn pri" id="dmGo">내려받기</button></div></dialog>
+<dialog class="mandlg bgdlg" id="bgDlg" aria-labelledby="bgT"><div class="manhead"><div><h2 id="bgT">배경 보관함 <small id="bgSess"></small></h2><button type="button" class="btn ghost ibtn" id="bgX" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div><nav class="mantoc" id="bgTabs" aria-label="배경 종류"></nav></div>
+<div class="bgcols"><div class="bglist" id="bgList"></div><div class="bgside"><canvas id="bgPv" width="960" height="540" aria-label="내 글을 얹은 미리보기"></canvas>
+<div class="bgpg"><button type="button" class="btn ibtn" id="bgPrev" aria-label="이전 화면"><i class="ph ph-caret-left" aria-hidden="true"></i></button><span class="hint" id="bgPg"></span><button type="button" class="btn ibtn" id="bgNext" aria-label="다음 화면"><i class="ph ph-caret-right" aria-hidden="true"></i></button></div>
+<div class="dmwarn" id="bgWarn" hidden>배경이 밝아서 글씨가 잘 안 보일 수 있어요. ‘어둡게’를 올려 보세요.</div>
+<label class="bgf" for="bgDim"><span>어둡게 <b id="bgDimT"></b></span><input type="range" id="bgDim" min="0" max="80"></label>
+<fieldset class="bgf" id="bgScope"><legend>쓸 곳 (이번 예배에만)</legend></fieldset></div></div>
+<div class="dmfoot"><span class="hint" id="bgMsg" role="status"></span><span class="bgbt"><button type="button" class="btn" id="bgOff">원래 배경으로</button><button type="button" class="btn pri" id="bgGo">이 배경 쓰기</button></span></div></dialog>
 <dialog class="newsdlg" id="newsDlg" aria-labelledby="newsT"><div class="newstop"><b>NEW</b><span class="newsver" id="newsV"></span></div><h2 id="newsT"></h2><ul class="newsul" id="newsB"></ul><div class="newsbt"><button type="button" class="btn" id="newsMan">호감 매뉴얼 보기</button><button type="button" class="btn pri" id="newsOk" autofocus>확인</button></div></dialog>
 <button type="button" class="btn hidden" id="lvPill"></button>
 <div hidden id="liveHome"><div class="rg rglive" id="rgLive"><button type="button" id="dlLive" title="예배당 화면에 바로 띄우기"><i class="ph-fill ph-broadcast" aria-hidden="true"></i><span>송출</span></button></div></div>
@@ -3065,7 +3086,7 @@ function teamApply(k,v){
 }
 // 로그인한 뒤 한 번: 팀 설정을 불러오고, 팀에 아직 없는 설정은 이 브라우저 것으로 채워요
 async function bootTeam(){
-  const {data,error}=await sb.from('team_settings').select('key,value');
+  const {data,error}=await sb.from('team_settings').select('key,value').in('key',TEAM_KEYS); // 배경 보관함 사진(media.lib.…)은 쓸 때만 받아요
   if(error){TEAM.on=false;return;} // 서버에 3단계 SQL이 아직 없으면 예전처럼 이 브라우저에만 저장해요
   TEAM.on=true;
   const have=new Map(data.map(r=>[r.key,r.value])),first=!store.get('teamSynced',false),mineBefore=[];
@@ -3667,13 +3688,17 @@ const IMARK='〔순서〕 ',IBASE=30000;
 // 이 예배에만 쓰는 양식도 저장 글 끝에 한 줄로 들어가요
 const FMARK='〔양식〕 ',FMRE=/^〔양식〕 (\{.*\})$/m;
 function textFmt(t){const m=String(t||'').match(FMRE);if(!m)return null;try{return normFmt(JSON.parse(m[1]));}catch(e){return null;}}
+// 이 예배에만 쓰는 배경. {song|word|info: {b:번호,d:어둡게}, 'g:곡 이름'…}. '〔순서〕'로 넣어서 옛 화면을 열어 둔 팀원에게 이상한 슬라이드가 안 보여요
+let SBG={};
+const bgEnt=v=>v&&typeof v==='object'&&/^(c:)?[a-z0-9-]{1,40}$/.test(v.b)?{b:v.b,d:Math.max(0,Math.min(80,+v.d||0))}:null;
+function textBg(t){const o={};for(const l of String(t||'').split('\n'))if(l.startsWith(IMARK+'{"k":"bg"'))try{const v=JSON.parse(l.slice(IMARK.length)).v;for(const k in v){const e=(k==='song'||k==='word'||k==='info'||k.startsWith('g:'))&&bgEnt(v[k]);if(e)o[k]=e;}}catch(e){}return o;}
 const IKIND={cover:{n:'표지',ic:'ph-flag-banner'},sermon:{n:'설교',ic:'ph-microphone-stage'},notice:{n:'안내',ic:'ph-megaphone-simple'},ad:{n:'광고',ic:'ph-newspaper'},text:{n:'고백문',ic:'ph-scroll'}};
 function splitCombined(t){t=String(t||'').replace(FMRE,'').trimEnd();if(!t.trim())return{song:'',word:'',quote:'',info:[]};
   const all=t.split(gapRe()).filter(x=>x.trim()),isI=c=>c.trimStart().startsWith(IMARK.trim()),ch=all.filter(c=>!isI(c)),isQ=c=>c.trimStart().startsWith(QMARK.trim());
   const info=all.filter(isI).map(c=>{try{const o=JSON.parse(c.trimStart().slice(IMARK.trim().length));return o&&IKIND[o.k]?o:null;}catch(e){return null;}}).filter(Boolean);
   return{info,song:ch.filter(c=>!isQ(c)&&!isWordChunk(c)).join(gapStr()),word:ch.filter(c=>!isQ(c)&&isWordChunk(c)).join(gapStr()),quote:ch.filter(isQ).map(c=>c.trimStart().replace(QMARK.trim(),'').replace(/^ /,'')).join(gapStr())};}
 function combinedText(){const q=($('quoteText')?.value||'').trim(),a=[$('outText').value.trim(),$('wordText').value.trim(),q?q.split(gapRe()).filter(x=>x.trim()).map(c=>QMARK+c.trimStart()).join(gapStr()):'',...INFO.map(o=>IMARK+JSON.stringify(o))].filter(Boolean);
-  return a.length?[...a,...(SFMT?[FMARK+JSON.stringify(SFMT)]:[])].join(gapStr()):'';}
+  return a.length?[...a,...(Object.keys(SBG).length?[IMARK+JSON.stringify({k:'bg',v:SBG})]:[]),...(SFMT?[FMARK+JSON.stringify(SFMT)]:[])].join(gapStr()):'';}
 function wordChunks(){const t=$('wordText').value.trim();return t?t.split(gapRe()).filter(x=>x.trim()):[];}
 function autosizeWord(){const t=$('wordText');if(!t.offsetParent)return;t.style.height='auto';t.style.height=Math.max(t.scrollHeight+2,140)+'px';}
 function refreshWordMeta(){const q=WMODE==='q',ta=$(q?'quoteText':'wordText'),n=(q?quoteChunks():wordChunks()).length,l=ta.value.trim()?ta.value.trim().split('\n').length:0;$('wordCount').textContent=n?`${q?'구절':'본문'} ${n}개 · ${l}줄`:'';autosizeWord();}
@@ -4296,7 +4321,11 @@ function buildLookUI(){
     if(L.style!=='cap'){text(s.p,'tag1','머리표 윗줄 (광고·고백문)');text(s.p,'tag2','머리표 아랫줄');}}
   if(!cap){
     // 배경
-    s=sec('bg','배경','ph-image');upload(s.p,grp,false);if(MEDIA[grp]||(grp==='quote'&&MEDIA.word))slider(s.p,'bgDim',true);
+    s=sec('bg','배경','ph-image');upload(s.p,grp,false);
+    // 배경 보관함: 고른 슬라이드가 있으면 그 곡부터, 없으면 이 종류 전체부터
+    {const b=document.createElement('button'),kd=grp==='song'||grp==='info'?grp:'word';b.type='button';b.className='btn lkwide bgopen';b.innerHTML='<i class="ph ph-images" aria-hidden="true"></i> 배경 보관함';
+      b.onclick=()=>{const g=lookSlideKey&&songGroups().find(q=>q.items.some(x=>x.ovKey===lookSlideKey&&bgKind(x)===kd));setRib(null);bgOpen(g||null,kd);};s.p.appendChild(b);}
+    if(MEDIA[grp]||(grp==='quote'&&MEDIA.word))slider(s.p,'bgDim',true);
     {const on=!!(MEDIA[grp]||(grp==='quote'&&MEDIA.word));if(on)s.q.innerHTML=`<span class="rgthumb" style="background-image:url('${MEDIA[grp]||MEDIA.word}')" title="배경 사진 사용 중"></span>`;}
     // 로고 · 아래 문구 (화면 맨 아래에 같이 놓여서 한 묶음)
     s=sec('logo','로고·아래 문구','ph-seal');upload(s.p,'logo',true);
@@ -4337,6 +4366,21 @@ function palOf(sc,songIdx){
   if(sc.type==='word')return palById(songColors['📖'+sc.ref]||'forest')||PALS[7];
   return palById(songColors[sc.songKey]||AUTO_SONG[songIdx%AUTO_SONG.length])||PALS[0];
 }
+// 이 예배에 고른 배경 그림. 기본 배경은 앱 파일(brand/bg), 교회가 올린 것은 팀 서버에서 쓸 때만 받아요
+const BGI={};let bgTry=null; // bgTry: 배경 보관함 창의 미리보기
+const bgKeyOf=sc=>'g:'+(sc.type==='word'?'📖'+sc.ref:sc.type==='info'?'ℹ'+sc.iid:sc.songKey),bgKind=sc=>sc.type==='song'?'song':sc.type==='info'?'info':'word';
+const bgEntOf=sc=>SBG[bgKeyOf(sc)]||SBG[bgKind(sc)]||null;
+function bgChanged(){renderShots();if($('slidebox').classList.contains('on'))drawSlide();if($('bgDlg').open)bgView();}
+function bgLoad(id){if(BGI[id])return BGI[id].p;const o=BGI[id]={img:null,p:null},ch=CH;
+  o.p=(async()=>{try{let u=`brand/bg/${id}.webp`;
+      if(id.startsWith('c:')){const {data,error}=await sb.from('team_settings').select('value').eq('key','media.lib.'+id.slice(2)).maybeSingle();if(error)throw error;u=safeImg(data?.value);if(!u){o.gone=1;return;}}
+      const im=new Image();im.src=u;await im.decode();if(ch!==CH)return;o.img=im;bgChanged();
+    }catch(e){delete BGI[id];o.bad=1;setTimeout(()=>{if(!BGI[id])BGI[id]=null;},0);}})();return o.p;}
+function bgOf(sc){const e=bgTry||bgEntOf(sc);if(!e)return null;const o=BGI[e.b];if(!o){if(o===undefined)bgLoad(e.b);return null;}return o.img?{img:o.img,d:e.d}:null;}
+const bgUsed=()=>[...new Set(Object.values(SBG).map(e=>e.b))];
+// 못 받은 것(인터넷 끊김)은 내려받기·송출 전에 한 번 더 받아 봐요
+async function bgReady(){await Promise.all(bgUsed().map(id=>{if(BGI[id]===null)delete BGI[id];return bgLoad(id);}));return bgUsed().filter(id=>!BGI[id]?.img&&!BGI[id]?.gone);}
+addEventListener('online',()=>{for(const id in BGI)if(!BGI[id])delete BGI[id];renderShots();});
 let bgFill=null,bgTap=null; // 송출: 배경 대신 칠할 색 · 배경만 떠 두기
 function drawBg(x,W,H,pal){
   if(bgFill){x.fillStyle=bgFill;x.fillRect(0,0,W,H);return;}
@@ -4451,10 +4495,10 @@ function drawScreen0(cv,sc,songIdx,opt={}){
   if(sc.type==='info')return drawInfo(x,W,H,sc,opt);
   if(isCaption(sc))return drawCaption(x,W,H,sc,opt);
   if(sc.blank){const ob=(SLIDE_OV[sc.ovKey]||{}).bg,ph=mediaImg('song');
-    if(ob==='black'){x.fillStyle='#000';x.fillRect(0,0,W,H);}else if(ob)drawBg(x,W,H,palById(ob)||palOf(sc,songIdx));else if(ph)drawPhoto(x,W,H,ph,LOOK.song.bgDim);else drawBg(x,W,H,palOf(sc,songIdx));
+    if(ob==='black'){x.fillStyle='#000';x.fillRect(0,0,W,H);}else if(ob)drawBg(x,W,H,palById(ob)||palOf(sc,songIdx));else if(bgOf(sc)){const b=bgOf(sc);drawPhoto(x,W,H,b.img,b.d);}else if(ph)drawPhoto(x,W,H,ph,LOOK.song.bgDim);else drawBg(x,W,H,palOf(sc,songIdx));
     return{texts:[],box:null,footer:null,regions:[]};}
   const grp=sc.type==='song'?'song':'word',photo=mediaImg(sc.ed==='quote'&&MEDIA.quote?'quote':grp),logo=mediaImg('logo');
-  if(photo)drawPhoto(x,W,H,photo,LOOK[grp].bgDim);else drawBg(x,W,H,palOf(sc,songIdx));
+  const sbg=bgOf(sc);if(sbg)drawPhoto(x,W,H,sbg.img,sbg.d);else if(photo)drawPhoto(x,W,H,photo,LOOK[grp].bgDim);else drawBg(x,W,H,palOf(sc,songIdx));
   const lb=logoBox(x,W,H,LOOK[grp],grp==='song'?H*.935:H*.89,logo);if(lb)x.drawImage(logo,lb.x,lb.y,lb.w,lb.h);
   const lay=slideLayout(x,W,H,sc);if(lay.box){x.fillStyle=lay.box.fill;x.fillRect(lay.box.x,lay.box.y,lay.box.w,lay.box.h);}
   if(opt.noText)return lay;
@@ -4526,9 +4570,9 @@ function shotGroupEl(g,groups,n0,{cw=480}={}){
   const cur=songColors[key]||(g.type==='word'?'forest':g.type==='info'?'slate':AUTO_SONG[g.songIdx%AUTO_SONG.length]);
   const gw=document.createElement('div');gw.className='sgroup';gw.dataset.t=g.type;
   const head=document.createElement('div');head.className='shead';
-  const isCustom=cur&&cur[0]==='#',usesPhoto=!!MEDIA[g.type==='word'?'word':g.type==='info'?'info':'song'];
+  const isCustom=cur&&cur[0]==='#',sbg=bgEntOf(g.items[0]),usesPhoto=!!sbg||!!MEDIA[g.type==='word'?'word':g.type==='info'?'info':'song'];
   head.innerHTML=`<b></b><span class="sw">${PALS.map(p=>`<button data-p="${p.id}" title="${p.name}" aria-label="${p.name} 배경" style="background:linear-gradient(135deg,${p.c[0]},${p.c[2]})" class="${p.id===cur?'on':''}"></button>`).join('')}<label class="plus${isCustom?' on':''}" title="색 직접 고르기" ${isCustom?`style="background:${cur}"`:''}>+<input type="color" value="${isCustom?cur:'#3b6ea5'}" aria-label="배경색 직접 고르기"></label></span>`;
-  if(usesPhoto)head.querySelector('.sw').outerHTML='<span class="hint" style="margin:0">배경 사진 사용 중</span>';
+  if(usesPhoto)head.querySelector('.sw').outerHTML=`<span class="hint sw" style="margin:0">${sbg?'이번 예배 배경':'배경 사진 사용 중'}</span>`;
   head.querySelector('input[type=color]')?.addEventListener('input',e=>{songColors[key]=e.target.value;store.set('songColors',songColors);teamSet('songColors');clearTimeout(window._ct);window._ct=setTimeout(renderShots,120);});
   head.querySelector('b').textContent=g.title;
   head.insertAdjacentHTML('afterbegin',`<span class="stag ${kindOf(g)}">${tagOf(g,groups)}</span>`);
@@ -4578,7 +4622,7 @@ function renderShots(){
   ensureGlyphs();clearTimeout(shotT);shotT=setTimeout(()=>{
     const box=$('shots'),groups=songGroups();box.innerHTML='';shownGroups=groups;
     const total=groups.reduce((a,g)=>a+g.items.length,0);renderTabCounts(total);renderGroupTabs(groups,total);
-    $('shotCount').textContent=total?`${total}장`:'';$('ptCount').textContent=total||'';['dlTxt','dlPdf','dlJpg','dlShots','dlPptx','dlLive'].forEach(id=>$(id).disabled=!total);
+    $('shotCount').textContent=total?`${total}장`:'';$('ptCount').textContent=total||'';['dlTxt','dlPdf','dlJpg','dlShots','dlPptx','dlMore','dlLive'].forEach(id=>$(id).disabled=!total);
     renderPv(groups);
     if(!total){box.innerHTML='<div class="empty">자막 결과가 생기면 화면마다 미리보기가 나와요.</div>';return;}
     if(curPage!=='slides'){box.dataset.stale='1';return;}delete box.dataset.stale;
@@ -4859,7 +4903,7 @@ function drawInfoCap(x,W,H,sc,opt){
 function drawInfo(x,W,H,sc,opt){
   if(infoCapSc(sc))return drawInfoCap(x,W,H,sc,opt);
   const L=LOOK.info,it0=sc.item,it=it0.k==='sermon'?{k:'cover',title:String(it0.title||'').replace(/\*\*/g,''),band:it0.ref||sermonRef(),time:it0.who||'',note:it0.sub||''}:it0,photo=mediaImg('info'),logo=mediaImg('logo'),texts=[];let footer=null;
-  if(photo)drawPhoto(x,W,H,photo,L.bgDim);else drawBg(x,W,H,palById(songColors['ℹ'+sc.iid]||'slate')||PALS[0]);
+  const sbg=bgOf(sc);if(sbg)drawPhoto(x,W,H,sbg.img,sbg.d);else if(photo)drawPhoto(x,W,H,photo,L.bgDim);else drawBg(x,W,H,palById(songColors['ℹ'+sc.iid]||'slate')||PALS[0]);
   const TF=`"${L.font}", "Noto Sans KR", sans-serif`,TW=lookW(L),BF=`"${L.font2}", "Noto Sans KR", serif`,NF=`"${L.noteFont}", "Noto Sans KR", serif`,SANS='"Noto Sans KR", sans-serif';
   const al=L.align||'center',axAt=m=>al==='left'?W*m:al==='right'?W*(1-m):W/2,hex=c=>String(c||'#ffffff').replace('#','').toUpperCase();
   const fx={shadow:L.shadowOn!==false,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null};
@@ -5360,7 +5404,7 @@ async function saveImages(id,ext){
   b.disabled=true;const t=b.innerHTML;b.querySelector('.bt').textContent='만드는 중…';
   try{
     if(!window.JSZip)await loadScript(['https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js']);
-    const zip=new JSZip();let n=0;
+    await drawReady();const zip=new JSZip();let n=0;
     for(const g of groups)for(const s of g.items){n++;
       let blob;if(ext==='jpg')blob=await shotJpg(s,g.songIdx||0);
       else{const cv=document.createElement('canvas');cv.width=1920;cv.height=1080;drawScreen(cv,s,g.songIdx||0);blob=await new Promise(r=>cv.toBlob(r,'image/png'));}
@@ -5382,7 +5426,7 @@ $('dlPptx').onclick=async()=>{
   b.disabled=true;const t=b.innerHTML;b.querySelector('.bt').textContent='만드는 중…';
   try{
     if(!window.PptxGenJS)await loadScript(['https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js','https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js']);
-    const pptx=new PptxGenJS();pptx.layout='LAYOUT_WIDE';pptx.title=exportName(groups);
+    await drawReady();const pptx=new PptxGenJS();pptx.layout='LAYOUT_WIDE';pptx.title=exportName(groups);
     const W=1920,H=1080,IN=13.333/W,PT=0.5; // 1920px 화면 기준: 1px = 0.5pt
     let n=0;
     for(const g of groups)for(const s of g.items){n++;
@@ -5424,6 +5468,91 @@ $('dlTxt').onclick=async()=>{const groups=exportGroups();if(!groups.length)retur
   // 윈도우 메모장과 옛 자막 프로그램에서도 한글과 줄바꿈이 깨지지 않게
   await saveBlob(`${exportName(groups)}.txt`,new Blob(['\ufeff'+exportText(groups).replace(/\n/g,'\r\n')+'\r\n'],{type:'text/plain;charset=utf-8'}));
   toast('TXT 파일로 내려받았어요');exported=true;renderSteps();};
+
+/* ---- 배경 보관함: 기본 배경(앱 파일)과 우리 교회가 올린 사진. 고른 것은 이번 예배에만 적어요 ---- */
+let BGL=null,BGC=[],bgTab='추천',bgSel=null,bgPages=[],bgPi=0,bgScope='song',bgGrp=null,bgDim=0,bgBusy=false;
+const BG_SEASON=['봄','여름','가을','겨울'],BG_ETC=['하늘','산과 잎','빛과 색','질감'];
+// 예배 이름의 날짜(없으면 다가오는 주일). 해는 지금과 가장 가까운 쪽
+function bgDate(now=new Date()){const m=($('docTitle').value||'').match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
+  if(!m){const d=new Date(now.getFullYear(),now.getMonth(),now.getDate());d.setDate(d.getDate()+((7-d.getDay())%7));return d;}
+  return [-1,0,1].map(k=>new Date(now.getFullYear()+k,m[1]-1,+m[2])).sort((a,b)=>Math.abs(a-now)-Math.abs(b-now))[0];}
+function easterOf(y){const a=y%19,b=y/100|0,c=y%100,d=b>>2,e=b%4,f=(b+8)/25|0,g=(b-f+1)/3|0,h=(19*a+b-d-g+15)%30,i=c>>2,k=c%4,l=(32+2*e+2*i-h-k)%7,m=(a+11*h+22*l)/451|0,n=h+l-7*m+114;return new Date(y,(n/31|0)-1,n%31+1);}
+// [이름, 시작, 끝]. 감사절은 맥추(7월 첫 주일)와 추수(11월 셋째 주일)
+function churchDays(y){const D=(m,d)=>new Date(y,m-1,d),add=(t,n)=>{const x=new Date(t);x.setDate(x.getDate()+n);return x;},sun=(m,n)=>{const x=D(m,1);return add(x,(7-x.getDay())%7+(n-1)*7);},E=easterOf(y),adv=add(D(12,25),-(D(12,25).getDay()||7)-21);
+  return[['새해',D(1,1),D(1,7)],['주현절',D(1,6),add(E,-47)],['사순절',add(E,-46),add(E,-1)],['부활절',E,add(E,48)],['성령강림절',add(E,49),add(E,55)],['감사절',add(sun(7,1),-6),sun(7,1)],['감사절',add(sun(11,3),-6),sun(11,3)],['대림절',adv,D(12,24)],['성탄절',D(12,24),add(D(12,31),5)],['새해',D(12,30),add(D(12,31),7)]];}
+function bgSuggest(d){const day=864e5,y=d.getFullYear(),all=[y-1,y,y+1].flatMap(churchDays),now=all.filter(([,a,b])=>d>=a&&d<=b).sort((a,b)=>(a[2]-a[1])-(b[2]-b[1])),soon=all.filter(([,a])=>a>d&&a-d<=28*day).sort((a,b)=>a[1]-b[1]),seen=new Set(),out=[];
+  for(const[l,at]of[[now,0],[soon,1]])for(const[n,a]of l)if(!seen.has(n)){seen.add(n);out.push({n,t:at?`곧 ${n} (${a.getMonth()+1}월 ${a.getDate()}일부터)`:`지금은 ${n}`});}
+  const s=BG_SEASON[((d.getMonth()+10)%12)/3|0];out.push({n:s,t:`계절 · ${s}`});return out;}
+async function bgOpen(g,kind){
+  const groups=songGroups(),ok=s=>!isCaption(s)&&!infoCapSc(s);bgPages=groups.flatMap(q=>q.items.filter(ok).map(s=>({s,g:q})));
+  if(!bgPages.length){toast('먼저 자막을 넣어 주세요');return;}
+  const first=bgPages.find(p=>!p.s.blank&&(g?p.g.chunk===g.chunk:bgKind(p.s)===kind))||bgPages.find(p=>g?p.g.chunk===g.chunk:bgKind(p.s)===kind)||bgPages[0];
+  bgPi=bgPages.indexOf(first);bgScope=g?'this':bgKind(first.s);bgTab='추천';
+  const e=bgEntOf(first.s);bgSel=e?e.b:null;bgDim=e?e.d:0;$('bgSess').textContent=$('docTitle').value||'';$('bgMsg').textContent='다른 예배와 지난 예배는 그대로예요.';
+  hideTip();if(!$('bgDlg').open)$('bgDlg').showModal();bgList();bgView();
+  try{if(!BGL){const r=await fetch('brand/bg/list.json');if(!r.ok)throw 0;BGL=await r.json();}}catch(err){$('bgMsg').textContent='기본 배경을 불러오지 못했어요. 인터넷을 확인해 주세요.';}
+  bgList();await bgMine();bgList();
+}
+async function bgMine(){if(!sb||!me)return;const my=CH,{data,error}=await sb.from('team_settings').select('key,value').like('key','media.libt.%');if(my!==CH||error||!data)return;
+  BGC=data.filter(r=>r.value&&safeImg(r.value.t)).map(r=>({id:'c:'+r.key.slice(11),name:String(r.value.n||'사진'),t:safeImg(r.value.t),at:+r.value.at||0,kb:+r.value.kb||0})).sort((a,b)=>b.at-a.at);}
+function bgSec(t,list,del){const h=document.createElement('h3'),w=document.createElement('div');h.textContent=t;w.className='bggrid';
+  list.forEach(o=>{const d=document.createElement('div'),b=document.createElement('button'),im=document.createElement('img');d.className='bgit';b.type='button';b.dataset.b=o.id;b.setAttribute('aria-pressed',o.id===bgSel);im.loading='lazy';im.alt='';im.src=o.t||`brand/bg/${o.id}-s.webp`;b.append(im,o.name);
+    b.onclick=()=>{bgSel=o.id;bgDim=o.id.startsWith('c:')?15:o.d||0; // 밝은 사진은 흰 글씨가 읽히는 값부터
+     if(BGI[o.id]===null)delete BGI[o.id];$('bgList').querySelectorAll('[data-b]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.b===bgSel));bgView();};d.append(b);
+    if(del){const x=document.createElement('button');x.type='button';x.className='bgdel';x.setAttribute('aria-label',`${o.name} 지우기`);x.innerHTML='<i class="ph ph-x" aria-hidden="true"></i>';x.onclick=()=>bgDel(o);d.append(x);}
+    w.append(d);});$('bgList').append(h,w);}
+function bgList(){const L=$('bgList'),top=L.scrollTop,A=BGL||[];L.textContent='';[...$('bgTabs').children].forEach(b=>b.setAttribute('aria-current',b.textContent===bgTab));
+  const cats=[...new Set(A.map(o=>o.cat))];[...$('bgTabs').children].find(b=>b.textContent==='계절').hidden=!cats.some(c=>BG_SEASON.includes(c));const of=c=>A.filter(o=>o.cat===c);
+  if(bgTab==='추천')bgSuggest(bgDate()).forEach(q=>{const l=of(q.n);if(l.length)bgSec(q.t,l);}),BG_ETC.forEach(c=>{const l=of(c);if(l.length)bgSec(c,l);}); // 사진이 없는 절기에도 비지 않게
+  else if(bgTab==='절기')cats.filter(c=>!BG_SEASON.includes(c)&&!BG_ETC.includes(c)).forEach(c=>bgSec(c,of(c)));
+  else if(bgTab==='계절')BG_SEASON.filter(c=>of(c).length).forEach(c=>bgSec(c,of(c)));
+  else if(bgTab==='자연·질감')BG_ETC.filter(c=>of(c).length).forEach(c=>bgSec(c,of(c)));
+  else{if(BGC.length)bgSec('우리 교회가 올린 배경',BGC,true);
+    const u=document.createElement('div');u.className='bgup';u.innerHTML='<label class="btn"><input class="sr" type="file" accept="image/*" id="bgFile"><i class="ph ph-plus" aria-hidden="true"></i> 사진 올리기</label><span class="hint">올린 사진만 교회 용량에 들어가요.</span>';L.append(u);
+    u.querySelector('input').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)bgPick(f);};}
+  L.scrollTop=top;}
+// 올리기 전에 크기와 남은 용량을 보여 줘요
+async function bgPick(f){if(bgBusy)return;if(!sb||!me){toast('로그인하면 올릴 수 있어요');return;}bgBusy=true;const my=CH;
+  try{const full=await readImage(f,1920,'image/jpeg'),t=await readImage(f,384,'image/jpeg'),size=full.length+t.length,{data:d}=await sb.rpc('church_usage');if(my!==CH)return;
+    const left=d?d.mb_limit*1048576-d.bytes:null,name=f.name.replace(/\.[^.]+$/,'').slice(0,30)||'사진';
+    if(left!=null&&size>left){toastUndo(`용량이 모자라요. 이 사진 ${spSize(size)} · 남은 용량 ${spSize(Math.max(0,left))}`,()=>{},'확인',9000);return;}
+    const u=$('bgList').querySelector('.bgup');if(!u)return;u.innerHTML='<span></span><button type="button" class="btn pri">올리기</button><button type="button" class="btn">취소</button>';
+    u.firstChild.textContent=`${name} · ${spSize(size)}${left==null?'':` · 남은 용량 ${spSize(left)}`}`;
+    const[ok,no]=u.querySelectorAll('button');no.onclick=bgList;ok.onclick=async()=>{if(bgBusy)return;bgBusy=true;ok.disabled=true;ok.textContent='올리는 중…';
+      try{const id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+        const a=await sb.from('team_settings').upsert({key:'media.lib.'+id,value:full});if(a.error)throw a.error;
+        const b=await sb.from('team_settings').upsert({key:'media.libt.'+id,value:{n:name,t,at:Date.now(),kb:Math.round(size/1024)}});
+        if(b.error){await sb.from('team_settings').delete().eq('key','media.lib.'+id);throw b.error;}
+        await bgMine();bgSel='c:'+id;bgDim=15;bgView();toast('사진을 올렸어요');
+      }catch(e){toastUndo(/저장 공간/.test(e?.message||'')?e.message:'올리지 못했어요. 인터넷을 확인해 주세요',()=>{},'확인',9000);}finally{bgBusy=false;bgList();}};
+  }catch(e){toast(e.message||'사진을 열지 못했어요');}finally{bgBusy=false;}}
+async function bgDel(o){if(bgBusy)return;const n=SESS.filter(c=>Object.values(c.id===curSess?SBG:textBg(c.text)).some(e=>e.b===o.id)).length;
+  if(!confirm(`‘${o.name}’ 사진을 지울까요?${n?` 예배 ${n}개에서 쓰고 있어요. 지우면 그 예배는 원래 배경으로 보여요.`:''}`))return;
+  bgBusy=true;const k=o.id.slice(2),a=await sb.from('team_settings').delete().eq('key','media.lib.'+k),b=a.error?a:await sb.from('team_settings').delete().eq('key','media.libt.'+k);bgBusy=false;
+  if(b.error){netErr(b.error);return;}
+  BGI[o.id]=null;if(bgSel===o.id)bgSel=null;BGC=BGC.filter(x=>x.id!==o.id);bgList();bgChanged();toast('사진을 지웠어요');}
+function bgView(){const p=bgPages[bgPi];if(!p)return;const cv=$('bgPv');cv.getContext('2d').clearRect(0,0,960,540);
+  bgTry=bgSel?{b:bgSel,d:bgDim}:null;try{drawScreen(cv,p.s,p.g.songIdx||0);}finally{bgTry=null;}
+  $('bgPg').textContent=`${p.g.title} · ${bgPi+1}/${bgPages.length}`;$('bgDim').value=bgDim;$('bgDimT').textContent=bgDim+'%';$('bgDim').disabled=$('bgGo').disabled=!bgSel;
+  const im=bgSel&&BGI[bgSel]?.img;let low=false;
+  if(im){const c=document.createElement('canvas');c.width=64;c.height=36;const x=c.getContext('2d');x.drawImage(im,0,0,64,36);const d=x.getImageData(13,13,38,16).data;let t=0;for(let i=0;i<d.length;i+=4)t+=.299*d[i]+.587*d[i+1]+.114*d[i+2];low=t/(d.length/4)*(1-bgDim/100)>150&&bgKind(p.s)!=='word'&&inkOn(LOOK[bgKind(p.s)].color||'#ffffff')!=='#ffffff';}
+  $('bgWarn').hidden=!low;
+  const kn={song:'찬양 전체',word:'말씀 전체',info:'순서·광고 전체'},has=k=>bgPages.some(q=>bgKind(q.s)===k),opts=[['this',p.s.type==='song'?'이 곡만':p.s.type==='word'?'이 본문만':'이 순서만'],...Object.keys(kn).filter(has).map(k=>[k,kn[k]]),['all','예배 전체']];
+  if(!opts.some(o=>o[0]===bgScope))bgScope='this';
+  const F=$('bgScope');F.querySelectorAll('label').forEach(l=>l.remove());opts.forEach(([v,t])=>{const l=document.createElement('label'),i=document.createElement('input');l.className='c';i.type='radio';i.name='bgsc';i.value=v;i.checked=v===bgScope;i.onchange=()=>{bgScope=v;};l.append(i,t);F.append(l);});}
+// 넓게 고르면 그 안에서 따로 정한 것도 같이 바뀌어요
+function bgSet(ent){const p=bgPages[bgPi],old=SBG,n={...SBG},kinds=bgScope==='all'?['song','word','info']:bgScope==='this'?[]:[bgScope];
+  const gk=new Map(songGroups().flatMap(g=>g.items).map(s=>[bgKeyOf(s),bgKind(s)]));
+  for(const k in n)if(k.startsWith('g:')&&(kinds.includes(gk.get(k))||bgScope==='all'))delete n[k];
+  if(bgScope==='this'){const k=bgKeyOf(p.s);if(ent)n[k]=ent;else delete n[k];}
+  for(const k of kinds)if(ent)n[k]=ent;else delete n[k];
+  const sess=curSess;SBG=n;saveSession();bgChanged();$('bgDlg').close();
+  const left=!ent&&bgScope==='this'&&bgEntOf(p.s);
+  toastUndo(left?'이 곡에 따로 정한 배경을 지웠어요. 전체 배경은 그대로예요':ent?'이번 예배에 배경을 썼어요':'원래 배경으로 돌렸어요',()=>{if(curSess!==sess)return;SBG=old;saveSession();bgChanged();});}
+['추천','절기','계절','자연·질감','우리 교회'].forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{bgTab=t;$('bgList').scrollTop=0;bgList();};$('bgTabs').append(b);});
+$('bgPrev').onclick=()=>{bgPi=(bgPi+bgPages.length-1)%bgPages.length;bgView();};$('bgNext').onclick=()=>{bgPi=(bgPi+1)%bgPages.length;bgView();};
+$('bgDim').oninput=()=>{bgDim=+$('bgDim').value;bgView();};$('bgGo').onclick=()=>{if(bgSel)bgSet({b:bgSel,d:bgDim});};$('bgOff').onclick=()=>bgSet(null);
+$('bgX').onclick=()=>$('bgDlg').close();$('bgDlg').addEventListener('click',e=>{if(e.target===$('bgDlg'))$('bgDlg').close();});
 
 /* ---- 다른 형식: TXT 고르기 · 투명 PNG/TGA · 초록 배경 PNG · CSV ---- */
 const DMK=[['txt','TXT 고르기','한글 방식 · 나누기 · 줄 수'],['png','투명 PNG','배경 없이 글자만'],['tga','투명 TGA','방송 장비용'],['green','초록 배경 PNG','초록을 빼서 얹을 때'],['csv','CSV','표로 읽는 프로그램용']];
@@ -5524,7 +5653,7 @@ $('dlPdf').onclick=async()=>{
   const b=$('dlPdf'),groups=exportGroups();if(!groups.length)return;
   b.disabled=true;const t=b.innerHTML;b.querySelector('.bt').textContent='만드는 중…';
   try{
-    const jpgs=[];
+    await drawReady();const jpgs=[];
     for(const g of groups)for(const s of g.items)jpgs.push(await shotJpg(s,g.songIdx||0));
     await saveBlob(`${exportName(groups)}.pdf`,await makePdf(jpgs));
     toast(`PDF로 내려받았어요 (${jpgs.length}장)`);exported=true;renderSteps();
@@ -5843,7 +5972,7 @@ function saveSession(){
 }
 function loadSession(id){
   const c=SESS.find(x=>x.id===id);if(!c)return;
-  clearTimeout(window._fr);fmtMap=null;endFmt();SFMT=textFmt(c.text);FMT=SFMT||DEF;fillForm();renderFmtPreview();renderPresets();
+  clearTimeout(window._fr);fmtMap=null;endFmt();SBG=textBg(c.text);SFMT=textFmt(c.text);FMT=SFMT||DEF;fillForm();renderFmtPreview();renderPresets();
   curSess=id;store.set('curSess',id);
   $('docTitle').value=c.name;results=c.results||[];store.set('results',results);
   songs.forEach(s=>s.pages.forEach(p=>URL.revokeObjectURL(p.url)));
@@ -6703,13 +6832,14 @@ function liveDb(){return new Promise((res,rej)=>{const r=indexedDB.open('hogam-l
 async function liveKv(mode,fn){const db=await liveDb();try{return await new Promise((res,rej)=>{const t=db.transaction('kv',mode),q=fn(t.objectStore('kv'));t.oncomplete=()=>res(q&&q.result);t.onerror=t.onabort=()=>rej(t.error);});}finally{db.close();}}
 // 나가거나 교회를 못 쓰게 되면 이 컴퓨터에 둔 송출 그림도 모두 지워요
 async function liveWipe(){LIVE=null;clearTimeout(liveKeepT);liveHold=false;liveAutoNo++;try{if(liveWin&&!liveWin.closed)liveWin.close();}catch(e){}liveWin=null;liveUI();try{await liveKv('readwrite',o=>o.clear());}catch(e){}}
-function liveSig(){return JSON.stringify([curSess,songGroups().map(g=>[g.title,g.type,g.songIdx,g.items.map(s=>[s.ovKey,s.type,s.ed,s.lines,s.ref,s.title,s.blank,s.item])]),LOOK,SLIDE_OV,songColors,Object.entries(MEDIA).map(([k,v])=>[k,v&&v.length,v&&v.slice(-40)]),typeof sermonRef==='function'?sermonRef():'']);}
+function liveSig(){return JSON.stringify([curSess,songGroups().map(g=>[g.title,g.type,g.songIdx,g.items.map(s=>[s.ovKey,s.type,s.ed,s.lines,s.ref,s.title,s.blank,s.item])]),LOOK,SLIDE_OV,songColors,SBG,bgUsed().map(id=>!!BGI[id]?.img),Object.entries(MEDIA).map(([k,v])=>[k,v&&v.length,v&&v.slice(-40)]),typeof sermonRef==='function'?sermonRef():'']);}
 const liveBlob=(cv,type,q)=>new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('그림을 만들지 못했어요')),type,q));
 function liveHash(t){let a=0xdeadbeef,b=0x41c6ce57;for(let i=0;i<t.length;i++){const c=t.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677);}return(a>>>0).toString(36)+(b>>>0).toString(36)+t.length;}
 const liveSkip=new Set(['line','src','lsrc','chunk','cs','ovKey']); // 글 위치 번호는 그림에 안 나와요
 async function drawReady(){
   ensureGlyphs();await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,8000))]);
   await Promise.all(Object.keys(MEDIA).filter(k=>MEDIA[k]).map(async k=>{mediaImg(k);try{await IMG[k].decode();}catch(e){}}));
+  if((await bgReady()).length)toast('배경을 못 받은 화면이 있어요. 인터넷을 확인해 주세요');
 }
 async function liveBake(onStep,stop=()=>false,old=null,onSlide=null){
   await drawReady();
@@ -6717,7 +6847,7 @@ async function liveBake(onStep,stop=()=>false,old=null,onSlide=null){
   const common=JSON.stringify([LOOK,songColors,Object.entries(MEDIA).map(([k,v])=>[k,v&&v.length,v&&v.slice(-40)]),typeof sermonRef==='function'?sermonRef():'']),qt=$('quoteText').value;
   const slides=[],todo=[],have=new Map((old?.slides||[]).map(x=>[x.h,x]));
   groups.forEach((g,gi)=>g.items.forEach((sc,n)=>{
-    const s={id:g.items[0].type+(g.chunk??'')+':'+n,g:gi,h:liveHash(common+JSON.stringify(sc,(k,v)=>liveSkip.has(k)?undefined:v)+JSON.stringify([g.songIdx,g.title,SLIDE_OV[sc.ovKey],sc.ed==='quote'?[qt,g.chunk]:0]))};
+    const s={id:g.items[0].type+(g.chunk??'')+':'+n,g:gi,h:liveHash(common+JSON.stringify(sc,(k,v)=>liveSkip.has(k)?undefined:v)+JSON.stringify([g.songIdx,g.title,SLIDE_OV[sc.ovKey],...(bgEntOf(sc)?[bgEntOf(sc),!!BGI[bgEntOf(sc).b]?.img]:[]),sc.ed==='quote'?[qt,g.chunk]:0]))};
     const o=have.get(s.h);if(o)for(const k of ['full','clear','green','thumb'])s[k]=o[k];else todo.push([s,sc,g]);slides.push(s);}));
   const curId=old?.slides[old.i]?.id;todo.sort((a,b)=>(b[0].id===curId)-(a[0].id===curId));
   const cv=mk(1920,1080),bg=mk(1920,1080),out=mk(1920,1080),th=mk(320,180),bx=bg.getContext('2d'),ox=out.getContext('2d'),x=cv.getContext('2d');

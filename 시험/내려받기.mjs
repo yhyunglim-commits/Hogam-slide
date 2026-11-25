@@ -63,7 +63,7 @@ try{
   await ev(`MEDIA.song=MEDIA.info=null;setPage('slides')`);await z(700);
   is('폭 1440에서 단추가 다 보임',await ev(`const r=$('dlMore').getBoundingClientRect();return r.width>0&&r.right<=innerWidth`));await shot('0-bar.png',S);
   await ev(`Object.assign(DM,{k:'txt',enc:'cp949',sep:'blank',n:'0',title:true,blank:false});$('dlMore').click()`);await z(400);await shot('1-txt.png',S);
-  is('없는 글자를 알려 주고 바꿔 줌',await ev(`const w=document.querySelector('.dmwarn'),r=w.textContent.includes('🙏');w.querySelector('button').click();return r&&DM.enc==='utf8'&&!document.querySelector('.dmwarn')`));
+  is('없는 글자를 알려 주고 바꿔 줌',await ev(`const w=document.querySelector('#dmOut .dmwarn'),r=w.textContent.includes('🙏');w.querySelector('button').click();return r&&DM.enc==='utf8'&&!document.querySelector('#dmOut .dmwarn')`));
   for(const k of ['png','tga','green','csv']){await ev(`document.querySelector('#dmKinds [data-k=${k}]').click()`);await z(400);await shot('2-'+k+'.png',S);}
   is('내려받기를 누르면 파일이 나가고 창이 닫힘',await ev(`let n='';const o=saveBlob;saveBlob=async a=>{n=a};await $('dmGo').onclick();saveBlob=o;return n.endsWith('.csv')&&!$('dmDlg').open`));
   is('고른 화면만 나감',await ev(`selKeys.add(shotKey(allShots()[0]));DM.k='txt';const r=dmRows().length===1;selKeys.clear();return r`));
