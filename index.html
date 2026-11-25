@@ -2371,6 +2371,34 @@ body.szing,body.szing *{user-select:none!important;-webkit-user-select:none!impo
   body:not(.railpinned) header.doc .brand{width:72px;padding:0!important;justify-content:center;box-sizing:border-box}
   body:not(.railpinned) header.doc .brand::after{display:none}
 }
+
+/* ---- 송출 ---- */
+.livebox{position:fixed;inset:0;z-index:79;background:var(--canvas);display:none;flex-direction:column;gap:12px;padding:14px 20px 20px;overflow:auto}
+.livebox.on{display:flex}
+.lvrow{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}.lvrow .sp{margin-left:auto}
+.lvrow h2{font-size:16px;margin:0}
+.lvtop{display:grid;grid-template-columns:1fr auto 1fr;gap:10px 14px;align-items:center}.lvtop .lvbtns{justify-content:center}
+.lvst{font-weight:700;font-size:15px;color:var(--text3)}.lvst.on{font-size:20px;letter-spacing:.06em;line-height:1;color:#fff;background:#D92D23;border-radius:8px;padding:8px 14px}
+.lvclk{font:500 14px ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.lvnote{background:var(--warn-soft);color:var(--warn-ink);border-radius:10px;padding:8px 14px;font-size:13px}
+.lvwork{display:grid;gap:14px;min-width:0;align-content:start}
+.lvscr{display:grid;grid-template-columns:minmax(0,min(66%,84vh)) minmax(0,min(33%,42vh));gap:14px;justify-content:center;align-items:start}.lvscr h3{font-size:13px;color:var(--text2);margin:0 0 6px}
+.lvscr canvas{display:block;width:100%;aspect-ratio:16/9;background:#000;border-radius:6px}
+.lvscr .live{outline:3px solid var(--bad);outline-offset:2px}
+.lvctl{justify-content:center}.lvctl .btn{height:46px;min-width:130px;justify-content:center}.lvrow .btn[aria-pressed=true]{background:var(--pri-soft);color:var(--pri-ink)}
+.lvgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.lvgrid button{border:0;border-radius:8px;background:var(--surface);box-shadow:var(--card-edge);color:var(--text);padding:4px;text-align:left;font-size:12px;cursor:pointer}
+.lvgrid img{display:block;width:100%;aspect-ratio:16/9;background:#000;border-radius:5px;margin-bottom:3px}
+.lvgrid button[aria-current=true]{box-shadow:0 0 0 3px var(--bad)}.lvgrid button.drag{opacity:.4}.lvgrid button.dropL{box-shadow:-5px 0 0 var(--pri)}.lvgrid button.dropR{box-shadow:5px 0 0 var(--pri)}
+.lvscreens{display:grid;gap:6px;margin:10px 0}#lvDlg .lvrow{margin-top:16px}
+#lookBox #lookCtl>.rglive{position:sticky;right:-28px;z-index:3;justify-content:center;padding:0 14px;background:var(--ribbg,var(--surface))}
+body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
+#dlLive{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:64px;height:54px;border:0;border-radius:10px;background:var(--bad-soft);color:var(--bad);font:700 13px var(--sans);cursor:pointer;white-space:nowrap}
+#dlLive i{font-size:24px;color:var(--bad)}#dlLive:hover:not(:disabled){filter:brightness(.96)}#dlLive:disabled{opacity:.4;cursor:default}
+#lvPill{position:fixed;right:20px;bottom:20px;z-index:70;background:var(--bad);color:#fff}
+#lvPill:hover{background:var(--bad);color:#fff}
+@media(max-width:1150px){.lvtop{grid-template-columns:minmax(0,1fr)}.lvtop .lvbtns{justify-content:flex-start}.lvtop .lvend{display:none}}
+@media(max-width:800px){.lvscr{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -2911,6 +2939,23 @@ body.szing,body.szing *{user-select:none!important;-webkit-user-select:none!impo
   <ul class="chlist" id="goneList"></ul>
   <div class="setrows"><button type="button" data-ch="join"><i class="ph ph-sign-in" aria-hidden="true"></i>다른 교회 들어가기</button><button type="button" data-ch="new" id="chMake3"><i class="ph ph-plus-circle" aria-hidden="true"></i>새 교회 만들기</button><button type="button" id="goneOut"><i class="ph ph-sign-out" aria-hidden="true"></i>로그아웃</button></div>
 </dialog>
+<div class="livebox" id="livebox" role="dialog" aria-modal="true" aria-labelledby="lvName">
+  <div class="lvtop"><div class="lvrow"><span class="lvst" id="lvSt" role="status"></span><h2 id="lvName">송출</h2><span class="lvclk" id="lvClk"></span></div>
+    <div class="lvrow lvbtns"><button type="button" class="btn" id="lvBgPic">원본 그대로</button><button type="button" class="btn" id="lvBgGreen" title="방송 장비에서 초록을 빼고 자막만 얹을 때">초록 배경</button><button type="button" class="btn" id="lvBlack" aria-pressed="false" title="단축키 B">검은 화면</button><button type="button" class="btn" id="lvFull">전체 화면</button><button type="button" class="btn" id="lvClear" aria-pressed="false" title="단축키 C">자막만 지우기</button><button type="button" class="btn" id="lvEdit">편집으로 돌아가기</button><button type="button" class="btn danger" id="lvEnd">송출 끝내기</button></div><span class="lvend"></span></div>
+  <div class="lvnote lvrow hidden" id="lvGone"><span>송출 창이 닫혀 있어요. 다시 열면 같은 화면부터 이어져요.</span><button type="button" class="btn sm sp" id="lvReopen">송출 창 다시 열기</button></div>
+  <div class="lvnote lvrow hidden" id="lvChg"><span id="lvChgTx"></span><button type="button" class="btn sm sp" id="lvApply">반영</button><button type="button" class="btn sm" id="lvLater">나중에</button></div>
+  <div class="lvwork">
+    <div class="lvscr"><div><h3 id="lvNowT">현재 슬라이드</h3><canvas id="lvNow" width="960" height="540"></canvas></div><div><h3>다음 슬라이드</h3><canvas id="lvNext" width="640" height="360"></canvas><p class="hint" id="lvPos"></p></div></div>
+    <div class="lvrow lvctl"><button type="button" class="btn" id="lvPrev">← 이전</button><button type="button" class="btn pri" id="lvGo">다음 →</button></div>
+    <p class="hint lvrow" style="margin:0">← → 스페이스로 넘기고, B는 검은 화면, C는 자막만 지우기예요. 누르면 바로 나가고, 끌면 송출 순서가 바뀌어요.<button type="button" class="btn sm hidden" id="lvOrder0">원래 순서로</button></p>
+    <div class="lvgrid" id="lvGrid"></div></div>
+</div>
+<button type="button" class="btn hidden" id="lvPill"></button>
+<div hidden id="liveHome"><div class="rg rglive" id="rgLive"><button type="button" id="dlLive" title="예배당 화면에 바로 띄우기"><i class="ph-fill ph-broadcast" aria-hidden="true"></i><span>송출</span></button></div></div>
+<dialog class="maildlg" id="lvDlg" aria-labelledby="lvDlgT"><form method="dialog"><h2 id="lvDlgT">송출 시작</h2>
+  <p class="lead" id="lvPrep" role="status"></p><div class="lvscreens" id="lvScr"></div>
+  <p class="hint">송출 중에 이 컴퓨터에서 편집한 내용은 바로 나가요. 팀원이 고친 것은 불러오거나 '반영'을 눌러야 나가요.</p>
+  <div class="lvrow"><button type="button" class="btn" id="lvFind">두 번째 화면 찾기</button><button type="button" class="btn sp" id="lvX">취소</button><button type="button" class="btn pri" id="lvStart" disabled>송출 시작</button></div></form></dialog>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -2956,6 +3001,7 @@ async function teamSend(k){clearTimeout(TEAM.t[k]);delete TEAM.t[k];TEAM.local[k
   if(error){TEAM.bad[k]=1;netErr(error);}else delete TEAM.bad[k];}
 // 팀 서버의 값을 이 화면에 반영해요
 function teamApply(k,v){
+  const lk0=LIVE&&liveLookSig();
   TEAM.applying=true;
   try{
     if(k==='look'&&v){LOOK=mkLook(v);store.set('look',LOOK);lookPrev=lookSnap();
@@ -2968,7 +3014,7 @@ function teamApply(k,v){
     else if(k==='mine'){mine=Array.isArray(v)?v.filter(m=>m&&m.f):[];store.set('mine',mine);renderMine();}
     else if(k==='infoLib'){ILIB=Array.isArray(v)?v.filter(o=>o&&o.title):[];store.set('infoLib',ILIB);renderInfoEd();}
     else if(k.startsWith('media.')){MEDIA[k.slice(6)]=safeImg(v);store.set('media',MEDIA);buildLookUI();renderShots();}
-  }finally{TEAM.applying=false;}
+  }finally{TEAM.applying=false;if(lk0&&lk0!==liveLookSig())liveHold=true;}
 }
 // 로그인한 뒤 한 번: 팀 설정을 불러오고, 팀에 아직 없는 설정은 이 브라우저 것으로 채워요
 async function bootTeam(){
@@ -4020,8 +4066,10 @@ function setRib(k){ribOpen=k;const all=!!$('lookBox').closest('#sbSet');$('lookC
 addEventListener('pointerdown',e=>{if(ribOpen&&!e.target.closest('.rg.open')&&!e.target.closest('#toast'))setRib(null);},true);
 addEventListener('keydown',e=>{if(e.key==='Escape'&&ribOpen)setRib(null);});
 addEventListener('resize',()=>placeRib());addEventListener('scroll',()=>placeRib(),{passive:true});
+// 송출 단추: '로고·아래 문구' 칸 옆. 그 칸이 없는 화면(자막 박스·빈 화면)에서는 맨 끝
+function placeLive(){const box=$('lookCtl'),r=$('rgLive'),lg=box.querySelector('.rg[data-k=logo]'),mo=box.querySelector('.rg[data-k=more]');if(lg)lg.after(r);else if(mo)mo.before(r);else box.appendChild(r);}
 function buildLookUI(){
-  const box=$('lookCtl');box.innerHTML='';
+  const box=$('lookCtl');$('liveHome').appendChild($('rgLive'));box.innerHTML='';queueMicrotask(placeLive);
   const pg=typeof curPage==='string'?curPage:'slides',inBox=!!$('lookBox').closest('#sbSet');
   const G=inBox?['song','word','quote','info']:pg==='song'?['song']:pg==='info'?['info']:pg==='word'?[WMODE==='q'?'quote':'word']:['song','word','quote','info'];
   if(!G.includes(lookTab)&&!lookSlideKey){lookTab=G[0];store.set('lookTab',lookTab);}
@@ -4225,10 +4273,13 @@ function palOf(sc,songIdx){
   if(sc.type==='word')return palById(songColors['📖'+sc.ref]||'forest')||PALS[7];
   return palById(songColors[sc.songKey]||AUTO_SONG[songIdx%AUTO_SONG.length])||PALS[0];
 }
+let bgFill=null,bgTap=null; // 송출: 배경 대신 칠할 색 · 배경만 떠 두기
 function drawBg(x,W,H,pal){
+  if(bgFill){x.fillStyle=bgFill;x.fillRect(0,0,W,H);return;}
   const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,pal.c[0]);g.addColorStop(.55,pal.c[1]);g.addColorStop(1,pal.c[2]);x.fillStyle=g;x.fillRect(0,0,W,H);
   [[.75,.28,.55,pal.b[0]],[.18,.8,.6,pal.b[1]],[.55,.6,.35,pal.b[0]]].forEach(([cx,cy,r,col])=>{
     const rg=x.createRadialGradient(cx*W,cy*H,0,cx*W,cy*H,r*W);rg.addColorStop(0,col);rg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=rg;x.fillRect(0,0,W,H);});
+  bgTap?.(x.canvas);
 }
 function spacedW(x,t,sp){let w=0;for(const ch of t)w+=x.measureText(ch).width;return w+sp*Math.max(0,[...t].length-1);}
 function drawSpaced(x,t,X,Y,sp,align,stroke){
@@ -4243,7 +4294,7 @@ function drawFooter(x,W,H,text,y,dx=0){
   let cx=W/2-total/2+dx;x.fillStyle='rgba(255,255,255,.92)';
   parts.forEach((p,i)=>{x.font=`${p.b?800:400} ${fs}px "Noto Sans KR", sans-serif`;cx+=drawSpaced(x,p.w,cx,y,sp,'left')+(i<parts.length-1?sp*2.2:0);});
 }
-function drawPhoto(x,W,H,img,dim){const k=Math.max(W/img.width,H/img.height),w=img.width*k,h=img.height*k;x.drawImage(img,(W-w)/2,(H-h)/2,w,h);if(dim>0){x.fillStyle=`rgba(0,0,0,${dim/100})`;x.fillRect(0,0,W,H);}}
+function drawPhoto(x,W,H,img,dim){if(bgFill){x.fillStyle=bgFill;x.fillRect(0,0,W,H);return;}const k=Math.max(W/img.width,H/img.height),w=img.width*k,h=img.height*k;x.drawImage(img,(W-w)/2,(H-h)/2,w,h);if(dim>0){x.fillStyle=`rgba(0,0,0,${dim/100})`;x.fillRect(0,0,W,H);}bgTap?.(x.canvas);}
 function footerWidth(x,W,text){const words=text.trim().split(/\s+/);if(!words[0])return 0;const fs=W*.0125,sp=fs*.62;let t=0;words.forEach((w,i)=>{x.font=`${i===0||i===words.length-1&&words.length>1?800:400} ${fs}px "Noto Sans KR", sans-serif`;t+=spacedW(x,w,sp)+(i<words.length-1?sp*2.2:0);});return t;}
 function logoBox(x,W,H,L,footY,img){
   if(!img||L.logoPos==='off')return null;const h=H*L.logoSize/100,w=img.width/img.height*h,m=W*.03;
@@ -4461,7 +4512,7 @@ function renderShots(){
   ensureGlyphs();clearTimeout(shotT);shotT=setTimeout(()=>{
     const box=$('shots'),groups=songGroups();box.innerHTML='';shownGroups=groups;
     const total=groups.reduce((a,g)=>a+g.items.length,0);renderTabCounts(total);renderGroupTabs(groups,total);
-    $('shotCount').textContent=total?`${total}장`:'';$('ptCount').textContent=total||'';['dlTxt','dlPdf','dlJpg','dlShots','dlPptx'].forEach(id=>$(id).disabled=!total);
+    $('shotCount').textContent=total?`${total}장`:'';$('ptCount').textContent=total||'';['dlTxt','dlPdf','dlJpg','dlShots','dlPptx','dlLive'].forEach(id=>$(id).disabled=!total);
     renderPv(groups);
     if(!total){box.innerHTML='<div class="empty">자막 결과가 생기면 화면마다 미리보기가 나와요.</div>';return;}
     if(curPage!=='slides'){box.dataset.stale='1';return;}delete box.dataset.stale;
@@ -6116,7 +6167,7 @@ function showJoin(u){const md=u.user_metadata||{};
       if(error)throw new Error('서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요');if(!data.ok)throw new Error(data.error);
       store.set('joinCode',null);toast(`${data.church}에 들어왔어요`);await afterLogin(u);}
     catch(x){err.textContent=x.message||String(x);}finally{go.disabled=false;}};}
-$('jOut').onclick=async()=>{await sb.auth.signOut();me=null;$('jName').value='';showGate();};
+$('jOut').onclick=async()=>{await liveWipe();await sb.auth.signOut();me=null;$('jName').value='';showGate();};
 // 옛 방식(이름+암호)으로 들어온 팀원에게 카카오 연결을 권해요
 const hasKakao=u=>(u.identities||[]).some(i=>i.provider==='kakao');
 async function linkKakao(){sessionStorage.setItem('cj_linking','1');const {error}=await sb.auth.linkIdentity({provider:'kakao',options:{redirectTo:backTo()}});
@@ -6133,7 +6184,7 @@ async function copyInvite(){const {data,error}=await sb.rpc('get_invite');
   const link=`${backTo()}?join=${data.code}`,d=new Date(data.expires_at),until=`${d.getMonth()+1}월 ${d.getDate()}일까지`;
   try{await navigator.clipboard.writeText(link);toastUndo(`초대 링크를 복사했어요. ${until} 쓸 수 있어요 (코드 ${data.code})`,()=>{},'확인',6000);}
   catch(_){prompt(`이 초대 링크를 복사해서 보내 주세요 (${until} 쓸 수 있어요)`,link);}}
-$('logout').onclick=async()=>{const old=!$('linkKakao').hidden;if(!confirm(old?'아직 카카오를 연결하지 않았어요. 나가면 다음에도 이름과 개인 암호로 들어와야 해요. 나갈까요?':'나갈까요? 다음에 카카오로 다시 들어오면 돼요.'))return;closeSet();saveSession();await flushSessions();await sb?.auth.signOut();me=null;if(old)location.href=backTo()+'?old';else location.reload();};
+$('logout').onclick=async()=>{const old=!$('linkKakao').hidden;if(!confirm(old?'아직 카카오를 연결하지 않았어요. 나가면 다음에도 이름과 개인 암호로 들어와야 해요. 나갈까요?':'나갈까요? 다음에 카카오로 다시 들어오면 돼요.'))return;closeSet();saveSession();await flushSessions();await liveWipe();await sb?.auth.signOut();me=null;if(old)location.href=backTo()+'?old';else location.reload();};
 
 // 예배 이름 칸을 글자 길이에 맞춰서, 저장 시각이 이름 바로 옆에 붙게
 function fitTitle(){const el=$('docTitle');if(!el)return;const m=fitTitle.m||(fitTitle.m=Object.assign(document.createElement('span'),{style:'position:absolute;visibility:hidden;white-space:pre;left:-9999px;top:0'}));
@@ -6348,7 +6399,7 @@ async function checkIn(now){if(!sb||!me||(!now&&Date.now()-chkAt<5000))return;ch
   if(my.role!==m.role){my.role=m.role;renderTrash();}renderChurch();}
 setInterval(()=>{if(document.visibilityState==='visible')checkIn();},60000);
 addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkIn();});
-function showGone(why,church){
+function showGone(why,church){liveWipe();
   const left=[];
   if(me){saveSession();if(TM)TM=null;
     const fly={};SESS.forEach(c=>{if(inflight[c.id]>0)fly[c.id]=c;});
@@ -6368,7 +6419,7 @@ function showGone(why,church){
   if(!$('goneDlg').open)$('goneDlg').showModal();}
 $('goneDlg').addEventListener('cancel',e=>e.preventDefault());
 $('goneDlg').addEventListener('close',()=>{if(!me)$('goneDlg').showModal();}); // Esc를 두 번 누르면 브라우저가 닫아 버려요
-$('goneOut').onclick=async()=>{await sb.auth.signOut();location.reload();};
+$('goneOut').onclick=async()=>{await liveWipe();await sb.auth.signOut();location.reload();};
 
 let chan=null;
 async function bootRemote(){
@@ -6462,8 +6513,201 @@ async function initAuth(){
   if(!sb){showGate('setup');return;}
   const {data:{session}}=await sb.auth.getSession();
   if(session)await afterLogin(session.user);else{showGate();if(AUTH_ERR)$('gErr').textContent='카카오 로그인이 끝나지 않았어요. 다시 해 주세요';}
-  sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT'&&me){me=null;showGate();}});
+  sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT'&&me){liveWipe();me=null;showGate();}});
 }
+
+/* ---- 송출: 시작할 때 모든 화면을 그림으로 떠서 이 컴퓨터에 두고, 송출 창은 그 그림만 보여 줘요
+   (그래서 인터넷이 끊기거나 팀원이 고쳐도 예배당 화면은 그대로예요) ---- */
+const LIVE_GREEN='#00B140',LIVE_KEEP=24*3600e3;
+let LIVE=null,liveWin=null,liveNew=null,liveBmp=new Map(),liveUrls=[],livePaintNo=0,liveNum='',liveLater='',liveBusy=0,liveHold=false,liveTouched=false,liveAutoNo=0;
+function liveDb(){return new Promise((res,rej)=>{const r=indexedDB.open('hogam-live',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);r.onblocked=()=>rej(new Error('blocked'));});}
+async function liveKv(mode,fn){const db=await liveDb();try{return await new Promise((res,rej)=>{const t=db.transaction('kv',mode),q=fn(t.objectStore('kv'));t.oncomplete=()=>res(q&&q.result);t.onerror=t.onabort=()=>rej(t.error);});}finally{db.close();}}
+// 나가거나 교회를 못 쓰게 되면 이 컴퓨터에 둔 송출 그림도 모두 지워요
+async function liveWipe(){LIVE=null;clearTimeout(liveKeepT);liveHold=false;liveAutoNo++;try{if(liveWin&&!liveWin.closed)liveWin.close();}catch(e){}liveWin=null;liveUI();try{await liveKv('readwrite',o=>o.clear());}catch(e){}}
+function liveSig(){return JSON.stringify([curSess,songGroups().map(g=>[g.title,g.type,g.songIdx,g.items.map(s=>[s.ovKey,s.type,s.ed,s.lines,s.ref,s.title,s.blank,s.item])]),LOOK,SLIDE_OV,songColors,Object.entries(MEDIA).map(([k,v])=>[k,v&&v.length,v&&v.slice(-40)]),typeof sermonRef==='function'?sermonRef():'']);}
+const liveBlob=(cv,type,q)=>new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('그림을 만들지 못했어요')),type,q));
+function liveHash(t){let a=0xdeadbeef,b=0x41c6ce57;for(let i=0;i<t.length;i++){const c=t.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677);}return(a>>>0).toString(36)+(b>>>0).toString(36)+t.length;}
+const liveSkip=new Set(['line','src','lsrc','chunk','cs','ovKey']); // 글 위치 번호는 그림에 안 나와요
+async function liveBake(onStep,stop=()=>false,old=null,onSlide=null){
+  ensureGlyphs();await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,8000))]);
+  await Promise.all(Object.keys(MEDIA).filter(k=>MEDIA[k]).map(async k=>{mediaImg(k);try{await IMG[k].decode();}catch(e){}}));
+  const sig=liveSig(),sess=curSess,name=$('docTitle').value||'예배',groups=songGroups(),mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
+  const common=JSON.stringify([LOOK,songColors,Object.entries(MEDIA).map(([k,v])=>[k,v&&v.length,v&&v.slice(-40)]),typeof sermonRef==='function'?sermonRef():'']),qt=$('quoteText').value;
+  const slides=[],todo=[],have=new Map((old?.slides||[]).map(x=>[x.h,x]));
+  groups.forEach((g,gi)=>g.items.forEach((sc,n)=>{
+    const s={id:g.items[0].type+(g.chunk??'')+':'+n,g:gi,h:liveHash(common+JSON.stringify(sc,(k,v)=>liveSkip.has(k)?undefined:v)+JSON.stringify([g.songIdx,g.title,SLIDE_OV[sc.ovKey],sc.ed==='quote'?[qt,g.chunk]:0]))};
+    const o=have.get(s.h);if(o)for(const k of ['full','clear','green','thumb'])s[k]=o[k];else todo.push([s,sc,g]);slides.push(s);}));
+  const curId=old?.slides[old.i]?.id;todo.sort((a,b)=>(b[0].id===curId)-(a[0].id===curId));
+  const cv=mk(1920,1080),bg=mk(1920,1080),out=mk(1920,1080),th=mk(320,180),bx=bg.getContext('2d'),ox=out.getContext('2d'),x=cv.getContext('2d');
+  const over=fill=>{ox.fillStyle=fill;ox.fillRect(0,0,1920,1080);ox.drawImage(cv,0,0);};let n=0;
+  for(const [s,sc,g] of todo){
+    if(stop())return null;
+    bx.fillStyle='#000';bx.fillRect(0,0,1920,1080);bgTap=c=>bx.drawImage(c,0,0);x.clearRect(0,0,1920,1080);
+    try{drawScreen(cv,sc,g.songIdx||0);}finally{bgTap=null;}
+    over('#000');th.getContext('2d').drawImage(out,0,0,320,180);const full=liveBlob(out,'image/jpeg',.93),thumb=liveBlob(th,'image/jpeg',.8),clear=liveBlob(bg,'image/jpeg',.93);
+    s.full=await full;s.thumb=await thumb;s.clear=await clear;
+    if(stop())return null;
+    x.clearRect(0,0,1920,1080);bgFill=LIVE_GREEN;try{drawScreen(cv,sc,g.songIdx||0);}finally{bgFill=null;}
+    over(LIVE_GREEN);s.green=await liveBlob(out,'image/png');
+    onStep?.(++n,todo.length);if(s.id===curId)onSlide?.(s);
+    await new Promise(r=>setTimeout(r,0));}
+  return{sig,sess,ch:CH,name,groups:groups.map(g=>({tag:tagOf(g,groups),title:g.title})),slides,at:Date.now()};
+}
+async function liveKeep(d){try{await liveKv('readwrite',o=>o.put(d,'data:'+CH));}catch(e){toast('이 컴퓨터에 저장하지 못했어요. 새로고침하면 이어갈 수 없어요');}}
+let liveKeepT;function liveKeepSoon(){clearTimeout(liveKeepT);liveKeepT=setTimeout(()=>{if(LIVE){const{i,bg,black,clear,t0,...d}=LIVE;liveKeep(d);}},2500);}
+function liveKeepPos(){if(!LIVE)return;const{i,bg,black,clear,t0}=LIVE;liveKv('readwrite',o=>o.put({i,bg,black,clear,t0},'pos:'+CH)).catch(()=>{});}
+
+/* 송출 창: 이 창을 새로고침해도 이름으로 다시 찾아 이어 써요 */
+function liveOpen(scr){
+  const f=scr?`popup,left=${scr.availLeft},top=${scr.availTop},width=${scr.availWidth},height=${scr.availHeight}`:'popup,width=1280,height=720';
+  let w=null;try{w=window.open('','hogamLive',f);}catch(e){}
+  if(!w){toast('송출 창이 막혔어요. 주소 칸에서 팝업을 허용해 주세요');return false;}
+  liveWin=w;liveDress();w.focus();return true;
+}
+function liveDress(){
+  const w=liveWin,d=w.document;
+  if(!d.getElementById('c')){d.title='호감슬라이드 송출';d.documentElement.style.background='#000';
+    d.head.innerHTML='<meta charset="utf-8"><style>html,body{margin:0;height:100%;background:#000;overflow:hidden}canvas{display:block;width:100vw;height:100vh;object-fit:contain}body.full{cursor:none}p{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);margin:0;white-space:nowrap;padding:10px 18px;border-radius:99px;background:rgba(0,0,0,.75);color:#fff;font:500 14px -apple-system,"Malgun Gothic",sans-serif}body.full p{display:none}</style>';
+    d.body.innerHTML='<canvas id="c" width="1920" height="1080"></canvas><p>이 창을 예배당 화면으로 옮기고 한 번 누르면 전체 화면이 돼요</p>';}
+  // 새로고침 뒤에는 예전 연결이 끊겨 있으니 늘 새로 달아요
+  w.onkeydown=liveKey;d.onclick=()=>{if(!d.fullscreenElement)d.documentElement.requestFullscreen().catch(()=>{});};
+  d.onfullscreenchange=()=>{d.body.classList.toggle('full',!!d.fullscreenElement);};
+  livePaint();
+}
+const liveMode=()=>LIVE.black?'black':LIVE.bg==='green'?(LIVE.clear?'greenOnly':'green'):LIVE.clear?'clear':'full';
+async function liveGet(i,m){const s=LIVE&&LIVE.slides[i];if(!s||!s[m])return null;const k=s.h+':'+m;
+  if(!liveBmp.has(k)){const p=createImageBitmap(s[m]);p.catch(()=>liveBmp.delete(k));liveBmp.set(k,p);
+    if(liveBmp.size>14){const o=liveBmp.keys().next().value;liveBmp.delete(o);}}
+  return liveBmp.get(k);}
+function livePut(cv,b,fill){const x=cv.getContext('2d');if(b)x.drawImage(b,0,0,cv.width,cv.height);else{x.fillStyle=fill;x.fillRect(0,0,cv.width,cv.height);}}
+async function livePaint(){
+  if(!LIVE)return;const no=++livePaintNo,m=liveMode(),solid=m==='black'?'#000':m==='greenOnly'?LIVE_GREEN:null,pm=LIVE.bg==='green'?'green':'full';
+  let b=null;try{if(!solid)b=await liveGet(LIVE.i,m);}catch(e){toast('이 화면을 그리지 못했어요');return;}
+  if(no!==livePaintNo||!LIVE)return; // 빨리 넘기면 마지막 것만
+  for(const cv of [$('lvNow'),liveWin&&!liveWin.closed?liveWin.document.getElementById('c'):null])if(cv)livePut(cv,b,solid);
+  try{const n=await liveGet(LIVE.i+1,pm);if(no===livePaintNo)livePut($('lvNext'),n,'#000');liveGet(LIVE.i+2,pm)?.catch?.(()=>{});}catch(e){}
+}
+function liveMove(i){if(!LIVE)return;LIVE.i=Math.max(0,Math.min(LIVE.slides.length-1,i));LIVE.black=LIVE.clear=false;liveNow();}
+function liveNow(){liveKeepPos();livePaint();liveUI();}
+function liveBuild(){
+  liveUrls.forEach(u=>URL.revokeObjectURL(u));liveUrls=[];liveBmp.clear();$('lvName').textContent=LIVE.name;
+  $('lvGrid').innerHTML='';LIVE.slides.forEach((s,i)=>{const b=document.createElement('button'),u=URL.createObjectURL(s.thumb);liveUrls.push(u);b.type='button';b.innerHTML=`<img alt="" src="${u}"><span></span>`;b.firstChild.draggable=false;b.lastChild.textContent=`${i+1} · ${LIVE.groups[s.g].tag}`;b.title=LIVE.groups[s.g].title;b.onclick=()=>liveMove(i);liveDrag(b,i);$('lvGrid').appendChild(b);});
+  $('lvOrder0').classList.toggle('hidden',!LIVE.custom);
+}
+// 끌어서 송출 순서 바꾸기 (원래 예배의 순서는 그대로). 나가 있는 화면은 따라가요
+let liveFrom=-1;
+function liveReorder(from,to){if(!LIVE||from===to||from<0)return;const a=LIVE.slides,cur=a[LIVE.i],[m]=a.splice(from,1);a.splice(to,0,m);LIVE.custom=true;LIVE.i=a.indexOf(cur);liveBuild();liveNow();liveKeepSoon();}
+function liveDrag(b,i){b.draggable=true;const side=e=>{const r=b.getBoundingClientRect();return e.clientX>r.left+r.width/2;},off=()=>b.classList.remove('dropL','dropR');
+  b.ondragstart=e=>{liveFrom=i;b.classList.add('drag');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',String(i+1));};
+  b.ondragend=()=>{liveFrom=-1;b.classList.remove('drag');};
+  b.ondragover=e=>{if(liveFrom<0)return;e.preventDefault();const R=side(e);b.classList.toggle('dropR',R);b.classList.toggle('dropL',!R);};b.ondragleave=off;
+  b.ondrop=e=>{e.preventDefault();off();let to=i+(side(e)?1:0);if(liveFrom<to)to--;liveReorder(liveFrom,to);liveFrom=-1;};
+  b.onkeydown=e=>{const d=e.altKey&&(e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0);if(!d)return;e.preventDefault();const to=i+d;if(to<0||to>=LIVE.slides.length)return;liveReorder(i,to);$('lvGrid').children[to].focus();};}
+// 새로 뜬 화면을 지금 송출에 끼워 넣기: 같은 내용 → 같은 자리 순으로 짝을 찾아 자리와 순서를 지켜요
+function liveMerge(d){
+  const fresh=d.sess!==LIVE.sess,used=new Set(),pair=new Map(),by=f=>LIVE.slides.forEach(o=>{if(pair.has(o))return;const n=d.slides.find(x=>!used.has(x)&&f(x,o));if(n){pair.set(o,n);used.add(n);}});
+  if(!fresh){by((x,o)=>x.h===o.h&&x.id===o.id);by((x,o)=>x.h===o.h);by((x,o)=>x.id===o.id);}
+  const cur=pair.get(LIVE.slides[LIVE.i]);let list=d.slides;
+  if(LIVE.custom&&!fresh){list=LIVE.slides.map(o=>pair.get(o)).filter(Boolean);d.slides.forEach((x,k)=>{if(!used.has(x))list.splice(k?list.indexOf(d.slides[k-1])+1:0,0,x);});}
+  let i=list.indexOf(cur);if(i<0)i=fresh?0:Math.min(LIVE.i,list.length-1);
+  LIVE={...LIVE,...d,slides:list,i,custom:!!LIVE.custom&&!fresh};liveHold=false;liveBuild();liveNow();liveKeepSoon();
+}
+function liveUI(){
+  const on=!!LIVE,open=on&&liveWin&&!liveWin.closed;
+  $('dlLive').lastElementChild.textContent=on?'ON AIR':'송출';
+  if(!on){$('livebox').classList.remove('on');$('lvPill').classList.add('hidden');return;}
+  const shown=$('livebox').classList.contains('on');$('lvPill').classList.toggle('hidden',shown);$('lvPill').textContent=open?'ON AIR · 조작 화면 열기':'송출 이어가기';
+  $('lvSt').textContent=open?'ON AIR':'송출 창 닫힘';$('lvSt').classList.toggle('on',!!open);$('lvGone').classList.toggle('hidden',!!open);
+  $('lvNow').classList.toggle('live',!!open);$('lvFull').disabled=!open;
+  $('lvNowT').textContent='현재 슬라이드'+(LIVE.black?' · 검은 화면':LIVE.clear?' · 자막 지움':'');
+  const n=LIVE.slides[LIVE.i+1];$('lvPos').textContent=`${LIVE.i+1} / ${LIVE.slides.length} · `+(n?`다음은 ${LIVE.groups[n.g].tag}`:'마지막 화면이에요');
+  $('lvBlack').setAttribute('aria-pressed',LIVE.black);$('lvClear').setAttribute('aria-pressed',LIVE.clear);
+  $('lvBgPic').setAttribute('aria-pressed',LIVE.bg!=='green');$('lvBgGreen').setAttribute('aria-pressed',LIVE.bg==='green');
+  [...$('lvGrid').children].forEach((b,i)=>{const c=i===LIVE.i;if(c&&b.getAttribute('aria-current')!=='true'&&shown)b.scrollIntoView({block:'nearest'});b.setAttribute('aria-current',c);});
+}
+function liveShow(){$('livebox').classList.add('on');liveUI();livePaint();$('lvGo').focus();}
+function liveKey(e){
+  if(!LIVE||e.metaKey||e.ctrlKey||e.altKey||e.isComposing)return;const k=e.key;let hit=true;
+  if(k==='Enter'&&liveNum){liveMove(+liveNum-1);liveNum='';}
+  else if(/^\d$/.test(k)){liveNum=(liveNum+k).slice(-3);}
+  else{liveNum='';
+    if(k==='ArrowRight'||k==='PageDown'||k===' '){if(!e.repeat)liveMove(LIVE.i+1);}
+    else if(k==='ArrowLeft'||k==='PageUp'){if(!e.repeat)liveMove(LIVE.i-1);}
+    else if(e.code==='KeyB'||k==='.'){if(!e.repeat){LIVE.black=!LIVE.black;liveNow();}}
+    else if(e.code==='KeyC'){if(!e.repeat){LIVE.clear=!LIVE.clear;LIVE.black=false;liveNow();}}
+    else hit=false;}
+  if(hit){e.preventDefault();e.stopImmediatePropagation();}
+}
+addEventListener('keydown',e=>{if(!$('livebox').classList.contains('on')||$('gate').classList.contains('on')||document.querySelector('dialog[open]'))return;
+  liveKey(e);if(e.key==='Escape')e.stopImmediatePropagation();},true); // Esc는 전체 화면에서 나올 때 쓰니 송출을 닫지 않아요
+$('lvPrev').onclick=()=>liveMove(LIVE.i-1);$('lvGo').onclick=()=>liveMove(LIVE.i+1);
+$('lvBlack').onclick=()=>{LIVE.black=!LIVE.black;liveNow();};$('lvClear').onclick=()=>{LIVE.clear=!LIVE.clear;LIVE.black=false;liveNow();};
+$('lvBgPic').onclick=()=>{LIVE.bg='pic';liveNow();};$('lvBgGreen').onclick=()=>{LIVE.bg='green';liveNow();};
+$('lvOrder0').onclick=()=>{const cur=LIVE.slides[LIVE.i],n=s=>+s.id.split(':').pop();LIVE.slides.sort((a,b)=>a.g-b.g||n(a)-n(b));LIVE.custom=false;LIVE.i=LIVE.slides.indexOf(cur);liveBuild();liveNow();liveKeepSoon();};
+$('lvEdit').onclick=()=>{$('livebox').classList.remove('on');liveUI();};
+$('lvPill').onclick=()=>liveShow();
+$('lvReopen').onclick=()=>{if(liveOpen(liveScr))liveUI();};
+// 크롬은 이 창의 누름을 송출 창에 넘겨줄 수 있어요. 안 되는 브라우저는 송출 창을 직접 눌러요
+$('lvFull').onclick=()=>{const w=liveWin;if(!w||w.closed)return;
+  w.onmessage=ev=>{if(ev.source===window&&ev.data==='full')w.document.documentElement.requestFullscreen().catch(()=>toast('송출 창을 한 번 눌러 주세요'));};
+  try{w.postMessage('full',{targetOrigin:location.origin,delegate:'fullscreen'});}catch(e){toast('송출 창을 한 번 눌러 주세요');}};
+$('lvEnd').onclick=async()=>{if(!confirm('송출을 끝낼까요? 예배당 화면의 송출 창도 닫혀요.'))return;await liveWipe();toast('송출을 끝냈어요');};
+
+/* 시작 창: 미리 받아 두기 → 화면 고르기 → 시작 */
+let liveScr=null,liveScrList=[];
+function liveScrUI(){const b=$('lvScr');b.innerHTML='';if(!('getScreenDetails' in window)){b.textContent='이 브라우저에서는 송출 창을 예배당 화면으로 끌어 옮겨 주세요. 크롬을 쓰면 자동으로 보내요.';$('lvFind').classList.add('hidden');return;}
+  if(!liveScrList.length){b.textContent='두 번째 화면을 찾으면 그쪽으로 바로 열어요. 안 찾으면 창을 끌어 옮기면 돼요.';return;}
+  if(liveScrList.length<2)b.textContent='두 번째 화면이 안 보여요. 화면 복제(미러링)가 아닌 확장으로 연결했는지 봐 주세요.';
+  liveScrList.forEach((s,i)=>{const l=document.createElement('label');l.innerHTML='<input type="radio" name="lvS"> <span></span>';l.lastChild.textContent=`${s.label||'화면 '+(i+1)} (${s.width}×${s.height})${s.isPrimary?' · 주 화면':''}`;const r=l.firstChild;r.checked=s===liveScr;r.onchange=()=>liveScr=s;b.appendChild(l);});}
+async function liveFind(){try{const d=await window.getScreenDetails();liveScrList=[...d.screens];liveScr=liveScrList.find(s=>s!==d.currentScreen&&!s.isPrimary)||liveScrList.find(s=>s!==d.currentScreen)||null;liveScrUI();}catch(e){toast('화면 찾기를 허용하지 않았어요. 송출 창을 끌어 옮기면 돼요');}}
+$('lvFind').onclick=liveFind;
+$('dlLive').onclick=async()=>{
+  if(LIVE){liveShow();return;}
+  liveNew=null;const no=++liveBusy;$('lvStart').disabled=true;$('lvDlg').showModal();liveScrUI();
+  try{if((await navigator.permissions.query({name:'window-management'})).state==='granted')liveFind();}catch(e){}
+  try{const d=await liveBake((n,t)=>{if(no===liveBusy)$('lvPrep').textContent=`화면을 이 컴퓨터에 받고 있어요 (${n}/${t})`;},()=>no!==liveBusy);
+    if(!d||no!==liveBusy)return;liveNew=d;$('lvPrep').textContent=`준비됐어요. 화면 ${d.slides.length}장을 받아 두어서 인터넷이 끊겨도 넘길 수 있어요.`;$('lvStart').disabled=!d.slides.length;}
+  catch(e){$('lvPrep').textContent='준비하지 못했어요: '+(e?.message||e);}
+};
+$('lvX').onclick=()=>$('lvDlg').close();$('lvDlg').addEventListener('close',()=>{liveBusy++;});
+$('lvStart').onclick=()=>{const d=liveNew;if(!d)return;LIVE={...d,i:0,bg:'pic',black:false,clear:false,t0:Date.now()};
+  if(!liveOpen(liveScr)){LIVE=null;return;}
+  $('lvDlg').close();liveBuild();liveShow();liveKeep(d);liveKeepPos();try{navigator.wakeLock?.request('screen').catch(()=>{});}catch(e){}};
+
+/* 이 컴퓨터에서 편집한 것은 바로 송출에 나가요. 다른 예배를 열었거나 팀원이 바꾼 모양은 '반영'을 눌러야 나가요 */
+for(const t of ['input','pointerdown','keydown','drop'])addEventListener(t,e=>{if(LIVE&&e.isTrusted&&!e.target.closest?.('#livebox,#lvPill,#gate'))liveTouched=true;},true);
+const liveLookSig=()=>JSON.stringify([LOOK,songColors,Object.entries(MEDIA).map(([k,v])=>[k,v&&v.length,v&&v.slice(-40)])]);
+let liveSeen='',liveSeenAt=0,liveAutoing='';
+async function liveAuto(sig){
+  const no=++liveAutoNo;liveAutoing=sig;
+  try{const d=await liveBake(null,()=>no!==liveAutoNo||!LIVE||curSess!==LIVE.sess||liveHold,LIVE,s=>{const o=LIVE?.slides[LIVE.i];if(o&&o.id===s.id&&no===liveAutoNo){Object.assign(o,s,{g:o.g});livePaint();}}); // 나가 있는 화면부터 바꿔요
+    if(d&&LIVE&&no===liveAutoNo&&d.sess===LIVE.sess&&d.slides.length)liveMerge(d);}
+  catch(e){toast('송출에 반영하지 못했어요: '+(e?.message||e));}
+  finally{if(no===liveAutoNo)liveAutoing='';}}
+function liveCheck(){if(!LIVE)return;const s=liveSig(),now=Date.now();if(s!==liveSeen){liveSeen=s;liveSeenAt=now;}
+  const diff=s!==LIVE.sig,other=curSess!==LIVE.sess,auto=diff&&!other&&!liveHold&&liveTouched;
+  // 글자를 잇달아 칠 때는 잠깐 멈추면 내보내요
+  if(auto&&liveAutoing!==s&&now-liveSeenAt>=500)liveAuto(s);
+  const show=diff&&!auto&&s!==liveLater;$('lvChg').classList.toggle('hidden',!show);
+  if(show){$('lvChgTx').textContent=other?'편집 칸에 다른 예배가 열려 있어요. 예배당 화면은 그대로예요.':liveHold?'팀원이 글자 모양이나 배경을 바꿨어요. 예배당 화면은 아직 그대로예요.':'편집 칸의 내용이 송출과 달라요. 예배당 화면은 아직 그대로예요.';if(!$('lvApply').disabled)$('lvApply').textContent=other?'이 예배로 바꾸기':'반영';}}
+$('lvLater').onclick=()=>{liveLater=liveSig();liveCheck();};
+$('lvApply').onclick=async()=>{const b=$('lvApply');b.disabled=true;liveAutoNo++;try{const d=await liveBake((n,t)=>b.textContent=`${n}/${t}`,()=>!LIVE,LIVE);if(!LIVE||!d)return;
+    if(!d.slides.length){toast('송출할 화면이 없어요');return;}
+    liveMerge(d);toast('송출 화면에 반영했어요');}
+  catch(e){toast('반영하지 못했어요: '+(e?.message||e));}finally{b.disabled=false;liveCheck();}};
+setInterval(()=>{if(!LIVE)return;const s=Math.floor((Date.now()-LIVE.t0)/1000);$('lvClk').textContent=`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+  const o=!!(liveWin&&!liveWin.closed);if(o!==$('lvSt').classList.contains('on'))liveUI();},500);
+setInterval(liveCheck,250);
+document.addEventListener('visibilitychange',()=>{if(LIVE&&!document.hidden)try{navigator.wakeLock?.request('screen').catch(()=>{});}catch(e){}});
+addEventListener('beforeunload',e=>{if(LIVE&&liveWin&&!liveWin.closed)e.preventDefault();});
+// 새로고침하거나 껐다 켜도 하루 안이면 같은 자리에서 이어가요
+async function liveRestore(){
+  // 다른 교회 것까지, 하루가 지난 그림은 지워요
+  try{for(const k of await liveKv('readonly',o=>o.getAllKeys())){if(!k.startsWith('data:'))continue;const d=await liveKv('readonly',o=>o.get(k));if(Date.now()-d.at>LIVE_KEEP)await liveKv('readwrite',o=>{o.delete(k);return o.delete('pos:'+k.slice(5));});}}catch(e){}
+  if(!CH)return;try{const d=await liveKv('readonly',o=>o.get('data:'+CH)),p=await liveKv('readonly',o=>o.get('pos:'+CH));if(!d||LIVE)return;
+  if(d.ch!==CH)return;
+  LIVE={...d,i:0,bg:'pic',black:false,clear:false,t0:d.at,...p};LIVE.i=Math.min(LIVE.i,d.slides.length-1);liveBuild();liveUI();}catch(e){}}
+liveRestore();
 
 // 시작
 if(!SESS.length||!curS()){const c=newSessionObj();c.text=store.get('out','');c.results=store.get('results',[]);c.dirty=store.get('dirty',false);SESS.unshift(c);curSess=c.id;store.set('curSess',curSess);store.set('sessions',SESS);}

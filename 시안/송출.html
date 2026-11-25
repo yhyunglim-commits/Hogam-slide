@@ -1,0 +1,103 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>호감슬라이드 송출 시안</title>
+<style>
+/* 배치: 위 도구 막대 / 왼쪽 예배 순서 / 가운데 지금·다음 화면, 조작 단추, 화면 목록 */
+:root{--bg:#F5F5F7;--surface:#fff;--line:#E1E1E6;--text:#1D1D1F;--text2:#4B4B50;--text3:#6E6E73;--sel:#E8E8ED;--pri:#006FE6;--pri-soft:#E8F2FF;--live:#D92D23;--ok:#187A3A;--warn:#FFF4E0;--warn-ink:#7A4A00;
+--sans:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif;--num:ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1E20;--surface:#2A2A2D;--line:#3A3A3E;--text:#F5F5F7;--text2:#C7C7CC;--text3:#A0A0A6;--sel:#3A3A3E;--pri:#2D8FFF;--pri-soft:#173252;--live:#FF5A50;--ok:#32D74B;--warn:#3D2C12;--warn-ink:#FFCC80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1E1E20;--surface:#2A2A2D;--line:#3A3A3E;--text:#F5F5F7;--text2:#C7C7CC;--text3:#A0A0A6;--sel:#3A3A3E;--pri:#2D8FFF;--pri-soft:#173252;--live:#FF5A50;--ok:#32D74B;--warn:#3D2C12;--warn-ink:#FFCC80;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font:14px/1.5 var(--sans);padding-block:16px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:14px}
+h1{font-size:17px;margin:0}h2{font-size:13px;margin:0;color:var(--text2)}
+button{font:500 14px var(--sans);color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:8px;min-height:36px;padding:0 13px;cursor:pointer}
+button:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+button.pri{background:#006FE6;border-color:#006FE6;color:#fff}
+button[aria-pressed=true]{background:var(--pri-soft);border-color:var(--pri)}
+.row{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}.push{margin-left:auto}
+.state{font-weight:600;color:var(--text3)}.state.on{color:var(--live)}
+.clock{font:500 14px var(--num);font-variant-numeric:tabular-nums}
+.note{background:var(--warn);color:var(--warn-ink);border-radius:10px;padding:10px 14px}
+.main{display:grid;grid-template-columns:210px minmax(0,1fr);gap:18px}
+.order{display:grid;gap:3px;align-content:start}
+.order button{text-align:left;border-color:transparent;background:none;padding:7px 10px}
+.order button[aria-current=true]{background:var(--sel)}
+.order small{display:block;color:var(--text3)}
+.work{display:grid;gap:14px;min-width:0;align-content:start}
+.screens{display:grid;grid-template-columns:2fr 1fr;gap:14px;align-items:start}
+.screens>div{display:grid;gap:6px;min-width:0}
+canvas{display:block;width:100%;aspect-ratio:16/9;border-radius:6px;background:#000}
+#now{outline:3px solid var(--live);outline-offset:2px}#now.off{outline-color:var(--line)}
+#now:fullscreen{border-radius:0;outline:0;object-fit:contain;width:100vw;height:100vh}
+.ctl button{min-height:46px}.ctl .pri{min-width:130px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.grid button{padding:4px;display:grid;gap:4px;text-align:left;font-size:12px}
+.grid button[aria-current=true]{border-color:var(--live);box-shadow:0 0 0 2px var(--live)}
+.hint{color:var(--text3);font-size:13px}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--text);width:min(440px,calc(100% - 32px));padding:22px}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog .in{display:grid;gap:14px}.checks{margin:0;padding:0;list-style:none;display:grid;gap:6px}.checks b{color:var(--ok)}
+@media(max-width:760px){.main,.screens{grid-template-columns:minmax(0,1fr)}.order{display:flex;overflow-x:auto}.order button{flex:none}.push{margin-left:0}}
+</style>
+<div class="wrap">
+  <div class="row"><h1>주일예배 송출</h1><span class="hint">시안 · 예시 자료</span><span class="state on" id="state">● 송출 중</span><span class="clock" id="clock">00:00</span>
+    <span class="push row" role="group" aria-label="배경"><button data-bg="pic" aria-pressed="true">배경 그대로</button><button data-bg="green" aria-pressed="false">초록 배경</button></span>
+    <button id="full">전체 화면으로 보기</button><button id="toggle">송출 끝내기</button></div>
+  <div class="note row" id="edit"><span>팀원이 찬양 2번째 화면을 고쳤어요. 예배당 화면은 아직 그대로예요.</span><button class="push" id="apply">이 화면에 반영</button><button id="later">나중에</button></div>
+  <div class="main">
+    <nav class="order" id="order" aria-label="예배 순서"></nav>
+    <div class="work">
+      <div class="screens"><div><h2 id="nowT">지금 예배당 화면</h2><canvas id="now" width="1920" height="1080"></canvas></div>
+        <div><h2>다음</h2><canvas id="next" width="960" height="540"></canvas><span class="hint" id="pos"></span></div></div>
+      <div class="row ctl"><button id="prev">← 이전</button><button class="pri" id="go">다음 →</button><button id="clear" aria-pressed="false">자막만 지우기 (C)</button><button id="black" aria-pressed="false">검은 화면 (B)</button></div>
+      <p class="hint" style="margin:0">← → 와 스페이스로 넘겨요. 리모컨도 같은 키를 써요. 화면을 누르면 바로 나가요. 숫자를 누르고 Enter를 치면 그 번호로 가요.</p>
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+</div>
+<dialog id="dlg"><div class="in"><h1>송출 시작</h1>
+  <ul class="checks"><li><b>✓</b> 글·배경·글꼴을 이 컴퓨터에 받았어요</li><li><b>✓</b> 인터넷이 끊겨도 넘길 수 있어요</li><li><b>✓</b> 두 번째 화면을 찾았어요 (예시)</li></ul>
+  <span class="hint">시작하면 지금 내용으로 고정돼요. 팀원이 고쳐도 반영을 누르기 전엔 안 바뀌어요.</span>
+  <div class="row"><button class="push" id="dlgX">취소</button><button class="pri" id="dlgOk">두 번째 화면에 시작</button></div></div></dialog>
+<script>
+const $=i=>document.getElementById(i);
+const G=[['찬양','만복의 근원 하나님',[['만복의 근원 하나님','온 백성 찬송 드리고'],['저 천사여 찬송하세','찬송 성부 성자 성령']]],
+['말씀','요한복음 3:16',[['하나님이 세상을 이처럼 사랑하사','독생자를 주셨으니'],['이는 저를 믿는 자마다','멸망치 않고 영생을 얻게 하려 하심이니라']]],
+['설교','세상을 사랑하신 하나님',[['세상을 사랑하신 하나님','요한복음 3:16']]],
+['광고','교회 소식',[['예배 후 1층에서','새가족 모임이 있습니다']]]];
+const L=G.flatMap((g,gi)=>g[2].map(t=>({g:gi,t})));
+let i=0,bg='pic',black=false,clear=false,live=true,num='',t0=Date.now();
+function draw(cv,s,o={}){const x=cv.getContext('2d'),W=cv.width,H=cv.height;
+  if(o.black||!s){x.fillStyle='#000';x.fillRect(0,0,W,H);return;}
+  if(bg==='green')x.fillStyle='#00B140';else{const q=x.createLinearGradient(0,0,W,H);q.addColorStop(0,'#163247');q.addColorStop(1,'#3F5E57');x.fillStyle=q;}
+  x.fillRect(0,0,W,H);if(o.clear)return;
+  x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';x.font=`700 ${W*.044}px "Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif`;
+  const lh=W*.068;s.t.forEach((l,k)=>x.fillText(l,W/2,H/2+(k-(s.t.length-1)/2)*lh));
+  x.font=`500 ${W*.016}px "Apple SD Gothic Neo","Noto Sans KR",sans-serif`;x.fillText(G[s.g][1],W/2,H*.92);}
+function render(){draw($('now'),L[i],{black:black||!live,clear});draw($('next'),L[i+1]);
+  $('now').className=live?'':'off';$('nowT').textContent=!live?'예배당 화면 (송출 안 함)':black?'지금 예배당 화면 · 검은 화면':clear?'지금 예배당 화면 · 자막 지움':'지금 예배당 화면';
+  $('pos').textContent=i+1<L.length?`${i+1} / ${L.length} · 다음은 ${G[L[i+1].g][0]}`:`${L.length} / ${L.length} · 마지막 화면이에요`;
+  $('state').textContent=live?'● 송출 중':'송출 전';$('state').className='state'+(live?' on':'');$('toggle').textContent=live?'송출 끝내기':'송출 시작';
+  $('black').setAttribute('aria-pressed',black);$('clear').setAttribute('aria-pressed',clear);
+  document.querySelectorAll('[data-bg]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.bg===bg));
+  [...$('order').children].forEach((b,k)=>b.setAttribute('aria-current',k===L[i].g));
+  [...$('grid').children].forEach((b,k)=>{b.setAttribute('aria-current',live&&k===i);draw(b.querySelector('canvas'),L[k]);});}
+const move=k=>{i=Math.max(0,Math.min(L.length-1,k));black=clear=false;render();};
+G.forEach((g,gi)=>{const b=document.createElement('button');b.innerHTML=`<small>${g[0]}</small>${g[1]}`;b.onclick=()=>move(L.findIndex(s=>s.g===gi));$('order').append(b);});
+L.forEach((s,k)=>{const b=document.createElement('button');b.innerHTML=`<canvas width="320" height="180"></canvas><span>${k+1} · ${G[s.g][0]}</span>`;b.onclick=()=>move(k);$('grid').append(b);});
+$('prev').onclick=()=>move(i-1);$('go').onclick=()=>move(i+1);
+$('black').onclick=()=>{black=!black;render();};$('clear').onclick=()=>{clear=!clear;render();};
+document.querySelectorAll('[data-bg]').forEach(b=>b.onclick=()=>{bg=b.dataset.bg;render();});
+$('toggle').onclick=()=>{if(live){live=false;render();}else $('dlg').showModal();};
+$('dlgX').onclick=()=>$('dlg').close();$('dlgOk').onclick=()=>{$('dlg').close();live=true;t0=Date.now();render();};
+$('apply').onclick=()=>{L[1].t=['저 천사도 찬송하세','찬송 성부 성자 성령'];$('edit').hidden=true;render();};$('later').onclick=()=>$('edit').hidden=true;
+$('full').onclick=async()=>{try{await $('now').requestFullscreen();}catch(e){$('full').textContent='이 화면에서는 안 돼요';}};
+addEventListener('keydown',e=>{if($('dlg').open||e.metaKey||e.ctrlKey||e.altKey)return;const k=e.key;
+  if(k==='Enter'&&num){e.preventDefault();move(+num-1);num='';return;}
+  if(/^\d$/.test(k)){num+=k;return;}num='';
+  if(['ArrowRight','PageDown',' '].includes(k)){e.preventDefault();move(i+1);}
+  else if(['ArrowLeft','PageUp'].includes(k)){e.preventDefault();move(i-1);}
+  else if(e.code==='KeyB')$('black').click();else if(e.code==='KeyC')$('clear').click();});
+setInterval(()=>{const s=live?Math.floor((Date.now()-t0)/1000):0;$('clock').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');},500);
+render();
+</script>
