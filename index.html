@@ -1770,6 +1770,8 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 /* ▾ 로 펼친 칸: 리본 아래에 떠요 */
 #lookBox .rgp{position:fixed;z-index:95;width:320px;max-width:calc(100vw - 16px);max-height:min(70vh,560px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px -16px rgba(16,24,40,.35);padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:stretch}
 #lookBox .rgp[hidden]{display:none}
+/* 배경: 사진이 없으면 한 줄이라 작게, 있으면 막대가 들어갈 만큼만 */
+#lookBox .rg[data-k=bg] .rgp{width:250px;padding:10px 12px}#lookBox .rg[data-k=bg] .rgp:has(.mthumb.empty){width:176px;padding:8px 10px}
 /* 크게 보기 옆에서는 세로로 다 펼쳐요 */
 #sbSet #lookBox{display:block;margin:0;padding:0;border:0;background:transparent;overflow:visible}
 #sbSet #lookBox .lkundo{margin:0 0 8px}
@@ -4081,7 +4083,7 @@ function textElems(grp,ik,icap,qcap){
 const FPAIRS={song:[['font','weight'],['tFont','tWeight']],word:[['font','weight'],['rFont','rWeight'],['hFont','hWeight']],info:[['font','weight'],['font2','weight2']]};
 const SZR={rSize:[1.5,4.5,.05],hSize:[1.5,5,.05],tSpacing:[-30,60,1],spacing2:[-30,60,1]}; // 새 키의 범위 (나머지는 LOOK_CTRLS)
 function placeRib(){const rg=ribOpen&&$('lookCtl').querySelector(`.rg[data-k="${ribOpen}"]`),p=rg&&rg.querySelector('.rgp');if(!p||$('lookBox').closest('#sbSet'))return;
-  const r=rg.getBoundingClientRect(),w=Math.min(innerWidth-16,Math.max(300,p.offsetWidth));p.style.top=Math.round(r.bottom+6)+'px';p.style.left=Math.round(Math.max(8,Math.min(innerWidth-w-8,r.left)))+'px';}
+  const r=rg.getBoundingClientRect(),w=Math.min(innerWidth-16,p.offsetWidth||300);p.style.top=Math.round(r.bottom+6)+'px';p.style.left=Math.round(Math.max(8,Math.min(innerWidth-w-8,r.left)))+'px';}
 function setRib(k){ribOpen=k;const all=!!$('lookBox').closest('#sbSet');$('lookCtl').querySelectorAll('.rg').forEach(g=>{const on=all||g.dataset.k===k,p=g.querySelector('.rgp'),h=g.querySelector('.rgh');g.classList.toggle('open',on);if(p)p.hidden=!on;if(h)h.setAttribute('aria-expanded',on);});placeRib();}
 addEventListener('pointerdown',e=>{if(ribOpen&&!e.target.closest('.rg.open')&&!e.target.closest('#toast'))setRib(null);},true);
 addEventListener('keydown',e=>{if(e.key==='Escape'&&ribOpen)setRib(null);});
