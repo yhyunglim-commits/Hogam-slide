@@ -53,6 +53,28 @@ try{
   is('실제 칸: 가사 글꼴 → 곡 제목 그대로',await ev(`lookTab='song';lookSlideKey=null;lookElem.song='lyrics';buildLookUI();const t=LOOK.song.tFont,q=$('lookCtl').querySelector('.lkfont select');q.value='Dongle';q.onchange();await new Promise(r=>setTimeout(r,1500));const r=LOOK.song.font==='Dongle'&&LOOK.song.tFont===t;LOOK=mkLook({});return r`));
   // 3) 옛 설정(글자를 따로 안 정한 것)은 보이던 값으로 굳음
   is('옛 설정은 보이던 값으로 굳음',await ev(`const l=mkLook({song:{font:'Dongle',weight:400},info:{color:'#123456'}});return l.song.tFont==='Dongle'&&l.info.color2==='#123456'&&l.info.noteColor==='#123456'`));
+  {const r=await ev(`
+ for(const k of ['song','word','info'])LOOK[k].footer='호감교회 HOGAM';LOOK.info.tag1='주일예배';LOOK.quote.capRight='오른쪽';const base=JSON.stringify(LOOK),out=new Set();
+ await Promise.all([400,700,800].flatMap(w=>['Dongle','Noto Sans KR','Nanum Myeongjo','Gowun Batang'].map(f=>document.fonts.load(w+' 40px "'+f+'"','가나다 ABC').catch(()=>{}))));
+ const NM={cover:'표지',notice:'안내',ad:'광고',sermon:'설교',text:'고백문'},name=s=>tabOf(s)==='info'?NM[s.ik]:({song:'찬양',word:'본문',quote:'참고'})[tabOf(s)];
+ const snap=s=>{const c=document.createElement('canvas');c.width=960;c.height=540;const l=drawScreen(c,s,0),o={};for(const t of l.texts||[]){const k=t.el||t.kind;o[k]=(o[k]||'')+JSON.stringify([t.size,t.weight,t.css,t.color,t.sp,t.lh,t.align,t.shadow,t.shAmt,t.stroke]);}
+   for(const r of l.regions||[]){if(r.st)o[r.k]=JSON.stringify(r.st);}if(l.footer)o.footer=JSON.stringify(l.footer.st);return o;};
+ for(const q of ['body','caption','box2'])for(const st of ['full','cap']){
+  const fresh=()=>{SLIDE_OV={};LOOK=mkLook(JSON.parse(base));LOOK.quote.quoteStyle=q;LOOK.info.style=st;};fresh();
+  const all=songGroups().flatMap(g=>g.items);
+  for(const s of all){const g=tabOf(s);if(g==='song'&&all.find(x=>tabOf(x)==='song')!==s)continue;
+   const ic=infoCapSc(s),E=textElems(g,s.ik,ic,isCaption(s)&&q);
+   const jobs=[];for(const e of E)for(const p of ['font','weight','size','color','spacing','lineH'])if(e[p])jobs.push([e,e[p],p]);
+   for(const e of E)if(e.align)jobs.push([e,e.align,'정렬']);
+   for(const[e,k,p]of jobs){fresh();const b=all.map(snap),cur=lv(LOOK[g],k,g);
+    freezeDeps(LOOK[g],k,LOOK[g],null);LOOK[g][k]=p==='font'?'Dongle':p==='weight'?(cur===400?800:400):p==='color'?'#ff0000':p==='size'?cur*1.2:p==='lineH'?cur+.4:p==='spacing'?(+cur||0)+12:p==='정렬'?'right':!cur;if(k==='strokeOn'){LOOK[g].strokeColor='#ff0000';}
+    const a=all.map(snap);all.forEach((x,n)=>{const ch=Object.keys(a[n]).filter(t=>t!=='cbar'&&a[n][t]!==b[n][t]);if(!ch.length)return;
+      const mine=e?ch.filter(t=>REGEL[t]===e.id):[],oth=x===s?ch.filter(t=>!e||REGEL[t]!==e.id||mine.length>1&&t!==mine[0]):ch;
+      if(x===s&&!(e&&isShape(e.id)&&!e.font)&&(e?oth.length:ch.length>1))out.add('같은 장 | '+name(s)+(ic?' 자막':isCaption(s)?' '+q:'')+' | '+(e?e.n:'(전체)')+' '+p+' → '+(e?oth:ch).map(t=>(REG[t]||[,t])[1]).join(', '));
+      if(x!==s&&g==='info'&&e&&e.id!=='footer')out.add('다른 종류 | '+name(s)+(ic?' 자막':'')+' | '+e.n+' '+p+' → '+name(x)+': '+ch.map(t=>(REG[t]||[,t])[1]).join(', '));
+      if(x!==s&&tabOf(x)!==g)out.add('다른 화면 | '+name(s)+' | '+(e?e.n:'')+p+' → '+name(x));});}
+  }}
+ return [...out].join('|||')`);if(r)console.log('  '+r.split('|||').slice(0,40).join('\n  '));is('한 항목을 바꾸면 그 항목만 (같은 장·순서·광고 다른 종류 모두, 아래 문구만 같이)',!r);}
   is('뺀 글꼴 11개는 비슷한 글꼴로 바뀌고 목록에 없음',await ev(`const L=Object.keys(FONT_OLD),o=mkLook({song:{font:'Jua',weight:400,tFont:'Gugi'},info:{font2:'Hahmlet',weight2:700}}),s=textOv('〔순서〕 '+JSON.stringify({k:'ov',v:{'s:a:0':{font:'Black Han Sans'}}})).v['s:a:0'],v=freeOv({'s:a:0':{tFont:'Do Hyeon'}},{})['s:a:0'];return L.length===11&&L.every(f=>!FONTS.some(x=>x.f===f))&&Object.values(FONT_OLD).every(([f,w])=>FONTS.some(x=>x.f===f)&&(!w||fontWts(f).includes(w)))&&o.song.font==='Nanum Gothic'&&o.song.weight===800&&o.song.tFont==='Gothic A1'&&o.info.font2==='Noto Serif KR'&&o.info.weight2===700&&s.font==='Noto Sans KR'&&s.weight===800&&v.tFont==='Gothic A1'`));
   is('옛 이 슬라이드만 글꼴도 굳음',await ev(`return freeOv({'s:곡:0':{font:'Dongle',weight:400}},{})['s:곡:0'].tFont==='Dongle'`));
   await ev(`LOOK=mkLook({});LOOK.song.footer=LOOK.info.footer='호감교회';window.W=ms=>new Promise(r=>setTimeout(r,ms));window.go=async f=>{const l=songGroups().flatMap(g=>g.items);openSlide(l.findIndex(f));await W(200);};window.J0=JSON.stringify(LOOK);window.rs=()=>{if($('slidebox').classList.contains('on'))closeSlide();LOOK=mkLook(JSON.parse(J0));SLIDE_OV={};lookScope='all';lookSlideKey=null;};

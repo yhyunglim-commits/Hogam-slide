@@ -4141,10 +4141,27 @@ const FB={
   song:{tFont:L=>L.font,tWeight:L=>lookW(L)>=700?500:400,tColor:()=>'#E9EDF2',tSpacing:()=>12},
   word:{rFont:L=>L.font,rWeight:L=>lookW(L),rSize:()=>2.9,rColor:()=>'#ffffff',hFont:()=>'Noto Sans KR',hWeight:()=>800,hSize:()=>3.1,hColor:()=>'#ffffff',hSpacing:()=>0,sFont:()=>'Noto Sans KR',sWeight:()=>400,sSize:()=>1.35,sColor:()=>'#ffffff',sSpacing:()=>18,bxColor:()=>'#ececee',capbar_c:()=>'#ffffff',capbar_a:()=>96,bxW:()=>71.9,bxH:()=>49,
     crFont:()=>'Noto Sans KR',crWeight:()=>500,crColor:()=>'#ffffff',crSpacing:()=>2,cgFont:()=>'Noto Sans KR',cgWeight:()=>500,cgColor:()=>'#ffffff'},
-  info:{weight2:()=>400,spacing2:L=>L.spacing,color2:L=>L.color,boxTitle:L=>L.boxText,hdSize:()=>2.6,ntSize:()=>1.35,nt2Size:()=>1.25,ibColor:()=>'#ffffff',bandr_c:L=>L.bandColor,band2r_c:L=>L.band2Color,tagr_c:L=>L.bandColor,tag2r_c:L=>L.band2Color,cbox_c:L=>L.capMain,cbox2_c:L=>L.capLight,ibW:()=>86.4,ibH:()=>64,csWeight:()=>500,csSpacing:()=>35,
+  info:{weight2:()=>400,spacing2:L=>L.spacing,color2:L=>L.color,boxTitle:L=>L.boxText,hdSize:()=>2.6,ntSize:()=>1.35,nt2Size:()=>1.25,ibColor:()=>'#ffffff',bandr_c:L=>L.bandColor,band2r_c:L=>L.band2Color,tagr_c:L=>L.bandColor,tag2r_c:L=>L.band2Color,cbox_c:L=>L.capMain,cwFont:L=>L.cFont,cwWeight:L=>L.cWeight,cwSize:L=>L.cSize,cbox2_c:L=>L.capLight,ibW:()=>86.4,ibH:()=>64,csWeight:()=>500,csSpacing:()=>35,
     bnFont:()=>'Noto Sans KR',bnWeight:()=>700,bnSize:()=>1.35,bnColor:()=>'#ffffff',bnSpacing:()=>22,tmFont:()=>'Noto Sans KR',tmWeight:()=>500,tmSize:()=>1.35,tmColor:()=>'#ffffff',tmSpacing:()=>4,
     g1Font:()=>'Noto Sans KR',g1Weight:()=>700,g1Size:()=>1.2375,g1Color:()=>'#ffffff',g1Spacing:()=>0,g2Font:()=>'Noto Sans KR',g2Weight:()=>500,g2Size:()=>1.2375,g2Color:()=>'#ffffff',g2Spacing:()=>16}};
-const lv=(L,k,g)=>{const v=L[k];if(v!==undefined&&v!==null&&v!=='')return v;const f=(FB[g==='quote'?'word':g]||{})[k]||FB.all[k];return f?f(L):undefined;};
+// 순서·광고는 종류(표지·안내·광고·설교·고백문)마다 따로 정해요: 'k_종류_키'에 쓰고, 정한 적 없으면 예전처럼 같이 쓰던 키를 봐요
+const KGLOBAL=/^(f[A-Z]|footer|style$|tag[12]$|logo|bgDim|capLines$|maxLines$|hide_|k_)/;
+const kk=(ik,k)=>!ik||KGLOBAL.test(k)?k:'k_'+ik+'_'+k;
+function KL(L,ik){const o={...L},p='k_'+ik+'_';for(const k in L)if(k.startsWith(p)){const v=L[k];if(v!==undefined&&v!==null&&v!=='')o[k.slice(p.length)]=v;}return o;}
+// 한 장만 바꾼 설정(예전엔 같이 쓰던 키로 적혀 있을 수 있어요)도 그 종류 키로 읽어요
+const kOv=(ov,ik)=>Object.fromEntries(Object.entries(ov).map(([k,v])=>[kk(ik,k),v]));
+const ikOf=ok=>{const id=String(ok).split(':')[1];return(INFO.find(o=>o.id===id)||{}).k;};
+// '모든 장'으로 정하면 그 키로 따로 정해 둔 장의 값을 지워요 (같은 뜻의 예전 키도)
+function ovDel(pre,k){const m=k.match(/^k_([a-z]+)_(.+)$/);for(const ok in SLIDE_OV)if(ok.startsWith(pre)){const o=SLIDE_OV[ok];delete o[k];if(m&&ikOf(ok)===m[1])delete o[m[2]];}}
+// 다른 항목이 기본값으로 빌려 보는 설정: 바꾸기 직전에 빌려 보던 쪽을 지금 보이는 값으로 굳혀서 같이 안 바뀌게
+const al0=L=>L.align||'center';
+const DEPF={align:{tAlign:al0,bnAlign:al0,noteAlign:(L,ik)=>ik==='notice'?(al0(L)==='left'?'right':'left'):al0(L)},
+  cFont:{cwFont:L=>L.cFont},cWeight:{cwWeight:L=>L.cWeight},cSize:{cwSize:L=>L.cSize},
+  shadowOn:{noteShadowOn:L=>L.shadowOn!==false},shadowAmt:{noteShadowAmt:L=>L.shadowAmt??18},strokeOn:{noteStrokeOn:L=>!!L.strokeOn},strokeColor:{noteStrokeColor:L=>L.strokeColor},strokeW:{noteStrokeW:L=>L.strokeW}};
+// T: 쓸 곳, k: 쓸 키(종류 키일 수 있음), view: 지금 보이는 설정, ik: 순서·광고 종류
+function freezeDeps(T,k,view,ik){const m=String(k).match(/^k_([a-z]+)_(.+)$/),b=m?m[2]:k,ik2=m?m[1]:ik,d=DEPF[b];if(!d)return;const V=ik2?KL(view,ik2):view;
+  for(const dk in d){const key=ik2?kk(ik2,dk):dk;if(T[key]===undefined||T[key]===null||T[key]==='')if(V[dk]===undefined||V[dk]===null||V[dk]==='')T[key]=d[dk](V,ik2);}}
+const lv=(L,k,g)=>{const v=L[k];if(v!==undefined&&v!==null&&v!=='')return v;if(k.startsWith('k_')){const m=k.match(/^k_[a-z]+_(.+)$/);if(m)return lv(L,m[1],g);}const f=(FB[g==='quote'?'word':g]||{})[k]||FB.all[k];return f?f(L):undefined;};
 const FONT_WTS={'Noto Sans KR':[400,500,600,700,800],'Pretendard Variable':[300,400,500,600,700,800,900],'Nanum Gothic':[400,700,800],'IBM Plex Sans KR':[400,700],'Gothic A1':[400,800],
   'Noto Serif KR':[400,700],'Nanum Myeongjo':[400,700,800],'Gowun Batang':[400,700],'Dongle':[400,700]};
 const fontWts=f=>FONT_WTS[f]||[400],nearW=(f,w)=>fontWts(f).reduce((a,b)=>Math.abs(b-w)<Math.abs(a-w)?b:a);
@@ -4152,19 +4169,21 @@ const WNAME={300:'가늘게',400:'보통',500:'중간',600:'약간 굵게',700:'
 // 바꿀 수 있는 글자 목록 (그 글자에 없는 설정은 null → 칸을 안 보여 줘요)
 const elem=(id,n,p,x={})=>({id,n,font:p+'Font',weight:p+'Weight',size:p+'Size',color:p+'Color',spacing:p+'Spacing',...x}),FOOT=elem('footer','아래 문구','f');
 const shEl=(id,n,x={})=>({id,n,color:id+'_c',alpha:id+'_a',...x});
-function textElems(grp,ik,icap,qcap){
+const KP=['font','weight','size','color','spacing','lineH','alpha','align'];
+function textElems(grp,ik,icap,qcap){if(grp==='info')return textElems0(grp,ik,icap,qcap).map(e=>e.id==='footer'?e:Object.fromEntries(Object.entries(e).map(([p,v])=>[p,KP.includes(p)&&v?kk(ik,v):v])));return textElems0(grp,ik,icap,qcap);}
+function textElems0(grp,ik,icap,qcap){
   if(grp==='song')return[{id:'lyrics',n:'가사',font:'font',weight:'weight',size:'size',color:'color',spacing:'spacing',lineH:'lineH'},
-    {id:'title',n:'곡 제목',font:'tFont',weight:'tWeight',size:'titleSize',color:'tColor',spacing:'tSpacing'},FOOT];
+    {id:'title',n:'곡 제목',font:'tFont',weight:'tWeight',size:'titleSize',color:'tColor',spacing:'tSpacing',align:'tAlign'},FOOT];
   if(grp==='quote'&&qcap)return[{id:'body',n:'자막 글',font:'font',weight:'weight',size:'capSize',color:qcap==='box2'?null:'capColor',spacing:'spacing',lineH:'capLineH'},
-    elem('capref','구절 이름','cr',qcap==='box2'?{color:null}:{}),elem('capright','오른쪽 문구','cg',qcap==='box2'?{color:null}:{}),...(qcap==='box2'?[shEl('capbox','아래 상자',{color:'capMain'}),shEl('caphead','위 상자',{color:'capLight'})]:[shEl('capbox','띠',{color:'capHex',alpha:'capAlpha'}),shEl('capbar','흰 막대')])];
+    elem('capref','구절 이름','cr'),elem('capright','오른쪽 문구','cg'),...(qcap==='box2'?[shEl('capbox','아래 상자',{color:'capMain'}),shEl('caphead','위 상자',{color:'capLight'})]:[shEl('capbox','띠',{color:'capHex',alpha:'capAlpha'}),shEl('capbar','흰 막대')])];
   if(grp!=='info')return[{id:'body',n:'본문',font:'font',weight:'weight',size:'size',color:'color',spacing:'spacing',lineH:'lineH'},
     {id:'ref',n:'구절 이름',font:'rFont',weight:'rWeight',size:'rSize',color:'rColor',spacing:'refSpacing'},
     elem('head','머리글','h'),elem('sub','작은 머리글','s'),FOOT,{id:'box',n:'본문 상자',color:'bxColor',alpha:'box'}];
-  const title={id:'title',n:'제목',font:'font',weight:'weight',spacing:'spacing'},note={id:'note',n:'작은 글',font:'noteFont',weight:'noteWeight',color:'noteColor',spacing:'noteSp',lineH:'noteLh'};
+  const title={id:'title',n:'제목',font:'font',weight:'weight',spacing:'spacing'},note={id:'note',n:'작은 글',font:'noteFont',weight:'noteWeight',color:'noteColor',spacing:'noteSp',lineH:'noteLh',align:'noteAlign'};
   if(icap){const small={id:'body',n:ik==='notice'?'안내 글':'작은 글',font:'cFont',weight:'cWeight',size:'cSize'};
-    const cb=shEl('cbox','자막 상자'),cb2=shEl('cbox2','둘째 상자');if(ik==='notice')return[small,cb];
-    if(ik==='sermon')return[{...title,size:'ctSize'},elem('csub','부제목','cs',{color:null}),{...small,n:'구절·설교자'},{...cb,n:'제목 상자'},{...cb2,n:'구절 상자'}];
-    return[{...title,weight:'cWeight',size:'ctSize',spacing:ik==='ad'?'spacing':null},{id:'body',n:'내용',font:'font2',weight:'weight2',size:'cSize',spacing:'spacing2',lineH:'lineH'},cb,...(ik==='ad'?[{...cb2,n:'제목 상자'}]:[])];}
+    const cb=shEl('cbox','자막 상자'),cb2=shEl('cbox2','둘째 상자');if(ik==='notice')return[{...small,color:'cbColor'},cb];
+    if(ik==='sermon')return[{...title,size:'ctSize',color:'ctColor'},elem('csub','부제목','cs'),{...small,n:'구절',color:'cbColor'},{id:'cwho',n:'설교자',font:'cwFont',weight:'cwWeight',size:'cwSize',color:'cwColor'},{...cb,n:'제목 상자'},{...cb2,n:'구절 상자'}];
+    return[{...title,weight:'cWeight',size:'ctSize',color:'ctColor',spacing:ik==='ad'?'spacing':null},{id:'body',n:'내용',font:'font2',weight:'weight2',size:'cSize',color:'cbColor',spacing:'spacing2',lineH:'lineH'},cb,...(ik==='ad'?[{...cb2,n:'제목 상자'}]:[])];}
   if(ik==='notice')return[{id:'body',n:'안내 글',font:'font2',weight:'weight2',size:'nSize',color:'color2',spacing:'spacing2',lineH:'lineH'},{...note,size:'nt2Size'},FOOT];
   if(ik==='ad'||ik==='text')return[{...title,size:'hdSize',color:'boxTitle'},{id:'body',n:'내용',font:'font2',weight:'weight2',size:'bSize',color:'boxText',spacing:'spacing2',lineH:'lineH'},elem('tag','머리표 윗줄','g1'),elem('tag2','머리표 아랫줄','g2'),shEl('tagr','머리표 윗띠'),shEl('tag2r','머리표 아랫띠'),FOOT,{id:'box',n:'상자',color:'ibColor',alpha:'box'}];
   return[{...title,size:'size',color:'color'},elem('band','띠 왼쪽 글','bn'),elem('time','띠 오른쪽 글','tm'),shEl('bandr','띠 왼쪽 도형'),shEl('band2r','띠 오른쪽 도형'),{...note,size:'ntSize'},FOOT];}
@@ -4191,8 +4210,8 @@ function buildLookUI(){
   const grp=LOOK[lookTab]?lookTab:'song',slideKey=lookSlideKey,scope=slideKey?lookScope:'all',cg=grp==='quote'?'word':grp;
   let L=LOOK[grp];
   const OVP={song:'s:',word:'w:',quote:'q:',info:'i:'}[grp];
-  if(scope!=='slide')L=new Proxy({},{get:(_,k)=>LOOK[grp][k],set:(_,k,v)=>{LOOK[grp][k]=v;if(typeof k==='string'&&!/^o[xy]_/.test(k))for(const ok in SLIDE_OV)if(ok.startsWith(OVP)&&k in SLIDE_OV[ok])delete SLIDE_OV[ok][k];return true;}});
-  else L=new Proxy({},{get:(_,k)=>{const o=SLIDE_OV[slideKey];return o&&k in o?o[k]:LOOK[grp][k];},set:(_,k,v)=>{(SLIDE_OV[slideKey]||(SLIDE_OV[slideKey]={}))[k]=v;return true;}});
+  if(scope!=='slide')L=new Proxy({},{get:(_,k)=>LOOK[grp][k],set:(_,k,v)=>{if(typeof k==='string')freezeDeps(LOOK[grp],k,LOOK[grp],null);LOOK[grp][k]=v;if(typeof k==='string'&&!/^o[xy]_/.test(k))ovDel(OVP,k);return true;}});
+  else L=new Proxy({},{get:(_,k)=>{const o=SLIDE_OV[slideKey];return o&&k in o?o[k]:LOOK[grp][k];},set:(_,k,v)=>{const o=SLIDE_OV[slideKey]||(SLIDE_OV[slideKey]={});if(typeof k==='string')freezeDeps(o,k,{...LOOK[grp],...o},null);o[k]=v;return true;}});
   const L0=L;
   if(slideKey){const own=SLIDE_OV[slideKey]&&Object.keys(SLIDE_OV[slideKey]).filter(k=>k!=='bg').length;const sc=document.createElement('div');sc.className='lkscope';
     sc.innerHTML=`<div class="seg2" role="radiogroup" aria-label="바꿀 범위"><button type="button" role="radio" data-sc="slide" aria-checked="${scope==='slide'}" title="여기서 바꾸면 이 슬라이드에만 적용돼요. 배경 사진·로고 파일은 모든 슬라이드가 같이 써요.">이 슬라이드만</button><button type="button" role="radio" data-sc="all" aria-checked="${scope==='all'}">모든 ${grp==='song'?'찬양':grp==='quote'?'참고 구절':grp==='info'?'순서·광고':'설교 본문'} 슬라이드</button></div>${own?`<button type="button" class="btn sm" data-ovclear title="이 슬라이드만 따로 바꾼 설정을 지우고 다른 슬라이드와 똑같이 맞춰요">따로 바꾼 것 지우기</button>`:''}`;
@@ -4504,16 +4523,16 @@ function drawCaption(x,W,H,sc,opt={}){
   return{texts:[],box:null,footer:null,caption:true,regions:R};
 }
 // 참고 구절 · 두 색 상자: 밝은 위 칸(구절 이름 · 오른쪽 문구) + 진한 아래 상자(“구절”) · 배경 없음
-const capSt=(L,p,W,wt,sp,k=1,ink)=>{const fs=W*lv(L,p+'Size','quote')/100*k,f=lv(L,p+'Font','quote'),s=L[p+'Spacing'];return{fs,font:`${+L[p+'Weight']||wt} ${fs}px "${f}", "Noto Sans KR", sans-serif`,color:ink||lv(L,p+'Color','quote'),sp:fs*(s??sp)/100,w:+L[p+'Weight']||wt,family:f};};
+const capSt=(L,p,W,wt,sp,k=1,ink)=>{const fs=W*lv(L,p+'Size','quote')/100*k,f=lv(L,p+'Font','quote'),s=L[p+'Spacing'];return{fs,font:`${+L[p+'Weight']||wt} ${fs}px "${f}", "Noto Sans KR", sans-serif`,color:ink&&!L[p+'Color']?ink:lv(L,p+'Color','quote'),sp:fs*(s??sp)/100,w:+L[p+'Weight']||wt,family:f};};
 function drawBox2(x,W,H,sc,opt,L,lines,fs,lh,wt,WF){
   const M=L.capMain||'#C25E1D',P=L.capLight||'#E8DECB',mInk=inkOn(M),pInk=inkOn(P),[ox,oy]=OFF(L,'cap',W,H);
   const X0=W*.07+ox,BW=W*.86,pad=W*.035,padY=fs*.95,BOT=H-H*(L.capBottom??3)/100+oy;
   const bh=padY*2+lh*Math.max(1,lines.length),by=BOT-bh,A=capSt(L,'cr',W,700,2,.975,pInk),B=capSt(L,'cg',W,500,10,.975,pInk),hh=H*.072,hy=by-hh;
   const R=[],QR=k=>QO(L,k,W,H),[rx,ry]=QR('capref'),[gx,gy]=QR('capright'),[tx0,ty0]=QR('cap'),shR=!hid(L,'capref'),shG=L.capRight&&!hid(L,'capright'),shT=!hid(L,'cap');
   shp(x,W,H,L,'caphead',{x:X0,y:hy,w:BW,h:hh},P,R,{a:(L.caphead_a??100)/100});shp(x,W,H,L,'capbox',{x:X0,y:by,w:BW,h:bh},M,R,{a:(L.capbox_a??100)/100});x.textBaseline='middle';
-  x.font=A.font;x.fillStyle=pInk;
+  x.font=A.font;x.fillStyle=A.color;
   if(shR&&opt.hide!=='capref')drawSpaced(x,L.refT||sc.ref||'',X0+W*.018+rx,hy+hh/2+ry,A.sp,'left');
-  let rw=0;if(shG){x.font=B.font;rw=spacedW(x,L.capRight,B.sp);if(opt.hide!=='capright')drawSpaced(x,L.capRight,X0+BW-W*.018-rw+gx,hy+hh/2+gy,B.sp,'left');}
+  let rw=0;if(shG){x.font=B.font;rw=spacedW(x,L.capRight,B.sp);x.fillStyle=B.color;if(opt.hide!=='capright')drawSpaced(x,L.capRight,X0+BW-W*.018-rw+gx,hy+hh/2+gy,B.sp,'left');}
   x.font=`${wt} ${fs}px ${WF}`;const sp=fs*(L.spacing||0)/100,hiC=mInk==='#ffffff'?'#FFE58A':'#9A3412';let hi=false;
   let tw=0;if(shT)lines.forEach((l,i)=>{tw=Math.max(tw,spacedW(x,(i===0?'“ ':'')+l.replace(/\*\*/g,'')+(i===lines.length-1?' ”':''),sp));});
   if(shT&&opt.hide!=='cap')lines.forEach((l,i)=>{const t=(i===0?'“ ':'')+l+(i===lines.length-1?' ”':''),y=by+padY+lh*(i+.5)+ty0;let cx=X0+pad+tx0;
@@ -4561,7 +4580,7 @@ function withLook(sc,fn){
   const t=tabOf(sc),grp0=t==='song'||t==='info'?t:'word',ov=(sc&&sc.ovKey&&SLIDE_OV[sc.ovKey])||{};
   if(t!=='quote'&&!Object.keys(ov).length)return fn();
   const base=LOOK[grp0],src=t==='quote'?{...LOOK.quote,head:base.head,sub:base.sub,footer:base.footer,footerOn:base.footerOn}:base;
-  LOOK[grp0]={...src,...ov};try{return fn();}finally{LOOK[grp0]=base;}
+  LOOK[grp0]={...src,...(t==='info'?kOv(ov,sc.ik):ov)};try{return fn();}finally{LOOK[grp0]=base;}
 }
 function drawScreen(cv,sc,songIdx,opt={}){return withLook(sc,()=>drawScreen0(cv,sc,songIdx,opt));}
 function drawScreen0(cv,sc,songIdx,opt={}){
@@ -4620,7 +4639,7 @@ function slideLayout0(x,W,H,sc){
     const fs=W*L.size/100,sp=fs*L.spacing/100,lyr=wrapTo(sc.lines,`${SW} ${fs}px ${SF}`,sp,W*.9); // 글자 크기는 정한 그대로 · 화면보다 긴 줄만 다음 줄로
     const lh=fs*L.lineH,blockH=lh*lyr.length,[ox,oy]=OFF(L,'lyrics',W,H),y0=H*L.posY/100-blockH/2+oy;
     const al=L.align||'center',ax=(al==='left'?W*.05:al==='right'?W*.95:W/2)+ox;
-    if(L.title&&sc.title){const ts=W*L.titleSize/100,[tx,ty]=OFF(L,'title',W,H),tf=lv(L,'tFont','song'),tc=lv(L,'tColor','song');texts.push({kind:'title',lines:[sc.title],size:ts,weight:lv(L,'tWeight','song'),family:tf,css:`"${tf}", "Noto Sans KR", sans-serif`,color:tc,hex:String(tc).replace('#','').toUpperCase(),alpha:1,sp:ts*lv(L,'tSpacing','song')/100,align:al,ax:ax+tx,y0:y0-H*L.titleGap/100-ts*.6+ty,lh:ts*1.2,boxW:W*.9});}
+    if(L.title&&sc.title){const ta=L.tAlign||al,tax=(ta==='left'?W*.05:ta==='right'?W*.95:W/2)+ox,ts=W*L.titleSize/100,[tx,ty]=OFF(L,'title',W,H),tf=lv(L,'tFont','song'),tc=lv(L,'tColor','song');texts.push({kind:'title',lines:[sc.title],size:ts,weight:lv(L,'tWeight','song'),family:tf,css:`"${tf}", "Noto Sans KR", sans-serif`,color:tc,hex:String(tc).replace('#','').toUpperCase(),alpha:1,sp:ts*lv(L,'tSpacing','song')/100,align:ta,ax:tax+tx,y0:y0-H*L.titleGap/100-ts*.6+ty,lh:ts*1.2,boxW:W*.9});}
     texts.push({kind:'lyrics',lines:lyr,size:fs,weight:SW,family:L.font,css:SF,color:L.color||'#fff',hex:(c=>String(c||'#ffffff').replace('#','').toUpperCase())(L.color),alpha:1,sp,align:al,ax,y0,lh,boxW:W*.9,shadow:L.shadowOn!==false,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null});
     if(L.footerOn){const[fx,fy]=OFF(L,'footer',W,H);footer={text:L.footer,y:H*.935+fy,dx:fx,st:footSt(L,W)};}
   }else{
@@ -4702,7 +4721,7 @@ function shotGroupEl(g,groups,n0,{cw=480}={}){
 // 한글 웹 글꼴은 글자 묶음별로 받아요: 화면에 쓰인 글자를 미리 받고, 새로 받은 게 있으면 다시 그려요
 let _glyphKey='';
 function ensureGlyphs(){const t=[$('outText').value,$('wordText').value,$('quoteText').value,...INFO.map(o=>[o.title,o.band,o.time,o.note,o.body,o.sub,o.ref,o.who].join('\n')),typeof sermonRef==='function'?sermonRef():''].join('\n')+Object.values(LOOK).map(L=>[L.head,L.sub,L.footer,L.tag1,L.tag2,L.capRight].join('')).join(''),
-  txt=[...new Set(t.replace(/\s/g,''))].join(''),fs=Object.entries(LOOK).flatMap(([g,L])=>[...[...FPAIRS[g==='quote'?'word':g],['fFont','fWeight']].flatMap(([f,w])=>[[lv(L,w,g),lv(L,f,g)],[400,lv(L,f,g)]]),...(g==='info'?[300,500,700].flatMap(w=>[[w,L.font],[w,L.font2],[w,L.cFont]]):[])]).concat(Object.values(SLIDE_OV).flatMap(o=>Object.keys(o).filter(k=>/font/i.test(k)).flatMap(k=>[400,500,700,800].map(w=>[w,o[k]])))).filter(f=>f[1]),key=txt+'|'+fs.join(',');
+  txt=[...new Set(t.replace(/\s/g,''))].join(''),fs=Object.entries(LOOK).flatMap(([g,L])=>[...[...FPAIRS[g==='quote'?'word':g],['fFont','fWeight']].flatMap(([f,w])=>[[lv(L,w,g),lv(L,f,g)],[400,lv(L,f,g)]]),...(g==='info'?[300,500,700].flatMap(w=>[[w,L.font],[w,L.font2],[w,L.cFont]]):[])]).concat(Object.keys(LOOK.info).filter(k=>/^k_[a-z]+_\w*font2?$/i.test(k)).flatMap(k=>[400,500,700,800].map(w=>[w,LOOK.info[k]]))).concat(Object.values(SLIDE_OV).flatMap(o=>Object.keys(o).filter(k=>/font/i.test(k)).flatMap(k=>[400,500,700,800].map(w=>[w,o[k]])))).filter(f=>f[1]),key=txt+'|'+fs.join(',');
   if(!txt||key===_glyphKey)return;_glyphKey=key;
   Promise.all(fs.map(([w,f])=>document.fonts.load(`${w} 40px "${f}"`,txt).catch(()=>[]))).then(r=>{if(r.some(a=>a&&a.length&&a.some(ff=>ff.status==='loaded'))){CAPMW.clear();lookChanged();renderShots();}});}
 function renderShots(){
@@ -4785,9 +4804,9 @@ function edElem(sc,k){const g=tabOf(sc);return textElems(g,sc.ik,infoCapSc(sc),i
 function edSizes(sc,k){const g=tabOf(sc);if(k==='logo')return['logoSize'];if(k==='box')return g==='info'?['ibW','ibH']:['bxW','bxH'];
   if(isShape(k))return[k+'_w',k+'_h'];
   const e=edElem(sc,k);return e&&e.size?[e.size]:[];}
-const edVal=(sc,k)=>{const g=tabOf(sc),o=SLIDE_OV[sc.ovKey];return o&&k in o?o[k]:lv(LOOK[g],k,g);};
+const edVal=(sc,k)=>{const g=tabOf(sc),o=SLIDE_OV[sc.ovKey];if(g==='info'){const q=kk(sc.ik,k);if(o&&q in o)return o[q];k=q;}return o&&k in o?o[k]:lv(LOOK[g],k,g);};
 // 바꿀 곳에 쓰기: '이 슬라이드만'이면 그 장, 아니면 모든 슬라이드(따로 정한 값은 지워서 같이 바뀌게)
-function edPut(sc,k,v){const T=moveTarget(sc);T[k]=v;if(T!==SLIDE_OV[sc.ovKey]){const pre=sc.ovKey[0]+':';if(/^o[xy]_/.test(k)){const o=SLIDE_OV[sc.ovKey];if(o)delete o[k];}else for(const ok in SLIDE_OV)if(ok.startsWith(pre))delete SLIDE_OV[ok][k];}}
+function edPut(sc,k,v){const g=tabOf(sc);if(g==='info')k=kk(sc.ik,k);const T=moveTarget(sc);freezeDeps(T,k,{...LOOK[g],...(SLIDE_OV[sc.ovKey]||{})},g==='info'?sc.ik:null);T[k]=v;if(T!==SLIDE_OV[sc.ovKey]){const pre=sc.ovKey[0]+':';if(/^o[xy]_|^k_[a-z]+_o[xy]_/.test(k)){const o=SLIDE_OV[sc.ovKey];if(o)delete o[k];}else ovDel(pre,k);}}
 function attachEdit(cv){
   cv.addEventListener('pointermove',e=>{if(cv._drag||e.pointerType==='touch')return;const r=edHit(cv,e);cv.style.cursor=r?(MOVK[r.k]?'move':'pointer'):cv===bigCv?'default':'';});
   cv.addEventListener('pointerdown',e=>{if(e.button!==0)return;const r=edHit(cv,e),c=edOf(cv);if(!c)return;
@@ -5114,8 +5133,8 @@ const infoBoxR=(W,H,L)=>{const[ox,oy]=OFF(L,'box',W,H);return{x:W*.068+ox,y:H*.2
 const infoCapF=(L,W)=>{const fs=W*L.cSize/100;return{fs,sp:fs*lv(L,'spacing2','info')/100*.5,font:`${lv(L,'weight2','info')} ${fs}px "${L.font2}", "Noto Sans KR", serif`};};
 const infoBodyF=(L,W)=>{const fs=W*L.bSize/100;return{fs,sp:fs*lv(L,'spacing2','info')/100,font:`${lv(L,'weight2','info')} ${fs}px "${L.font2}", "Noto Sans KR", serif`};};
 // 항목 하나 → 슬라이드 여러 장 (광고·고백문은 빈 줄과 '화면당 줄'로 나눠요)
-function infoScreens(){const out=[],L=LOOK.info,W=1920,H=1080;
-  INFO.forEach((it,i)=>{const base={type:'info',ed:'info',ik:it.k,iid:it.id,chunk:IBASE+i,title:infoName(it),item:it,cs:0,ce:0,src:[]};
+function infoScreens(){const out=[],W=1920,H=1080;
+  INFO.forEach((it,i)=>{const L=KL(LOOK.info,it.k);const base={type:'info',ed:'info',ik:it.k,iid:it.id,chunk:IBASE+i,title:infoName(it),item:it,cs:0,ce:0,src:[]};
     let pages=[[]];
     if(it.k==='ad'||it.k==='text'){const cap=L.style==='cap',b=infoBoxR(W,H,L),f=cap?infoCapF(L,W):infoBodyF(L,W),pad=cap?W*.035:W*.035,max=Math.max(1,(cap?L.capLines:L.maxLines)|0),bw=cap?W*.86:b.w;pages=[];
       let pi=0;for(const para of String(it.body||'').split(/\n[ \t]*\n/)){pi++;const ls=wrapTo(para.split('\n'),f.font,f.sp,bw-pad*2).filter(l=>l!=='');
@@ -5129,15 +5148,17 @@ let _sref={k:null,v:''};
 function sermonRef(){const k=$('wordText').value;if(_sref.k===k)return _sref.v;const w=parseScreens().find(s=>s.type==='word'&&s.ed!=='quote');_sref={k,v:(w&&w.ref)||''};return _sref.v;}
 const inkOn=hex=>{const n=parseInt(String(hex||'#000000').replace('#','').padEnd(6,'0').slice(0,6),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))/255>.6?'#1d1d1d':'#ffffff';};
 function drawInfoCap(x,W,H,sc,opt){
-  const L=LOOK.info,it=sc.item,texts=[],R=[];x.clearRect(0,0,W,H);
+  const L=KL(LOOK.info,sc.item.k),it=sc.item,texts=[],R=[];x.clearRect(0,0,W,H);
   const TF=`"${L.font}", "Noto Sans KR", sans-serif`,TW=lookW(L),BW=L.cWeight,CF=`"${L.cFont}", "Noto Sans KR", sans-serif`,BF=`"${L.font2}", "Noto Sans KR", serif`;
   const M=lv(L,'cbox_c','info')||'#C25E1D',P=lv(L,'cbox2_c','info')||'#E8DECB',mInk=inkOn(M),pInk=inkOn(P),box=(k,bx,by,bw,bh,fill,line)=>shp(x,W,H,L,k,{x:bx,y:by,w:bw,h:bh},fill,R,{a:(L[k+'_a']??100)/100,line}),hex=c=>String(c).replace('#','').toUpperCase();
   const[ox,oy]=OFF(L,'cbox',W,H),cs=W*L.cSize/100,cts=W*L.ctSize/100,X0=W*.07+ox,X1=W*.93+ox,BOT=H*.93+oy;
   const rect=(rx,ry,rw,rh,fill)=>{x.fillStyle=fill;x.fillRect(rx,ry,rw,rh);};
-  let el='cbody';const T=(lines,size,weight,fam,css,color,ax,yMid,lh,align,sp,boxW)=>{texts.push({kind:'cbox',el,lines,size,weight,family:fam,css,color,hex:hex(color),sp:sp||0,align:align||'left',ax,y0:yMid-lh*lines.length/2,lh,boxW,alpha:1});};
+  // 글자 색을 직접 정했으면 그 색, 아니면 상자 색에 맞춰 흰색·검정
+  const CC=(e,c)=>e==='ctitle'&&L.ctColor||e==='cbody'&&L.cbColor||e==='csub'&&L.csColor||e==='cwho'&&L.cwColor||e==='cref'&&L.cbColor||c;
+  let el='cbody';const T=(lines,size,weight,fam,css,color0,ax,yMid,lh,align,sp,boxW)=>{const color=CC(el,color0);texts.push({kind:'cbox',el,lines,size,weight,family:fam,css,color,hex:hex(color),sp:sp||0,align:align||'left',ax,y0:yMid-lh*lines.length/2,lh,boxW,alpha:1});};
   const meas=(t,size,wt,css,sp)=>{x.font=`${wt} ${size}px ${css}`;return spacedW(x,t,sp||0);};
   // 한 줄 안에서 굵기가 바뀌는 글: [[글,굵기],…]를 이어서 놓고 전체 너비를 돌려줘요 (go=false면 재기만)
-  const run=(segs,size,color,X,yMid,sp,go=true,fam=L.font,TF=`"${fam}", "Noto Sans KR", sans-serif`)=>{let cx=X;for(const[t,wt,e]of segs){if(!t)continue;if(e)el=e;const w=meas(t,size,wt,TF,sp);if(go)T([t],size,wt,fam,TF,color,cx,yMid,size*1.25,'left',sp,w+size);cx+=w;}return cx-X;};
+  const run=(segs,size0,color0,X,yMid,sp,go=true,fam0=L.font)=>{let cx=X;for(const[t,wt,e,f2,s2]of segs){if(!t)continue;if(e)el=e;const fam=f2||fam0,size=s2||size0,TF=`"${fam}", "Noto Sans KR", sans-serif`,color=CC(el,color0),w=meas(t,size,wt,TF,sp);if(go)T([t],size,wt,fam,TF,color,cx,yMid,size*1.25,'left',sp,w+size);cx+=w;}return cx-X;};
   const split1=t=>{const m=String(t||'').trim().match(/^(\S+)(\s[\s\S]*)?$/);return m?[m[1],m[2]||'']:['',''];};
   if(it.k==='notice'){
     const ls=String(it.body||'').split('\n').map(l=>l.trim()).filter(Boolean),fs=cs*1.1,padX=fs*2.4;if(!ls.length)ls.push(IKIND.notice.n);
@@ -5156,7 +5177,7 @@ function drawInfoCap(x,W,H,sc,opt){
     el='ctitle';box('cbox',X0,b1y,b1w,b1h,M);run(tsegs,ts,mInk,X0+padX*1.2,b1y+b1h/2,tsp);
     el='csub';if(sw)T([it.sub],ss,SW,L.csFont,SF,mInk,X0+padX*1.2+tw+W*.03,b1y+b1h/2,ss*1.3,'left',ssp,sw+ss);el='cbody';
     const ref=String(it.ref||sermonRef()||'').trim(),[rb,rr]=split1(ref),[wb,wr]=split1(it.who),bs=cs*.98;
-    const segs=[...(ref?[[rb,BW,'cref'],[rr,400]]:[]),...(ref&&it.who?[['   ㅣ   ',300,'cbar']]:[]),...(it.who?[[wb,BW,'cwho'],[wr,400]]:[])];
+    const WF=lv(L,'cwFont','info'),WS=W*lv(L,'cwSize','info')/100*.98,WW=lv(L,'cwWeight','info'),segs=[...(ref?[[rb,BW,'cref'],[rr,400]]:[]),...(ref&&it.who?[['   ㅣ   ',300,'cbar']]:[]),...(it.who?[[wb,WW,'cwho',WF,WS],[wr,400,'cwho',WF,WS]]:[])];
     if(segs.length){const w=run(segs,bs,P,0,0,0,false,L.cFont);box('cbox2',X0,b2y,w+padX*2,b2h,P);run(segs,bs,pInk,X0+padX,b2y+b2h/2,0,true,L.cFont);}
   }else{
     const f=infoCapF(L,W),lh=f.fs*Math.max(1.2,L.lineH-.1),pad=W*.035,f19=infoCapF(L,1920),ls=wrapTo(sc.lines||[],f19.font,f19.sp,1920*.79),page=''; // 쪽 번호는 안 붙여요
@@ -5179,11 +5200,11 @@ function drawInfoCap(x,W,H,sc,opt){
   return lay;}
 function drawInfo(x,W,H,sc,opt){
   if(infoCapSc(sc))return drawInfoCap(x,W,H,sc,opt);
-  const L=LOOK.info,it0=sc.item,it=it0.k==='sermon'?{k:'cover',title:String(it0.title||'').replace(/\*\*/g,''),band:it0.ref||sermonRef(),time:it0.who||'',note:it0.sub||''}:it0,photo=mediaImg('info'),logo=mediaImg('logo'),texts=[];let footer=null;
+  const L=KL(LOOK.info,sc.item.k),it0=sc.item,it=it0.k==='sermon'?{k:'cover',title:String(it0.title||'').replace(/\*\*/g,''),band:it0.ref||sermonRef(),time:it0.who||'',note:it0.sub||''}:it0,photo=mediaImg('info'),logo=mediaImg('logo'),texts=[];let footer=null;
   const sbg=bgOf(sc);if(sbg)drawPhoto(x,W,H,sbg.img,sbg.d);else if(photo)drawPhoto(x,W,H,photo,L.bgDim);else drawBg(x,W,H,palById(songColors['ℹ'+sc.iid]||'slate')||PALS[0]);
   const TF=`"${L.font}", "Noto Sans KR", sans-serif`,TW=lookW(L),BF=`"${L.font2}", "Noto Sans KR", serif`,NF=`"${L.noteFont}", "Noto Sans KR", serif`,SANS='"Noto Sans KR", sans-serif';
   const al=L.align||'center',axAt=m=>al==='left'?W*m:al==='right'?W*(1-m):W/2,hex=c=>String(c||'#ffffff').replace('#','').toUpperCase();
-  const fx={shadow:L.shadowOn!==false,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null};
+  const fx={shadow:L.shadowOn!==false,shAmt:L.shadowAmt??18,stroke:L.strokeOn?{c:L.strokeColor,w:L.strokeW}:null},nv=(k,d)=>L[k]??d,nfx={shadow:nv('noteShadowOn',L.shadowOn!==false),shAmt:nv('noteShadowAmt',L.shadowAmt??18),stroke:nv('noteStrokeOn',L.strokeOn)?{c:nv('noteStrokeColor',L.strokeColor),w:nv('noteStrokeW',L.strokeW)}:null},alB=L.bnAlign||al,alN=L.noteAlign;
   const T=o=>{texts.push({alpha:1,sp:0,...o,hex:hex(o.color)});},SR=[],alp=k=>(L[k+'_a']??100)/100;
   const rect=(rx,ry,rw,rh,fill,a=1,r=0)=>{x.save();x.globalAlpha=a;x.fillStyle=fill;x.beginPath();if(r&&x.roundRect)x.roundRect(rx,ry,rw,rh,r);else x.rect(rx,ry,rw,rh);x.fill();x.restore();};
   const st=p=>{const fs=W*lv(L,p+'Size','info')/100,f=lv(L,p+'Font','info'),w=lv(L,p+'Weight','info'),css=`"${f}", "Noto Sans KR", sans-serif`,sp=fs*lv(L,p+'Spacing','info')/100;return{fs,sp,font:`${w} ${fs}px ${css}`,t:{size:fs,weight:w,family:f,css,color:lv(L,p+'Color','info'),sp}};};
@@ -5197,19 +5218,19 @@ function drawInfo(x,W,H,sc,opt){
     const[ox,oy]=OFF(L,'ititle',W,H),ty=H*.4+oy,tax=axAt(.07)+ox;
     T({kind:'ititle',lines:[it.title||''],size:fs,weight:TW,family:L.font,css:TF,color:L.color,sp,align:al,ax:tax,y0:ty-fs*.6,lh:fs*1.2,boxW:W*.9,...fx});
     const[bx,by]=OFF(L,'iband',W,H),bh=H*.05*Math.max(it.band?lv(L,'bnSize','info'):0,it.time?lv(L,'tmSize','info'):0,it.band||it.time?0:1.35)/1.35,top=ty+fs*.58+H*.035+by,b=band(it.band||'',it.time||'',L.bandColor,L.band2Color,0,top,bh,'iband');
-    if(b.w)b.draw((al==='left'?axAt(.07):al==='right'?axAt(.07)-b.w:W/2-b.w/2)+bx);
+    if(b.w)b.draw((alB==='left'?W*.07:alB==='right'?W*.93-b.w:W/2-b.w/2)+bx);
     const ns=W*lv(L,'ntSize','info')/100,nl=String(it.note||'').split('\n').map(l=>l.trim()).filter(Boolean);
-    if(nl.length){const[nx,ny]=OFF(L,'inote',W,H);T({kind:'inote',lines:nl,size:ns,weight:L.noteWeight,family:L.noteFont,css:NF,color:L.noteColor,sp:ns*L.noteSp/100,align:al,ax:axAt(.07)+nx,y0:top+bh+H*.05+ny,lh:ns*L.noteLh,boxW:W*.86,...fx});}
+    if(nl.length){const[nx,ny]=OFF(L,'inote',W,H),a2=alN||al;T({kind:'inote',lines:nl,size:ns,weight:L.noteWeight,family:L.noteFont,css:NF,color:L.noteColor,sp:ns*L.noteSp/100,align:a2,ax:(a2==='left'?W*.07:a2==='right'?W*.93:W/2)+nx,y0:top+bh+H*.05+ny,lh:ns*L.noteLh,boxW:W*.86,...nfx});}
     footY=H*.83;
   }else if(it.k==='notice'){
     const w2=lv(L,'weight2','info'),c2=lv(L,'color2','info'),fs=W*L.nSize/100,sp=fs*lv(L,'spacing2','info')/100,font=`${w2} ${fs}px ${BF}`,ls=wrapTo(String(it.body||'').split('\n'),font,sp,W*.84),lh=fs*L.lineH;
     const[ox,oy]=OFF(L,'inotice',W,H);
     T({kind:'inotice',lines:ls,size:fs,weight:w2,family:L.font2,css:BF,color:c2,sp,align:al,ax:axAt(.08)+ox,y0:H*.46-lh*ls.length/2+oy,lh,boxW:W*.84,...fx});
     const ns=W*lv(L,'nt2Size','info')/100,nlh=ns*L.noteLh*1.7/1.9,nl=String(it.note||'').split('\n').map(l=>l.trim()).filter(Boolean);
-    if(nl.length){const[nx,ny]=OFF(L,'inote',W,H),na=al==='left'?'right':'left';T({kind:'inote',lines:nl,size:ns,weight:L.noteWeight,family:L.noteFont,css:NF,color:L.noteColor,sp:ns*L.noteSp/100,align:na,ax:(na==='left'?W*.05:W*.95)+nx,y0:H*.86-nlh*nl.length+ny,lh:nlh,boxW:W*.4,...fx});}
+    if(nl.length){const[nx,ny]=OFF(L,'inote',W,H),na=alN||(al==='left'?'right':'left');T({kind:'inote',lines:nl,size:ns,weight:L.noteWeight,family:L.noteFont,css:NF,color:L.noteColor,sp:ns*L.noteSp/100,align:na,ax:(na==='left'?W*.05:na==='right'?W*.95:W/2)+nx,y0:H*.86-nlh*nl.length+ny,lh:nlh,boxW:W*.4,...nfx});}
   }else{
     const b=infoBoxR(W,H,L),pad=W*.035,f=infoBodyF(L,W);let f19=infoBodyF(L,1920);const bw19=1920*(lv(L,'ibW','info')/100-.07);let bl=wrapTo(sc.lines||[],f19.font,f19.sp,bw19),bl0=String(it.title||'').trim()?W*lv(L,'hdSize','info')/100*1.2+H*.03:0;
-    if(Object.keys(SLIDE_OV[sc.ovKey]||{}).some(k=>['bSize','font2','weight2','spacing2','lineH'].includes(k)))for(let z=L.bSize;z>1.2&&f.fs*L.lineH*bl.length>b.h-pad*1.6-bl0;){z*=.96;const L2={...L,bSize:z};Object.assign(f,infoBodyF(L2,W));f19=infoBodyF(L2,1920);bl=wrapTo(sc.lines||[],f19.font,f19.sp,bw19);} // 이 장만 크게 한 글은 상자 안에 맞춰요
+    if(Object.keys(SLIDE_OV[sc.ovKey]||{}).some(k=>['bSize','font2','weight2','spacing2','lineH'].includes(k.replace(/^k_[a-z]+_/,''))))for(let z=L.bSize;z>1.2&&f.fs*L.lineH*bl.length>b.h-pad*1.6-bl0;){z*=.96;const L2={...L,bSize:z};Object.assign(f,infoBodyF(L2,W));f19=infoBodyF(L2,1920);bl=wrapTo(sc.lines||[],f19.font,f19.sp,bw19);} // 이 장만 크게 한 글은 상자 안에 맞춰요
     shp(x,W,H,L,'box',b,lv(L,'ibColor','info'),SR,{a:L.box/100,r:H*.022});
     if(L.tag1||L.tag2){const right=b.x+b.w,G1=st('g1'),G2=st('g2'),th=G=>G.fs*.048/.022;
       [[L.tag2,L.band2Color,b.y-th(G2),G2,'itag2'],[L.tag1,L.bandColor,b.y-(L.tag2?th(G2):0)-th(G1),G1,'itag']].forEach(([t,c,top,G,kind])=>{if(!t)return;x.font=G.font;const tw=spacedW(x,t,G.sp)+G.fs*W*.024/(W*.012375);
@@ -5603,7 +5624,7 @@ function layRegions(x,W,H,lay,lb){const R=[];
 const REG={lyrics:['text','가사'],title:['layout','곡 제목'],footer:['logo','아래 문구 · 모든 슬라이드'],head:['layout','머리글 · 모든 슬라이드'],sub:['layout','작은 머리글 · 모든 슬라이드'],
   ref:['text','본문 제목'],body:['text','본문'],box:['layout','상자'],bandr:['band','띠 왼쪽 도형'],band2r:['band','띠 오른쪽 도형'],tagr:['band','머리표 윗띠'],tag2r:['band','머리표 아랫띠'],cbox2:['look','둘째 상자'],capbox:['cap','띠 상자'],caphead:['cap','위 상자'],capbar:['cap','막대'],logo:['logo','로고'],cap:['cap','자막 글'],capref:['cap','구절 이름'],capright:['cap','띠 위 오른쪽 문구 · 모든 슬라이드'],
   ititle:['text','큰 제목'],iband:['band','띠 왼쪽 글'],itime:['band','띠 오른쪽 글'],inote:['body','작은 글'],inotice:['body','안내 글'],ihead:['text','제목'],ibody:['body','글'],itag:['band','머리표 윗줄 · 모든 슬라이드'],itag2:['band','머리표 아랫줄 · 모든 슬라이드'],ctitle:['text','제목'],csub:['text','부제목'],cbody:['text','글'],cref:['text','구절'],cwho:['text','설교자'],cbox:['look','자막 상자']};
-const REGEL={lyrics:'lyrics',title:'title',body:'body',ref:'ref',head:'head',ititle:'title',ihead:'title',inotice:'body',ibody:'body',inote:'note',sub:'sub',footer:'footer',box:'box',cap:'body',capref:'capref',capright:'capright',iband:'band',itime:'time',itag:'tag',itag2:'tag2',ctitle:'title',csub:'csub',cbody:'body',cref:'body',cwho:'body',...Object.fromEntries(['bandr','band2r','tagr','tag2r','cbox','cbox2','capbox','caphead','capbar'].map(k=>[k,k]))}; // 누른 곳 → 바꿀 글자
+const REGEL={lyrics:'lyrics',title:'title',body:'body',ref:'ref',head:'head',ititle:'title',ihead:'title',inotice:'body',ibody:'body',inote:'note',sub:'sub',footer:'footer',box:'box',cap:'body',capref:'capref',capright:'capright',iband:'band',itime:'time',itag:'tag',itag2:'tag2',ctitle:'title',csub:'csub',cbody:'body',cref:'body',cwho:'cwho',...Object.fromEntries(['bandr','band2r','tagr','tag2r','cbox','cbox2','capbox','caphead','capbar'].map(k=>[k,k]))}; // 누른 곳 → 바꿀 글자
 let sbLay=null;
 function focusLookSection(key){const rg=$('lookCtl').querySelector(`.rg[data-k="${key}"]`);if(!rg)return;const body=rg;
   setTimeout(()=>{body?.scrollIntoView({behavior:'smooth',block:'center'});body?.classList.add('flash');setTimeout(()=>body?.classList.remove('flash'),1400);},30);}
