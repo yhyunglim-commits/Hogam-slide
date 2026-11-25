@@ -57,15 +57,14 @@ try{
   await cap('song','한 화면 줄 수를 맞춰요','#outLines',560,'#resPanel .rbar');
   await cap('song','맞춤법을 검사해요','#checkBtn',560,'#resPanel .rbar');
   // 말씀
-  await ev(`setPage('word');setWMode('w')`);await z(900);await ev(`const set=(i,v)=>{const e=$(i);e.value=v;e.onchange&&e.onchange();e.dispatchEvent(new Event('input',{bubbles:true}))};set('bBook','요한복음');set('bChap','3');set('bV1','16');set('bV2','17')`);await z(400);
+  await ev(`setPage('word');setWordTab('body')`);await z(900);await ev(`const set=(i,v)=>{const e=$(i);e.value=v;e.onchange&&e.onchange()};set('bBook','요한복음');set('bChap','3');set('bV1','16');set('bV2','17')`);await z(400);
   await cap('word','책과 장, 절을 골라요','#bBook');
-  await ev(`const e=$('verseIn');e.value='16 하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니\\n17 하나님이 그 아들을 세상에 보내신 것은';e.dispatchEvent(new Event('input',{bubbles:true}))`);await z(500);
-  await cap('word','본문을 붙여 넣어요','#verseIn');
-  await cap('word','설교 본문 자막에 넣어요','#verseToEdit');
-  await ev(`$('verseToEdit').click()`);await z(1500);
-  await ev(`setWMode('q')`);await z(700);await cap('word','참고 구절도 넣어요','#qAddSlot');
+  await ev(`wTidyRaw('16 하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니\\n17 하나님이 그 아들을 세상에 보내신 것은')`);await z(1500);
+  await cap('word','본문을 붙여 넣으면 자막이 돼요','#wEd');
+  await cap('word','한 줄 글자 수를 맞춰요','#wMan');
+  await cap('word','참고 구절도 넣어요','[data-wadd=q]');
   // 순서·광고
-  await ev(`setWMode('w');setPage('info')`);await z(900);
+  await ev(`setPage('info')`);await z(900);
   await cap('info','넣을 화면을 골라요','[data-ia=cover]',640,'#infoAdd');
   await ev(`document.querySelector('[data-ia=cover]').click()`);await z(900);
   await cap('info','글을 써요','#infoEd',640);
