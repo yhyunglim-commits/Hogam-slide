@@ -36,16 +36,16 @@ try{
    const snap=o=>{const cv=document.createElement('canvas');cv.width=960;cv.height=540;const l=drawScreen(cv,o.s,o.si);return {t:l.texts.map(t=>({k:t.kind,n:t.lines[0],v:[t.family,t.weight,t.size,t.color,t.sp,t.lh].join()})),px:[...cv.getContext('2d').getImageData(0,0,960,540).data].reduce((h,v)=>(h*31+v)|0,7)}};
    await Promise.all([400,700,800].flatMap(w=>['Jua','Noto Sans KR','Nanum Myeongjo','Gowun Batang'].map(f=>document.fonts.load(w+' 40px "'+f+'"','여호와는 나의 목자시니').catch(()=>{}))));
    const out=[],base=JSON.stringify(LOOK);
-   const OWN={lyrics:['lyrics'],title:['title','ititle','ihead'],body:['body','inotice','ibody'],ref:['ref'],head:['head'],note:['inote']};
+   const OWN={lyrics:['lyrics'],title:['title','ititle','ihead'],body:['body','inotice','ibody'],ref:['ref'],head:['head'],note:['inote'],sub:['sub'],footer:[],box:[],capref:[],capright:[],band:['iband'],time:['itime'],tag:['itag'],tag2:['itag2']};
    const TI=['설교제목','광고제목','고백문']; // 방송 자막에서 제목에 속하는 글
    for(const [p,st,nm] of [['song',null,'찬양'],['word',null,'본문'],['quote','body','참고 본문'],['quote','caption','참고 자막'],['quote','box2','두 색 상자'],['info:a1','full','표지'],['info:a2','full','안내'],['info:a3','full','광고'],['info:a4','full','설교'],['info:a5','full','고백문'],['info:a2','cap','안내 자막'],['info:a3','cap','광고 자막'],['info:a4','cap','설교 자막'],['info:a5','cap','고백문 자막']])for(const sc of ['all','slide']){
-    const[g,id]=p.split(':'),reset=()=>{SLIDE_OV={};LOOK=mkLook(JSON.parse(base));if(g==='quote')LOOK.quote.quoteStyle=st;if(g==='info')LOOK.info.style=st;};reset();
+    const[g,id]=p.split(':'),reset=()=>{SLIDE_OV={};LOOK=mkLook(JSON.parse(base));LOOK.quote.capRight='오른쪽 문구';for(const k of ['song','word','info'])LOOK[k].footer='호감교회 HOGAM';if(g==='quote')LOOK.quote.quoteStyle=st;if(g==='info')LOOK.info.style=st;};reset();
     const o=songGroups().flatMap(gg=>gg.items.map(s=>({s,si:gg.songIdx||0}))).find(x=>tabOf(x.s)===g&&(!id||x.s.iid===id));
     if(!o){out.push([nm,'화면 없음']);continue;}const ic=st==='cap',E=textElems(g,o.s.ik,ic,g==='quote'&&st!=='body'&&st);
     for(const e of E)for(const prop of ['font','weight','size','color','spacing','lineH']){if(!e[prop])continue;reset();const b=snap(o),k=e[prop],cur=lv(LOOK[g],k,g),T=sc==='all'?LOOK[g]:(SLIDE_OV[o.s.ovKey]={});
       T[k]=prop==='font'?'Jua':prop==='weight'?(cur===400?800:400):prop==='color'?'#ff0000':prop==='size'?cur*1.2:prop==='lineH'?cur+.4:(cur||0)+12;
       const a=snap(o),ch=a.t.filter((t,i)=>!b.t[i]||b.t[i].v!==t.v);
-      const bad=ch.filter(t=>t.k==='cbox'?(E.length>1&&(e.id==='title')!==TI.includes(t.n)):!OWN[e.id].includes(t.k));
+      const bad=ch.filter(t=>t.k==='cbox'?(E.length>1&&(e.id==='csub'?t.n!=='부제목':e.id==='title'?!TI.includes(t.n):TI.includes(t.n)||t.n==='부제목')):!OWN[e.id].includes(t.k));
       if(bad.length||!ch.length&&a.px===b.px)out.push([sc,nm,e.n,prop,bad.length?'같이 바뀜: '+bad.map(t=>t.n):'안 바뀜'].join(' · '));}
    }SLIDE_OV={};LOOK=mkLook(JSON.parse(base));return out;`);
   if(rows.length)console.log(rows.join('\n'));is('글자를 바꾸면 그 글자만 바뀜 (모든 화면·글자·속성, 모두/이 슬라이드만)',rows.length===0);
