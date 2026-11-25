@@ -868,7 +868,8 @@ select cron.schedule('hogam-clear-ai', '30 18 * * *', 'select public.clear_old_a
 -- 한도는 교회마다 따로 둬요. 나중에 요금제가 생기면 이 값을 바꾸면 돼요.
 alter table public.churches add column if not exists ai_limit     int not null default 50 check (ai_limit between 0 and 5000);
 alter table public.churches add column if not exists member_limit int not null default 5   check (member_limit between 1 and 200);
-alter table public.churches add column if not exists mb_limit     int not null default 100 check (mb_limit between 1 and 5000);
+alter table public.churches add column if not exists mb_limit     int not null default 50 check (mb_limit between 1 and 5000);
+alter table public.churches alter column mb_limit set default 50; -- 처음엔 100이었어요. 배경·로고·곡·예배를 다 더한 크기
 
 -- 새 교회 알림: 호감이 확인한 때. 처음 적용할 때 이미 있던 교회는 확인한 것으로 봐요.
 do $$ begin
