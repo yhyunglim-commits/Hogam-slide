@@ -34,7 +34,7 @@ try{
   // 1) 한 글자를 바꾸면 그 글자만 바뀌는지: 화면 종류 × 글자 × 속성 전부
   const rows=await ev(`
    const snap=o=>{const cv=document.createElement('canvas');cv.width=960;cv.height=540;const l=drawScreen(cv,o.s,o.si);return {t:l.texts.map(t=>({k:t.kind,n:t.lines[0],v:[t.family,t.weight,t.size,t.color,t.sp,t.lh].join()})),px:[...cv.getContext('2d').getImageData(0,0,960,540).data].reduce((h,v)=>(h*31+v)|0,7)}};
-   await Promise.all([400,700,800].flatMap(w=>['Jua','Noto Sans KR','Nanum Myeongjo','Gowun Batang'].map(f=>document.fonts.load(w+' 40px "'+f+'"','여호와는 나의 목자시니').catch(()=>{}))));
+   await Promise.all([400,700,800].flatMap(w=>['Dongle','Noto Sans KR','Nanum Myeongjo','Gowun Batang'].map(f=>document.fonts.load(w+' 40px "'+f+'"','여호와는 나의 목자시니').catch(()=>{}))));
    const out=[],base=JSON.stringify(LOOK);
    const OWN={lyrics:['lyrics'],title:['title','ititle','ihead'],body:['body','inotice','ibody'],ref:['ref'],head:['head'],note:['inote'],sub:['sub'],footer:[],box:[],capref:[],capright:[],band:['iband'],time:['itime'],tag:['itag'],tag2:['itag2']};
    const TI=['설교제목','광고제목','고백문']; // 방송 자막에서 제목에 속하는 글
@@ -43,17 +43,18 @@ try{
     const o=songGroups().flatMap(gg=>gg.items.map(s=>({s,si:gg.songIdx||0}))).find(x=>tabOf(x.s)===g&&(!id||x.s.iid===id));
     if(!o){out.push([nm,'화면 없음']);continue;}const ic=st==='cap',E=textElems(g,o.s.ik,ic,g==='quote'&&st!=='body'&&st);
     for(const e of E)for(const prop of ['font','weight','size','color','spacing','lineH']){if(!e[prop])continue;reset();const b=snap(o),k=e[prop],cur=lv(LOOK[g],k,g),T=sc==='all'?LOOK[g]:(SLIDE_OV[o.s.ovKey]={});
-      T[k]=prop==='font'?'Jua':prop==='weight'?(cur===400?800:400):prop==='color'?'#ff0000':prop==='size'?cur*1.2:prop==='lineH'?cur+.4:(cur||0)+12;
+      T[k]=prop==='font'?'Dongle':prop==='weight'?(cur===400?800:400):prop==='color'?'#ff0000':prop==='size'?cur*1.2:prop==='lineH'?cur+.4:(cur||0)+12;
       const a=snap(o),ch=a.t.filter((t,i)=>!b.t[i]||b.t[i].v!==t.v);
-      const bad=ch.filter(t=>t.k==='cbox'?(E.length>1&&(e.id==='csub'?t.n!=='부제목':e.id==='title'?!TI.includes(t.n):TI.includes(t.n)||t.n==='부제목')):!OWN[e.id].includes(t.k));
+      const bad=isShape(e.id)?[]:ch.filter(t=>t.k==='cbox'?(E.length>1&&(e.id==='csub'?t.n!=='부제목':e.id==='title'?!TI.includes(t.n):TI.includes(t.n)||t.n==='부제목')):!OWN[e.id].includes(t.k));
       if(bad.length||!ch.length&&a.px===b.px)out.push([sc,nm,e.n,prop,bad.length?'같이 바뀜: '+bad.map(t=>t.n):'안 바뀜'].join(' · '));}
    }SLIDE_OV={};LOOK=mkLook(JSON.parse(base));return out;`);
   if(rows.length)console.log(rows.join('\n'));is('글자를 바꾸면 그 글자만 바뀜 (모든 화면·글자·속성, 모두/이 슬라이드만)',rows.length===0);
   // 2) 실제 칸으로: 가사 글꼴을 골라도 곡 제목은 그대로
-  is('실제 칸: 가사 글꼴 → 곡 제목 그대로',await ev(`lookTab='song';lookSlideKey=null;lookElem.song='lyrics';buildLookUI();const t=LOOK.song.tFont,q=$('lookCtl').querySelector('.lkfont select');q.value='Jua';q.onchange();await new Promise(r=>setTimeout(r,1500));const r=LOOK.song.font==='Jua'&&LOOK.song.tFont===t;LOOK=mkLook({});return r`));
+  is('실제 칸: 가사 글꼴 → 곡 제목 그대로',await ev(`lookTab='song';lookSlideKey=null;lookElem.song='lyrics';buildLookUI();const t=LOOK.song.tFont,q=$('lookCtl').querySelector('.lkfont select');q.value='Dongle';q.onchange();await new Promise(r=>setTimeout(r,1500));const r=LOOK.song.font==='Dongle'&&LOOK.song.tFont===t;LOOK=mkLook({});return r`));
   // 3) 옛 설정(글자를 따로 안 정한 것)은 보이던 값으로 굳음
-  is('옛 설정은 보이던 값으로 굳음',await ev(`const l=mkLook({song:{font:'Jua',weight:400},info:{color:'#123456'}});return l.song.tFont==='Jua'&&l.info.color2==='#123456'&&l.info.noteColor==='#123456'`));
-  is('옛 이 슬라이드만 글꼴도 굳음',await ev(`return freeOv({'s:곡:0':{font:'Jua',weight:400}},{})['s:곡:0'].tFont==='Jua'`));
+  is('옛 설정은 보이던 값으로 굳음',await ev(`const l=mkLook({song:{font:'Dongle',weight:400},info:{color:'#123456'}});return l.song.tFont==='Dongle'&&l.info.color2==='#123456'&&l.info.noteColor==='#123456'`));
+  is('뺀 글꼴 11개는 비슷한 글꼴로 바뀌고 목록에 없음',await ev(`const L=Object.keys(FONT_OLD),o=mkLook({song:{font:'Jua',weight:400,tFont:'Gugi'},info:{font2:'Hahmlet',weight2:700}}),s=textOv('〔순서〕 '+JSON.stringify({k:'ov',v:{'s:a:0':{font:'Black Han Sans'}}})).v['s:a:0'],v=freeOv({'s:a:0':{tFont:'Do Hyeon'}},{})['s:a:0'];return L.length===11&&L.every(f=>!FONTS.some(x=>x.f===f))&&Object.values(FONT_OLD).every(([f,w])=>FONTS.some(x=>x.f===f)&&(!w||fontWts(f).includes(w)))&&o.song.font==='Nanum Gothic'&&o.song.weight===800&&o.song.tFont==='Gothic A1'&&o.info.font2==='Noto Serif KR'&&o.info.weight2===700&&s.font==='Noto Sans KR'&&s.weight===800&&v.tFont==='Gothic A1'`));
+  is('옛 이 슬라이드만 글꼴도 굳음',await ev(`return freeOv({'s:곡:0':{font:'Dongle',weight:400}},{})['s:곡:0'].tFont==='Dongle'`));
   await ev(`LOOK=mkLook({});LOOK.song.footer=LOOK.info.footer='호감교회';window.W=ms=>new Promise(r=>setTimeout(r,ms));window.go=async f=>{const l=songGroups().flatMap(g=>g.items);openSlide(l.findIndex(f));await W(200);};window.J0=JSON.stringify(LOOK);window.rs=()=>{if($('slidebox').classList.contains('on'))closeSlide();LOOK=mkLook(JSON.parse(J0));SLIDE_OV={};lookScope='all';lookSlideKey=null;};
     window.hit=(c,lay,k)=>{const b=c.getBoundingClientRect(),r=lay.regions.find(q=>q.k===k),z=b.width/c.width;return{clientX:b.left+(r.x+r.w/2)*z,clientY:b.top+(r.y+r.h/2)*z,bubbles:true,detail:1}}`);
   is('표지 아래 문구를 고쳐도 제목은 그대로',await ev(`await go(s=>s.iid==='a1');startInline('footer');const shown=$('sbInl').value;$('sbInl').value='새문구';endInline(true);await W(500);const r=shown==='호감교회'&&INFO[0].title==='감사주일'&&LOOK.info.footer==='새문구'&&LOOK.song.footer==='호감교회';rs();return r`));
@@ -65,8 +66,8 @@ try{
   is('미리보기에서 누른 글자가 골라짐',await ev(`renderShots();await W(700);const c=document.querySelector('#shots canvas');c.scrollIntoView({block:'center'});c.dispatchEvent(new MouseEvent('click',hit(c,c._lay,'title')));const r=lookElem.song==='title'&&$('lookCtl').querySelector('[data-el=title]').getAttribute('aria-checked')==='true';lookElem.song='lyrics';rs();return r`));
   // 끌기
   const drag=`const c=document.querySelector('#shots canvas'),b=c.getBoundingClientRect(),h=hit(c,c._lay,'lyrics');c.setPointerCapture=()=>{};const P=(t,dx)=>c.dispatchEvent(new PointerEvent(t,{bubbles:true,button:0,pointerType:'mouse',clientX:h.clientX+dx,clientY:h.clientY}));P('pointerdown',0);P('pointermove',b.width*.05);P('pointermove',b.width*.1);P('pointerup',b.width*.1);`;
-  is('이 슬라이드만 끌면 보이던 자리에서 시작',await ev(`LOOK.song.ox_lyrics=5;renderShots();await W(700);const s=songGroups().flatMap(g=>g.items)[0];lookSlideKey=s.ovKey;lookScope='slide';${drag}const r=Math.abs(SLIDE_OV[s.ovKey].ox_lyrics-15)<.1&&LOOK.song.ox_lyrics===5;rs();return r`));
-  is('따로 옮긴 장도 모두 끌 때 움직임',await ev(`const s=songGroups().flatMap(g=>g.items)[0];SLIDE_OV[s.ovKey]={ox_lyrics:10};renderShots();await W(700);${drag}const r=Math.abs(LOOK.song.ox_lyrics-20)<.1&&!(SLIDE_OV[s.ovKey]||{}).ox_lyrics;rs();return r`));
+  is('이 슬라이드만 끌면 보이던 자리에서 시작',await ev(`LOOK.song.ox_q_lyrics=5;renderShots();await W(700);const s=songGroups().flatMap(g=>g.items)[0];lookSlideKey=s.ovKey;lookScope='slide';${drag}const r=Math.abs(SLIDE_OV[s.ovKey].ox_q_lyrics-15)<.1&&LOOK.song.ox_q_lyrics===5;rs();return r`));
+  is('따로 옮긴 장도 모두 끌 때 움직임',await ev(`const s=songGroups().flatMap(g=>g.items)[0];SLIDE_OV[s.ovKey]={ox_q_lyrics:10};renderShots();await W(700);${drag}const r=Math.abs(LOOK.song.ox_q_lyrics-20)<.1&&!(SLIDE_OV[s.ovKey]||{}).ox_q_lyrics;rs();return r`));
   is('내 되돌리기가 팀원 것을 안 건드림',await ev(`lookPrev=lookSnap();lookHist=[];lookPrevT=0;LOOK.song.size=6;saveLook();teamApply('look',{...LOOK,word:{...LOOK.word,size:4}});undoLook();const r=LOOK.song.size===5&&LOOK.word.size===4;rs();return r`));
   is('순서·광고에서 로고를 넣으면 그 화면에 켜짐',await ev(`lookTab='info';buildLookUI();const c=document.createElement('canvas');c.width=c.height=40;const bl=await new Promise(r=>c.toBlob(r)),dt=new DataTransfer();dt.items.add(new File([bl],'l.png',{type:'image/png'}));const i=$('lookCtl').querySelector('.rg[data-k=logo] input[type=file]');i.files=dt.files;i.dispatchEvent(new Event('change'));await W(800);const r=LOOK.info.logoPos!=='off';MEDIA.logo=null;rs();return r`));
   is('참고 자막 굵기를 바꾸면 줄을 다시 잼',await ev(`const a=capKey();LOOK.quote.weight=400;const r=a!==capKey();rs();return r`));
@@ -77,7 +78,7 @@ try{
   await ev(`window.RAW='${RAW}';window.setW=async t=>{$('wordText').value=t;$('wordText').dispatchEvent(new Event('input',{bubbles:true}));setPage('word');setWordTab('body');await W(900);};
     window.drawn=()=>songGroups().flatMap(g=>g.items).filter(s=>s.ed==='word').flatMap(s=>{const c=document.createElement('canvas');c.width=1920;c.height=1080;return drawScreen(c,s,0).texts.find(t=>t.kind==='body').lines;}).filter(Boolean).join('\\n');
     window.edl=()=>$('wEd').value.split('\\n').filter(Boolean).join('\\n')`);
-  for(const[f,sz]of[['Nanum Myeongjo',3],['Pretendard',3.4],['Jua',4.2],['Noto Sans KR',2.6]])
+  for(const[f,sz]of[['Nanum Myeongjo',3],['Pretendard',3.4],['Dongle',4.2],['Noto Sans KR',2.6]])
     is('말씀: 정리된 줄이 슬라이드에서 다시 안 꺾임 · '+f,await ev(`const k=JSON.stringify(LOOK);LOOK.word.font='${f}';LOOK.word.size=${sz};LOOK.word.weight=700;await document.fonts.load('700 40px "${f}"',RAW).catch(()=>{});BSET.max=autoWordMax();const t=verseResult(RAW,'이사야 24장 1-3절').text;await setW(t);const r=drawn()===t.split('\\n').slice(1).join('\\n')&&edl()===drawn();LOOK=mkLook(JSON.parse(k));return r`));
   is('말씀: 글자 수를 크게 정해도 상자보다 긴 줄이 안 생김',await ev(`BSET.auto=false;BSET.max=40;const t=verseResult(RAW,'이사야 24장 1-3절').text;await setW(t);const r=drawn()===t.split('\\n').slice(1).join('\\n');renderWCharCtl();const lab=$('wAuto').textContent;BSET.auto=true;BSET.max=autoWordMax();return r&&lab!=='자동'`));
   is('말씀: 긴 줄도 편집 칸과 슬라이드가 같은 줄',await ev(`await setW('이사야 24장 1절\\n'+RAW);return edl()===drawn()&&edl().split('\\n').length>RAW.split('\\n').length`));

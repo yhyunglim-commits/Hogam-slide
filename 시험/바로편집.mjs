@@ -54,7 +54,7 @@ try{
   const KIND=[['song','','찬양'],['word','','본문'],['quote','body','참고 본문'],['quote','caption','참고 자막'],['quote','box2','두 색 상자'],['info:a1','full','표지'],['info:a2','full','안내'],['info:a3','full','광고'],['info:a4','full','설교'],['info:a5','full','고백문'],['info:a2','cap','안내 자막'],['info:a3','cap','광고 자막'],['info:a4','cap','설교 자막'],['info:a5','cap','고백문 자막']];
   const prep=async(p,st,big)=>{await ev(`await rs();look('${p}','${st}');renderShots();await W(350);${big?`openSlide(all().findIndex(s=>shotKey(s)===shotKey(find('${p}'))));await W(250);window.CV=bigCv;`:`window.CV=cvOf('${p}');CV.scrollIntoView({block:'center'});await W(120);`}return 1`);return ev(`return edOf(CV).lay.regions.filter(r=>r.k!=='logo').map(r=>r.k)`);};
   // 1) 고르기 · 2) 크기 · 3) 두 번 누르기: 화면 종류마다 모든 항목
-  const badSel=[],badSize=[],badEdit=[],noReach=[];let nItem=0;
+  const badRest=[],badMove=[],badSel=[],badSize=[],badEdit=[],noReach=[];let nItem=0;
   for(const[p,st,nm]of KIND)for(const big of [false,true]){
     console.error(`${Math.round(performance.now()/1000)}초 ${nm}${big?' 크게':''}`);const ks=await prep(p,st,big);
     for(const k of ks){nItem++;const tag=`${nm}${big?' 크게':''} · ${k}`;
@@ -64,13 +64,19 @@ try{
       // 크기
       const before=await ev(`return regs(CV)`),a=await ev(`return handle('se')`),sz=await ev(`return edSizes(edOf(CV).sc,'${k}').map(x=>edVal(edOf(CV).sc,x))`);
       const bw=await ev(`const b=CV.getBoundingClientRect();return[b.width,b.height]`),r0=before[k];
-      await drag(a,[a[0]+Math.max(14,r0[2]*bw[0]*.25),a[1]+(k==='box'?14:0)]);await z(250);
+      await drag(a,[a[0]+Math.max(14,r0[2]*bw[0]*.25),a[1]+(await ev(`return isShape('${k}')`)?14:0)]);await z(250);
       if(!big)await ev(`window.CV=cvOf('${p}')`);
       const after=await ev(`return CV?regs(CV):null`),sz2=await ev(`return CV?edSizes(edOf(CV).sc,'${k}').map(x=>edVal(edOf(CV).sc,x)):[]`);
-      const grown=sz2.some((v,i)=>v>sz[i]+.01),r1=after&&after[k],stay=!r1||!['box','cbox','lyrics','title','head','sub','ref','footer','ititle','inotice','inote','iband'].includes(k)||Math.abs(r1[0]-r0[0])<.006&&Math.abs(r1[1]-r0[1])<.011;
+      // 다른 항목은 제자리 (상자는 안의 글이 다시 나뉘니 빼고)
+      if(after&&k!=='box'&&k!=='cap'){ // 자막 글은 커지면 띠가 위로 늘어나요
+        const mv=Object.keys(before).filter(q=>q!==k&&after[q]&&Math.hypot(after[q][0]-before[q][0],after[q][1]-before[q][1])>.004);if(mv.length)badRest.push(tag+' → '+mv);}
+      const grown=sz2.some((v,i)=>v>sz[i]+.01),r1=after&&after[k],stay=!r1||['cap','capref','capright'].includes(k)||Math.abs(r1[0]-r0[0])<.006&&Math.abs(r1[1]-r0[1])<.011;
       if(!grown||!stay)badSize.push(tag+(grown?' 자리 밀림 '+JSON.stringify([r0,r1]):' 안 커짐 '+sz+'→'+sz2));
+      // 끌면 그 항목만 움직임
+      await prep(p,st,big);{const w=await ev(`window.b2=regs(CV);return at(CV,'${k}')`);if(w){await drag(w,[w[0]+16,w[1]-9]);if(!big)await ev(`window.CV=cvOf('${p}')`);
+        const m=await ev(`const n=regs(CV);return Object.keys(n).filter(q=>b2[q]&&Math.hypot(n[q][0]-b2[q][0],n[q][1]-b2[q][1])>.003).join()`);if(m!==k)badMove.push(tag+' 움직인 것: '+m);}}
       // 두 번 누르기
-      if(['box','cbox'].includes(k))continue;
+      if(await ev(`return isShape('${k}')`))continue;
       await prep(p,st,big);const q=await ev(`return at(CV,'${k}')`);await dbl(q);
       if(!await ev(`return !$('sbInl').hidden&&sbEditK==='${k}'`)){badEdit.push(tag+' 안 열림');continue;}
       const orig=await ev(`return $('sbInl').value`);
@@ -83,8 +89,24 @@ try{
       const u=await ev(`const T=['outText','wordText','quoteText'].every((id,i)=>$(id).value===T0[i]),I=JSON.stringify(INFO)===I0;const o=T&&I&&!JSON.stringify([LOOK,SLIDE_OV]).includes('갸');return o?'':JSON.stringify([$('toast').textContent,T,I,I?'':JSON.stringify(INFO)+I0,lookHist.length,lookFut.slice(-1)]).slice(0,500)`);
       if(u)badEdit.push(tag+' 되돌리기 안 됨 '+u);
     }}
-  if(noReach.length)console.log('  못 누른 항목:',noReach.join(', '));for(const l of [badSel,badSize,badEdit])if(l.length)console.log('  '+l.join('\n  '));
-  is(`모든 항목을 누르면 골라짐 (항목 ${nItem}개)`,!badSel.length);is('모든 항목을 누를 수 있음',!noReach.length);is('모서리를 끌면 커지고 맞은편 모서리는 제자리',!badSize.length);is('두 번 누르면 글을 고치고 되돌릴 수 있음',!badEdit.length);
+  if(noReach.length)console.log('  못 누른 항목:',noReach.join(', '));for(const l of [badSel,badSize,badEdit,badRest,badMove])if(l.length)console.log('  '+l.join('\n  '));
+  is(`모든 항목을 누르면 골라짐 (항목 ${nItem}개)`,!badSel.length);is('모든 항목을 누를 수 있음',!noReach.length);is('모서리를 끌면 커지고 맞은편 모서리는 제자리',!badSize.length);is('두 번 누르면 글을 고치고 되돌릴 수 있음',!badEdit.length);is('끌면 그 항목만 움직임',!badMove.length);is('크기를 바꿔도 다른 항목은 제자리',!badRest.length);
+  // 글을 안 고치고 빈 곳을 눌러 나가도 글자가 그대로 보임
+  {const gone=[];for(const[p,st,k]of [['song','','lyrics'],['word','','ref'],['quote','body','body'],['info:a1','full','ititle'],['info:a3','full','ihead']]){await prep(p,st,false);await ev(`window.RG=edOf(CV).lay.regions.find(r=>r.k==='${k}');window.px=c=>c.getContext('2d').getImageData(RG.x,RG.y,RG.w,RG.h).data;window.far=(a,b)=>{let n=0;for(let i=0;i<a.length;i+=4)if(Math.abs(a[i]-b[i])+Math.abs(a[i+1]-b[i+1])+Math.abs(a[i+2]-b[i+2])>90)n++;return n;};px(CV);CV._draw();window.p0=px(CV)`);await dbl(await ev(`return at(CV,'${k}')`));await z(150);
+    const opened=await ev(`return !$('sbInl').hidden&&(window.p1=px(cvOf('${p}')),window.nHid=far(p0,p1))>20`);const e=await ev(`const b=cvOf('${p}').closest('.sgroup').getBoundingClientRect();return[b.right-30,Math.min(innerHeight-20,b.bottom-5)]`);await click(e);await z(500);
+    if(!opened||await ev(`return far(px(cvOf('${p}')),p1)<nHid*.8`))gone.push(p+' '+k+(opened?'':' 안 열림'));}if(gone.length)console.log('  '+gone.join(', '));is('고치지 않고 빈 곳을 눌러 나가도 글자가 보임',!gone.length);}
+  // 단축키
+  await prep('info:a1','full',false);{await click(await ev(`return at(CV,'bandr')`));is('띠 도형을 글자와 따로 고름',await ev(`return ED.keys.join()==='bandr'`));
+    for(const type of ['keyDown','keyUp'])await send('Input.dispatchKeyEvent',{type,key:'Delete',code:'Delete',windowsVirtualKeyCode:46},S);await z(300);
+    is('Delete는 그 장에서만 숨김 · 글은 그대로',await ev(`window.CV=cvOf('info:a1');const a=Object.keys(regs(CV)),b=Object.keys(regs(cvOf('info:a4')));return !a.includes('bandr')&&a.includes('iband')&&b.includes('bandr')&&JSON.stringify(INFO)===I0`));
+    is('숨긴 것이 저장되고 되돌려짐',await ev(`const o=textOv(ovLine()[0]);const r=Object.values(o.v).some(v=>v.hide_bandr===true);undoLook();await W(300);return r&&Object.keys(regs(cvOf('info:a1'))).includes('bandr')`));
+    await ev(`window.CV=cvOf('info:a1')`);await click(await ev(`return at(CV,'ititle')`));await ev(`window.b3=regs(CV)`);for(const type of ['keyDown','keyUp'])await send('Input.dispatchKeyEvent',{type,key:'ArrowRight',code:'ArrowRight',windowsVirtualKeyCode:39},S);await z(300);
+    is('화살표로 그 항목만 옮김',await ev(`const n=regs(cvOf('info:a1'));return Object.keys(n).filter(q=>Math.abs(n[q][0]-b3[q][0])>.0005).join()==='ititle'`));
+    for(const type of ['keyDown','keyUp'])await send('Input.dispatchKeyEvent',{type,key:'Tab',code:'Tab',windowsVirtualKeyCode:9},S);await z(200);is('Tab으로 다음 항목',await ev(`return ED&&ED.keys.length===1&&ED.keys[0]!=='ititle'`));
+    await keys('a',4);is('⌘A로 모두 고름',await ev(`return ED.keys.length===edCtx().lay.regions.length`));await keys('Escape');
+    await ev(`window.CV=cvOf('info:a1')`);await click(await ev(`return at(CV,'iband')`));await keys('Enter');is('Enter로 글 고치기',await ev(`return !$('sbInl').hidden&&sbEditK==='iband'`));await keys('Escape');}
+  await prep('word','',false);{await ev(`LOOK.word.hColor='#ff8800';LOOK.word.hSize=3.6;saveLook();await W(300);window.CV=cvOf('word')`);await click(await ev(`return at(CV,'head')`));await keys('c',4);await ev(`window.CV=cvOf('word')`);await click(await ev(`return at(CV,'ref')`));await keys('v',4);is('⌘C·⌘V로 모양만 옮김',await ev(`return LOOK.word.rColor==='#ff8800'&&LOOK.word.rSize===3.6&&$('wordText').value===T0[1]`));}
+  is('툴바에 되돌리기 화살표가 없음 · 갓피아 아이콘이 보임',await ev(`const i=document.querySelector('.tlink img');setPage('word');await W(700);const r=!$('lkUndo')&&!$('lkRedo')&&i.complete&&i.naturalWidth>0;setPage('slides');await W(500);return r`));
   // 여러 개
   await prep('word','',false);{const a=await ev(`return at(CV,'head')`);await click(a);const b=await ev(`return at(CV,'ref')`);await click(b,{shift:true});await z(300);await ev(`window.CV=cvOf('word');window.b0=regs(CV)`);
     is('Shift로 여러 개 고르기',await ev(`return ED.keys.join()==='head,ref'&&document.querySelectorAll('.edfr').length===2`));await shot('여러개.png',S);
@@ -121,7 +143,7 @@ try{
   is('예전에 이 컴퓨터에만 있던 것은 한 번 옮겨짐',await ev(`const c=curS(),t=c.text;c.text=t.split('\\n').filter(l=>!l.includes('"k":"ov"')).join('\\n');const k=all().find(s=>s.ed==='word').ovKey;OV_OLD={[k]:{size:4},'w:없는 본문:0':{size:5}};loadSession(c.id);const r=SLIDE_OV[k]?.size===4&&Object.keys(SLIDE_OV).length===1;OV_OLD={};return r`));
   // 팀원이 먼저 고친 글은 되돌리기가 안 덮음
   is('되돌리기가 팀원이 고친 글을 안 덮음',await ev(`await rs();openSlide(all().findIndex(s=>s.ed==='word'));startInline('body');$('sbInl').value=$('sbInl').value.replace('하나님이','하나님께서');endInline(true);await W(300);$('wordText').value='요한복음 3:16\\n1 팀원이 바꿈';$('wordText').dispatchEvent(new Event('input',{bubbles:true}));undoLook();const a=$('wordText').value;closeSlide();return a==='요한복음 3:16\\n1 팀원이 바꿈'&&$('toast').textContent.includes('못했어요')`));
-  is('글을 고치고 새로 고치면 다시 하기는 비움',await ev(`await rs();LOOK.song.size=6;saveLook();undoLook();const a=lookFut.length;lookPrevT=0;LOOK.song.size=4;saveLook();return a===1&&lookFut.length===0&&!$('lkUndo').disabled&&$('lkRedo').disabled`));
+  is('글을 고치고 새로 고치면 다시 하기는 비움',await ev(`await rs();LOOK.song.size=6;saveLook();undoLook();const a=lookFut.length;lookPrevT=0;LOOK.song.size=4;saveLook();return a===1&&lookFut.length===0&&lookHist.length>0`));
   is('곡 제목을 고치면 색과 설정도 따라감',await ev(`await rs();const s=find('song');songColors[s.title]='rose';SLIDE_OV[s.ovKey]={size:6};renderShots();await W(300);openSlide(all().findIndex(x=>x.ed==='song'));startInline('title');const old=$('sbInl').value;$('sbInl').value='새 제목';endInline(true);await W(300);const n=find('song'),r=n.title==='새 제목'&&songColors['새 제목']==='rose'&&SLIDE_OV[n.ovKey]?.size===6;closeSlide();return r&&!!old`));
   is('광고 여러 장 중 한 장만 고침',await ev(`await rs();INFO[2].body=Array.from({length:9},(_,i)=>(i+1)+'번째 줄').join('\\n')+'\\n\\n끝 문단';saveInfo();await W(300);const b=all().filter(s=>s.iid==='a3');openSlide(all().findIndex(s=>s.iid==='a3'&&s.page===1));startInline('ibody');$('sbInl').value=$('sbInl').value.replace('8번째','여덟째');endInline(true);await W(300);closeSlide();return b.length===3&&INFO[2].body===['1번째 줄','2번째 줄','3번째 줄','4번째 줄','5번째 줄','6번째 줄','7번째 줄','여덟째 줄','9번째 줄'].join('\\n')+'\\n\\n끝 문단'`));
   // 작은 미리보기 글 고치기 · 확대 단추
