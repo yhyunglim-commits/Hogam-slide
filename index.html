@@ -2156,7 +2156,7 @@ body{font-family:var(--sans)}
 }
 #gate .gvl-out{margin-top:64px}
 #gate .gvl-out h2{margin:0 0 24px;text-align:center;font-size:clamp(20px,5.8vw,26px);font-weight:900;letter-spacing:-.04em;color:var(--ink)}
-#gate .gvl-out ul{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0;padding:0;list-style:none}
+#gate .gvl-out ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 8px;margin:0;padding:0;list-style:none}
 #gate .gvl-out li{text-align:center}
 #gate .gvl-out h3 small{display:block;margin-top:2px;font-size:12px;font-weight:600;color:var(--sub)}
 #gate .gvl-out svg{display:block;width:64px;max-width:100%;margin:0 auto;filter:drop-shadow(0 8px 14px rgba(20,18,40,.14))}
@@ -2164,7 +2164,7 @@ body{font-family:var(--sans)}
 @media (min-width:861px){
 #gate .gvl-out{margin-top:110px}
 #gate .gvl-out h2{font-size:34px;margin-bottom:32px}
-#gate .gvl-out ul{max-width:820px;margin:0 auto}
+#gate .gvl-out ul{grid-template-columns:repeat(6,minmax(0,1fr));max-width:1040px;margin:0 auto}
 #gate .gvl-out svg{width:104px}
 #gate .gvl-out h3{font-size:18px}
 }
@@ -2393,6 +2393,23 @@ body.szing,body.szing *{user-select:none!important;-webkit-user-select:none!impo
 body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
 #dlLive{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:64px;height:54px;border:0;border-radius:10px;background:var(--bad-soft);color:var(--bad);font:700 13px var(--sans);cursor:pointer;white-space:nowrap}
 #dlLive i{font-size:24px;color:var(--bad)}#dlLive:hover:not(:disabled){filter:brightness(.96)}#dlLive:disabled{opacity:.4;cursor:default}
+/* ---- 다른 형식으로 내려받기 ---- */
+.dmdlg .manhead{padding-bottom:14px}
+.dmcols{display:grid;grid-template-columns:190px 260px minmax(0,1fr);height:min(440px,calc(100vh - 190px));min-height:0}
+.dmcols>*{padding:16px;min-width:0;overflow:auto}
+.dmkinds{display:grid;gap:4px;align-content:start;border-right:1px solid var(--line)}
+.dmkinds button{border:0;background:none;border-radius:8px;padding:8px 10px;text-align:left;font:inherit;font-size:14px;font-weight:600;color:var(--text);cursor:pointer}.dmkinds button:hover{background:var(--glass)}
+.dmkinds button[aria-pressed=true]{background:var(--pri-soft);color:var(--pri-ink)}.dmkinds small{display:block;font-size:12px;font-weight:400;color:var(--text3)}
+.dmopts{display:grid;gap:16px;align-content:start;font-size:14px}.dmopts .hint{margin:0}
+.dmopts .f{display:grid;gap:6px;font-size:13px;font-weight:600}.dmopts .f select,.dmopts .f input{width:100%}.dmopts .c{display:flex;gap:8px;align-items:center}
+.dmout{background:var(--sunken);display:grid;gap:12px;align-content:start}
+.dmout pre{margin:0;font:13px/1.6 var(--sans);white-space:pre-wrap;overflow-wrap:anywhere}
+.dmout table{border-collapse:collapse;width:100%;font-size:13px}.dmout td,.dmout th{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;white-space:pre-wrap}
+.dmpics{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}.dmpics div{display:grid;gap:4px;font-size:12px;color:var(--text2);overflow-wrap:anywhere}
+.dmpics canvas{width:100%;aspect-ratio:16/9;display:block;border-radius:5px}.dmpics .clr{background:repeating-conic-gradient(#8b8b92 0 25%,#a4a4ab 0 50%) 0 0/14px 14px}
+.dmwarn{background:var(--warn-soft);color:var(--warn-ink);border-radius:8px;padding:10px 12px;font-size:13px;display:grid;gap:8px;justify-items:start}
+.dmfoot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 24px;border-top:1px solid var(--line)}.dmfoot .hint{margin:0}
+@media(max-width:820px){.dmcols{grid-template-columns:minmax(0,1fr);height:auto;overflow:auto}.dmcols>*{overflow:visible}.dmkinds{border-right:0;border-bottom:1px solid var(--line)}}
 /* ---- 호감 매뉴얼 · 새 소식 ---- */
 .mandlg{border:0;border-radius:16px;padding:0;width:min(900px,calc(100vw - 32px));max-height:min(860px,calc(100vh - 40px));background:var(--surface);color:var(--text);box-shadow:0 24px 60px -12px rgba(0,0,0,.35);overflow:hidden;font-family:var(--sans)}
 .mandlg[open]{display:flex;flex-direction:column}.mandlg::backdrop,.newsdlg::backdrop{background:rgba(15,23,42,.45)}
@@ -2625,7 +2642,7 @@ body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
     <div class="page" id="pgSlides">
       <section class="panel shots-panel" id="slidePanel">
       <div class="ph2"><span class="pico c4" aria-hidden="true"><i class="ph-fill ph-presentation" aria-hidden="true"></i></span><h2>슬라이드 미리보기</h2><span class="hint" style="margin:0 0 0 4px">탭을 끌어 예배 순서대로 놓고, ×로 지워요</span><span class="meta" id="shotCount"></span>
-        <div class="acts"><button class="btn" id="dlTxt" title="찬양·말씀·순서 글을 TXT 파일로"><span class="bico txt" aria-hidden="true"><i class="ph-fill ph-file-text"></i></span><span class="bt">TXT</span></button><button class="btn" id="dlPdf" title="슬라이드를 PDF 파일로"><span class="bico pdf" aria-hidden="true"><i class="ph-fill ph-file-pdf"></i></span><span class="bt">PDF</span></button><button class="btn" id="dlJpg" title="슬라이드를 JPG 이미지로 (용량이 작아요)"><span class="bico img" aria-hidden="true"><i class="ph-fill ph-image"></i></span><span class="bt">JPG</span></button><button class="btn" id="dlShots" title="슬라이드를 PNG 이미지로 (가장 또렷해요)"><span class="bico img" aria-hidden="true"><i class="ph-fill ph-image"></i></span><span class="bt">PNG</span></button><button class="btn pri" id="dlPptx"><span class="bico ppt" aria-hidden="true"><i class="ph-fill ph-presentation-chart"></i></span><span class="bt">PowerPoint</span></button></div></div>
+        <div class="acts"><button class="btn" id="dlTxt" title="찬양·말씀·순서 글을 TXT 파일로"><span class="bico txt" aria-hidden="true"><i class="ph-fill ph-file-text"></i></span><span class="bt">TXT</span></button><button class="btn" id="dlPdf" title="슬라이드를 PDF 파일로"><span class="bico pdf" aria-hidden="true"><i class="ph-fill ph-file-pdf"></i></span><span class="bt">PDF</span></button><button class="btn" id="dlJpg" title="슬라이드를 JPG 이미지로 (용량이 작아요)"><span class="bico img" aria-hidden="true"><i class="ph-fill ph-image"></i></span><span class="bt">JPG</span></button><button class="btn" id="dlShots" title="슬라이드를 PNG 이미지로 (가장 또렷해요)"><span class="bico img" aria-hidden="true"><i class="ph-fill ph-image"></i></span><span class="bt">PNG</span></button><button class="btn pri" id="dlPptx"><span class="bico ppt" aria-hidden="true"><i class="ph-fill ph-presentation-chart"></i></span><span class="bt">PowerPoint</span></button><button class="btn" id="dlMore" title="TXT 고르기 · 투명 그림 · 초록 배경 · CSV" aria-haspopup="dialog"><span class="bt">다른 형식…</span></button></div></div>
       <div class="shotbody">
       <div class="shotcol">
         <div class="shotzoom"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><button type="button" id="zoomOut" aria-label="미리보기 작게">−</button><input type="range" id="shotZoom" min="1" max="6" step="1" aria-label="미리보기 크기"><button type="button" id="zoomIn" aria-label="미리보기 크게">+</button></div>
@@ -2814,6 +2831,8 @@ body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
           <li><svg viewBox="0 0 96 120" aria-hidden="true"><defs><linearGradient id="gvlP2" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eef0f4"/></linearGradient><linearGradient id="gvlC2" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#4aa3ff"/><stop offset="1" stop-color="#1f6fe0"/></linearGradient></defs><path d="M12 4h50l26 26v78a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8z" fill="url(#gvlP2)" stroke="#cfd3db" stroke-width="1.2"/><path d="M62 4v18a8 8 0 0 0 8 8h18z" fill="#d9dde4" stroke="#cfd3db" stroke-width="1.2" stroke-linejoin="round"/><rect x="18" y="36" width="56" height="40" rx="5" fill="#cfe6ff"/><circle cx="60" cy="47" r="5.5" fill="#ffc83d"/><path d="M18 71l16-19 13 14 8-8 19 18H23a5 5 0 0 1-5-5z" fill="#3fa36b"/><rect x="16" y="84" width="60" height="22" rx="6" fill="url(#gvlC2)"/><text x="46" y="100" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" style="letter-spacing:-.3px">JPG·PNG</text></svg><h3>이미지 <small>(JPG, PNG)</small></h3></li>
           <li><svg viewBox="0 0 96 120" aria-hidden="true"><defs><linearGradient id="gvlP3" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eef0f4"/></linearGradient><linearGradient id="gvlC3" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f5814f"/><stop offset="1" stop-color="#d9501f"/></linearGradient></defs><path d="M12 4h50l26 26v78a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8z" fill="url(#gvlP3)" stroke="#cfd3db" stroke-width="1.2"/><path d="M62 4v18a8 8 0 0 0 8 8h18z" fill="#d9dde4" stroke="#cfd3db" stroke-width="1.2" stroke-linejoin="round"/><rect x="16" y="36" width="60" height="38" rx="4" fill="#ffe7dc" stroke="#e8683a" stroke-width="2.4"/><path d="M32 45a10 10 0 1 0 10 10H32z" fill="#e8683a"/><path d="M35.500 41.500a10 10 0 0 1 10 10h-10z" fill="#f4a27f"/><path d="M52 48h17M52 56h17M52 64h11" stroke="#e8683a" stroke-width="2.8" stroke-linecap="round"/><rect x="16" y="84" width="60" height="22" rx="6" fill="url(#gvlC3)"/><text x="46" y="100" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">PPTX</text></svg><h3>파워포인트</h3></li>
           <li><svg viewBox="0 0 96 120" aria-hidden="true"><defs><linearGradient id="gvlP4" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eef0f4"/></linearGradient><linearGradient id="gvlC4" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ff6b6b"/><stop offset="1" stop-color="#cf2b34"/></linearGradient></defs><path d="M12 4h50l26 26v78a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8z" fill="url(#gvlP4)" stroke="#cfd3db" stroke-width="1.2"/><path d="M62 4v18a8 8 0 0 0 8 8h18z" fill="#d9dde4" stroke="#cfd3db" stroke-width="1.2" stroke-linejoin="round"/><rect x="24" y="34" width="44" height="17" rx="3" fill="#ffd9d9"/><path d="M24 59h44M24 67h44M24 75h26" stroke="#e5383f" stroke-width="3" stroke-linecap="round"/><path d="M28 48l9-9 7 6 6-4 12 7z" fill="#e5383f"/><rect x="16" y="84" width="60" height="22" rx="6" fill="url(#gvlC4)"/><text x="46" y="100" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">PDF</text></svg><h3>PDF</h3></li>
+          <li><svg viewBox="0 0 96 120" aria-hidden="true"><defs><linearGradient id="gvlP5" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eef0f4"/></linearGradient><linearGradient id="gvlC5" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9b7bf0"/><stop offset="1" stop-color="#6b46c9"/></linearGradient></defs><path d="M12 4h50l26 26v78a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8z" fill="url(#gvlP5)" stroke="#cfd3db" stroke-width="1.2"/><path d="M62 4v18a8 8 0 0 0 8 8h18z" fill="#d9dde4" stroke="#cfd3db" stroke-width="1.2" stroke-linejoin="round"/><rect x="18" y="36" width="56" height="40" rx="5" fill="#eee9fb"/><rect x="32" y="36" width="14" height="10" fill="#d3c8f3"/><rect x="60" y="36" width="14" height="10" fill="#d3c8f3"/><rect x="18" y="46" width="14" height="10" fill="#d3c8f3"/><rect x="46" y="46" width="14" height="10" fill="#d3c8f3"/><rect x="32" y="56" width="14" height="10" fill="#d3c8f3"/><rect x="60" y="56" width="14" height="10" fill="#d3c8f3"/><rect x="18" y="66" width="14" height="10" fill="#d3c8f3"/><rect x="46" y="66" width="14" height="10" fill="#d3c8f3"/><path d="M30 52h32M36 62h20" stroke="#6b46c9" stroke-width="4.5" stroke-linecap="round"/><rect x="16" y="84" width="60" height="22" rx="6" fill="url(#gvlC5)"/><text x="46" y="100" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" style="letter-spacing:-.3px">PNG·TGA</text></svg><h3>투명 이미지 <small>(PNG, TGA)</small></h3></li>
+          <li><svg viewBox="0 0 96 120" aria-hidden="true"><defs><linearGradient id="gvlP6" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eef0f4"/></linearGradient><linearGradient id="gvlC6" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#4cc27b"/><stop offset="1" stop-color="#23864a"/></linearGradient></defs><path d="M12 4h50l26 26v78a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8z" fill="url(#gvlP6)" stroke="#cfd3db" stroke-width="1.2"/><path d="M62 4v18a8 8 0 0 0 8 8h18z" fill="#d9dde4" stroke="#cfd3db" stroke-width="1.2" stroke-linejoin="round"/><rect x="18" y="36" width="56" height="40" rx="4" fill="#e6f6ec" stroke="#2f9e5b" stroke-width="2.4"/><path d="M18 47h56M18 57h56M18 67h56M36 36v40" stroke="#2f9e5b" stroke-width="2"/><rect x="16" y="84" width="60" height="22" rx="6" fill="url(#gvlC6)"/><text x="46" y="100" text-anchor="middle" font-size="14" font-weight="800" fill="#fff" style="letter-spacing:-.3px">CSV</text></svg><h3>표 <small>(CSV)</small></h3></li>
         </ul>
       </div>
     </div>
@@ -2971,6 +2990,9 @@ body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
     <div class="lvgrid" id="lvGrid"></div></div>
 </div>
 <dialog class="mandlg" id="manDlg" aria-labelledby="manT"><div class="manhead"><div><h2 id="manT">호감 매뉴얼</h2><button type="button" class="btn ghost ibtn" id="manX" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div><nav class="mantoc" id="manToc" aria-label="주제"></nav></div><div class="manpage" id="manPage" tabindex="-1"></div></dialog>
+<dialog class="mandlg dmdlg" id="dmDlg" aria-labelledby="dmT"><div class="manhead"><div><h2 id="dmT">다른 형식으로 내려받기</h2><button type="button" class="btn ghost ibtn" id="dmX" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div></div>
+<div class="dmcols"><div class="dmkinds" id="dmKinds"></div><div class="dmopts" id="dmOpts"></div><div class="dmout" id="dmOut" tabindex="0" aria-label="결과 미리보기"></div></div>
+<div class="dmfoot"><span class="hint" id="dmSum" role="status"></span><button type="button" class="btn pri" id="dmGo">내려받기</button></div></dialog>
 <dialog class="newsdlg" id="newsDlg" aria-labelledby="newsT"><div class="newstop"><b>NEW</b><span class="newsver" id="newsV"></span></div><h2 id="newsT"></h2><ul class="newsul" id="newsB"></ul><div class="newsbt"><button type="button" class="btn" id="newsMan">호감 매뉴얼 보기</button><button type="button" class="btn pri" id="newsOk" autofocus>확인</button></div></dialog>
 <button type="button" class="btn hidden" id="lvPill"></button>
 <div hidden id="liveHome"><div class="rg rglive" id="rgLive"><button type="button" id="dlLive" title="예배당 화면에 바로 띄우기"><i class="ph-fill ph-broadcast" aria-hidden="true"></i><span>송출</span></button></div></div>
@@ -5225,7 +5247,7 @@ function renderSelBar(){
   ca.checked=!!all.length&&n===all.length;ca.indeterminate=n>0&&n<all.length;ca.disabled=!all.length;
   $('selAllTx').textContent=n?`${n}장 고름`:'전체 선택';
   $('selDel').classList.toggle('hidden',!n);$('selDel').textContent=`삭제`;
-  [['dlTxt','TXT'],['dlPdf','PDF'],['dlJpg','JPG'],['dlShots','PNG'],['dlPptx','PowerPoint']].forEach(([id,t])=>$(id).querySelector('.bt').textContent=n?`${n}장 ${t}`:t);
+  [['dlTxt','TXT'],['dlPdf','PDF'],['dlJpg','JPG'],['dlShots','PNG'],['dlPptx','PowerPoint'],['dlMore','다른 형식…']].forEach(([id,t])=>$(id).querySelector('.bt').textContent=n?`${n}장 ${t}`:t);
   $('shots').classList.toggle('selecting',n>0);
   $('shots').querySelectorAll('.shotw').forEach(w=>{const on=selKeys.has(w.dataset.k);w.classList.toggle('sel',on);const i=w.querySelector('.shotck input');if(i)i.checked=on;});
 }
@@ -5402,6 +5424,83 @@ $('dlTxt').onclick=async()=>{const groups=exportGroups();if(!groups.length)retur
   // 윈도우 메모장과 옛 자막 프로그램에서도 한글과 줄바꿈이 깨지지 않게
   await saveBlob(`${exportName(groups)}.txt`,new Blob(['\ufeff'+exportText(groups).replace(/\n/g,'\r\n')+'\r\n'],{type:'text/plain;charset=utf-8'}));
   toast('TXT 파일로 내려받았어요');exported=true;renderSteps();};
+
+/* ---- 다른 형식: TXT 고르기 · 투명 PNG/TGA · 초록 배경 PNG · CSV ---- */
+const DMK=[['txt','TXT 고르기','한글 방식 · 나누기 · 줄 수'],['png','투명 PNG','배경 없이 글자만'],['tga','투명 TGA','방송 장비용'],['green','초록 배경 PNG','초록을 빼서 얹을 때'],['csv','CSV','표로 읽는 프로그램용']];
+const DM={k:'txt',enc:'utf8',sep:'blank',mark:'---',n:'0',title:true,blank:false};let dmBusy=false;
+const dmText=()=>DM.k==='txt'||DM.k==='csv';
+// 화면 하나 = {tag, title, lines}. 제목은 묶음(곡·본문)의 첫 화면에만 붙여 써요
+function dmRows(){
+  const groups=exportGroups(),clean=l=>String(l).replace(/\*\*/g,'').trim();
+  return groups.flatMap(g=>{let first=true;return g.items.filter(s=>DM.blank||!s.blank).map(s=>{
+    let title=s.type==='word'?s.ref||'':s.title||'',lines=s.lines||[],head=true;
+    if(s.type==='info'){const o=s.item||{};head=o.k==='ad'||o.k==='text';title=o.title||'';
+      lines=[head?'':o.title,o.k==='sermon'?o.ref||sermonRef():'',o.who,o.sub,o.time,o.note,lines.length?lines.join('\n'):s.pages>1?'':o.body].filter(Boolean).join('\n').split('\n');}
+    const r={s,g,tag:tagOf(g,groups),title:clean(title),lines:lines.map(clean).filter(Boolean),first:head&&first&&!s.blank};if(!s.blank)first=false;return r;});});
+}
+// 줄 수는 긴 화면을 나누기만 해요 (합치면 절이 섞여요)
+function dmScreens(rows){const n=+DM.n;return rows.flatMap(r=>{const out=[];if(!n||!r.lines.length)out.push(r.lines);else for(let i=0;i<r.lines.length;i+=n)out.push(r.lines.slice(i,i+n));
+  return out.map((l,i)=>(DM.title&&r.first&&!i&&r.title?[r.title]:[]).concat(l).join('\n'));});}
+const dmTxt=sc=>sc.join(DM.sep==='mark'&&DM.mark.trim()?`\n${DM.mark.trim()}\n`:'\n\n');
+const dmCsv=rows=>[['번호','순서','제목','자막'],...rows.map((r,i)=>[i+1,r.tag,r.title,r.lines.join('\n')])].map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+// 옛 윈도우 한글(CP949): 브라우저는 읽기만 해 줘서, 읽는 표를 거꾸로 만들어 써요
+let _cp949;function cp949(){if(_cp949)return _cp949;_cp949=new Map();const d=new TextDecoder('euc-kr');
+  for(let a=0x81;a<0xFF;a++)for(let b=0x41;b<0xFF;b++){const t=d.decode(new Uint8Array([a,b]));if(t.length===1&&t.charCodeAt(0)!==0xFFFD&&!_cp949.has(t))_cp949.set(t,[a,b]);}return _cp949;}
+const cp949Miss=t=>[...new Set([...t].filter(c=>c.codePointAt(0)>127&&!cp949().has(c)))];
+function dmEncode(t){t=t.normalize('NFC').replace(/\n/g,'\r\n')+'\r\n';if(DM.enc!=='cp949')return new TextEncoder().encode('﻿'+t);
+  const m=cp949(),o=[];for(const c of t){const n=c.codePointAt(0);if(n<128)o.push(n);else o.push(...(m.get(c)||[63]));}return new Uint8Array(o);}
+// 배경만 비우거나 초록으로 칠한 화면. 글자 뒤 상자는 남아요
+function dmDraw(cv,r){const x=cv.getContext('2d');x.clearRect(0,0,cv.width,cv.height);const fill=DM.k==='green'?LIVE_GREEN:'rgba(0,0,0,0)';
+  if(!r.s.blank){bgFill=fill;try{drawScreen(cv,r.s,r.g.songIdx||0);}finally{bgFill=null;}}
+  if(DM.k==='green'){x.globalCompositeOperation='destination-over';x.fillStyle=fill;x.fillRect(0,0,cv.width,cv.height);x.globalCompositeOperation='source-over';}}
+// 압축 안 한 32비트 TGA (위에서부터, BGRA)
+// 읽기용 캔버스에 옮겨서 읽어요 (그린 캔버스를 바로 읽으면 브라우저가 그리는 방식을 바꿔 글자 모양이 PNG와 달라져요)
+function dmTga(cv){const W=cv.width,H=cv.height,rc=document.createElement('canvas');rc.width=W;rc.height=H;const rx=rc.getContext('2d',{willReadFrequently:true});rx.drawImage(cv,0,0);
+  const d=rx.getImageData(0,0,W,H).data,o=new Uint8Array(18+d.length);
+  o[2]=2;o[12]=W&255;o[13]=W>>8;o[14]=H&255;o[15]=H>>8;o[16]=32;o[17]=0x28;
+  for(let i=0;i<d.length;i+=4){o[18+i]=d[i+2];o[19+i]=d[i+1];o[20+i]=d[i];o[21+i]=d[i+3];}return o;}
+// TGA는 한 장에 8MB라, 한 장씩 바로 눌러 담아요 (모아 두면 브라우저가 멈출 수 있어요)
+let _crcT;function crc32(u){if(!_crcT){_crcT=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;_crcT[n]=c;}}
+  let c=-1;for(let i=0;i<u.length;i++)c=_crcT[(c^u[i])&255]^(c>>>8);return(c^-1)>>>0;}
+async function zipEntry(name,u,pack){const z=pack?new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer()):u;
+  return{name:new TextEncoder().encode(name.normalize('NFC')),crc:crc32(u),size:u.length,csize:z.length,m:pack?8:0,data:new Blob([z])};}
+function zipBlob(list){const parts=[],cen=[];let off=0,cl=0;const d=new Date(),tm=d.getHours()<<11|d.getMinutes()<<5|d.getSeconds()>>1,dt=(d.getFullYear()-1980)<<9|(d.getMonth()+1)<<5|d.getDate();
+  const head=(e,c)=>{const b=new DataView(new ArrayBuffer(c?46:30)),k=c?2:0;b.setUint32(0,c?0x02014b50:0x04034b50,true);if(c)b.setUint16(4,20,true);
+    [20,0x800,e.m,tm,dt].forEach((v,i)=>b.setUint16(4+k+i*2,v,true));b.setUint32(14+k,e.crc,true);b.setUint32(18+k,e.csize,true);b.setUint32(22+k,e.size,true);b.setUint16(26+k,e.name.length,true);if(c)b.setUint32(42,off,true);return b;};
+  for(const e of list){cen.push(head(e,true),e.name);cl+=46+e.name.length;parts.push(head(e),e.name,e.data);off+=30+e.name.length+e.csize;}
+  const end=new DataView(new ArrayBuffer(22));end.setUint32(0,0x06054b50,true);end.setUint16(8,list.length,true);end.setUint16(10,list.length,true);end.setUint32(12,cl,true);end.setUint32(16,off,true);
+  return new Blob([...parts,...cen,end],{type:'application/zip'});}
+const dmName=(r,i)=>`${String(i+1).padStart(2,'0')}_${(r.title||r.g.title||'화면').replace(/[\\/:*?"<>|\s]+/g,'').slice(0,20)}.${DM.k==='tga'?'tga':'png'}`;
+async function dmMake(onStep){const rows=dmRows(),name=exportName(exportGroups());
+  if(DM.k==='txt')return{name:name+'.txt',blob:new Blob([dmEncode(dmTxt(dmScreens(rows)))],{type:'text/plain'})};
+  if(DM.k==='csv')return{name:name+'.csv',blob:new Blob([dmEncode(dmCsv(rows))],{type:'text/csv'})};
+  await drawReady();const cv=document.createElement('canvas');cv.width=1920;cv.height=1080;const list=[];
+  for(const[i,r]of rows.entries()){dmDraw(cv,r);const u=DM.k==='tga'?dmTga(cv):new Uint8Array(await(await liveBlob(cv,'image/png')).arrayBuffer());
+    list.push(await zipEntry(dmName(r,i),u,DM.k==='tga'));onStep?.(i+1,rows.length);await new Promise(r=>setTimeout(r,0));}
+  return{name:`${name} ${{png:'투명 PNG',tga:'투명 TGA',green:'초록 배경 PNG'}[DM.k]}.zip`,blob:zipBlob(list)};}
+function dmOpts(){const sel=(id,l,o)=>`<label class="f">${l}<select class="sel" id="dm_${id}">${o.map(([v,t])=>`<option value="${v}"${DM[id]===v?' selected':''}>${t}</option>`).join('')}</select></label>`,
+    ck=(id,l)=>`<label class="c"><input type="checkbox" id="dm_${id}"${DM[id]?' checked':''}>${l}</label>`,enc=sel('enc','한글 저장 방식',[['utf8','UTF-8 (추천)'],['cp949','옛 윈도우용 한글']]);
+  $('dmOpts').innerHTML=(DM.k==='txt'?enc+sel('sep','화면 나누기',[['blank','빈 줄'],['mark','기호 직접 적기']])+(DM.sep==='mark'?`<label class="f">나누는 기호<input type="text" id="dm_mark" maxlength="12" value="${esc(DM.mark)}"></label>`:'')+sel('n','한 화면 최대 줄 수',[['0','지금 화면 그대로'],['1','1줄'],['2','2줄'],['3','3줄'],['4','4줄']])+'<p class="hint">줄 수는 내려받는 파일에만 적용돼요.</p>'+ck('title','제목 넣기')
+    :DM.k==='csv'?enc+'<p class="hint">한 줄에 화면 하나씩이에요.</p>'
+    :`<p class="hint">${{png:'사진과 배경색을 빼고 글자·로고만 남겨요. 글자 뒤에 깐 상자는 남아요.',tga:'배경을 뺀 투명한 그림이에요. 파일이 커서 만드는 데 시간이 걸릴 수 있어요.',green:'송출의 초록 배경과 같은 초록이에요.'}[DM.k]}</p>`)+ck('blank','빈 화면도 넣기');
+  $('dmOpts').querySelectorAll('select,input').forEach(el=>el.addEventListener(el.type==='text'?'input':'change',()=>{const id=el.id.slice(3);DM[id]=el.type==='checkbox'?el.checked:el.value;if(id==='sep')dmOpts();dmOut();}));}
+function dmOut(){const rows=dmRows(),o=$('dmOut');let n=rows.length,t='';o.textContent='';
+  if(DM.k==='txt'){const sc=dmScreens(rows);n=sc.length;t=dmTxt(sc);const p=document.createElement('pre');p.textContent=t;o.append(p);}
+  else if(DM.k==='csv'){t=dmCsv(rows);o.innerHTML='<table><thead><tr><th>번호</th><th>순서</th><th>제목</th><th>자막</th></tr></thead><tbody>'+rows.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.tag||'')}</td><td>${esc(r.title)}</td><td>${esc(r.lines.join('\n'))}</td></tr>`).join('')+'</tbody></table>';}
+  else{const w=document.createElement('div');w.className='dmpics';rows.slice(0,12).forEach((r,i)=>{const d=document.createElement('div'),c=document.createElement('canvas');c.width=480;c.height=270;if(DM.k!=='green')c.className='clr';dmDraw(c,r);d.append(c,dmName(r,i));w.append(d);});o.append(w);
+    if(n>12){const p=document.createElement('p');p.className='hint';p.textContent=`외 ${n-12}장`;o.append(p);}}
+  if(dmText()&&DM.enc==='cp949'){const m=cp949Miss(t.normalize('NFC'));if(m.length){const w=document.createElement('div'),sp=document.createElement('span'),b=document.createElement('button');w.className='dmwarn';sp.textContent=`옛 윈도우용 한글에는 없는 글자가 있어요: ${m.slice(0,12).join(' ')}. 그대로 받으면 ?로 바뀌어요.`;b.className='btn sm';b.type='button';b.textContent='UTF-8로 바꾸기';b.onclick=()=>{DM.enc='utf8';dmOpts();dmOut();};w.append(sp,b);o.prepend(w);}}
+  $('dmSum').textContent=`화면 ${n}개 · ${dmText()?DM.k.toUpperCase()+' 파일 하나':'1920×1080 · ZIP 파일 하나'}`;$('dmGo').disabled=dmBusy||!n;}
+function dmAll(){[...$('dmKinds').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===DM.k));dmOpts();dmOut();dmLock(dmBusy);}
+// 만드는 동안 형식이나 설정을 바꾸면 섞이니 잠가요
+function dmLock(v){$('dmDlg').querySelectorAll('.dmkinds button,.dmopts select,.dmopts input,.dmwarn button').forEach(e=>e.disabled=v);}
+DMK.forEach(([k,t,d])=>{const b=document.createElement('button');b.type='button';b.dataset.k=k;b.innerHTML=`${t}<small>${d}</small>`;b.onclick=()=>{DM.k=k;dmAll();};$('dmKinds').append(b);});
+$('dlMore').onclick=()=>{if(!exportGroups().length)return;hideTip();dmAll();if(!$('dmDlg').open)$('dmDlg').showModal();};
+$('dmX').onclick=()=>$('dmDlg').close();$('dmDlg').addEventListener('click',e=>{if(e.target===$('dmDlg'))$('dmDlg').close();});
+$('dmGo').onclick=async()=>{if(dmBusy)return;dmBusy=true;const g=$('dmGo');g.disabled=true;dmLock(true);
+  try{const f=await dmMake((a,b)=>g.textContent=`만드는 중 ${a}/${b}`);await saveBlob(f.name,f.blob);$('dmDlg').close();toast('내려받았어요');exported=true;renderSteps();}
+  catch(e){$('dmDlg').close();toast('만들지 못했어요: '+(e?.message||e));}
+  finally{dmBusy=false;g.textContent='내려받기';g.disabled=false;dmLock(false);}};
 
 /* ---- PDF로 내려받기: 한 쪽에 슬라이드 그림 한 장 (16:9) ---- */
 async function makePdf(jpgs){
@@ -6608,9 +6707,12 @@ function liveSig(){return JSON.stringify([curSess,songGroups().map(g=>[g.title,g
 const liveBlob=(cv,type,q)=>new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('그림을 만들지 못했어요')),type,q));
 function liveHash(t){let a=0xdeadbeef,b=0x41c6ce57;for(let i=0;i<t.length;i++){const c=t.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677);}return(a>>>0).toString(36)+(b>>>0).toString(36)+t.length;}
 const liveSkip=new Set(['line','src','lsrc','chunk','cs','ovKey']); // 글 위치 번호는 그림에 안 나와요
-async function liveBake(onStep,stop=()=>false,old=null,onSlide=null){
+async function drawReady(){
   ensureGlyphs();await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,8000))]);
   await Promise.all(Object.keys(MEDIA).filter(k=>MEDIA[k]).map(async k=>{mediaImg(k);try{await IMG[k].decode();}catch(e){}}));
+}
+async function liveBake(onStep,stop=()=>false,old=null,onSlide=null){
+  await drawReady();
   const sig=liveSig(),sess=curSess,name=$('docTitle').value||'예배',groups=songGroups(),mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
   const common=JSON.stringify([LOOK,songColors,Object.entries(MEDIA).map(([k,v])=>[k,v&&v.length,v&&v.slice(-40)]),typeof sermonRef==='function'?sermonRef():'']),qt=$('quoteText').value;
   const slides=[],todo=[],have=new Map((old?.slides||[]).map(x=>[x.h,x]));
