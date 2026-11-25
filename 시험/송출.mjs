@@ -30,8 +30,14 @@ try{
   await ev(`sessionStorage.setItem('cj_church','test-church')`);await open();
   await ev(`for(const [id,v] of [['outText','만복의 근원 하나님\\n온 백성 찬송 드리고\\n\\n저 천사여 찬송하세\\n찬송 성부 성자 성령\\n\\n아멘 아멘\\n아멘'],['wordText','요한복음 3:16\\n하나님이 세상을 이처럼 사랑하사\\n독생자를 주셨으니\\n\\n이는 저를 믿는 자마다\\n멸망치 않고 영생을 얻게'],['quoteText','시편 23:1\\n여호와는 나의 목자시니\\n내가 부족함이 없으리로다']]){const e=$(id);e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));}
     LOOK.quote.quoteStyle='caption';setPage('slides')`);await z(1500);
+  // 배경·로고 넣는 칸
+  await ev(`lookTab='song';MEDIA.song=null;setPage('slides')`);await z(700);
+  for(const[b,n]of[['bg','사진'],['logo','로고']]){await ev(`setRib('${b}')`);await z(250);is(n+' 칸: 이름과 + 만',await ev(`const m=document.querySelector('.rg[data-k=${b}] .media2');return m.textContent.trim()==='${n} 없음'&&m.querySelectorAll('.btn').length===1`));is(n+' 칸: 아이콘과 +가 한 줄',await ev(`const y=q=>{const r=document.querySelector('.rg[data-k=${b}] .media2 '+q).getBoundingClientRect();return r.top+r.height/2};return Math.abs(y('.mthumb i')-y('.mplus'))<2`));if(b==='bg')await shot('9-bg.png',S);}
+  await ev(`setRib('bg')`);await ev(`const c=document.createElement('canvas');c.width=160;c.height=90;c.getContext('2d').fillStyle='#964';c.getContext('2d').fillRect(0,0,160,90);const b=await new Promise(r=>c.toBlob(r)),dt=new DataTransfer();dt.items.add(new File([b],'a.png',{type:'image/png'}));const i=document.querySelector('.rg[data-k=bg] .media2 input');i.files=dt.files;i.dispatchEvent(new Event('change'))`);
+  is('+로 사진을 넣음',await until(`MEDIA.song&&document.querySelector('.rg[data-k=bg] .media2 img')`,5000));await z(400);await shot('9-bg2.png',S);
+  await ev(`document.querySelector('.rg[data-k=bg] .mx').click()`);await z(300);is('×로 사진을 지움',await ev(`return !MEDIA.song&&document.querySelector('.rg[data-k=bg] .mname').textContent==='사진 없음'`));await ev(`setRib(null)`);
   // 호감 매뉴얼
-  await ev(`$('openMan').click()`);await z(900);const tabs=await ev(`return MAN.length`);let full=0;
+  is('왼쪽 메뉴에는 없고 설정에 있음',await ev(`openSet();return !document.getElementById('openMan')&&$('setMan').getBoundingClientRect().width>0`));is('의견 보내기 단추',await ev(`return $('openMail').textContent.includes('의견 보내기')`));await ev(`$('setMan').click()`);await z(900);is('설정에서 매뉴얼이 열림',await ev(`return $('manDlg').open&&!$('setbox').classList.contains('on')`));const tabs=await ev(`return MAN.length`);let full=0;
   for(let i=0;i<tabs;i++){await ev(`$('manToc').children[${i}].click()`);await z(250);if(await ev(`const im=[...$('manPage').querySelectorAll('img')];for(const x of im){x.loading='eager';await x.decode().catch(()=>{});}return MAN[${i}][0]==='news'?$('manPage').textContent.includes('1.0'):im.length>1&&im.every(x=>x.naturalWidth>100)`))full++;}
   is('매뉴얼 주제 10칸이 모두 채워짐',tabs===10&&full===10);
   await ev(`showMan('song')`);await z(300);await shot('6-man.png',S);await ev(`$('manPage').querySelector('.mango button').click()`);is('화면 열기 단추',await ev(`return !$('manDlg').open&&curPage==='song'`));

@@ -1274,16 +1274,14 @@ details.look summary{font-size:13px;font-weight:600;color:var(--text)}
 #lookCtl .lkcol .sw0 em{font-style:normal;font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums}
 #lookCtl .lkfx{border-radius:12px;background:var(--sunken);padding:4px 12px}
 #lookCtl .lkfx .lkfxb{padding:4px 0 12px}
-#lookCtl .media2{display:grid;grid-template-columns:minmax(0,1fr) 132px;gap:12px;align-items:center}
-#lookCtl .media2 .mleft{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-#lookCtl .media2 .mleft label.btn{cursor:pointer}
-#lookCtl .media2 .mhint{width:100%;font-size:12px;color:var(--text3)}
-#lookCtl .mthumb{width:132px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--sunken);border:1px solid var(--line);display:grid;place-items:center}
+#lookCtl .media2{display:flex;gap:10px;align-items:center}
+#lookCtl .media2 .mname{flex:1;min-width:0;font-size:13px;color:var(--text2)}
+#lookCtl .media2 .mplus{position:relative;cursor:pointer;flex:none}#lookCtl .media2 .mplus:focus-within{box-shadow:var(--focus)}
+#lookCtl .mthumb{width:64px;flex:none;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--sunken);border:1px solid var(--line);display:grid;place-items:center}
 #lookCtl .mthumb img{width:100%;height:100%;object-fit:cover;display:block}
 #lookCtl .mthumb.logo{background:repeating-conic-gradient(#e5e7eb 0 25%,#fff 0 50%) 0 0/12px 12px}
-#lookCtl .mthumb.logo img{object-fit:contain;padding:10px}
-#lookCtl .mthumb.empty{display:flex;flex-direction:column;gap:2px;color:var(--text3);font-size:20px}
-#lookCtl .mthumb.empty small{font-size:12px}
+#lookCtl .mthumb.logo img{object-fit:contain;padding:4px}
+#lookCtl .media2 .mthumb.empty{display:grid;place-items:center;padding:0;min-height:0;aspect-ratio:auto;height:28px;background:none;border:0;width:28px;color:var(--text3);font-size:20px}
 #lookCtl details.lksec>.lkgrid,#lookCtl .lkfxb>.lkgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
 #lookCtl .stp .num{border-radius:0!important;background:transparent!important;box-shadow:none!important;height:auto!important;border-top:0!important;border-bottom:0!important}
 #lookCtl .stp .num input{border:0!important;background:transparent!important;box-shadow:none!important;width:48px!important;height:30px!important;outline:none}
@@ -1772,8 +1770,6 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 /* ▾ 로 펼친 칸: 리본 아래에 떠요 */
 #lookBox .rgp{position:fixed;z-index:95;width:320px;max-width:calc(100vw - 16px);max-height:min(70vh,560px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px -16px rgba(16,24,40,.35);padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:stretch}
 #lookBox .rgp[hidden]{display:none}
-#lookBox .rgp .media2{grid-template-columns:minmax(0,1fr) 110px}
-#lookBox .rgp .mthumb{width:110px}
 /* 크게 보기 옆에서는 세로로 다 펼쳐요 */
 #sbSet #lookBox{display:block;margin:0;padding:0;border:0;background:transparent;overflow:visible}
 #sbSet #lookBox .lkundo{margin:0 0 8px}
@@ -2413,7 +2409,6 @@ body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
 .newstop{display:flex;align-items:center;justify-content:space-between}.newstop b{background:#D92D23;color:#fff;border-radius:6px;padding:3px 10px;font-size:13px}.newsver{font-size:13px;color:var(--text3)}
 .newsdlg h2{font-size:20px;line-height:1.4;margin:18px 0 14px}.newsul{margin:0 0 24px;padding-left:20px;display:grid;gap:10px;font-size:15px;line-height:1.6}.newsbt{display:flex;justify-content:space-between}
 .manpage h3{font-size:17px;margin:6px 0 12px}.manpage .newsver{margin:20px 0 0}
-.railman{color:var(--text2)}.railman .mico{background:var(--chip)!important;color:var(--text2)!important;box-shadow:none!important}
 #gate .gv-ask.gv-man{margin-left:auto}#gate .gv-man+.gv-ask{margin-left:0}
 @media(max-width:640px){.manpage ol li{grid-template-columns:minmax(0,1fr);gap:12px}.manhead,.manpage{padding-left:16px;padding-right:16px}#gate .gv-ask{padding:0 12px;font-size:13px}#gate .gtop .gv-ask svg{display:none}}
 #lvPill{position:fixed;right:20px;bottom:20px;z-index:70;background:var(--bad);color:#fff}
@@ -2439,8 +2434,7 @@ body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
     <div class="railfoot" id="railFoot">
     <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><i class="spdot" id="spDot" role="img" aria-label="새 교회가 있어요" hidden></i><span class="megear" aria-hidden="true"><i class="ph-fill ph-gear-six"></i></span><div class="mt"><b id="meName">로그인 전</b></div></div>
     <div class="railuse" id="railUse" hidden></div>
-    <div class="rfrow"><button type="button" class="railmail railman" id="openMan" title="호감 매뉴얼"><span class="mico" aria-hidden="true"><i class="ph ph-question"></i></span><span class="mt2"><b>호감 매뉴얼</b></span></button></div>
-    <div class="rfrow"><button type="button" class="railmail" id="openMail" title="문의 · 협업 · 응원 보내기"><span class="mico" aria-hidden="true"><i class="ph-fill ph-envelope-simple"></i></span><span class="mt2"><b>문의·응원 보내기</b><small>hogamcommunity@gmail.com</small></span></button></div>
+    <div class="rfrow"><button type="button" class="railmail" id="openMail" title="의견 보내기"><span class="mico" aria-hidden="true"><i class="ph-fill ph-envelope-simple"></i></span><span class="mt2"><b>의견 보내기</b><small>hogamcommunity@gmail.com</small></span></button></div>
     </div>
   </aside>
   <div class="scrim" id="scrim"></div>
@@ -4144,8 +4138,9 @@ function buildLookUI(){
   const text=(g,k,ph,ex)=>{const w=document.createElement('label');w.className='lk lkwide';w.innerHTML=`<span>${ph}${allTag(k)}</span>`;const i=document.createElement('input');i.type='text';i.className='lktext';i.placeholder=ex||ph;i.value=T(k)[k]||'';i.oninput=()=>{T(k)[k]=i.value;saveLook();};w.appendChild(i);g.appendChild(w);};
   // 사진·로고: 왼쪽은 버튼, 오른쪽은 썸네일
   const upload=(g,k,isLogo)=>{const on=!!MEDIA[k],w=document.createElement('div');w.className='media2 lkwide';
-    w.innerHTML=`<div class="mleft"><label class="btn sm"><input type="file" accept="image/*" hidden><i class="ph ph-upload-simple" aria-hidden="true"></i> ${on?(isLogo?'로고 바꾸기':'사진 바꾸기'):(isLogo?'로고 넣기':'사진 넣기')}</label>${on?`<button class="btn sm ghost mx" type="button">지우기</button>`:''}<span class="mhint">${isLogo?'배경이 비치는 투명 PNG가 좋아요':'없으면 곡마다 색 배경'}</span></div>
-      <div class="mthumb${isLogo?' logo':''}${on?'':' empty'}">${on?`<img src="${MEDIA[k]}" alt="${isLogo?'로고':'배경 사진'} 미리보기">`:`<i class="ph ${isLogo?'ph-seal':'ph-image'}" aria-hidden="true"></i><small>${isLogo?'로고 없음':'사진 없음'}</small>`}</div>`;
+    const nm=isLogo?'로고':'사진';
+    w.innerHTML=`<div class="mthumb${isLogo?' logo':''}${on?'':' empty'}">${on?`<img src="${MEDIA[k]}" alt="${isLogo?'로고':'배경 사진'} 미리보기">`:`<i class="ph ${isLogo?'ph-seal':'ph-image'}" aria-hidden="true"></i>`}</div><span class="mname">${on?(isLogo?'로고':'배경 사진'):nm+' 없음'}</span>
+      ${on?`<button class="btn ghost ibtn mx" type="button" aria-label="${nm} 지우기" title="지우기"><i class="ph ph-x" aria-hidden="true"></i></button>`:''}<label class="btn ibtn mplus" title="${nm} ${on?'바꾸기':'넣기'}"><input class="sr" type="file" accept="image/*" aria-label="${nm} ${on?'바꾸기':'넣기'}"><i class="ph ph-plus" aria-hidden="true"></i></label>`;
     w.querySelector('input').onchange=async e=>{const f=e.target.files[0];if(!f)return;
       try{MEDIA[k]=await readImage(f,isLogo?640:1920,isLogo?'image/png':'image/jpeg');if(isLogo&&L.logoPos==='off'){LOOK.song.logoPos=LOOK.song.logoPos==='off'?'footer':LOOK.song.logoPos;LOOK.word.logoPos=LOOK.word.logoPos==='off'?'footer':LOOK.word.logoPos;LOOK.quote.logoPos=LOOK.quote.logoPos==='off'?'footer':LOOK.quote.logoPos;store.set('look',LOOK);teamSet('look');}
         saveMedia(k);buildLookUI();renderShots();}catch(err){toast(err.message);}};
@@ -6543,7 +6538,7 @@ async function initAuth(){
 }
 
 /* ---- 새 소식: 쓰는 사람이 알아챌 변화가 있을 때만 맨 앞에 한 칸 넣어요 (버전 · 날짜 · 올린 때 · 제목 · 내용 · 매뉴얼 주제) ---- */
-const NEWS=[{v:'1.0',d:'2026년 11월 25일',at:'2026-11-25T00:00:00+09:00',t:'예배당 화면에 바로 송출해요',b:['빨간 ‘송출’을 누르면 프로젝터나 TV에 띄워요.','편집한 내용이 바로 나가요.','호감 매뉴얼이 생겼어요.'],man:'live'}];
+const NEWS=[{v:'1.0',d:'2026년 11월 25일',at:'2026-11-25T00:00:00+09:00',t:'예배당 화면에 바로 송출해요',b:['빨간 ‘송출’을 누르면 프로젝터나 TV에 띄워요.','편집한 내용이 바로 나가요.','호감 매뉴얼이 생겼어요. 설정에서 볼 수 있어요.'],man:'live'}];
 function newsList(ul,n){ul.innerHTML='';n.b.forEach(x=>{const li=document.createElement('li');li.textContent=x;ul.appendChild(li);});}
 // 버전이 바뀐 뒤 한 번만. 송출 중이면 다음에, 소식보다 늦게 가입한 사람에게는 안 띄워요
 async function startNews(next){
@@ -6573,7 +6568,7 @@ async function showMan(k){
 }
 function openMan(k='plan'){closeRail();hideTip();if(!$('manDlg').open)$('manDlg').showModal();showMan(k);}
 MAN.forEach(m=>{const b=document.createElement('button');b.type='button';b.dataset.k=m[0];b.textContent=m[1];b.onclick=()=>showMan(m[0]);$('manToc').appendChild(b);});
-$('openMan').onclick=$('gMan').onclick=()=>openMan();$('setMan').onclick=()=>{closeSet();openMan();};$('manX').onclick=()=>$('manDlg').close();
+$('gMan').onclick=()=>openMan();$('setMan').onclick=()=>{closeSet();openMan();};$('manX').onclick=()=>$('manDlg').close();
 $('manDlg').addEventListener('click',e=>{if(e.target===$('manDlg'))$('manDlg').close();});
 
 /* ---- 송출: 시작할 때 모든 화면을 그림으로 떠서 이 컴퓨터에 두고, 송출 창은 그 그림만 보여 줘요
