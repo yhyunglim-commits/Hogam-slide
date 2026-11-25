@@ -1019,7 +1019,7 @@ language plpgsql stable security definer set search_path = public as $$
 declare c public.churches;
 begin
   select * into c from public.churches where id = public.my_church();
-  if not found or not public.is_admin(c.id) then raise exception '교회 관리자만 볼 수 있어요'; end if;
+  if not found then raise exception '팀원만 볼 수 있어요'; end if; -- 숫자만 있어서 팀원 모두 봐요
   return jsonb_build_object('ai_limit', c.ai_limit, 'member_limit', c.member_limit, 'mb_limit', c.mb_limit,
     'members',  (select count(*) from public.members where church_id = c.id),
     'ai_month', (select coalesce(sum(n), 0) from public.ai_daily where church_id = c.id and day >= date_trunc('month', now() at time zone 'Asia/Seoul')::date),
