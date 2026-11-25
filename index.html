@@ -1577,7 +1577,7 @@ details.look>summary{position:sticky;top:0;z-index:23;background:var(--surface)}
 .sbsel .sbedit{border:0;background:#fff;color:#111;font:inherit;font-size:12px;font-weight:700;padding:3px 9px;border-radius:6px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .sbsel>span:not(.sbtag){display:none}
 .sbsel .sbtag{background:transparent!important;padding:0!important}
-.sbinl{position:fixed;z-index:80;margin:0;padding:0;border:0;outline:2px dashed rgba(255,255,255,.85);outline-offset:6px;background:rgba(0,0,0,.08);resize:none;overflow:hidden;white-space:pre-wrap;box-sizing:content-box;caret-color:#fff}
+.sbinl{position:fixed;z-index:80;margin:0;padding:0;border:0;outline:2px dashed rgba(255,255,255,.85);outline-offset:6px;background:rgba(0,0,0,.08);resize:none;overflow:hidden;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;box-sizing:content-box;caret-color:#fff}
 .sbinl.dark{outline-color:rgba(0,0,0,.6);caret-color:#111}
 
 /* 되돌리기 ⤺ */
@@ -4617,13 +4617,13 @@ let _glyphKey='';
 function ensureGlyphs(){const t=[$('outText').value,$('wordText').value,$('quoteText').value,...INFO.map(o=>[o.title,o.band,o.time,o.note,o.body,o.sub,o.ref,o.who].join('\n')),typeof sermonRef==='function'?sermonRef():''].join('\n')+Object.values(LOOK).map(L=>[L.head,L.sub,L.footer,L.tag1,L.tag2,L.capRight].join('')).join(''),
   txt=[...new Set(t.replace(/\s/g,''))].join(''),fs=Object.entries(LOOK).flatMap(([g,L])=>[...FPAIRS[g==='quote'?'word':g].flatMap(([f,w])=>[[lv(L,w,g),lv(L,f,g)],[400,lv(L,f,g)]]),...(g==='info'?[300,500,700].flatMap(w=>[[w,L.font],[w,L.font2],[w,L.cFont]]):[])]).concat(Object.values(SLIDE_OV).flatMap(o=>Object.keys(o).filter(k=>/font/i.test(k)).flatMap(k=>[400,500,700,800].map(w=>[w,o[k]])))).filter(f=>f[1]),key=txt+'|'+fs.join(',');
   if(!txt||key===_glyphKey)return;_glyphKey=key;
-  Promise.all(fs.map(([w,f])=>document.fonts.load(`${w} 40px "${f}"`,txt).catch(()=>[]))).then(r=>{if(r.some(a=>a&&a.length&&a.some(ff=>ff.status==='loaded'))){CAPMW.clear();renderShots();}});}
+  Promise.all(fs.map(([w,f])=>document.fonts.load(`${w} 40px "${f}"`,txt).catch(()=>[]))).then(r=>{if(r.some(a=>a&&a.length&&a.some(ff=>ff.status==='loaded'))){CAPMW.clear();lookChanged();renderVerse();renderShots();}});}
 function renderShots(){
   ensureGlyphs();clearTimeout(shotT);shotT=setTimeout(()=>{
     const box=$('shots'),groups=songGroups();box.innerHTML='';shownGroups=groups;
     const total=groups.reduce((a,g)=>a+g.items.length,0);renderTabCounts(total);renderGroupTabs(groups,total);
     $('shotCount').textContent=total?`${total}장`:'';$('ptCount').textContent=total||'';['dlTxt','dlPdf','dlJpg','dlShots','dlPptx','dlMore','dlLive'].forEach(id=>$(id).disabled=!total);
-    renderPv(groups);
+    renderPv(groups);syncWEd();
     if(!total){box.innerHTML='<div class="empty">자막 결과가 생기면 화면마다 미리보기가 나와요.</div>';return;}
     if(curPage!=='slides'){box.dataset.stale='1';return;}delete box.dataset.stale;
     const selG=shotSel==='all'?null:groups.find(g=>gKey(g)===shotSel);
@@ -4749,17 +4749,34 @@ function renderWTabs(){const box=$('wTabs');if(!box)return;const all=wItems(),it
     w.querySelector('[data-cp]').onclick=()=>copy(x.c);
     w.querySelector('[data-x]').onclick=()=>x.k==='q'?removeQuoteChunk(x.i):removeTextChunk('wordText',x.i,'설교 본문');box.appendChild(w);});
   const ed=$('wEd'),cur=it.find(x=>x.k===wTab.k&&x.i===wTab.i);
-  if(document.activeElement!==ed||!cur)ed.value=cur?cur.c:'';ed.disabled=!cur;
+  if(document.activeElement!==ed||!cur)ed.value=cur?wView(cur):'';ed.disabled=!cur;
   $('qCapOpts').hidden=!(cur&&cur.k==='q'&&isCapStyle(LOOK.quote.quoteStyle));if(document.activeElement!==$('qRight'))$('qRight').value=LOOK.quote.capRight||'';
   autosizeWEd();if(typeof renderWCharCtl==='function')renderWCharCtl();
   if(curPage==='word'&&!lookSlideKey){const t=WMODE==='q'?'quote':'word';if(lookTab!==t){lookTab=t;store.set('lookTab',t);buildLookUI();}}if(curPage)renderShots();}
+const wView=x=>chunkFit(x.c,x.k==='q'?'quote':'word');
+// 글꼴·크기가 바뀌면 저장된 글은 두고 편집 칸에 보이는 줄만 슬라이드와 맞춰요
+function syncWEd(){const ed=$('wEd'),x=wItems().find(x=>x.k===wTab.k&&x.i===wTab.i);if(!x||document.activeElement===ed)return;const v=wView(x);if(ed.value!==v){ed.value=v;autosizeWEd();}}
+// 정해 둔 글자 수가 있을 때만 (자동이면 상자 너비로)
+const wLim=(h,k)=>(WOV[h]&&WOV[h].max)||(k==='q'?(QMAX||0):0)||(BSET.auto?0:BSET.max);
+// 쓰다가 상자보다 길어진 줄을 슬라이드와 같은 자리에서 나눠요. 커서는 같은 글자 뒤에, 되돌리기도 그대로
+function keepFit(ta,fit){const v=ta.value,ls=v.split('\n');let a=0;
+  for(let i=0;i<ls.length;i++){const f=fit(ls[i],i);if(f.length>1){const nt=f.join('\n'),p=ta.selectionStart,before=v.slice(a,Math.max(a,p)),n=before.replace(/\s/g,'').length,inside=p>=a&&p<=a+ls[i].length;
+    const top=ta.scrollTop;ta.setSelectionRange(a,a+ls[i].length);if(document.activeElement!==ta||!document.execCommand('insertText',false,nt))ta.setRangeText(nt,a,a+ls[i].length,'end');
+    let q=p;if(inside){q=0;for(let c=0;c<n&&q<nt.length;q++)if(/\S/.test(nt[q]))c++;if(n&&/\s$/.test(before)&&/\s/.test(nt[q]||''))q++;q+=a;}else if(p>a)q=p+nt.length-ls[i].length;
+    ta.setSelectionRange(q,q);ta.scrollTop=top;keepFit(ta,fit);return true;}a+=ls[i].length+1;}return false;}
+function fitWEd(){const h=curWHead(),k=wTab.k,ed=k==='q'?'quote':'word',lim=wLim(h,k);_fitting=true;const r=keepFit($('wEd'),(l,i)=>!l.trim()||(i===0&&!/^\d{1,3} /.test(l.trim()))?[l]:wordFit([l],ed,lim));_fitting=false;if(r)saveWEd();}
+let _fitting=false,_fitT=0,_wIME=false;
+$('wEd').addEventListener('compositionstart',()=>{_wIME=true;clearTimeout(_fitT);});
+$('wEd').addEventListener('compositionend',()=>{_wIME=false;clearTimeout(_fitT);_fitT=setTimeout(fitWEd,500);});
+$('wEd').addEventListener('blur',()=>{clearTimeout(_fitT);_wIME=false;if($('wEd').value&&curWHead())renderWTabs();});
 function autosizeWEd(){const t=$('wEd');if(!t||!t.offsetParent)return;t.style.height='auto';t.style.height=Math.max(t.scrollHeight+2,160)+'px';}
-$('wEd').addEventListener('input',()=>{const k=wTab.k,ch=chunksOf(k);if(!ch.length)return;ch[wTab.i]=$('wEd').value.replace(/\s+$/,'');
-  _wSync=true;const m=wMaster(k);m.value=ch.join(gapStr());m.dispatchEvent(new Event('input',{bubbles:true}));_wSync=false;autosizeWEd();});
+$('wEd').addEventListener('input',()=>{if(_fitting)return;saveWEd();clearTimeout(_fitT);if(!_wIME)_fitT=setTimeout(fitWEd,500);});
+function saveWEd(){const k=wTab.k,ch=chunksOf(k);if(!ch.length)return;ch[wTab.i]=$('wEd').value.replace(/\s+$/,'');
+  _wSync=true;const m=wMaster(k);m.value=ch.join(gapStr());m.dispatchEvent(new Event('input',{bubbles:true}));_wSync=false;autosizeWEd();}
 ['wordText','quoteText'].forEach(id=>$(id).addEventListener('input',()=>{if(!_wSync)renderWTabs();else{clearTimeout(window._wt);window._wt=setTimeout(()=>{if(document.activeElement!==$('wEd'))renderWTabs();},300);}}));
 sortable($('wTabs'),{item:'.chipw.qtab',axis:'xy',onEnd:o=>{reorderQuoteChunks(o);wTab={k:'q',i:o.indexOf(wTab.i)>=0&&wTab.k==='q'?o.indexOf(wTab.i):wTab.i};renderWTabs();}});
 function gotoInWEd(k,n){const m=wMaster(k),ls=m.value.split('\n');const starts=chunkStarts(m.value,k==='q'?'quote':'word');let i=0;starts.forEach((st,j)=>{if(st!=null&&n>=st)i=j;});
-  wTab={k,i};store.set('wTab',wTab);if(k!==WMODE)setWMode(k,true);renderWTabs();const rel=n-(starts[i]||0),ed=$('wEd'),el=ed.value.split('\n');let a=0;for(let j=0;j<rel&&j<el.length;j++)a+=el[j].length+1;
+  wTab={k,i};store.set('wTab',wTab);if(k!==WMODE)setWMode(k,true);renderWTabs();const rel0=n-(starts[i]||0),src=(chunksOf(k)[i]||'').split('\n'),rel=rel0>0?chunkFit(src.slice(0,rel0).join('\n'),k==='q'?'quote':'word').split('\n').length:0,ed=$('wEd'),el=ed.value.split('\n');let a=0;for(let j=0;j<rel&&j<el.length;j++)a+=el[j].length+1;
   ed.focus({preventScroll:true});ed.setSelectionRange(a,a+(el[rel]||'').length);ed.scrollIntoView({behavior:'smooth',block:'center'});}
 function gotoWordLine(n){gotoInWEd('w',n);}
 function gotoQuoteLine(n){gotoInWEd('q',n);}
@@ -4768,7 +4785,7 @@ function renderWordChips(){}function renderQuoteChips(){}
 
 /* ---- 말씀 자막 칸: 고른 탭의 한 줄 글자 수 (자동이 기본, 끄면 이 탭만 따로) ---- */
 function curWHead(){const it=wItems().find(x=>x.k===wTab.k&&x.i===wTab.i);return it?it.c.split('\n')[0].trim():'';}
-function renderWCharCtl(){const h=curWHead();$('wMax').value=h?maxFor(h):BSET.max;$('wAuto').checked=!(h&&WOV[h]);$('wMax').disabled=$('wMaxDn').disabled=$('wMaxUp').disabled=!h;$('wAuto').disabled=!h;}
+function renderWCharCtl(){const h=curWHead();$('wMax').value=h?maxFor(h):BSET.max;$('wAuto').checked=!(h&&WOV[h]);$('wAuto').nextElementSibling.textContent=BSET.auto?'슬라이드에 맞춰 자동':'기본 글자 수 따르기';$('wMax').disabled=$('wMaxDn').disabled=$('wMaxUp').disabled=!h;$('wAuto').disabled=!h;}
 function setTabMax(v){const h=curWHead();if(!h)return;v=Math.min(60,Math.max(10,Math.round(+v)||maxFor(h)));WOV[h]={max:v};store.set('wordOv',WOV);rewrapWord(h);renderWCharCtl();}
 $('wMaxDn').onclick=()=>setTabMax(maxFor(curWHead())-1);$('wMaxUp').onclick=()=>setTabMax(maxFor(curWHead())+1);
 $('wMax').addEventListener('change',e=>setTabMax(e.target.value));
@@ -4789,7 +4806,7 @@ function renderQSlots(){const box=$('qSlots');box.innerHTML='';
     box.appendChild(d);});}
 $('qAddSlot').onclick=()=>{qSlots.push({title:'',raw:''});saveSlots();renderQSlots();setTimeout(()=>{const l=[...document.querySelectorAll('.qslot .qt')].pop();l?.focus();},30);};
 function insertQuotes(){let n=0;const ta=$('quoteText');
-  for(const q of qSlots){if(!q.raw.trim())continue;const r=verseResult(q.raw,q.title.trim()).text;if(!r)continue;
+  for(const q of qSlots){if(!q.raw.trim())continue;const r=verseResult(q.raw,q.title.trim(),BSET.max,'quote').text;if(!r)continue;
     const ch=quoteChunks(),head=r.split('\n')[0].trim(),at=q.title.trim()?ch.findIndex(c=>c.split('\n')[0].trim()===head):-1;
     if(at>=0){ch[at]=r;ta.value=ch.join(gapStr());}else ta.value=ta.value.trim()?ta.value.trim()+gapStr()+r:r;rememberWord(r,q.raw,q.title.trim());n++;}
   if(n){ta.dispatchEvent(new Event('input',{bubbles:true}));if(capAuto())rewrapWord();}return n;}
@@ -4829,12 +4846,19 @@ function newInfo(k){const id='i'+Date.now().toString(36)+Math.random().toString(
   return{id,k,title:'사도신경',body:''};}
 const infoName=o=>(o.k==='notice'?(o.body||'').split('\n').find(l=>l.trim()):String(o.title||'').replace(/\*\*/g,''))?.trim()||IKIND[o.k].n;
 // 줄이 상자보다 길면 띄어쓰기 단위로 나눠요 (한 낱말이 너무 길면 글자 단위)
-function wrapTo(lines,font,sp,maxW){const x=wrapTo.c||(wrapTo.c=document.createElement('canvas').getContext('2d'));x.font=font;const out=[],fits=t=>spacedW(x,t,sp)<=maxW;
-  for(const raw of lines){const t=raw.trim();if(!t){out.push('');continue;}if(fits(t)){out.push(t);continue;}
+function wrapTo(lines,font,sp,maxW,lim,raw){const x=wrapTo.c||(wrapTo.c=document.createElement('canvas').getContext('2d'));x.font=font;const out=[],fits=t=>spacedW(x,raw?t.replace(/\*\*/g,''):t,sp)<=maxW&&(!lim||width(t)<=lim);
+  for(const l0 of lines){const t=l0.trim();if(!t){out.push('');continue;}if(fits(t)){out.push(t);continue;}
     let cur='';for(const w of t.split(/\s+/)){const nx=cur?cur+' '+w:w;if(fits(nx)){cur=nx;continue;}if(cur)out.push(cur);cur='';
       if(fits(w)){cur=w;continue;}for(const ch of w){if(cur&&!fits(cur+ch)){out.push(cur);cur='';}cur+=ch;}}
     if(cur)out.push(cur);}
   return out;}
+// 말씀 줄: 슬라이드 상자에 실제로 그려지는 줄 그대로 (편집 칸·자동 나누기·크게 보기가 모두 이걸 써요). lim: 정해 둔 한 줄 글자 수
+function wordFit(lines,ed,lim){const L=ed==='quote'?LOOK.quote:LOOK.word;if(ed==='quote'&&isCapStyle(L.quoteStyle))return lines;
+  const fs=1920*L.size/100;return wrapTo(lines,`${lookW(L)} ${fs}px "${L.font}", "Noto Sans KR", serif`,fs*L.spacing/100,1920*.719-1920*.032*2,lim,true);}
+// 고르게 나누되 상자보다 긴 줄이 하나라도 있으면 글자 수를 줄여 다시 나눠요
+function splitFit(text,max,ed){for(let m=max;m>=6;m--){const ls=splitLine(text,m);if(wordFit(ls,ed).length===ls.length)return ls;}return wordFit([text],ed);}
+// 첫 줄(본문 이름)은 두고 나머지를 슬라이드에 그려지는 줄로
+const chunkFit=(c,ed,lim)=>{const ls=c.split('\n'),h=/^\d{1,3} /.test(ls[0].trim())?0:1;return[...ls.slice(0,h),...wordFit(ls.slice(h),ed,lim)].join('\n');};
 const infoBoxR=(W,H,L)=>{const[ox,oy]=OFF(L,'box',W,H);return{x:W*.068+ox,y:H*.2+oy,w:W*.864,h:H*.64};};
 const infoCapF=(L,W)=>{const fs=W*L.cSize/100;return{fs,sp:fs*lv(L,'spacing2','info')/100*.5,font:`${lv(L,'weight2','info')} ${fs}px "${L.font2}", "Noto Sans KR", serif`};};
 const infoBodyF=(L,W)=>{const fs=W*L.bSize/100;return{fs,sp:fs*lv(L,'spacing2','info')/100,font:`${lv(L,'weight2','info')} ${fs}px "${L.font2}", "Noto Sans KR", serif`};};
@@ -5360,9 +5384,31 @@ function startInline(k){const o=sbList[sbI];if(!o||!EDITABLE.includes(k)||!sbLay
     :{x:r.x,y:r.y,w:Math.max(r.w,W*.3),font:`500 ${ls*z}px "Noto Sans KR", sans-serif`,lh:r.h*z,sp:0,color:b2?inkOn(Lq.capLight):'#fff',al:k==='capright'?'right':'left'};if(k==='capright')st.x=r.x+r.w-st.w;}
   Object.assign(ta.style,{left:(b.left+st.x*z)+'px',top:(b.top+st.y*z)+'px',width:(st.w*z)+'px',font:st.font,lineHeight:st.lh+'px',letterSpacing:st.sp+'px',color:st.color,textAlign:st.al,textShadow:st.sh?'0 2px 6px rgba(0,0,0,.35)':'none'});
   const c=String(st.color).replace('#','');ta.classList.toggle('dark',c.length>=6&&parseInt(c.slice(0,2),16)*.3+parseInt(c.slice(2,4),16)*.59+parseInt(c.slice(4,6),16)*.11<128);
-  ta.value=editTextOf(k,sc);ta.dataset.orig=ta.value;ta.hidden=false;const fit=()=>{ta.style.height='0px';ta.style.height=ta.scrollHeight+'px';};fit();ta.oninput=fit;
+  // 화면에 그려진 줄 그대로 넣어요 (누르기만 해도 줄이 달라지지 않게)
+  const wrapK=k==='body'||k==='lyrics',fitL=l=>l.trim()?wrapTo([l],`${t.weight} ${t.size}px ${t.css}`,t.sp,t.boxW,k==='body'?wLim(sc.ref||'',sc.ed==='quote'?'q':'w'):0,true):[l];
+  ta.value=wrapK&&t?wrapTo(editTextOf(k,sc).split('\n'),`${t.weight} ${t.size}px ${t.css}`,t.sp,t.boxW,0,true).join('\n'):editTextOf(k,sc);ta.dataset.orig=ta.value;ta.hidden=false;
+  if(wrapK&&t)ta.style.width=(st.w*z+2)+'px';
+  sbLive=SBLIVE.includes(k)&&sc.type!=='info'?sbLiveStart(sc):null;let ime=false,busy=false;clearTimeout(sbLiveT);const fit=()=>{ta.style.height='0px';ta.style.height=ta.scrollHeight+'px';};fit();
+  const later=()=>{clearTimeout(sbLiveT);sbLiveT=setTimeout(()=>{if(sbLive&&ta.value!==sbLive.shown)sbLiveWrite(ta.value);if(wrapK&&t&&!ime){clearTimeout(sbFitT);sbFitT=setTimeout(()=>{if(ta.hidden||ime)return;busy=true;const r=keepFit(ta,fitL);busy=false;if(r){fit();sbLiveWrite(ta.value);}},350);}},150);};
+  ta.oninput=()=>{fit();if(!busy)later();};ta.oncompositionstart=()=>{ime=true;};ta.oncompositionend=()=>{ime=false;later();};
   ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}
-function endInline(save){const ta=$('sbInl');if(ta.hidden)return;ta.hidden=true;const k=sbEditK;sbEditK=null;
+// 쓰는 동안 바로 저장: 고치는 줄의 자리를 기억하고 그 줄만 바꿔요
+const SBLIVE=['body','lyrics','cap'];let sbLive=null,sbLiveT=0,sbFitT=0;
+function sbLiveStart(sc){const ta=edMaster(sc),ls=ta.value.split('\n'),idx=[...(sc.lsrc||sc.src||[])].sort((a,b)=>a-b);if(!idx.length)return null;
+  const at=idx[0],block=ls.slice(at,idx[idx.length-1]+1),last=block[block.length-1];
+  return{sc,ta,at,block,first:block,text:ta.value,shown:$('sbInl').value,em:sc.type==='song'&&FMT.endMark&&FMT.endPos!=='newline'&&last.trimEnd().endsWith(FMT.endMark)};}
+function sbLivePut(nl){const S=sbLive,ls=S.ta.value.split('\n');
+  // 그사이 팀원이 다른 곳을 고쳤으면 내 줄을 다시 찾아요. 같은 줄을 고쳤으면 덮지 않아요
+  if(S.ta.value!==S.text){let hit=-1;for(let i=0;i+S.block.length<=ls.length;i++)if(S.block.every((b,j)=>b===ls[i+j])&&(hit<0||Math.abs(i-S.at)<Math.abs(hit-S.at)))hit=i;
+    if(hit<0){if(!S.lost)toast('다른 곳에서 이 글을 먼저 고쳤어요. 닫고 다시 열어 주세요');S.lost=true;return;}S.at=hit;}
+  ls.splice(S.at,S.block.length,...nl);S.block=nl;S.text=S.ta.value=ls.join('\n');S.ta.dispatchEvent(new Event('input',{bubbles:true}));}
+function sbLiveWrite(v){const S=sbLive;if(!S)return;const word=S.sc.type!=='song',LL=S.sc.ed==='quote'?LOOK.quote:LOOK.word,src=v.split('\n').map(x=>x.trim()),nl=[];
+  // 절 사이 빈 줄은 한 줄만 남겨요 (앱이 저절로 띄운 줄, 본문이 둘로 갈라지는 빈 줄은 안 넣어요)
+  src.forEach((x,i)=>{if(x)nl.push(x);else if(word&&nl.length&&nl[nl.length-1]&&FMT.songGap>1){const nx=src.slice(i).find(Boolean);if(nx&&!(LL.verseGap&&/^\d{1,3} /.test(nx)))nl.push('');}});
+  if(!nl.length)return;S.shown=v;if(S.em)nl[nl.length-1]+=FMT.endMark;sbLivePut(nl);}
+function sbRefresh(){const key=((sbList[sbI]||{}).s||{}).ovKey;sbList=songGroups().flatMap(g=>g.items.map(s=>({s,si:g.songIdx||0})));const j=sbList.findIndex(x=>x.s.ovKey===key);if(j>=0)sbI=j;sbI=Math.max(0,Math.min(sbI,sbList.length-1));drawSlide();if($('slidebox').classList.contains('on')&&lookSlideKey&&sbList[sbI]&&sbList[sbI].s.ovKey!==lookSlideKey)syncLookToSlide();}
+function endInline(save){const ta=$('sbInl');if(ta.hidden)return;ta.hidden=true;const k=sbEditK;sbEditK=null;clearTimeout(sbLiveT);clearTimeout(sbFitT);
+  if(sbLive){if(save){if(ta.value!==sbLive.shown)sbLiveWrite(ta.value);}else if(sbLive.block!==sbLive.first)sbLivePut(sbLive.first);sbLive=null;sbRefresh();return;}
   if(save&&ta.value!==ta.dataset.orig)saveTextEdit(k,ta.value);else drawSlide();}
 $('sbInl').addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){e.preventDefault();endInline(false);}
   else if(e.key==='Enter'&&!e.isComposing&&(e.metaKey||e.ctrlKey||ONE_LINE.includes(sbEditK))){e.preventDefault();endInline(true);}});
@@ -5373,11 +5419,8 @@ function saveTextEdit(k,v){const o=sbList[sbI];if(!o)return;const sc=o.s;
   if(HFK[k]){LOOK[grp][HFK[k]]=v.replace(/\n+/g,' ').trim();saveLook();toast('모든 슬라이드에 바꿨어요');}
   else{const ta=edMaster(sc),ls=ta.value.split('\n');
     if(k==='ref'||k==='capref'){ls[sc.cs]=v.replace(/\n+/g,' ').trim();}
-    else{const idx=[...(sc.lsrc||sc.src||[])].sort((a,b)=>a-b);if(!idx.length)return;const em=sc.type==='song'&&FMT.endMark&&FMT.endPos!=='newline'&&ls[idx[idx.length-1]].trimEnd().endsWith(FMT.endMark);
-      const nl=v.split('\n').map(x=>x.trim()).filter(Boolean);if(!nl.length)return;if(em)nl[nl.length-1]+=FMT.endMark;
-      for(let i=idx.length-1;i>=0;i--)ls.splice(idx[i],1);ls.splice(idx[0],0,...nl);}
     ta.value=ls.join('\n');ta.dispatchEvent(new Event('input',{bubbles:true}));toast('글자를 고쳤어요');}
-  setTimeout(()=>{const key=((sbList[sbI]||o).s||{}).ovKey;sbList=songGroups().flatMap(g=>g.items.map(s=>({s,si:g.songIdx||0})));const j=sbList.findIndex(x=>x.s.ovKey===key);if(j>=0)sbI=j;sbI=Math.max(0,Math.min(sbI,sbList.length-1));drawSlide();if($('slidebox').classList.contains('on')&&lookSlideKey&&sbList[sbI]&&sbList[sbI].s.ovKey!==lookSlideKey)syncLookToSlide();},300);}
+  sbRefresh();}
 
 {const cv=$('slidebox').querySelector('canvas');attachMove(cv,()=>({sc:sbList[sbI]&&sbList[sbI].s,lay:sbLay}),()=>{const o=sbList[sbI];if(!o)return;sbLay=drawScreen(cv,o.s,o.si);placeSbSel();});}
 
@@ -5838,18 +5881,18 @@ function cleanVerses(raw){
   while(res.length&&res[0].gap)res.shift();while(res.length&&res[res.length-1].gap)res.pop();
   return res;
 }
-function verseResult(raw=$('verseIn').value,title=BSET.title,max=BSET.max){
+function verseResult(raw=$('verseIn').value,title=BSET.title,max=BSET.max,ed='word'){
   const vs=cleanVerses(raw).filter(v=>!(BSET.heads&&v.head));
   if(!vs.length)return{text:'',lines:0};
   const out=[];
   for(const v of vs){if(v.gap){if(out.length&&out[out.length-1]!=='')out.push('');continue;}
     if(LOOK.word.verseGap&&!BSET.nums&&v.n&&out.length&&out[out.length-1]!=='')out.push('');
-    out.push(...splitLine((BSET.nums&&v.n?v.n+' ':'')+v.t,max));}
+    out.push(...splitFit((BSET.nums&&v.n?v.n+' ':'')+v.t,max,ed));}
   while(out.length&&out[out.length-1]==='')out.pop();
   return{text:(title?title+'\n':'')+out.join('\n'),lines:out.filter(Boolean).length};
 }
 function renderVerse(){const r=verseResult();$('verseOut').textContent=r.text||'붙여 넣은 본문이 여기에 정리돼요.';$('verseCount').textContent=r.lines?`${r.lines}줄`:'';}
-$('verseIn').addEventListener('input',renderVerse);
+$('verseIn').addEventListener('input',()=>{renderVerse();const t=$('verseIn').value.trim();if(t)document.fonts.load(`${lookW(LOOK.word)} 40px "${LOOK.word.font}"`,t).then(r=>{if(r.length)renderVerse();}).catch(()=>{});});
 ['bMax','bTitle','vNums','vHeads','bAuto'].forEach(id=>$(id).addEventListener('input',readBible));
 $('bMaxDn').onclick=()=>{$('bMax').value=Math.max(10,+$('bMax').value-1);readBible();};
 $('bMaxUp').onclick=()=>{$('bMax').value=Math.min(60,+$('bMax').value+1);readBible();};
@@ -5866,7 +5909,7 @@ let WSRC=store.get('wordSrc',{});
 function rememberWord(gen,raw,title){const k=gen.split('\n')[0].trim();delete WSRC[k];WSRC[k]={raw,title,gen};
   const ks=Object.keys(WSRC);while(ks.length>30)delete WSRC[ks.shift()];store.set('wordSrc',WSRC);}
 // 지금 글을 다시 나눠요: 첫 줄(본문 이름)은 그대로, 절 번호나 빈 줄에서 새 단락
-function reflowChunk(c,max){const ls=c.split('\n'),out=[];let cur=[];const flush=()=>{if(cur.length){out.push(...splitLine(cur.join(' '),max));cur=[];}};
+function reflowChunk(c,max,ed='word'){const ls=c.split('\n'),out=[];let cur=[];const flush=()=>{if(cur.length){out.push(...splitFit(cur.join(' '),max,ed));cur=[];}};
   for(const l of ls.slice(1)){const t=l.trim();if(!t){flush();if(out.length&&out[out.length-1]!=='')out.push('');continue;}if(/^\d{1,3}\s/.test(t))flush();cur.push(t);}
   flush();while(out.length&&out[out.length-1]==='')out.pop();return[ls[0],...out].join('\n');}
 let WOV=store.get('wordOv',{}); // 본문 이름(첫 줄) → 이 탭만의 한 줄 글자 수
@@ -5892,7 +5935,7 @@ const capAvailW=(L,W)=>L.quoteStyle==='box2'?W*.86-W*.035*2:W*(1-.13);
 function rewrapWord(only){let changed=0;const clean=x=>x.replace(/[ \t]+$/gm,'').trim();
   for(const id of ['wordText','quoteText']){const ta=$(id),t=ta.value.trim();if(!t)continue;const ch=t.split(gapRe()).filter(x=>x.trim());let ch2=0;
     const out=ch.map(c=>{const h=c.split('\n')[0].trim();if(only&&h!==only)return c;const max=maxFor(h),s=WSRC[h];
-      const fresh=s&&clean(c)===clean(s.gen),r=id==='quoteText'&&capAuto()&&!(WOV[h]&&WOV[h].max)?reflowCap(c):fresh?verseResult(s.raw,s.title,max).text:reflowChunk(c,max);
+      const fresh=s&&clean(c)===clean(s.gen),r=id==='quoteText'&&capAuto()&&!(WOV[h]&&WOV[h].max)?reflowCap(c):fresh?verseResult(s.raw,s.title,max,id==='quoteText'?'quote':'word').text:reflowChunk(c,max,id==='quoteText'?'quote':'word');
       if(!r||clean(r)===clean(c))return c;ch2++;if(fresh)rememberWord(r,s.raw,s.title);return r;});
     if(ch2){changed+=ch2;ta.value=out.join(gapStr());ta.dispatchEvent(new Event('input',{bubbles:true}));}}
   if(changed)toast('말씀 자막을 지금 글자 수로 다시 나눴어요');

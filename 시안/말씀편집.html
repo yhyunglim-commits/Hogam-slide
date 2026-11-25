@@ -1,0 +1,76 @@
+<title>말씀 편집 두 칸</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* 배치: 왼쪽 한 칸에서 고르고 붙여 넣고 고치기, 오른쪽은 큰 미리보기. 앱의 어두운 화면 색을 그대로 써요 */
+:root{--bg:#1c1c1e;--card:#2a2a2c;--in:#1f1f21;--line:#434347;--fg:#f2f2f4;--dim:#a6a6ad;--or:#ff9f0a;--blue:#0a84ff;--sel:#8fb4ff;--ui:"Noto Sans KR",system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}body{background:var(--bg);color:var(--fg);font:14px/1.6 var(--ui);padding-block:16px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}:focus-visible{outline:2px solid var(--sel);outline-offset:2px}
+.note{color:var(--dim);margin:0 0 14px;max-width:70ch}
+.two{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:14px;align-items:start}
+.card{background:var(--card);border-radius:14px;padding:16px;min-width:0;display:grid;gap:14px}
+h2{font-size:16px;margin:0}.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.sp{margin-left:auto}
+.btn{background:#3a3a3d;border:0;border-radius:8px;padding:6px 12px}.btn.p{background:var(--blue);color:#fff}.btn.t{background:none;color:var(--sel);padding:6px 4px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px}.tab{border:1px solid var(--line);background:none;border-radius:10px;padding:7px 12px;text-align:left}
+.tab small{display:block;color:var(--dim);font-size:12px;line-height:1.3}.tab[aria-selected=true]{border-color:var(--sel);box-shadow:inset 0 0 0 1px var(--sel)}.tab.w small{color:var(--or)}
+input[type=text],textarea{width:100%;background:var(--in);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+textarea{display:block;min-height:330px;line-height:1.9;resize:vertical}#raw{min-height:150px}
+.seg{display:inline-flex;background:var(--in);border-radius:9px;padding:3px}.seg button{border:0;background:none;border-radius:7px;padding:4px 12px}.seg button[aria-pressed=true]{background:#4a4a4f}
+.st{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:9px}.st button{border:0;background:none;width:34px;height:34px}.st b{min-width:46px;text-align:center;font-variant-numeric:tabular-nums}
+.box{background:var(--in);border-radius:10px;padding:12px;display:grid;gap:10px}
+.state{color:var(--dim);font-size:13px}.state.m{color:var(--or)}
+#pv{display:grid;gap:12px;max-height:78vh;overflow:auto;padding:3px}
+.s{border:2px solid transparent;border-radius:10px;overflow:hidden;padding:0;background:none;position:relative;display:block;width:100%}.s.on{border-color:var(--sel)}.s canvas{display:block;width:100%}
+.empty{color:var(--dim);padding:40px 0;text-align:center}
+@media(max-width:860px){.two{grid-template-columns:minmax(0,1fr)}#pv{max-height:none}}
+</style>
+<p class="note">눌러 볼 수 있는 시안이에요. 본문은 예시이고 저장되지 않아요. 왼쪽 글을 고치면 오른쪽 슬라이드가 같은 줄로 바뀌고, 커서가 있는 슬라이드에 파란 테두리가 생겨요.</p>
+<div class="two">
+<section class="card">
+  <div class="tabs" id="tabs" role="tablist" aria-label="본문과 참고 구절"></div>
+  <input type="text" id="ref" aria-label="본문 이름" placeholder="예) 이사야 24장 1-3절">
+  <div class="row"><span>한 줄</span><span class="seg"><button id="auto">자동</button><button id="man">직접</button></span>
+    <span class="st"><button id="dn" aria-label="한 글자 줄이기">−</button><b id="mx"></b><button id="up" aria-label="한 글자 늘리기">+</button></span>
+    <button class="btn t sp" id="rawT">원문 보기</button></div>
+  <div class="box" id="rawB" hidden><label for="raw">붙여 넣은 원문</label><textarea id="raw" spellcheck="false"></textarea>
+    <div class="row"><label><input type="checkbox" id="num" checked> 절 번호 남기기</label><button class="btn p sp" id="redo">원문에서 다시 정리</button></div></div>
+  <div class="box" id="ask" hidden><span>손으로 고친 줄이 있어요. 다시 정리하면 고친 것이 없어져요.</span><div class="row"><button class="btn p" id="yes">다시 정리</button><button class="btn" id="no">그대로 두기</button></div></div>
+  <textarea id="ed" spellcheck="false" aria-label="자막" placeholder="성경 본문을 여기에 붙여 넣으세요. 붙여 넣으면 바로 자막으로 정리돼요."></textarea>
+  <div class="row"><span class="state" id="state"></span><button class="btn sp" id="undo">되돌리기</button></div>
+</section>
+<section class="card"><div class="row"><h2>미리보기</h2><span class="state" id="cnt"></span></div><div id="pv"></div></section>
+</div>
+<script>
+const $=i=>document.getElementById(i),F='700 58px "Noto Sans KR",sans-serif',BW=1250,X=document.createElement('canvas').getContext('2d');
+const R1='1 주님께서 땅을 텅 비게 하시며, 황폐하게 하시며, 땅의 표면을 뒤엎으시며, 그 주민을 흩으실 것이니,\n2 이 일이 백성과 제사장에게 똑같이 미칠 것이며, 종과 그 주인에게, 하녀와 그 안주인에게, 사는 자와 파는 자에게, 빌려 주는 자와 빌리는 자에게, 이자를 받는 자와 이자를 내는 자에게, 똑같이 미칠 것이다.\n3 땅이 완전히 텅 비며, 완전히 황무하게 될 것이다. 주님께서 그렇게 된다고 선언하셨기 때문이다.';
+const mk=(k,ref,raw)=>({k,ref,raw,txt:'',auto:true,max:21,hand:false,hist:[]});
+let D=[mk('w','이사야 24장 1-3절',R1),mk('q','시편 23편 1절','1 여호와는 나의 목자시니 내게 부족함이 없으리로다')],I=0,A=null;const c=()=>D[I];
+const len=s=>s.replace(/\s/g,'').length;
+function wrap(l,m){X.font=F;const o=[];let cur='';for(const w of l.trim().split(/\s+/)){const n=cur?cur+' '+w:w;if(cur&&(X.measureText(n).width>BW||m&&len(n)>m)){o.push(cur);cur=w;}else cur=n;}o.push(cur);return o;}
+function nice(l,m){const g=wrap(l,m);if(g.length<2)return g;for(let k=8;k<60;k++){const t=wrap(l,Math.min(k,m||99));if(t.length===g.length)return t;}return g;}
+const tidy=d=>d.raw.split('\n').filter(x=>x.trim()).flatMap(l=>nice($('num').checked?l:l.replace(/^\d+\s+/,''),d.auto?0:d.max)).join('\n');
+const push=()=>{c().hist.push([c().txt,c().hand,c().raw]);if(c().hist.length>50)c().hist.shift();};
+function slides(d){const o=[];let p=[];d.txt.split('\n').forEach((t,i)=>{if(p.length>=4||!t.trim()&&p.length){o.push(p);p=[];}if(t.trim())p.push({t,i});});if(p.length)o.push(p);return o;}
+function pv(){const box=$('pv');box.innerHTML='';const S=slides(c()),at=$('ed').value.slice(0,$('ed').selectionStart).split('\n').length-1;$('cnt').textContent=S.length?S.length+'장':'';
+ if(!S.length){box.innerHTML='<div class="empty">왼쪽에 본문을 붙여 넣으면 슬라이드가 나와요.</div>';return;}
+ S.forEach((p,n)=>{const b=document.createElement('button'),v=document.createElement('canvas');b.className='s'+(p.some(o=>o.i===at)?' on':'');b.setAttribute('aria-label',n+1+'번째 슬라이드');v.width=1920;v.height=1080;const x=v.getContext('2d'),g=x.createLinearGradient(0,0,1920,1080);g.addColorStop(0,'#2f3d22');g.addColorStop(.6,'#62763a');g.addColorStop(1,'#33422c');x.fillStyle=g;x.fillRect(0,0,1920,1080);
+  x.textBaseline='middle';x.fillStyle='#fff';x.font='700 58px "Noto Sans KR"';x.fillText(c().k==='w'?'성경봉독':'참고 구절',110,265);x.font='700 52px "Noto Sans KR"';x.fillText(c().ref,460,265);x.fillStyle='rgba(236,236,238,.93)';x.fillRect(438,340,1380,530);x.fillStyle='#1d1d1d';x.font=F;p.forEach((o,j)=>x.fillText(o.t,500,425+j*100));x.fillStyle='#fff';x.font='700 26px "Noto Sans KR"';x.fillText(n+1+'',40,50);
+  b.onclick=()=>{const l=c().txt.split('\n'),s=l.slice(0,p[0].i).join('\n').length+(p[0].i?1:0);$('ed').focus();$('ed').setSelectionRange(s,s+p.map(o=>o.t).join('\n').length);mark();};b.append(v);box.append(b);});}
+function mark(){const at=$('ed').value.slice(0,$('ed').selectionStart).split('\n').length-1;slides(c()).forEach((p,n)=>$('pv').children[n]?.classList.toggle('on',p.some(o=>o.i===at)));}
+function draw(keep){const t=$('tabs');t.innerHTML='';D.forEach((d,i)=>{const b=document.createElement('button');b.className='tab '+d.k;b.role='tab';b.setAttribute('aria-selected',i===I);const s=document.createElement('small');s.textContent=d.k==='w'?'설교 본문':'참고 '+D.slice(0,i+1).filter(q=>q.k==='q').length;b.append(s,d.ref||'이름 없음');b.onclick=()=>{I=i;$('ask').hidden=true;draw();};t.append(b);});
+ const a=document.createElement('button');a.className='tab';a.textContent='+ 참고 구절';a.onclick=()=>{D.push(mk('q','',''));I=D.length-1;draw();$('ref').focus();};t.append(a);
+ const d=c();if(!keep){$('ed').value=d.txt;$('ref').value=d.ref;$('raw').value=d.raw;}
+ $('auto').setAttribute('aria-pressed',d.auto);$('man').setAttribute('aria-pressed',!d.auto);$('dn').disabled=$('up').disabled=d.auto;$('mx').textContent=d.auto?Math.max(0,...d.txt.split('\n').map(len))+'자':d.max+'자';
+ $('state').textContent=d.hand?'손으로 고친 줄이 있어요':d.txt?'원문에서 정리한 그대로예요':'';$('state').className='state'+(d.hand?' m':'');$('undo').disabled=!d.hist.length;$('rawT').hidden=!d.raw;if(!d.raw)$('rawB').hidden=true;$('rawT').textContent=$('rawB').hidden?'원문 보기':'원문 닫기';pv();}
+function again(fn){const go=()=>{push();fn&&fn();c().txt=tidy(c());c().hand=false;$('ask').hidden=true;draw();};if(c().hand){A=go;$('ask').hidden=false;}else go();}
+$('yes').onclick=()=>A&&A();$('no').onclick=()=>{$('ask').hidden=true;};
+$('auto').onclick=()=>again(()=>c().auto=true);$('man').onclick=()=>again(()=>c().auto=false);$('dn').onclick=()=>again(()=>c().max=Math.max(10,c().max-1));$('up').onclick=()=>again(()=>c().max=Math.min(40,c().max+1));
+$('rawT').onclick=()=>{$('rawB').hidden=!$('rawB').hidden;draw(true);};$('redo').onclick=()=>{const v=$('raw').value;again(()=>c().raw=v);};
+$('ref').oninput=()=>{c().ref=$('ref').value;draw(true);};
+$('ed').addEventListener('paste',e=>{const t=e.clipboardData.getData('text');if(c().txt.trim()||!t.trim())return;e.preventDefault();push();c().raw=t.replace(/\r/g,'');c().txt=tidy(c());c().hand=false;draw();});
+let tm;$('ed').oninput=e=>{push();c().txt=$('ed').value;c().hand=!!c().raw;draw(true);clearTimeout(tm);if(!e.isComposing)tm=setTimeout(fit,600);};
+function fit(){const d=c(),e=$('ed'),n=d.txt.split('\n').flatMap(l=>l.trim()?wrap(l,d.auto?0:d.max):['']).join('\n');if(n.replace(/\s/g,'')!==d.txt.replace(/\s/g,'')||n.split('\n').length===d.txt.split('\n').length)return;const k=e.value.slice(0,e.selectionStart).replace(/\s/g,'').length;let q=0,m=0;while(m<k)if(/\S/.test(n[q++]))m++;d.txt=e.value=n;e.setSelectionRange(q,q);draw(true);}
+['keyup','click'].forEach(k=>$('ed').addEventListener(k,mark));
+$('undo').onclick=()=>{const h=c().hist.pop();if(h){[c().txt,c().hand,c().raw]=h;draw();}};
+const start=()=>{D.forEach(d=>d.txt=tidy(d));draw();};start();document.fonts.load('700 58px "Noto Sans KR"',R1+'여호와는 나의 목자시니 부족함 없으리로다 성경봉독 참고 구절').then(start,()=>{});
+</script>
