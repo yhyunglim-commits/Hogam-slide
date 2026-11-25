@@ -2395,6 +2395,27 @@ body.szing,body.szing *{user-select:none!important;-webkit-user-select:none!impo
 body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
 #dlLive{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:64px;height:54px;border:0;border-radius:10px;background:var(--bad-soft);color:var(--bad);font:700 13px var(--sans);cursor:pointer;white-space:nowrap}
 #dlLive i{font-size:24px;color:var(--bad)}#dlLive:hover:not(:disabled){filter:brightness(.96)}#dlLive:disabled{opacity:.4;cursor:default}
+/* ---- 호감 매뉴얼 · 새 소식 ---- */
+.mandlg{border:0;border-radius:16px;padding:0;width:min(900px,calc(100vw - 32px));max-height:min(860px,calc(100vh - 40px));background:var(--surface);color:var(--text);box-shadow:0 24px 60px -12px rgba(0,0,0,.35);overflow:hidden;font-family:var(--sans)}
+.mandlg[open]{display:flex;flex-direction:column}.mandlg::backdrop,.newsdlg::backdrop{background:rgba(15,23,42,.45)}
+.manhead{padding:18px 24px 0;border-bottom:1px solid var(--line)}.manhead>div:first-child{display:flex;align-items:center;justify-content:space-between}.manhead h2{font-size:18px;margin:0}
+.mantoc{display:flex;flex-wrap:wrap;gap:2px;padding:10px 0 12px;margin:0 -10px}
+.mantoc button{border:0;background:none;border-radius:8px;padding:7px 11px;font-size:14px;color:var(--text2);cursor:pointer}.mantoc button:hover{background:var(--glass)}
+.mantoc button[aria-current=true]{background:var(--pri-soft);color:var(--pri-ink);font-weight:700}
+.manpage{overflow:auto;padding:0 24px 24px}.manpage ol{list-style:none;margin:0;padding:0}
+.manpage ol li{display:grid;grid-template-columns:250px minmax(0,1fr);gap:26px;align-items:center;padding:20px 0}.manpage ol li+li{border-top:1px solid var(--line)}
+.mansay{display:flex;gap:14px;align-items:center;font-size:17px;font-weight:600;line-height:1.4}
+.manno{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:50%;background:var(--pri-soft);color:var(--pri-ink);font-weight:700}
+.manshot{position:relative;aspect-ratio:16/10;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#F5F5F7}.manshot img{display:block;width:100%;height:100%}
+.manshot i{position:absolute;border:3px solid #D92D23;border-radius:9px}
+.mango{display:flex;justify-content:center;padding-top:14px;border-top:1px solid var(--line)}
+.newsdlg{border:0;border-radius:16px;padding:26px;width:min(440px,calc(100vw - 32px));background:var(--surface);color:var(--text);font-family:var(--sans);box-shadow:0 24px 60px -12px rgba(0,0,0,.35)}
+.newstop{display:flex;align-items:center;justify-content:space-between}.newstop b{background:#D92D23;color:#fff;border-radius:6px;padding:3px 10px;font-size:13px}.newsver{font-size:13px;color:var(--text3)}
+.newsdlg h2{font-size:20px;line-height:1.4;margin:18px 0 14px}.newsul{margin:0 0 24px;padding-left:20px;display:grid;gap:10px;font-size:15px;line-height:1.6}.newsbt{display:flex;justify-content:space-between}
+.manpage h3{font-size:17px;margin:6px 0 12px}.manpage .newsver{margin:20px 0 0}
+.railman{color:var(--text2)}.railman .mico{background:var(--chip)!important;color:var(--text2)!important;box-shadow:none!important}
+#gate .gv-ask.gv-man{margin-left:auto}#gate .gv-man+.gv-ask{margin-left:0}
+@media(max-width:640px){.manpage ol li{grid-template-columns:minmax(0,1fr);gap:12px}.manhead,.manpage{padding-left:16px;padding-right:16px}#gate .gv-ask{padding:0 12px;font-size:13px}#gate .gtop .gv-ask svg{display:none}}
 #lvPill{position:fixed;right:20px;bottom:20px;z-index:70;background:var(--bad);color:#fff}
 #lvPill:hover{background:var(--bad);color:#fff}
 @media(max-width:1150px){.lvtop{grid-template-columns:minmax(0,1fr)}.lvtop .lvbtns{justify-content:flex-start}.lvtop .lvend{display:none}}
@@ -2418,6 +2439,7 @@ body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
     <div class="railfoot" id="railFoot">
     <div class="foot mebox" id="meBox"><span class="av" id="meAv" aria-hidden="true"></span><i class="spdot" id="spDot" role="img" aria-label="새 교회가 있어요" hidden></i><span class="megear" aria-hidden="true"><i class="ph-fill ph-gear-six"></i></span><div class="mt"><b id="meName">로그인 전</b></div></div>
     <div class="railuse" id="railUse" hidden></div>
+    <div class="rfrow"><button type="button" class="railmail railman" id="openMan" title="호감 매뉴얼"><span class="mico" aria-hidden="true"><i class="ph ph-question"></i></span><span class="mt2"><b>호감 매뉴얼</b></span></button></div>
     <div class="rfrow"><button type="button" class="railmail" id="openMail" title="문의 · 협업 · 응원 보내기"><span class="mico" aria-hidden="true"><i class="ph-fill ph-envelope-simple"></i></span><span class="mt2"><b>문의·응원 보내기</b><small>hogamcommunity@gmail.com</small></span></button></div>
     </div>
   </aside>
@@ -2752,6 +2774,7 @@ body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
  <div class="gv-sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
  <div class="gwrap">
   <header class="gtop"><img src="brand/logo.svg" alt=""><span class="brandtx"><span>호감슬라이드</span><span lang="en" aria-hidden="true">HOGAMSLIDE</span></span>
+    <button class="gv-ask gv-man" type="button" id="gMan" aria-haspopup="dialog">호감 매뉴얼</button>
     <button class="gv-ask" type="button" id="gAsk" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5z"/><path d="M8.5 8.5h7M8.5 11.5h4.5"/></svg>문의·협업</button>
   </header>
   <section class="gv-hero">
@@ -2845,6 +2868,7 @@ body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
     <div class="setme"><span class="av" id="setAv" aria-hidden="true"></span><b id="setName"></b></div>
     <div><h3>화면 밝기</h3><div class="seg2 settheme" role="radiogroup" aria-label="화면 밝기"><button type="button" role="radio" data-th="auto">자동</button><button type="button" role="radio" data-th="light">밝게</button><button type="button" role="radio" data-th="dark">어둡게</button></div></div>
     <div><h3>교회 · <span id="setChurch"></span></h3><div class="setrows"><button type="button" id="invite"><i class="ph ph-user-plus" aria-hidden="true"></i>팀원 초대</button><button type="button" id="openTeam" hidden><i class="ph ph-users" aria-hidden="true"></i>팀원 관리</button><button type="button" id="openLog"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>편집 기록</button><button type="button" data-ch="join"><i class="ph ph-sign-in" aria-hidden="true"></i>다른 교회 들어가기</button><button type="button" data-ch="new" id="chMake"><i class="ph ph-plus-circle" aria-hidden="true"></i>새 교회 만들기</button></div></div>
+    <div><h3>도움말</h3><div class="setrows"><button type="button" id="setMan"><i class="ph ph-question" aria-hidden="true"></i>호감 매뉴얼</button></div></div>
     <div><h3>계정</h3><div class="setrows"><button type="button" id="linkKakao" hidden><i class="ph ph-chat-circle" aria-hidden="true"></i>카카오 연결</button><button type="button" id="logout"><i class="ph ph-sign-out" aria-hidden="true"></i>나가기</button></div></div>
     <div id="setSuper" hidden><h3>호감슬라이드</h3><div class="setrows"><button type="button" id="openSuper"><i class="ph ph-buildings" aria-hidden="true"></i>전체 관리<em class="spbadge" id="spBadge" hidden></em></button></div></div>
   </div></div>
@@ -2950,6 +2974,8 @@ body:not([data-page=slides]) .rglive,#sbSet .rglive{display:none!important}
     <p class="hint lvrow" style="margin:0">← → 스페이스로 넘기고, B는 검은 화면, C는 자막만 지우기예요. 누르면 바로 나가고, 끌면 송출 순서가 바뀌어요.<button type="button" class="btn sm hidden" id="lvOrder0">원래 순서로</button></p>
     <div class="lvgrid" id="lvGrid"></div></div>
 </div>
+<dialog class="mandlg" id="manDlg" aria-labelledby="manT"><div class="manhead"><div><h2 id="manT">호감 매뉴얼</h2><button type="button" class="btn ghost ibtn" id="manX" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div><nav class="mantoc" id="manToc" aria-label="주제"></nav></div><div class="manpage" id="manPage" tabindex="-1"></div></dialog>
+<dialog class="newsdlg" id="newsDlg" aria-labelledby="newsT"><div class="newstop"><b>NEW</b><span class="newsver" id="newsV"></span></div><h2 id="newsT"></h2><ul class="newsul" id="newsB"></ul><div class="newsbt"><button type="button" class="btn" id="newsMan">호감 매뉴얼 보기</button><button type="button" class="btn pri" id="newsOk" autofocus>확인</button></div></dialog>
 <button type="button" class="btn hidden" id="lvPill"></button>
 <div hidden id="liveHome"><div class="rg rglive" id="rgLive"><button type="button" id="dlLive" title="예배당 화면에 바로 띄우기"><i class="ph-fill ph-broadcast" aria-hidden="true"></i><span>송출</span></button></div></div>
 <dialog class="maildlg" id="lvDlg" aria-labelledby="lvDlgT"><form method="dialog"><h2 id="lvDlgT">송출 시작</h2>
@@ -2967,7 +2993,7 @@ let curPage=null; // 지금 보는 탭 페이지: song · word · slides (setPag
 let CH=null;try{CH=sessionStorage.getItem('cj_church')||localStorage.getItem('cj_lastChurch')||null;}catch(e){}
 const OKSU='00000000-0000-0000-0000-000000000001';
 // 개인 취향만 교회와 상관없이 같이 쓰고, 나머지는 교회마다 따로 저장해요 (교회 것이 섞이지 않게)
-const MY_KEYS=new Set(['theme','railPinned','joinCode','folds','rail_hist','rail_lib','lkOpen','shotZoom','startOff','cols','histH','libW']);
+const MY_KEYS=new Set(['theme','railPinned','joinCode','folds','rail_hist','rail_lib','lkOpen','shotZoom','startOff','newsSeen','cols','histH','libW']);
 const storeKey=k=>'cj_'+(CH&&!MY_KEYS.has(k)?`c:${CH}:`:'')+k;
 const store={get(k,d){try{const v=localStorage.getItem(storeKey(k));return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){try{localStorage.setItem(storeKey(k),JSON.stringify(v));return true;}catch(e){return false;}}};
 function keepChurch(id){try{sessionStorage.setItem('cj_church',id);localStorage.setItem('cj_lastChurch',id);return sessionStorage.getItem('cj_church')===id;}catch(e){return false;}}
@@ -6434,7 +6460,7 @@ async function bootRemote(){
     else if((l.updated||0)>(r.updated||0)+2000){const v=r.ver;Object.assign(r,l);r.ver=l.ver??v;pushSession(r);}});
   SESS=remote;store.set('sessions',SESS);
   if(!SESS.find(x=>x.id===curSess)){const wk=SESS.find(x=>x.name===sundayName());const c=wk||newSessionObj();if(!SESS.includes(c))SESS.unshift(c);curSess=c.id;}
-  renderLib();loadSession(curSess);subscribe();startPresence();if(!startOff())openStart();
+  renderLib();loadSession(curSess);subscribe();startPresence();startNews(()=>{if(!startOff())openStart();});
   await bootTeam();
 }
 function subscribe(){
@@ -6515,6 +6541,40 @@ async function initAuth(){
   if(session)await afterLogin(session.user);else{showGate();if(AUTH_ERR)$('gErr').textContent='카카오 로그인이 끝나지 않았어요. 다시 해 주세요';}
   sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT'&&me){liveWipe();me=null;showGate();}});
 }
+
+/* ---- 새 소식: 쓰는 사람이 알아챌 변화가 있을 때만 맨 앞에 한 칸 넣어요 (버전 · 날짜 · 올린 때 · 제목 · 내용 · 매뉴얼 주제) ---- */
+const NEWS=[{v:'1.0',d:'2026년 11월 25일',at:'2026-11-25T00:00:00+09:00',t:'예배당 화면에 바로 송출해요',b:['빨간 ‘송출’을 누르면 프로젝터나 TV에 띄워요.','편집한 내용이 바로 나가요.','호감 매뉴얼이 생겼어요.'],man:'live'}];
+function newsList(ul,n){ul.innerHTML='';n.b.forEach(x=>{const li=document.createElement('li');li.textContent=x;ul.appendChild(li);});}
+// 버전이 바뀐 뒤 한 번만. 송출 중이면 다음에, 소식보다 늦게 가입한 사람에게는 안 띄워요
+async function startNews(next){
+  const n=NEWS[0];let show=store.get('newsSeen','')!==n.v&&!LIVE;
+  if(show)try{const u=(await sb.auth.getSession()).data.session?.user;if(!u||new Date(u.created_at)>=new Date(n.at)){store.set('newsSeen',n.v);show=false;}}catch(e){show=false;}
+  if(!show||LIVE||$('newsDlg').open){next();return;}
+  $('newsV').textContent=`버전 ${n.v} · ${n.d}`;$('newsT').textContent=n.t;newsList($('newsB'),n);
+  let man=false;$('newsMan').onclick=()=>{man=true;$('newsDlg').close();};$('newsOk').onclick=()=>$('newsDlg').close();
+  $('newsDlg').onclose=()=>{store.set('newsSeen',n.v);if(man){openMan(n.man);$('manDlg').addEventListener('close',next,{once:true});}else next();};
+  $('newsDlg').showModal();
+}
+/* 호감 매뉴얼: 캡처는 brand/manual (node 시험/매뉴얼찍기.mjs brand/manual 로 다시 찍어요) */
+const MAN=[['plan','예배 준비','예배 준비하기 열기',()=>openConti()],['song','찬양','찬양 열기',()=>setPage('song')],['word','말씀','말씀 열기',()=>setPage('word')],['info','순서·광고','순서·광고 열기',()=>setPage('info')],['look','꾸미기','슬라이드 미리보기 열기',()=>setPage('slides')],['down','내려받기','슬라이드 미리보기 열기',()=>setPage('slides')],['live','송출','슬라이드 미리보기 열기',()=>setPage('slides')],['lib','보관함·양식','곡 보관함 열기',()=>openLib()],['team','팀원·교회','설정 열기',()=>openSet()],['news','지난 소식']];
+let MANSHOTS=null;
+async function showMan(k){
+  const P=$('manPage');[...$('manToc').children].forEach(b=>b.setAttribute('aria-current',b.dataset.k===k));P.innerHTML='';P.scrollTop=0;
+  if(k==='news'){NEWS.forEach(n=>{const v=document.createElement('p'),h=document.createElement('h3'),u=document.createElement('ul');v.className='newsver';v.textContent=`버전 ${n.v} · ${n.d}`;h.textContent=n.t;u.className='newsul';newsList(u,n);P.append(v,h,u);});return;}
+  if(!MANSHOTS){try{const r=await fetch('brand/manual/list.json?v='+NEWS[0].v);if(!r.ok)throw 0;MANSHOTS=await r.json();}catch(e){P.innerHTML='<p class="hint">매뉴얼을 불러오지 못했어요. 인터넷 연결을 확인해 주세요.</p>';return;}
+    if($('manToc').querySelector('[aria-current=true]')?.dataset.k!==k)return;}
+  const o=document.createElement('ol');MANSHOTS.filter(x=>x.topic===k).forEach((x,i)=>{const li=document.createElement('li');
+    li.innerHTML='<div class="mansay"><span class="manno"></span><span></span></div><div class="manshot"><img alt="" loading="lazy"><i aria-hidden="true"></i></div>';
+    const[a,b]=li.firstChild.children;a.textContent=i+1;b.textContent=x.text;li.querySelector('img').src=`brand/manual/${x.f}?v=${NEWS[0].v}`;
+    Object.assign(li.querySelector('i').style,{left:`calc(${x.m.x}% - 4px)`,top:`calc(${x.m.y}% - 4px)`,width:`calc(${x.m.w}% + 8px)`,height:`calc(${x.m.h}% + 8px)`});o.appendChild(li);});P.appendChild(o);
+  const before=$('gate').classList.contains('on'),m=MAN.find(x=>x[0]===k),start=before&&!$('gStart').classList.contains('hidden');if(before&&!start)return;
+  const g=document.createElement('div');g.className='mango';g.innerHTML='<button type="button" class="btn pri"></button>';const bt=g.firstChild;bt.textContent=before?'카카오로 시작하기':m[2];
+  bt.onclick=()=>{$('manDlg').close();if(before)$('gKakao').click();else{closeSet();m[3]();}};P.appendChild(g);
+}
+function openMan(k='plan'){closeRail();hideTip();if(!$('manDlg').open)$('manDlg').showModal();showMan(k);}
+MAN.forEach(m=>{const b=document.createElement('button');b.type='button';b.dataset.k=m[0];b.textContent=m[1];b.onclick=()=>showMan(m[0]);$('manToc').appendChild(b);});
+$('openMan').onclick=$('gMan').onclick=()=>openMan();$('setMan').onclick=()=>{closeSet();openMan();};$('manX').onclick=()=>$('manDlg').close();
+$('manDlg').addEventListener('click',e=>{if(e.target===$('manDlg'))$('manDlg').close();});
 
 /* ---- 송출: 시작할 때 모든 화면을 그림으로 떠서 이 컴퓨터에 두고, 송출 창은 그 그림만 보여 줘요
    (그래서 인터넷이 끊기거나 팀원이 고쳐도 예배당 화면은 그대로예요) ---- */

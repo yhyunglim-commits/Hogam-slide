@@ -30,6 +30,20 @@ try{
   await ev(`sessionStorage.setItem('cj_church','test-church')`);await open();
   await ev(`for(const [id,v] of [['outText','만복의 근원 하나님\\n온 백성 찬송 드리고\\n\\n저 천사여 찬송하세\\n찬송 성부 성자 성령\\n\\n아멘 아멘\\n아멘'],['wordText','요한복음 3:16\\n하나님이 세상을 이처럼 사랑하사\\n독생자를 주셨으니\\n\\n이는 저를 믿는 자마다\\n멸망치 않고 영생을 얻게'],['quoteText','시편 23:1\\n여호와는 나의 목자시니\\n내가 부족함이 없으리로다']]){const e=$(id);e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));}
     LOOK.quote.quoteStyle='caption';setPage('slides')`);await z(1500);
+  // 호감 매뉴얼
+  await ev(`$('openMan').click()`);await z(900);const tabs=await ev(`return MAN.length`);let full=0;
+  for(let i=0;i<tabs;i++){await ev(`$('manToc').children[${i}].click()`);await z(250);if(await ev(`const im=[...$('manPage').querySelectorAll('img')];for(const x of im){x.loading='eager';await x.decode().catch(()=>{});}return MAN[${i}][0]==='news'?$('manPage').textContent.includes('1.0'):im.length>1&&im.every(x=>x.naturalWidth>100)`))full++;}
+  is('매뉴얼 주제 10칸이 모두 채워짐',tabs===10&&full===10);
+  await ev(`showMan('song')`);await z(300);await shot('6-man.png',S);await ev(`$('manPage').querySelector('.mango button').click()`);is('화면 열기 단추',await ev(`return !$('manDlg').open&&curPage==='song'`));
+  await ev(`$('gate').classList.add('on');$('gMan').click()`);await z(500);is('로그인 전: 카카오로 시작하기만 보임',await ev(`const b=$('manPage').querySelector('.mango button');return $('manDlg').open&&(!b||b.textContent==='카카오로 시작하기')`));await ev(`$('manX').click()`);await z(300);await shot('7-gate.png',S);
+  await ev(`$('gate').classList.remove('on')`);
+  // 새 소식
+  const news=(when)=>ev(`sb.auth.getSession=async()=>({data:{session:{user:{created_at:'${when}'}}}});window.__n=0;await startNews(()=>window.__n++);return $('newsDlg').open`);
+  await ev(`localStorage.removeItem('cj_newsSeen')`);is('예전부터 쓰던 사람에게 새 소식이 뜸',await news('2026-11-01T00:00:00Z')===true);await z(300);await shot('8-news.png',S);
+  await ev(`$('newsOk').click()`);await z(300);is('확인하면 다음 창으로 넘어감',await ev(`return __n===1`));is('두 번째는 안 뜸',await news('2026-11-01T00:00:00Z')===false);
+  await ev(`localStorage.removeItem('cj_newsSeen')`);is('처음 온 사람에게는 안 뜸',await news('2027-01-01T00:00:00Z')===false&&await ev(`return __n===1`));
+  await ev(`localStorage.removeItem('cj_newsSeen');LIVE={}`);is('송출 중에는 안 뜨고 다음에 뜸',await news('2026-11-01T00:00:00Z')===false&&await ev(`LIVE=null;return store.get('newsSeen','')===''`));
+  await ev(`setPage('slides')`);await z(900);
   const total=await ev(`return allShots().length`);is(`화면이 생김 (${total}장)`,total>=3);is('투명 자막 화면이 들어 있음',await ev(`return allShots().some(isCaption)`));
   // 참고 구절 자막(투명)도 검사
   await z(300);is('송출 단추가 로고·아래 문구 바로 옆',await ev(`return $('rgLive').previousElementSibling?.dataset.k==='logo'`));
@@ -92,6 +106,6 @@ try{
   // 하루 지난 것 · 나가기
   await ev(`$('lvEnd').click()`);await z(900);is('끝내면 창이 닫히고 저장한 그림도 지워짐',(await pages()).length===1&&await ev(`return (await liveKv('readonly',o=>o.getAllKeys())).length`)===0);
   await ev(`await liveKv('readwrite',o=>o.put({at:Date.now()-25*3600e3,ch:'x'},'data:x'))`);await open();await z(800);is('하루 지난 그림은 지워짐',await ev(`return (await liveKv('readonly',o=>o.getAllKeys())).length`)===0);
-  const mine=errs.filter(e=>/live/i.test(e));is('송출 코드 오류 없음',!mine.length);if(mine.length)console.log(mine.slice(0,3));
+  const mine=errs.filter(e=>/live|man|news/i.test(e));is('송출·매뉴얼 코드 오류 없음',!mine.length);if(mine.length)console.log(mine.slice(0,3));
 }catch(e){bad++;console.log('멈춤',e.message);}
 console.log(`통과 ${ok} · 실패 ${bad}`);ch.kill();srv.close();await z(500);fs.rmSync(tmp,{recursive:true,force:true});process.exit(bad?1:0);
