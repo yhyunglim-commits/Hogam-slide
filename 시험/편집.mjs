@@ -1,0 +1,77 @@
+// 편집 기능 시험: node 시험/편집.mjs  (크롬만 있으면 돼요. 실제 서버에는 붙지 않아요)
+import http from 'http';import fs from 'fs';import os from 'os';import path from 'path';import {spawn} from 'child_process';import {fileURLToPath} from 'url';
+const ROOT=path.join(path.dirname(fileURLToPath(import.meta.url)),'..'),CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const SHOT=process.env.SHOT,tmp=fs.mkdtempSync(path.join(os.tmpdir(),'hogam-edit-')),z=ms=>new Promise(r=>setTimeout(r,ms));
+const srv=http.createServer((q,r)=>{const f=path.join(ROOT,decodeURIComponent(q.url.split('?')[0]));
+  if(q.url.startsWith('/config.js'))return r.end('window.HOGAM_CONFIG={SUPABASE_URL:"https://example.invalid",SUPABASE_ANON_KEY:"x"};');
+  if(!f.startsWith(ROOT)||!fs.existsSync(f)||fs.statSync(f).isDirectory()){r.statusCode=404;return r.end();}
+  r.setHeader('content-type',({'.html':'text/html; charset=utf-8','.js':'text/javascript','.svg':'image/svg+xml','.png':'image/png'})[path.extname(f)]||'application/octet-stream');r.end(fs.readFileSync(f));});
+await new Promise(r=>srv.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${srv.address().port}/index.html`;
+const ch=spawn(CHROME,[...(process.env.HEAD?[]:['--headless=new']),'--remote-debugging-port=0',`--user-data-dir=${tmp}`,'--no-first-run','--window-size=1440,900','about:blank'],{stdio:['ignore','ignore','pipe']});
+const url=await new Promise(r=>{let b='';ch.stderr.on('data',d=>{b+=d;const m=b.match(/ws:\/\/\S+/);if(m)r(m[0]);});});
+const ws=new WebSocket(url);await new Promise(r=>ws.onopen=r);let n=0,wait={},errs=[];
+ws.onmessage=e=>{const d=JSON.parse(e.data);if(d.id){wait[d.id]?.(d);delete wait[d.id];}
+  if(d.method==='Runtime.exceptionThrown'){const t=d.params.exceptionDetails;errs.push(t.exception?.description||t.text);}
+  if(d.method==='Page.javascriptDialogOpening')send('Page.handleJavaScriptDialog',{accept:true},d.sessionId);};
+const send=(method,params={},sessionId)=>new Promise(r=>{wait[++n]=r;ws.send(JSON.stringify({id:n,method,params,sessionId}));});
+const attach=async id=>{const s=(await send('Target.attachToTarget',{targetId:id,flatten:true})).result.sessionId;for(const m of ['Runtime.enable','Page.enable','Network.enable'])await send(m,{},s);await send('Emulation.setFocusEmulationEnabled',{enabled:true},s);return s;};
+const pages=async()=>(await send('Target.getTargets')).result.targetInfos.filter(t=>t.type==='page');
+let S=await attach((await pages())[0].targetId);const main=(await pages())[0].targetId;
+const ev=async(e,s=S)=>{const r=await send('Runtime.evaluate',{expression:`(async()=>{${e}})()`,awaitPromise:true,returnByValue:true,userGesture:true},s);if(r.result?.exceptionDetails)throw new Error(r.result.exceptionDetails.exception?.description||'eval');return r.result?.result?.value;};
+const until=async(e,ms=40000,s=S)=>{const t=Date.now();while(Date.now()-t<ms){if(await ev(`return !!(${e})`,s).catch(()=>0))return true;await z(150);}return false;};
+let ok=0,bad=0;const is=(name,v)=>{v?ok++:bad++;console.log(v?'통과':'실패',name);};
+const key=async(k,code,s=S)=>{const vk={ArrowRight:39,ArrowLeft:37,Enter:13,' ':32}[k]||k.toUpperCase().charCodeAt(0);if(process.env.HEAD){await send('Page.bringToFront',{},s);await z(250);}for(const type of ['keyDown','keyUp'])await send('Input.dispatchKeyEvent',{type,key:k,code:code||k,windowsVirtualKeyCode:vk},s);await z(350);};
+const open=async()=>{await send('Page.navigate',{url:base},S);await until(`document.readyState==='complete'&&typeof liveRestore==='function'&&LOOK`);await z(1500);await ev(`$('gate').classList.remove('on')`);};
+// 송출 창 그림의 지문 (실제로 보이는 픽셀)
+const pix=s=>ev(`const c=document.getElementById('c'),d=c.getContext('2d').getImageData(0,0,1920,1080).data;let h=0;for(let i=0;i<d.length;i+=404)h=(h*31+d[i]+d[i+1]*3+d[i+2]*7)|0;return h+':'+[...d.slice(0,3)]`,s);
+const shot=async(f,s)=>{if(SHOT)fs.writeFileSync(path.join(SHOT,f),Buffer.from((await send('Page.captureScreenshot',{format:'png'},s)).result.data,'base64'));};
+try{
+  await ev(`localStorage`).catch(()=>{});await send('Page.navigate',{url:base},S);await z(2500);
+  await ev(`sessionStorage.setItem('cj_church','test-church')`);await open();
+  await ev(`for(const [id,v] of [['outText','만복의 근원 하나님\\n온 백성 찬송 드리고\\n\\n저 천사여 찬송하세\\n찬송 성부 성자 성령\\n\\n아멘 아멘\\n아멘'],['wordText','요한복음 3:16\\n하나님이 세상을 이처럼 사랑하사\\n독생자를 주셨으니\\n\\n이는 저를 믿는 자마다\\n멸망치 않고 영생을 얻게'],['quoteText','시편 23:1\\n여호와는 나의 목자시니\\n내가 부족함이 없으리로다']]){const e=$(id);e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));}
+    LOOK.quote.quoteStyle='caption';setPage('slides')`);await z(1500);
+  await ev(`INFO=[{id:'a1',k:'cover',title:'감사주일',band:'주일예배',time:'11시',note:'작은글 하나\\n작은글 둘'},{id:'a2',k:'notice',body:'기도\\n홍길동 장로',note:'작은 안내\\n둘째 줄'},{id:'a3',k:'ad',title:'광고제목',body:'광고 내용입니다\\n둘째 줄'},{id:'a4',k:'sermon',title:'설교제목',sub:'부제목',who:'홍길동 목사',ref:'요 3:16'},{id:'a5',k:'text',title:'고백문',body:'전능하사 천지를\\n만드신'}];LOOK.quote.quoteStyle='body';renderInfoList();setPage('slides')`);await z(1200);
+  // 1) 한 글자를 바꾸면 그 글자만 바뀌는지: 화면 종류 × 글자 × 속성 전부
+  const rows=await ev(`
+   const snap=o=>{const cv=document.createElement('canvas');cv.width=960;cv.height=540;const l=drawScreen(cv,o.s,o.si);return {t:l.texts.map(t=>({k:t.kind,n:t.lines[0],v:[t.family,t.weight,t.size,t.color,t.sp,t.lh].join()})),px:[...cv.getContext('2d').getImageData(0,0,960,540).data].reduce((h,v)=>(h*31+v)|0,7)}};
+   await Promise.all([400,700,800].flatMap(w=>['Jua','Noto Sans KR','Nanum Myeongjo','Gowun Batang'].map(f=>document.fonts.load(w+' 40px "'+f+'"','여호와는 나의 목자시니').catch(()=>{}))));
+   const out=[],base=JSON.stringify(LOOK);
+   const OWN={lyrics:['lyrics'],title:['title','ititle','ihead'],body:['body','inotice','ibody'],ref:['ref'],head:['head'],note:['inote']};
+   const TI=['설교제목','광고제목','고백문']; // 방송 자막에서 제목에 속하는 글
+   for(const [p,st,nm] of [['song',null,'찬양'],['word',null,'본문'],['quote','body','참고 본문'],['quote','caption','참고 자막'],['quote','box2','두 색 상자'],['info:a1','full','표지'],['info:a2','full','안내'],['info:a3','full','광고'],['info:a4','full','설교'],['info:a5','full','고백문'],['info:a2','cap','안내 자막'],['info:a3','cap','광고 자막'],['info:a4','cap','설교 자막'],['info:a5','cap','고백문 자막']])for(const sc of ['all','slide']){
+    const[g,id]=p.split(':'),reset=()=>{SLIDE_OV={};LOOK=mkLook(JSON.parse(base));if(g==='quote')LOOK.quote.quoteStyle=st;if(g==='info')LOOK.info.style=st;};reset();
+    const o=songGroups().flatMap(gg=>gg.items.map(s=>({s,si:gg.songIdx||0}))).find(x=>tabOf(x.s)===g&&(!id||x.s.iid===id));
+    if(!o){out.push([nm,'화면 없음']);continue;}const ic=st==='cap',E=textElems(g,o.s.ik,ic,g==='quote'&&st!=='body'&&st);
+    for(const e of E)for(const prop of ['font','weight','size','color','spacing','lineH']){if(!e[prop])continue;reset();const b=snap(o),k=e[prop],cur=lv(LOOK[g],k,g),T=sc==='all'?LOOK[g]:(SLIDE_OV[o.s.ovKey]={});
+      T[k]=prop==='font'?'Jua':prop==='weight'?(cur===400?800:400):prop==='color'?'#ff0000':prop==='size'?cur*1.2:prop==='lineH'?cur+.4:(cur||0)+12;
+      const a=snap(o),ch=a.t.filter((t,i)=>!b.t[i]||b.t[i].v!==t.v);
+      const bad=ch.filter(t=>t.k==='cbox'?(E.length>1&&(e.id==='title')!==TI.includes(t.n)):!OWN[e.id].includes(t.k));
+      if(bad.length||!ch.length&&a.px===b.px)out.push([sc,nm,e.n,prop,bad.length?'같이 바뀜: '+bad.map(t=>t.n):'안 바뀜'].join(' · '));}
+   }SLIDE_OV={};LOOK=mkLook(JSON.parse(base));return out;`);
+  if(rows.length)console.log(rows.join('\n'));is('글자를 바꾸면 그 글자만 바뀜 (모든 화면·글자·속성, 모두/이 슬라이드만)',rows.length===0);
+  // 2) 실제 칸으로: 가사 글꼴을 골라도 곡 제목은 그대로
+  is('실제 칸: 가사 글꼴 → 곡 제목 그대로',await ev(`lookTab='song';lookSlideKey=null;lookElem.song='lyrics';buildLookUI();const t=LOOK.song.tFont,q=$('lookCtl').querySelector('.lkfont select');q.value='Jua';q.onchange();await new Promise(r=>setTimeout(r,1500));const r=LOOK.song.font==='Jua'&&LOOK.song.tFont===t;LOOK=mkLook({});return r`));
+  // 3) 옛 설정(글자를 따로 안 정한 것)은 보이던 값으로 굳음
+  is('옛 설정은 보이던 값으로 굳음',await ev(`const l=mkLook({song:{font:'Jua',weight:400},info:{color:'#123456'}});return l.song.tFont==='Jua'&&l.info.color2==='#123456'&&l.info.noteColor==='#123456'`));
+  is('옛 이 슬라이드만 글꼴도 굳음',await ev(`return freeOv({'s:곡:0':{font:'Jua',weight:400}},{})['s:곡:0'].tFont==='Jua'`));
+  await ev(`LOOK=mkLook({});LOOK.song.footer=LOOK.info.footer='호감교회';window.W=ms=>new Promise(r=>setTimeout(r,ms));window.go=async f=>{const l=songGroups().flatMap(g=>g.items);openSlide(l.findIndex(f));await W(200);};window.J0=JSON.stringify(LOOK);window.rs=()=>{if($('slidebox').classList.contains('on'))closeSlide();LOOK=mkLook(JSON.parse(J0));SLIDE_OV={};lookScope='all';lookSlideKey=null;};
+    window.hit=(c,lay,k)=>{const b=c.getBoundingClientRect(),r=lay.regions.find(q=>q.k===k),z=b.width/c.width;return{clientX:b.left+(r.x+r.w/2)*z,clientY:b.top+(r.y+r.h/2)*z,bubbles:true,detail:1}}`);
+  is('표지 아래 문구를 고쳐도 제목은 그대로',await ev(`await go(s=>s.iid==='a1');startInline('footer');const shown=$('sbInl').value;$('sbInl').value='새문구';endInline(true);await W(500);const r=shown==='호감교회'&&INFO[0].title==='감사주일'&&LOOK.info.footer==='새문구'&&LOOK.song.footer==='호감교회';rs();return r`));
+  is('설교 작은 글은 부제목 칸에 저장',await ev(`await go(s=>s.iid==='a4');startInline('inote');const shown=$('sbInl').value;$('sbInl').value='바꾼부제';endInline(true);await W(500);const r=shown==='부제목'&&INFO[3].sub==='바꾼부제'&&!INFO[3].note;rs();return r`));
+  is('글을 고치고 바로 다음 장으로 가도 안 돌아옴',await ev(`await go(s=>s.type==='song');startInline('lyrics');$('sbInl').value+=' 가';$('sbNext').click();await W(900);const r=sbI===1;rs();return r`));
+  is('이 슬라이드만: 다른 저장 뒤에도 값이 남음',await ev(`await go(s=>s.type==='song');lookScope='slide';buildLookUI();saveLook();$('lookCtl').querySelector('[data-k=tsize] .stp button:last-child').click();const r=JSON.stringify(SLIDE_OV).includes('size');rs();return r`));
+  is('광고를 이 장만 크게 해도 상자 안',await ev(`const keep=INFO[2].body;INFO[2].body='광고 내용이 아주 길게 이어지는 문장입니다 '.repeat(8);const s=songGroups().flatMap(g=>g.items).find(s=>s.iid==='a3');SLIDE_OV[s.ovKey]={bSize:3.5};const c=document.createElement('canvas');c.width=1920;c.height=1080;const r=drawScreen(c,s,0).regions,x=r.find(q=>q.k==='box'),b=r.find(q=>q.k==='ibody');INFO[2].body=keep;rs();return b.x+b.w<=x.x+x.w&&b.y+b.h<=x.y+x.h`));
+  is('다른 탭을 열어 둔 채 글자를 눌러도 맞게 골라짐',await ev(`await go(s=>s.type==='song');$('lookCtl').querySelector('[data-g=word]').click();const c=$('slidebox').querySelector('canvas');c.dispatchEvent(new MouseEvent('click',hit(c,sbLay,'title')));const r=lookTab==='song'&&lookElem.song==='title';lookElem.song='lyrics';rs();return r`));
+  is('미리보기에서 누른 글자가 골라짐',await ev(`renderShots();await W(700);const c=document.querySelector('#shots canvas');c.scrollIntoView({block:'center'});c.dispatchEvent(new MouseEvent('click',hit(c,c._lay,'title')));const r=lookElem.song==='title'&&$('lookCtl').querySelector('[data-el=title]').getAttribute('aria-checked')==='true';lookElem.song='lyrics';rs();return r`));
+  // 끌기
+  const drag=`const c=document.querySelector('#shots canvas'),b=c.getBoundingClientRect(),h=hit(c,c._lay,'lyrics');c.setPointerCapture=()=>{};const P=(t,dx)=>c.dispatchEvent(new PointerEvent(t,{bubbles:true,button:0,pointerType:'mouse',clientX:h.clientX+dx,clientY:h.clientY}));P('pointerdown',0);P('pointermove',b.width*.05);P('pointermove',b.width*.1);P('pointerup',b.width*.1);`;
+  is('이 슬라이드만 끌면 보이던 자리에서 시작',await ev(`LOOK.song.ox_lyrics=5;renderShots();await W(700);const s=songGroups().flatMap(g=>g.items)[0];lookSlideKey=s.ovKey;lookScope='slide';${drag}const r=Math.abs(SLIDE_OV[s.ovKey].ox_lyrics-15)<.1&&LOOK.song.ox_lyrics===5;rs();return r`));
+  is('따로 옮긴 장도 모두 끌 때 움직임',await ev(`const s=songGroups().flatMap(g=>g.items)[0];SLIDE_OV[s.ovKey]={ox_lyrics:10};renderShots();await W(700);${drag}const r=Math.abs(LOOK.song.ox_lyrics-20)<.1&&!(SLIDE_OV[s.ovKey]||{}).ox_lyrics;rs();return r`));
+  is('내 되돌리기가 팀원 것을 안 건드림',await ev(`lookPrev=lookSnap();lookHist=[];lookPrevT=0;LOOK.song.size=6;saveLook();teamApply('look',{...LOOK,word:{...LOOK.word,size:4}});undoLook();const r=LOOK.song.size===5&&LOOK.word.size===4;rs();return r`));
+  is('순서·광고에서 로고를 넣으면 그 화면에 켜짐',await ev(`lookTab='info';buildLookUI();const c=document.createElement('canvas');c.width=c.height=40;const bl=await new Promise(r=>c.toBlob(r)),dt=new DataTransfer();dt.items.add(new File([bl],'l.png',{type:'image/png'}));const i=$('lookCtl').querySelector('.rg[data-k=logo] input[type=file]');i.files=dt.files;i.dispatchEvent(new Event('change'));await W(800);const r=LOOK.info.logoPos!=='off';MEDIA.logo=null;rs();return r`));
+  is('참고 자막 굵기를 바꾸면 줄을 다시 잼',await ev(`const a=capKey();LOOK.quote.weight=400;const r=a!==capKey();rs();return r`));
+  is('절 띄우기·자막 줄 수는 모든 슬라이드에 저장',await ev(`await go(s=>s.ed==='word');lookScope='slide';buildLookUI();const l=[...$('lookCtl').querySelectorAll('.lksw')].find(x=>x.textContent.includes('절마다')),i=l.querySelector('input');i.checked=true;i.onchange();const r=LOOK.word.verseGap===true&&l.textContent.includes('모든 슬라이드');rs();return r`));
+  is('쓸 데 없는 칸은 숨김',await ev(`const k=n=>!!$('lookCtl').querySelector('.rg[data-k='+n+']');lookTab='info';const r=[];for(const[i,st,w]of[[0,'full',true],[2,'full',false],[2,'cap',false]]){infoSel=i;LOOK.info.style=st;buildLookUI();r.push(k('align')===w&&k('fx')===w);}lookTab='quote';LOOK.quote.quoteStyle='box2';buildLookUI();r.push(!k('fx')&&!k('tcolor'));rs();return r.every(Boolean)`));
+  is('코드 오류 없음',!errs.filter(e=>!/fetch|network|invalid|Failed/i.test(e)).length);if(errs.length)console.log(errs.slice(0,3).map(e=>e.slice(0,200)));
+}catch(e){bad++;console.log('멈춤',e.message);}
+console.log(`통과 ${ok} · 실패 ${bad}`);ch.kill();srv.close();await z(500);fs.rmSync(tmp,{recursive:true,force:true});process.exit(bad?1:0);
