@@ -60,7 +60,7 @@ try{
     for(const k of ks){nItem++;const tag=`${nm}${big?' 크게':''} · ${k}`;
       await prep(p,st,big);const pt=await ev(`return at(CV,'${k}')`);if(!pt){noReach.push(tag);continue;}
       await click(pt);
-      if(!await ev(`return ED&&ED.keys.join()==='${k}'&&$('sbInl').hidden&&document.querySelectorAll('.edfr').length===1&&document.querySelectorAll('.edfr i').length===4`)){badSel.push(tag);continue;}
+      if(!await ev(`return ED&&ED.keys.join()==='${k}'&&$('sbInl').hidden&&document.querySelectorAll('.edfr').length===1&&document.querySelectorAll('.edfr i').length===(isShape('${k}')?8:4)`)){badSel.push(tag);continue;}
       // 크기
       const before=await ev(`return regs(CV)`),a=await ev(`return handle('se')`),sz=await ev(`return edSizes(edOf(CV).sc,'${k}').map(x=>edVal(edOf(CV).sc,x))`);
       const bw=await ev(`const b=CV.getBoundingClientRect();return[b.width,b.height]`),r0=before[k];
@@ -105,8 +105,40 @@ try{
     for(const type of ['keyDown','keyUp'])await send('Input.dispatchKeyEvent',{type,key:'Tab',code:'Tab',windowsVirtualKeyCode:9},S);await z(200);is('Tab으로 다음 항목',await ev(`return ED&&ED.keys.length===1&&ED.keys[0]!=='ititle'`));
     await keys('a',4);is('⌘A로 모두 고름',await ev(`return ED.keys.length===edCtx().lay.regions.length`));await keys('Escape');
     await ev(`window.CV=cvOf('info:a1')`);await click(await ev(`return at(CV,'iband')`));await keys('Enter');is('Enter로 글 고치기',await ev(`return !$('sbInl').hidden&&sbEditK==='iband'`));await keys('Escape');}
-  await prep('word','',false);{await ev(`LOOK.word.hColor='#ff8800';LOOK.word.hSize=3.6;saveLook();await W(300);window.CV=cvOf('word')`);await click(await ev(`return at(CV,'head')`));await keys('c',4);await ev(`window.CV=cvOf('word')`);await click(await ev(`return at(CV,'ref')`));await keys('v',4);is('⌘C·⌘V로 모양만 옮김',await ev(`return LOOK.word.rColor==='#ff8800'&&LOOK.word.rSize===3.6&&$('wordText').value===T0[1]`));}
+  // 복사·붙여넣기는 항목 자체 · 새 글상자·도형 · 도형 8점 · 가이드 · 말풍선 · 숫자 위아래
+  await prep('song','',false);{await click(await ev(`return at(CV,'lyrics')`));await keys('c',4);await keys('v',4);await z(400);
+    is('⌘C·⌘V로 항목 자체를 복사 (이 장에만)',await ev(`window.CV=cvOf('song');const s=find('song'),o=objsOf(s);return o.length===1&&o[0].t==='text'&&o[0].text.includes('온 백성')&&ED.keys[0]==='o:'+o[0].id&&!objParse(LOOK.song.objsAll).length&&!!SLIDE_OV[s.ovKey].objs`));
+    await keys('d',4);await z(300);is('⌘D로 복제',await ev(`return objsOf(find('song')).length===2`));
+    for(const type of ['keyDown','keyUp'])await send('Input.dispatchKeyEvent',{type,key:'Delete',code:'Delete',windowsVirtualKeyCode:46},S);await z(300);is('Delete로 새 글상자 지움',await ev(`return objsOf(find('song')).length===1`));
+    is('저장했다 다시 열어도 그대로',await ev(`const t=textOv(ovLine()[0]),s=find('song');return objParse(t.v[s.ovKey].objs).length===1`));}
+  await prep('info:a1','full',false);{await ev(`lookSlideKey=find('info:a1').ovKey;buildLookUI();document.querySelector('[data-add=shape]').click();await W(500);window.CV=cvOf('info:a1')`);
+    is('+ 도형으로 이 장에 넣고 골라짐',await ev(`const o=objsOf(find('info:a1')).filter(q=>q.t==='shape');return o.length===1&&ED&&ED.keys[0]==='o:'+o[0].id`));
+    is('도형은 점이 8개',await ev(`return document.querySelectorAll('.edfr i').length===8`));
+    const r0=await ev(`return regs(CV)[ED.keys[0]]`),hE=await ev(`return handle('e')`);await drag(hE,[hE[0]+40,hE[1]]);await z(300);
+    is('옆 점은 너비만 바꿈',await ev(`window.CV=cvOf('info:a1');const r=regs(CV)[ED.keys[0]],a=${JSON.stringify(r0)};return r[2]>a[2]+.02&&Math.abs(r[3]-a[3])<.002&&Math.abs(r[0]-a[0])<.002`));
+    await ev(`window.CV=cvOf('info:a1');window.g0=null;const o=MutationObserver;window.GL=[];new o(()=>{const n=document.querySelectorAll('.edgd');if(n.length)GL.push(n.length);}).observe(document.body,{subtree:true,childList:true})`);
+    const p=await ev(`return at(CV,ED.keys[0])`);await drag(p,[p[0]+25,p[1]+12]);is('끌면 십자 가이드가 나오고 놓으면 사라짐',await ev(`return GL.some(n=>n>=2)&&!document.querySelector('.edgd')`));
+    await ev(`window.CV=cvOf('info:a1')`);await click(await ev(`return at(CV,ED.keys[0])`));await ev(`lookPane='place';buildLookUI()`);const b=await ev(`const r=$('tpW').closest('.tp-num').querySelector('.tp-ud button').getBoundingClientRect();window.w0=+$('tpW').value;return[r.left+r.width/2,r.top+r.height/2]`);await click(b);await z(300);
+    is('숫자 칸 위 단추로 올림',await ev(`return Math.abs(+$('tpW').value-(w0+.5))<.01&&Math.abs(objsOf(find('info:a1')).find(q=>q.t==='shape').w-(w0+.5))<.01`));
+    await ev(`window.CV=cvOf('info:a1');CV.scrollIntoView({block:'center'});await W(150)`);const q=await ev(`return at(CV,'ititle')`);await mouse('mouseMoved',q[0],q[1]);await z(700);
+    is('커서를 올리면 이름이 그 아래 나옴',await ev(`const t=document.querySelector('.edtip');if(!t)return false;const r=t.getBoundingClientRect();return t.textContent.includes('제목')&&r.top>`+q[1]+`-60&&r.top<`+q[1]+`+260`));
+    await mouse('mouseMoved',5,5);await ev(`lookPane='text';buildLookUI()`);}
+  await prep('song','',false);{await click(await ev(`return at(CV,'lyrics')`));await ev(`lookPane='text';buildLookUI()`);const it=await ev(`const b=[...document.querySelectorAll('.tp-sty button')][1].getBoundingClientRect();return[b.left+b.width/2,b.top+b.height/2]`);await click(it);await z(300);
+    is('기울임 단추는 그 글자만',await ev(`window.CV=cvOf('song');const l=edOf(CV).lay.texts;return LOOK.song.lyricsIt===true&&l.find(t=>t.kind==='lyrics').it&&!l.find(t=>t.kind==='title').it`));
+    is('파워포인트에도 기울임',await ev(`const c=document.createElement('canvas');c.width=1920;c.height=1080;const l=drawScreen(c,find('song'),0,{noText:true});return !!l.texts.find(t=>t.kind==='lyrics').it`));}
   is('툴바에 되돌리기 화살표가 없음 · 갓피아 아이콘이 보임',await ev(`const i=document.querySelector('.tlink img');setPage('word');await W(700);const r=!$('lkUndo')&&!$('lkRedo')&&i.complete&&i.naturalWidth>0;setPage('slides');await W(500);return r`));
+  // 블록 지정한 글자만
+  await prep('song','',false);{await dbl(await ev(`return at(CV,'lyrics')`));await z(200);
+    await ev(`const t=$('sbInl'),a=t.value.indexOf('찬송');t.setSelectionRange(a,a+2);t.dispatchEvent(new Event('select'))`);
+    const b=await ev(`lookPane='text';buildLookUI();const r=[...document.querySelectorAll('.tp-sty button')][1].getBoundingClientRect();return[r.left+r.width/2,r.top+r.height/2]`);
+    await ev(`document.querySelector('.tp-sty button').focus()`);await z(400);
+    is('블록을 지정하고 칸을 누르면 고른 글자만 모드',await ev(`return !!document.querySelector('.tp-run')&&lookRun&&lookRun.t==='찬송'`));
+    await click(await ev(`const r=[...document.querySelectorAll('.tp-sty button')][1].getBoundingClientRect();return[r.left+r.width/2,r.top+r.height/2]`));await z(300);
+    await ev(`$('tpColor').value='#ff0000';$('tpColor').oninput()`);await z(300);
+    is('고른 글자에만 기울임·색',await ev(`window.CV=cvOf('song');const s=find('song'),r=runParse(SLIDE_OV[s.ovKey].runs),t=edOf(CV).lay.texts.find(q=>q.kind==='lyrics');return r.length===1&&r[0].t==='찬송'&&r[0].s.it===true&&r[0].s.color==='#ff0000'&&!LOOK.song.lyricsIt&&!!t.rl&&t.rl.some(l=>l.length)`));
+    is('일부 모양이 파워포인트 토막 글로',await ev(`const c=document.createElement('canvas');c.width=1920;c.height=1080;const l=drawScreen(c,find('song'),0,{noText:true}),t=l.texts.find(q=>q.kind==='lyrics');const sg=t.lines.flatMap((x,i)=>t.rl[i]&&t.rl[i].length?runSegs(t,x,i):[]);return sg.some(g=>g.s.it&&g.tx.includes('찬송'))`));
+    is('그 글자를 고쳐도 다른 줄을 고치면 따라감',await ev(`const ta=$('outText');ta.value=ta.value.replace('아멘 아멘 할렐루야','아멘 아멘 할렐루야 아멘');ta.dispatchEvent(new Event('input',{bubbles:true}));await W(500);const c=document.createElement('canvas');c.width=960;c.height=540;const t=drawScreen(c,all().find(s=>s.ed==='song'&&!s.blank),0).texts.find(q=>q.kind==='lyrics');return !!t.rl`));
+    is('고른 글자 풀기',await ev(`document.querySelector('.tp-run .tbtn').click();return !lookRun&&!document.querySelector('.tp-run')`));}
   // 여러 개
   await prep('word','',false);{const a=await ev(`return at(CV,'head')`);await click(a);const b=await ev(`return at(CV,'ref')`);await click(b,{shift:true});await z(300);await ev(`window.CV=cvOf('word');window.b0=regs(CV)`);
     is('Shift로 여러 개 고르기',await ev(`return ED.keys.join()==='head,ref'&&document.querySelectorAll('.edfr').length===2`));await shot('여러개.png',S);
