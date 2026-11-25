@@ -1859,7 +1859,7 @@ body.starting #v-home>:not(header.doc){visibility:hidden}
 #contibox{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 #contibox{align-items:center}
 #setbox,#trashbox{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-body:has(#contibox.on,#setbox.on,#trashbox.on) header.doc{z-index:40!important}
+body:has(.logbox.on,.fmtbox.on,#slidebox.on,#lightbox.on) header.doc{z-index:40!important}
 #contiBlank{margin-left:auto;margin-right:-12px}
 #contiHistQ{width:100%;box-sizing:border-box;height:36px;margin-bottom:8px;font-size:14px}
 #contiHomeP:focus{outline:0!important;box-shadow:none!important}
@@ -2363,7 +2363,7 @@ body.szing,body.szing *{user-select:none!important;-webkit-user-select:none!impo
 /* 되돌리기 그림도 탭·상자의 그림과 같은 세로줄에 */
 @media (min-width:1101px){.ribbon .lkundo{margin-left:11px}}
 .chh{margin:16px 0 8px;font-size:14px;color:var(--text2)}.chh[hidden]{display:none}
-#chUse,#setUse{margin:0 0 12px}#chMore{margin:0 0 16px}#chMore[hidden]{display:none}.chlist[hidden]{display:none}
+#chUse{margin:0 0 12px}#chMore{margin:0 0 16px}#chMore[hidden]{display:none}.chlist[hidden]{display:none}
 .contic .cfoot #contiOffL{min-height:36px}#contiOffL[hidden]{display:none}
 /* 옆 메뉴를 접으면 맨 위 로고는 아이콘만, 옆 메뉴 폭(72px)에 가운데로 */
 @media (min-width:1101px){
@@ -2816,7 +2816,7 @@ body.szing,body.szing *{user-select:none!important;-webkit-user-select:none!impo
   <div class="setbody">
     <div class="setme"><span class="av" id="setAv" aria-hidden="true"></span><b id="setName"></b></div>
     <div><h3>화면 밝기</h3><div class="seg2 settheme" role="radiogroup" aria-label="화면 밝기"><button type="button" role="radio" data-th="auto">자동</button><button type="button" role="radio" data-th="light">밝게</button><button type="button" role="radio" data-th="dark">어둡게</button></div></div>
-    <div><h3>교회 · <span id="setChurch"></span></h3><div class="tmuse setuse" id="setUse" hidden></div><div class="setrows"><button type="button" id="invite"><i class="ph ph-user-plus" aria-hidden="true"></i>팀원 초대</button><button type="button" id="openTeam" hidden><i class="ph ph-users" aria-hidden="true"></i>팀원 관리</button><button type="button" id="openLog"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>편집 기록</button><button type="button" data-ch="join"><i class="ph ph-sign-in" aria-hidden="true"></i>다른 교회 들어가기</button><button type="button" data-ch="new" id="chMake"><i class="ph ph-plus-circle" aria-hidden="true"></i>새 교회 만들기</button></div></div>
+    <div><h3>교회 · <span id="setChurch"></span></h3><div class="setrows"><button type="button" id="invite"><i class="ph ph-user-plus" aria-hidden="true"></i>팀원 초대</button><button type="button" id="openTeam" hidden><i class="ph ph-users" aria-hidden="true"></i>팀원 관리</button><button type="button" id="openLog"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>편집 기록</button><button type="button" data-ch="join"><i class="ph ph-sign-in" aria-hidden="true"></i>다른 교회 들어가기</button><button type="button" data-ch="new" id="chMake"><i class="ph ph-plus-circle" aria-hidden="true"></i>새 교회 만들기</button></div></div>
     <div><h3>계정</h3><div class="setrows"><button type="button" id="linkKakao" hidden><i class="ph ph-chat-circle" aria-hidden="true"></i>카카오 연결</button><button type="button" id="logout"><i class="ph ph-sign-out" aria-hidden="true"></i>나가기</button></div></div>
     <div id="setSuper" hidden><h3>호감슬라이드</h3><div class="setrows"><button type="button" id="openSuper"><i class="ph ph-buildings" aria-hidden="true"></i>전체 관리<em class="spbadge" id="spBadge" hidden></em></button></div></div>
   </div></div>
@@ -4317,7 +4317,7 @@ let SLIDE_OV=store.get('slideOv',{});
  mq.addEventListener('change',place);place();
  av.setAttribute('role','button');av.tabIndex=0;av.setAttribute('aria-label','설정 열기');av.removeAttribute('aria-hidden');
  const tog=()=>openSet();me.addEventListener('click',tog);av.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openSet();}});}
-function openSet(){closeRail();hideTip();$('setName').textContent=$('meName').textContent;$('setAv').textContent=$('meAv').textContent;$('setbox').classList.add('on');$('setClose').focus();useBox('setUse');}
+function openSet(){closeRail();hideTip();$('setName').textContent=$('meName').textContent;$('setAv').textContent=$('meAv').textContent;$('setbox').classList.add('on');$('setClose').focus();}
 function closeSet(){$('setbox').classList.remove('on');}
 $('setClose').onclick=closeSet;$('setbox').addEventListener('click',e=>{if(e.target.id==='setbox')closeSet();});
 addEventListener('keydown',e=>{if(e.key==='Escape')closeSet();});
@@ -6227,7 +6227,7 @@ const tmFail='불러오지 못했어요. 인터넷 연결을 확인해 주세요
 async function openTeam(t){TM=t;if(!t.all){closeSet();closeRail();if(!$('tmDlg').open)$('tmDlg').showModal();}
   tmErr('');tmUl(t).innerHTML='<li class="empty">불러오는 중…</li>';if(!t.all)tmUse(t);await tmLoad();}
 const useBars=d=>spM('이번 달 AI',d.ai_month,d.ai_limit,n=>spNum(n)+'번')+(d.member_limit==null?'':spM('팀원',d.members,d.member_limit,n=>spNum(n)+'명')+spM('용량',d.bytes,d.mb_limit*1048576,spSize));
-// 설정·교회 정보 창의 사용량: 팀원 모두 봐요
+// 교회 정보 창의 사용량: 팀원 모두 봐요
 async function useBox(id){const u=$(id),my=me;u.hidden=!my;if(!my||!sb)return;u.innerHTML='<p>사용량을 불러오는 중…</p>';
   const {data:d,error}=await sb.rpc('church_usage');if(me!==my)return;u.innerHTML=error||!d?'<p>사용량을 불러오지 못했어요.</p>':useBars(d);if(d){RU={me:my,at:Date.now(),d};aiDraw();}}
 function openChurch(){closeRail();hideTip();chMode('pick');useBox('chUse');$('chMore').hidden=me?.role!=='admin';}
