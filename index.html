@@ -3662,9 +3662,12 @@ const IKIND={cover:{n:'표지',ic:'ph-flag-banner'},sermon:{n:'설교',ic:'ph-mi
 function splitCombined(t){t=String(t||'').replace(FMRE,'').trimEnd();if(!t.trim())return{song:'',word:'',quote:'',info:[]};
   const all=t.split(gapRe()).filter(x=>x.trim()),isI=c=>c.trimStart().startsWith(IMARK.trim()),ch=all.filter(c=>!isI(c)),isQ=c=>c.trimStart().startsWith(QMARK.trim());
   const info=all.filter(isI).map(c=>{try{const o=JSON.parse(c.trimStart().slice(IMARK.trim().length));return o&&IKIND[o.k]?o:null;}catch(e){return null;}}).filter(Boolean);
-  return{info,song:ch.filter(c=>!isQ(c)&&!isWordChunk(c)).join(gapStr()),word:ch.filter(c=>!isQ(c)&&isWordChunk(c)).join(gapStr()),quote:ch.filter(isQ).map(c=>c.trimStart().replace(QMARK.trim(),'').replace(/^ /,'')).join(gapStr())};}
-function combinedText(){const q=($('quoteText')?.value||'').trim(),a=[$('outText').value.trim(),$('wordText').value.trim(),q?q.split(gapRe()).filter(x=>x.trim()).map(c=>QMARK+c.trimStart()).join(gapStr()):'',...INFO.map(o=>IMARK+JSON.stringify(o))].filter(Boolean);
-  return a.length?[...a,...(Object.keys(SBG).length?[IMARK+JSON.stringify({k:'bg',v:SBG})]:[]),...(SFMT?[FMARK+JSON.stringify(SFMT)]:[])].join(gapStr()):'';}
+  // 절 번호가 없는 본문은 이름을 따로 적어 둬요 (본문은 곡 뒤에 있으니 뒤에서부터 찾아요). 옛 화면은 이 줄을 몰라서 그냥 지나가요
+  const wt=new Set();for(const c of all.filter(isI))try{const o=JSON.parse(c.trimStart().slice(IMARK.trim().length));if(o&&o.k==='wt'&&Array.isArray(o.v))for(const h of o.v)for(let i=ch.length-1;i>=0;i--)if(!wt.has(i)&&!isQ(ch[i])&&!isWordChunk(ch[i])&&ch[i].trim().split('\n')[0].trim()===h){wt.add(i);break;}}catch(e){}
+  const isW=(c,i)=>isWordChunk(c)||wt.has(i);
+  return{info,song:ch.filter((c,i)=>!isQ(c)&&!isW(c,i)).join(gapStr()),word:ch.filter((c,i)=>!isQ(c)&&isW(c,i)).join(gapStr()),quote:ch.filter(isQ).map(c=>c.trimStart().replace(QMARK.trim(),'').replace(/^ /,'')).join(gapStr())};}
+function combinedText(){const q=($('quoteText')?.value||'').trim(),a=[$('outText').value.trim(),$('wordText').value.trim(),q?q.split(gapRe()).filter(x=>x.trim()).map(c=>QMARK+c.trimStart()).join(gapStr()):'',...INFO.map(o=>IMARK+JSON.stringify(o))].filter(Boolean),wt=wordChunks().filter(c=>!isWordChunk(c)).map(c=>c.trim().split('\n')[0].trim());
+  return a.length?[...a,...(wt.length?[IMARK+JSON.stringify({k:'wt',v:wt})]:[]),...(Object.keys(SBG).length?[IMARK+JSON.stringify({k:'bg',v:SBG})]:[]),...(SFMT?[FMARK+JSON.stringify(SFMT)]:[])].join(gapStr()):'';}
 function wordChunks(){const t=$('wordText').value.trim();return t?t.split(gapRe()).filter(x=>x.trim()):[];}
 function autosizeWord(){const t=$('wordText');if(!t.offsetParent)return;t.style.height='auto';t.style.height=Math.max(t.scrollHeight+2,140)+'px';}
 function refreshWordMeta(){const q=WMODE==='q',ta=$(q?'quoteText':'wordText'),n=(q?quoteChunks():wordChunks()).length,l=ta.value.trim()?ta.value.trim().split('\n').length:0;$('wordCount').textContent=n?`${q?'구절':'본문'} ${n}개 · ${l}줄`:'';autosizeWord();}
@@ -4702,6 +4705,8 @@ setTimeout(()=>{setWMode(WMODE,true);renderWTabs();},0);
 let wPend={w:{title:'',at:null},q:{title:'',at:null}},wBase='',wHist=[],wOk='',wAskFn=null,wRawDraft=null;
 const wCur=()=>wTab.i<0?null:wItems().find(x=>x.k===wTab.k&&x.i===wTab.i);
 const wParts=c=>{const ls=c.split('\n'),h=/^\d{1,3} /.test(ls[0].trim())?'':ls[0].trim();return{h,ls:h?ls.slice(1):ls};};
+// 본문 하나 안의 빈 줄은 한 줄까지만 (더 띄우면 저장할 때 다른 본문으로 갈라져요. 곡 사이 빈 줄이 1이면 빈 줄을 안 둬요)
+function oneChunk(s){const n=Math.max(1,FMT.songGap)>1?1:0,out=[];let b=0;for(const l of s.split('\n')){if(!l.trim()){b++;if(b<=n&&out.length)out.push('');continue;}b=0;out.push(l);}while(out.length&&!out[out.length-1])out.pop();return out.join('\n');}
 const wEdOf=k=>k==='q'?'quote':'word',wClean=x=>x.replace(/[ \t]+$/gm,'').trim();
 const wView=x=>wordFit(wParts(x.c).ls,wEdOf(x.k)).join('\n').replace(/^\n+/,'');
 // 손으로 고친 글인지: 원문에서 정리한 그대로가 아니면 고친 것으로 봐요
@@ -4713,7 +4718,7 @@ function wReset(){wPend={w:{title:'',at:null},q:{title:'',at:null}};wHist=[];wOk
   if(!wItems().length){wTab={k:'w',i:-1};if($('verseIn').value.trim())$('wSrc').hidden=false;}else if(wTab.i<0)wTab={k:'w',i:0};$('wEd').blur();renderWTabs();}
 function wNewTab(k){wPend[k].at=null;wPend[k].want=true;wTab={k,i:-1};store.set('wTab',wTab);$('wSrc').hidden=$('wAsk').hidden=true;wRawDraft=null;renderWTabs();}
 // 한 덩어리만 바꿔요. 그사이 팀원이 앞에 다른 글을 넣었으면 그 덩어리를 다시 찾아요
-function wPut(next,quick){const k=wTab.k,ch=chunksOf(k);let i=wTab.i,before=null;
+function wPut(next,quick){next=oneChunk(next||'');const k=wTab.k,ch=chunksOf(k);let i=wTab.i,before=null;
   if(i>=0){if(wBase&&ch[i]!==wBase){const j=ch.indexOf(wBase);if(j>=0)i=j;}before=ch[i]??null;if(next)ch[i]=next;else ch.splice(i,1);}
   else{i=Math.min(ch.length,wPend[k].at??ch.length);ch.splice(i,0,next);}
   const l=wHist[wHist.length-1];if(quick&&l&&l.k===k&&l.after===before&&before!=null&&Date.now()-l.t<1500){l.after=next||null;l.t=Date.now();}else wHist.push({k,i,before,after:next||null,t:Date.now()});if(wHist.length>60)wHist.shift();
@@ -5905,7 +5910,7 @@ function verseResult(raw,title='',max=BSET.max,ed='word'){
     if(LOOK.word.verseGap&&!BSET.nums&&v.n&&out.length&&out[out.length-1]!=='')out.push('');
     out.push(...splitFit((BSET.nums&&v.n?v.n+' ':'')+v.t,max,ed));}
   while(out.length&&out[out.length-1]==='')out.pop();
-  return{text:(title?title+'\n':'')+out.join('\n'),lines:out.filter(Boolean).length};
+  return{text:oneChunk((title?title+'\n':'')+out.join('\n')),lines:out.filter(Boolean).length};
 }
 ['bMax','vNums','vHeads','bAuto'].forEach(id=>$(id).addEventListener('input',readBible));
 // 말씀 자막에 넣은 본문을 기억해 두었다가, 글자 수를 바꾸면 손대지 않은 본문만 다시 나눠요
