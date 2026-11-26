@@ -2212,6 +2212,35 @@ body{font-family:var(--sans)}
 #gate #gOld{margin-top:18px}
 #gate #gJoin{margin-top:44px}
 #gate .gv-vis{display:block;margin:56px auto 0}
+/* 초대 코드 없이 온 사람: 고르기 · 무료 시작 (2026-11-26, 시안/무료시작.html) */
+#gate[data-v=pick] .gv-vis,#gate[data-v=free] .gv-vis,#gate[data-v=join] .gv-vis{display:none}
+#gate #gPick{max-width:880px;margin:44px auto 0}
+#gate #gFree{max-width:400px;margin:44px auto 0;text-align:left}
+#gate .gsub{margin:10px 0 0;font-size:16px;line-height:1.6;color:var(--sub)}
+#gate .gfree{display:inline-block;font-style:normal;font-size:.36em;font-weight:800;letter-spacing:0;color:#fff;background:#1F8F62;padding:.2em .55em;border-radius:8px;vertical-align:middle}
+#gate .gpk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:34px;text-align:left}
+#gate .gpk-c{display:flex;flex-direction:column;gap:14px;padding:28px;border-radius:24px;border:2px solid var(--line);background:rgba(255,255,255,.9);color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:transform .15s}
+#gate .gpk-c:hover{transform:translateY(-2px)}
+#gate .gpk-c:focus-visible{outline:3px solid #A994E8;outline-offset:3px}
+#gate .gpk-free{border-color:#7468E8;background:#fff;box-shadow:0 22px 48px -20px rgba(90,70,170,.32)}
+#gate .gpk-tag{align-self:flex-start;font-size:13px;font-weight:800;color:#4A3FB5;background:var(--lilac);padding:5px 11px;border-radius:999px}
+#gate .gpk-t{font-size:24px;font-weight:900;letter-spacing:-.04em}
+#gate .gpk-t .gfree{font-size:14px;margin-left:6px}
+#gate .gpk-d{font-size:15px;line-height:1.6;color:var(--sub)}
+#gate .gpk-l{display:flex;flex-direction:column;gap:8px;font-size:14.5px;font-weight:600}
+#gate .gpk-l i{color:#1F8F62;margin-right:8px;font-size:16px;vertical-align:-2px}
+#gate .gpk-go{margin-top:auto;display:flex;align-items:center;justify-content:center;height:52px;border-radius:999px;background:#6457E0;color:#fff;font-size:16px;font-weight:800}
+#gate .gpk-c:not(.gpk-free) .gpk-go{background:var(--fill);color:var(--ink)}
+#gate .gnote{margin:18px 0 0;font-size:13.5px;line-height:1.6;color:#6E6887}
+#gate .gquota{display:flex;flex-direction:column;gap:8px;max-width:380px;box-sizing:border-box;margin:20px 0 0;padding:18px;border-radius:18px;background:var(--fill);font-size:14px;color:var(--sub)}
+#gate .gquota b{color:var(--ink);font-size:15px;margin-bottom:2px}
+#gate .gquota span{display:flex;justify-content:space-between}
+#gate .gquota em{font-style:normal;font-weight:800;color:var(--ink)}
+#gate .gquota small{margin-top:4px;font-size:13px;line-height:1.6}
+#gate .gfreelink{color:#4A3FB5;font-weight:700}
+#gate .gfreeline{margin:12px 0 0;font-size:14.5px;font-weight:600;color:var(--sub)}
+#gate #gPick .glink{margin-left:auto;margin-right:auto}
+@media (max-width:860px){#gate .gpk{grid-template-columns:minmax(0,1fr)}#gate .gpk-c{padding:22px}}
 @media (min-width:861px){
 #gate .gv-mb{display:none}
 #gate .gv-hero h1{font-size:min(74px,5.9vw);line-height:1.15;white-space:nowrap;margin-top:88px}
@@ -2240,8 +2269,6 @@ body{font-family:var(--sans)}
 #gate .gvl-cur.is-on{opacity:1}
 #gate .gvl-cur.is-dn{scale:.78}
 #gate .gvl-base{display:none}
-#gate .gvl-note{margin:16px 0 0;text-align:center;font-size:12px;color:#6f6a80;visibility:hidden}
-#gate .gvl-note.is-on{visibility:visible}
 @media (min-width:861px){
 #gate .gvl-caps{gap:28px;max-width:860px;margin:0 auto 28px}
 #gate .gvl-caps button{flex-direction:row;justify-content:center;gap:10px;padding:8px 6px;font-size:16px;text-align:left}
@@ -2269,6 +2296,15 @@ body{font-family:var(--sans)}
 #gate .gvl-out h3{font-size:18px}
 }
 @media (prefers-reduced-motion:reduce){#gate .gvl-in,#gate .gvl-in img,#gate .gvl-cur{transition:none}}
+/* 원하는 파일: 슬라이드처럼 옆으로 계속 흘러가요 (두 벌을 이어 붙여 끊김 없이). 움직임 줄이기면 그대로 */
+@media (prefers-reduced-motion:no-preference){
+#gate .gvl-roll{overflow:hidden;padding:6px 0 18px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+#gate .gvl-roll ul{display:flex;gap:0;width:max-content;max-width:none;margin:0;animation:gvlRoll 28s linear infinite}
+#gate .gvl-roll:hover ul{animation-play-state:paused}
+#gate .gvl-roll li{flex:none;width:132px}
+@media (min-width:861px){#gate .gvl-roll li{width:190px}#gate .gvl-roll{max-width:1040px;margin:0 auto}}
+}
+@keyframes gvlRoll{to{transform:translateX(-50%)}}
 /* ===== 말씀 탭: 두 칸 (고르고 붙여 넣고 고치기 · 미리보기) ===== */
 body[data-wmode=w] #wordPanel .qstyle{display:none!important}
 .wname{padding:12px 18px 8px;display:grid;gap:8px;container-type:inline-size}
@@ -2331,6 +2367,24 @@ body[data-wmode=w] #wordPanel .qstyle{display:none!important}
 .chdlg label span{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px}.chdlg label input{width:100%;box-sizing:border-box;height:42px;font-size:16px}
 .chdlg .btn.pri{height:42px;justify-content:center}
 .chdlg .hint2{margin:0;font-size:13px;color:var(--text3)}
+/* 약관 동의 칸 (첫 화면 · 동의 창 같이) */
+.gagree{margin:18px 0 0;padding:14px 16px;border:1px solid var(--line2);border-radius:14px;display:flex;flex-direction:column;gap:10px;min-width:0;box-sizing:border-box}
+.gagree legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.gagree label{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.5;color:var(--text2);cursor:pointer}
+.gagree input{width:18px;height:18px;margin:1px 0 0;flex:none;accent-color:#6457E0}
+.gagree .ga-all{font-size:15px;font-weight:800;color:var(--text)}
+.gagree .ga-line{height:1px;background:var(--line2)}
+.gagree .ga-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.gagree a{font-size:13.5px;font-weight:600;color:var(--text2);white-space:nowrap;padding:2px 0}
+.gagree small{display:block;font-size:12.5px;color:var(--text3)}
+#gate .gagree{max-width:380px;border:1.5px solid var(--line);background:rgba(255,255,255,.92)}
+#gate .gagree label,#gate .gagree a{color:var(--sub)}
+#gate .gagree .ga-all{color:var(--ink)}
+#gate .gagree .ga-line{background:var(--line)}
+#gate .gagree small{color:#6E6887}
+.agdlg .agmsg{margin:12px 0 0;font-size:14.5px;line-height:1.65;color:var(--text2)}
+.agdlg .btn{width:100%;height:44px;justify-content:center;margin-top:8px}
+.agdlg .cherr:empty{display:none}
 .chlist{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:6px}
 .chlist button{width:100%;display:flex;align-items:center;gap:8px;padding:10px 14px;border:0;border-radius:12px;background:var(--sunken);color:var(--text);font:inherit;text-align:left;cursor:pointer}
 .chlist button:disabled{opacity:.5}.chlist .tt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}.chlist small{color:var(--text3);font-size:13px}.chlist i{color:var(--pri);font-size:18px}
@@ -2921,6 +2975,7 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
         <h1 class="gv-rot"><span class="on"><em class="gvt gvt-blur">예배</em>를 돕고, <br class="gv-mb"><em class="gvt gvt-blur">교회</em>를 세우다</span><span>악보를 넣으면 <br class="gv-mb"><em class="gvt gvt-type">슬라이드</em>가 만들어져요</span><span><em class="gvt gvt-mark">5분</em> 만에 완성하는 <br class="gv-mb"><em class="gvt gvt-mark">호감슬라이드</em></span><span>순서만 입력해도 <br class="gv-mb"><em class="gvt gvt-flap">자동</em>으로 완성</span></h1>
         <p class="ginv hidden" id="gInv">초대 링크로 오셨어요. 카카오로 시작하면 바로 교회에 들어갈 수 있어요.</p>
         <button class="gkakao" id="gKakao" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3C6.48 3 2 6.54 2 10.9c0 2.83 1.88 5.31 4.71 6.7l-.96 3.53c-.08.3.26.54.52.37l4.2-2.78c.5.06 1 .09 1.53.09 5.52 0 10-3.54 10-7.9S17.52 3 12 3z"/></svg>카카오로 시작하기</button>
+        <p class="gfreeline">교회 하나, 팀원 5명까지 무료로 시작해요</p>
         <p class="gerr" id="gErr" role="alert"></p>
         <div id="gOld" class="hidden">
           <label class="gl"><span>이름</span><input id="gName" type="text" maxlength="10" autocomplete="username" placeholder="예) 김목자"></label>
@@ -2929,14 +2984,37 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
           <p class="ghint">들어온 뒤 ‘카카오 연결’을 한 번 해 두면, 다음부터는 카카오로 들어와요.</p>
         </div>
       </div>
+      <div id="gPick" class="hidden">
+        <h2 class="gjt">어떻게 시작할까요?</h2>
+        <p class="gsub">초대받지 않았어도 바로 쓸 수 있어요.</p>
+        <p class="gerr" id="pkErr" role="alert"></p>
+        <div class="gpk">
+          <button type="button" class="gpk-c gpk-free" id="pkFree"><span class="gpk-tag">처음이라면 여기</span><span class="gpk-t">우리 교회 시작하기 <em class="gfree">무료</em></span><span class="gpk-d">교회 공간을 새로 만들고, 팀원을 초대해서 같이 써요. 만든 사람이 관리자가 돼요.</span><span class="gpk-l"><span><i class="ph ph-check" aria-hidden="true"></i>AI 악보·주보 읽기 한 달 50번</span><span><i class="ph ph-check" aria-hidden="true"></i>팀원 5명까지</span><span><i class="ph ph-check" aria-hidden="true"></i>저장 공간 50MB</span></span><span class="gpk-go">무료로 시작하기</span></button>
+          <button type="button" class="gpk-c" id="pkCode"><span class="gpk-t">초대 코드로 들어가기</span><span class="gpk-d">팀원에게 받은 링크나 8글자 코드가 있으면, 그 교회로 바로 들어가요.</span><span class="gpk-go">코드 넣기</span></button>
+        </div>
+        <p class="gnote">새로 만들 수 있는 교회는 한 사람당 1곳이에요. 초대받아 들어가는 교회는 따로예요.</p>
+        <button type="button" class="glink" id="jOut">다른 카카오 계정으로 시작하기</button>
+      </div>
+      <div id="gFree" class="hidden">
+        <h2 class="gjt">우리 교회 시작하기 <em class="gfree">무료</em></h2>
+        <p class="gsub">두 칸만 적으면 바로 시작해요.</p>
+        <label class="gl"><span>교회 이름</span><input id="gfChurch" type="text" maxlength="20" autocomplete="off" placeholder="예) 호감교회"></label>
+        <label class="gl"><span>교회에서 쓸 내 이름</span><input id="gfName" type="text" maxlength="10" autocomplete="off" placeholder="예) 김목자"></label>
+        <fieldset class="gagree" id="gfAgree"></fieldset>
+        <p class="gerr" id="gfErr" role="alert"></p>
+        <button class="gpri" id="gfGo" type="button">무료로 시작하기</button>
+        <div class="gquota"><b>무료로 쓸 수 있는 만큼</b><span>AI 악보·주보 읽기<em>한 달 50번</em></span><span>팀원<em>5명까지</em></span><span>저장 공간<em>50MB</em></span><small>곡·예배 만들기, 편집, 송출, 내려받기는 횟수 없이 써요. 만든 사람이 이 교회의 관리자가 돼요.</small></div>
+        <button type="button" class="glink" data-gback>← 다시 고르기</button>
+      </div>
       <div id="gJoin" class="hidden">
         <h2 class="gjt">교회에 들어가기</h2>
         <label class="gl"><span>초대 코드</span><input id="jCode" type="text" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="예) AB3DEF7H"></label>
         <label class="gl"><span>교회에서 쓸 이름</span><input id="jName" type="text" maxlength="10" autocomplete="off" placeholder="예) 김목자"></label>
+        <fieldset class="gagree" id="jAgree"></fieldset>
         <p class="gerr" id="jErr" role="alert"></p>
         <button class="gpri" id="jGo" type="button">들어가기</button>
-        <button type="button" class="glink" id="jMake">초대 코드가 없나요? 새 교회 만들기</button>
-        <button type="button" class="glink" id="jOut">처음 화면으로</button>
+        <button type="button" class="glink gfreelink" id="jMake">초대 코드가 없나요? 무료로 우리 교회 시작하기 →</button>
+        <button type="button" class="glink" data-gback>← 다시 고르기</button>
       </div>
     </div>
   </form>
@@ -2946,17 +3024,16 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
         <div class="gvl-lid"><div class="gvl-bar"><i></i><i></i><i></i><span>호감슬라이드</span></div><div class="gvl-scr"><div class="gvl-in"><img data-f="s0" data-src="brand/first/s0.webp" alt=""><img data-f="s1" data-src="brand/first/s1.webp" alt=""><img data-f="s2" data-src="brand/first/s2.webp" alt=""><img data-f="s3" data-src="brand/first/s3.webp" alt=""><img data-f="s4" data-src="brand/first/s4.webp" alt=""><img data-f="w0" data-src="brand/first/w0.webp" alt=""><img data-f="w1" data-src="brand/first/w1.webp" alt=""><img data-f="w2" data-src="brand/first/w2.webp" alt=""><img data-f="w3" data-src="brand/first/w3.webp" alt=""><img data-f="o0" data-src="brand/first/o0.webp" alt=""><img data-f="o1" data-src="brand/first/o1.webp" alt=""><img data-f="o2" data-src="brand/first/o2.webp" alt=""><img data-f="o3" data-src="brand/first/o3.webp" alt=""><img data-f="o4" data-src="brand/first/o4.webp" alt=""><img data-f="o5" data-src="brand/first/o5.webp" alt=""><svg class="gvl-cur" viewBox="0 0 24 24"><path d="M5 3l14 10.5-6.2.9 3.4 6.3-2.9 1.5-3.3-6.4L5 20z" fill="#111" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg></div></div></div>
         <div class="gvl-base"></div>
       </div>
-      <p class="gvl-note">성경 본문 · 개역한글 (대한성서공회)</p>
       <div class="gvl-out">
         <h2>완성된 슬라이드는 내가 원하는 파일로!</h2>
-        <ul>
+        <div class="gvl-roll"><ul>
           <li><svg viewBox="0 0 96 120" aria-hidden="true"><defs><linearGradient id="gvlP1" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eef0f4"/></linearGradient><linearGradient id="gvlC1" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#8b93a3"/><stop offset="1" stop-color="#656d7c"/></linearGradient></defs><path d="M12 4h50l26 26v78a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8z" fill="url(#gvlP1)" stroke="#cfd3db" stroke-width="1.2"/><path d="M62 4v18a8 8 0 0 0 8 8h18z" fill="#d9dde4" stroke="#cfd3db" stroke-width="1.2" stroke-linejoin="round"/><path d="M18 38h42M18 48h56M18 58h48M18 68h56" stroke="#9aa1ad" stroke-width="3.4" stroke-linecap="round"/><rect x="16" y="84" width="60" height="22" rx="6" fill="url(#gvlC1)"/><text x="46" y="100" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">TXT</text></svg><h3>텍스트</h3></li>
           <li><svg viewBox="0 0 96 120" aria-hidden="true"><defs><linearGradient id="gvlP2" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eef0f4"/></linearGradient><linearGradient id="gvlC2" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#4aa3ff"/><stop offset="1" stop-color="#1f6fe0"/></linearGradient></defs><path d="M12 4h50l26 26v78a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8z" fill="url(#gvlP2)" stroke="#cfd3db" stroke-width="1.2"/><path d="M62 4v18a8 8 0 0 0 8 8h18z" fill="#d9dde4" stroke="#cfd3db" stroke-width="1.2" stroke-linejoin="round"/><rect x="18" y="36" width="56" height="40" rx="5" fill="#cfe6ff"/><circle cx="60" cy="47" r="5.5" fill="#ffc83d"/><path d="M18 71l16-19 13 14 8-8 19 18H23a5 5 0 0 1-5-5z" fill="#3fa36b"/><rect x="16" y="84" width="60" height="22" rx="6" fill="url(#gvlC2)"/><text x="46" y="100" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" style="letter-spacing:-.3px">JPG·PNG</text></svg><h3>이미지 <small>(JPG, PNG)</small></h3></li>
           <li><svg viewBox="0 0 96 120" aria-hidden="true"><defs><linearGradient id="gvlP3" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eef0f4"/></linearGradient><linearGradient id="gvlC3" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f5814f"/><stop offset="1" stop-color="#d9501f"/></linearGradient></defs><path d="M12 4h50l26 26v78a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8z" fill="url(#gvlP3)" stroke="#cfd3db" stroke-width="1.2"/><path d="M62 4v18a8 8 0 0 0 8 8h18z" fill="#d9dde4" stroke="#cfd3db" stroke-width="1.2" stroke-linejoin="round"/><rect x="16" y="36" width="60" height="38" rx="4" fill="#ffe7dc" stroke="#e8683a" stroke-width="2.4"/><path d="M32 45a10 10 0 1 0 10 10H32z" fill="#e8683a"/><path d="M35.500 41.500a10 10 0 0 1 10 10h-10z" fill="#f4a27f"/><path d="M52 48h17M52 56h17M52 64h11" stroke="#e8683a" stroke-width="2.8" stroke-linecap="round"/><rect x="16" y="84" width="60" height="22" rx="6" fill="url(#gvlC3)"/><text x="46" y="100" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">PPTX</text></svg><h3>파워포인트</h3></li>
           <li><svg viewBox="0 0 96 120" aria-hidden="true"><defs><linearGradient id="gvlP4" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eef0f4"/></linearGradient><linearGradient id="gvlC4" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ff6b6b"/><stop offset="1" stop-color="#cf2b34"/></linearGradient></defs><path d="M12 4h50l26 26v78a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8z" fill="url(#gvlP4)" stroke="#cfd3db" stroke-width="1.2"/><path d="M62 4v18a8 8 0 0 0 8 8h18z" fill="#d9dde4" stroke="#cfd3db" stroke-width="1.2" stroke-linejoin="round"/><rect x="24" y="34" width="44" height="17" rx="3" fill="#ffd9d9"/><path d="M24 59h44M24 67h44M24 75h26" stroke="#e5383f" stroke-width="3" stroke-linecap="round"/><path d="M28 48l9-9 7 6 6-4 12 7z" fill="#e5383f"/><rect x="16" y="84" width="60" height="22" rx="6" fill="url(#gvlC4)"/><text x="46" y="100" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">PDF</text></svg><h3>PDF</h3></li>
           <li><svg viewBox="0 0 96 120" aria-hidden="true"><defs><linearGradient id="gvlP5" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eef0f4"/></linearGradient><linearGradient id="gvlC5" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9b7bf0"/><stop offset="1" stop-color="#6b46c9"/></linearGradient></defs><path d="M12 4h50l26 26v78a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8z" fill="url(#gvlP5)" stroke="#cfd3db" stroke-width="1.2"/><path d="M62 4v18a8 8 0 0 0 8 8h18z" fill="#d9dde4" stroke="#cfd3db" stroke-width="1.2" stroke-linejoin="round"/><rect x="18" y="36" width="56" height="40" rx="5" fill="#eee9fb"/><rect x="32" y="36" width="14" height="10" fill="#d3c8f3"/><rect x="60" y="36" width="14" height="10" fill="#d3c8f3"/><rect x="18" y="46" width="14" height="10" fill="#d3c8f3"/><rect x="46" y="46" width="14" height="10" fill="#d3c8f3"/><rect x="32" y="56" width="14" height="10" fill="#d3c8f3"/><rect x="60" y="56" width="14" height="10" fill="#d3c8f3"/><rect x="18" y="66" width="14" height="10" fill="#d3c8f3"/><rect x="46" y="66" width="14" height="10" fill="#d3c8f3"/><path d="M30 52h32M36 62h20" stroke="#6b46c9" stroke-width="4.5" stroke-linecap="round"/><rect x="16" y="84" width="60" height="22" rx="6" fill="url(#gvlC5)"/><text x="46" y="100" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" style="letter-spacing:-.3px">PNG·TGA</text></svg><h3>투명 이미지 <small>(PNG, TGA)</small></h3></li>
           <li><svg viewBox="0 0 96 120" aria-hidden="true"><defs><linearGradient id="gvlP6" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eef0f4"/></linearGradient><linearGradient id="gvlC6" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#4cc27b"/><stop offset="1" stop-color="#23864a"/></linearGradient></defs><path d="M12 4h50l26 26v78a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8z" fill="url(#gvlP6)" stroke="#cfd3db" stroke-width="1.2"/><path d="M62 4v18a8 8 0 0 0 8 8h18z" fill="#d9dde4" stroke="#cfd3db" stroke-width="1.2" stroke-linejoin="round"/><rect x="18" y="36" width="56" height="40" rx="4" fill="#e6f6ec" stroke="#2f9e5b" stroke-width="2.4"/><path d="M18 47h56M18 57h56M18 67h56M36 36v40" stroke="#2f9e5b" stroke-width="2"/><rect x="16" y="84" width="60" height="22" rx="6" fill="url(#gvlC6)"/><text x="46" y="100" text-anchor="middle" font-size="14" font-weight="800" fill="#fff" style="letter-spacing:-.3px">CSV</text></svg><h3>표 <small>(CSV)</small></h3></li>
-        </ul>
+        </ul></div>
       </div>
     </div>
   </section>
@@ -3093,6 +3170,14 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
     </div>
     <div id="spOne" hidden><div class="spseg" id="spTabs" role="group" aria-label="교회 관리"></div><div id="spPane"></div></div>
   </div>
+</dialog>
+<dialog class="maildlg chdlg agdlg" id="agDlg" aria-labelledby="agT">
+  <div class="chhead"><h2 id="agT">약관에 동의해 주세요</h2></div>
+  <p class="agmsg">호감슬라이드를 여러 교회가 함께 쓰게 되면서 이용약관과 개인정보 처리방침을 만들었어요. 동의하면 지금처럼 계속 쓸 수 있어요.</p>
+  <fieldset class="gagree" id="agBox"></fieldset>
+  <p class="cherr" id="agErr" role="alert"></p>
+  <button type="button" class="btn pri" id="agGo">동의하고 계속하기</button>
+  <button type="button" class="btn ghost" id="agNo">동의하지 않아요 (로그아웃)</button>
 </dialog>
 <dialog class="maildlg chdlg gonedlg" id="goneDlg" aria-labelledby="goneTitle">
   <div class="chhead"><h2 id="goneTitle"></h2></div>
@@ -7028,11 +7113,31 @@ $('gKakao').onclick=async()=>{$('gErr').textContent='';
 // 옛 로그인(이름+암호)은 따로 알려 준 주소(?old)로 왔을 때만 열어요. 팀원이 모두 카카오를 연결하면 없애요
 $('gOld').classList.toggle('hidden',!new URLSearchParams(location.search).has('old'));
 // 움직임 줄이기 설정이면 소개 영상은 멈춰 두고 직접 재생하게
-function showGate(kind){$('gate').classList.add('on');$('gate').dataset.asked=1;
-  const setup=kind==='setup',join=kind==='join';$('gSetup').classList.toggle('hidden',!setup);$('gBody').classList.toggle('hidden',setup);
-  $('gStart').classList.toggle('hidden',join);$('gJoin').classList.toggle('hidden',!join);$('gInv').classList.toggle('hidden',!store.get('joinCode',null));
-  if(join)setTimeout(()=>($('jCode').value?$('jName'):$('jCode')).focus(),50);}
+// kind: (없음) 첫 화면 · setup 서버 설정 없음 · pick 시작 방법 고르기 · free 무료로 교회 만들기 · join 초대 코드
+function showGate(kind){$('gate').classList.add('on');$('gate').dataset.asked=1;$('gate').dataset.v=kind||'start';
+  const setup=kind==='setup',V={pick:'gPick',free:'gFree',join:'gJoin'};$('gSetup').classList.toggle('hidden',!setup);$('gBody').classList.toggle('hidden',setup);
+  $('gStart').classList.toggle('hidden',!!V[kind]);Object.entries(V).forEach(([k,id])=>$(id).classList.toggle('hidden',k!==kind));$('gInv').classList.toggle('hidden',!store.get('joinCode',null));
+  if(V[kind])scrollTo(0,0),$('gate').scrollTop=0;
+  const f={join:()=>$('jCode').value?$('jName'):$('jCode'),free:()=>$('gfChurch'),pick:()=>$('pkFree')}[kind];if(f)setTimeout(()=>f().focus(),50);}
+// ---- 이용약관·개인정보 동의 (14단계). 약관 글을 바꿔 다시 동의를 받으려면 schema.sql의 terms_ver()와 같이 올려요 ----
+const TERMS_VER=1;
+function agreeBox(el){el.innerHTML='<legend>약관 동의</legend><label class="ga-all"><input type="checkbox" data-all>모두 동의해요</label><div class="ga-line"></div>'
+  +'<div class="ga-row"><label><input type="checkbox" data-one>(필수) 이용약관</label><a href="terms.html" target="_blank" rel="noopener">보기</a></div>'
+  +'<div class="ga-row"><label><input type="checkbox" data-one><span>(필수) 개인정보 수집·이용<small>카카오 닉네임과 교회에서 쓸 이름만 받아요</small></span></label><a href="privacy.html" target="_blank" rel="noopener">보기</a></div>';
+  const all=el.querySelector('[data-all]'),one=[...el.querySelectorAll('[data-one]')];
+  all.onchange=()=>one.forEach(x=>x.checked=all.checked);one.forEach(x=>x.onchange=()=>all.checked=one.every(y=>y.checked));}
+['gfAgree','jAgree','agBox'].forEach(id=>agreeBox($(id)));
+const agreedIn=id=>[...$(id).querySelectorAll('[data-one]')].every(x=>x.checked);
+async function agreeNow(){const {data,error}=await sb.rpc('agree_terms',{p_ver:TERMS_VER});
+  if(error)throw new Error('서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요');if(!data.ok)throw new Error(data.error);}
+// 이미 쓰던 사람이 아직 동의하지 않았으면 한 번 물어요. 동의하지 않으면 로그아웃
+function askAgree(){return new Promise(res=>{const d=$('agDlg');$('agErr').textContent='';d.querySelectorAll('input').forEach(x=>x.checked=false);
+  $('agGo').onclick=async()=>{if(!agreedIn('agBox'))return $('agErr').textContent='두 가지 모두 동의해 주세요';$('agGo').disabled=true;
+    try{await agreeNow();d.close();res(true);}catch(x){$('agErr').textContent=x.message;}finally{$('agGo').disabled=false;}};
+  $('agNo').onclick=()=>{d.close();res(false);};d.showModal();});}
+$('agDlg').addEventListener('cancel',e=>e.preventDefault());
 function hideGate(){$('gate').classList.remove('on');}
+{const u=document.querySelector('#gate .gvl-roll ul');[...u.children].forEach(li=>{const c=li.cloneNode(true);c.setAttribute('aria-hidden','true');u.appendChild(c);});}
 /* ---- 첫 화면 움직임: 제목 4문장 · 워크플로우 세 단계 · 문의·협업 창 (첫 화면이 닫히면 쉬어요) ---- */
 {const T=[...document.querySelectorAll('.gv-rot>span')],open=()=>$('gate').classList.contains('on'),still=matchMedia('(prefers-reduced-motion:reduce)').matches;let k=0;
  // 강조 단어에만 효과: 블러인 · 타자기 · 형광펜 · 스플릿 플랩
@@ -7047,14 +7152,14 @@ function hideGate(){$('gate').classList.remove('on');}
 // 노트북 화면: 찬양 → 말씀 → 예배 순서를 실제 앱 사진으로 이어 보여 줘요. 예시 곡은 호감이 지은 것, 성경은 개역한글 원문 그대로
 {
   const z=ms=>new Promise(r=>setTimeout(r,ms)),open=()=>$('gate').classList.contains('on'),still=matchMedia('(prefers-reduced-motion:reduce)').matches;
-  const box=$('gvl'),inn=box.querySelector('.gvl-in'),cur=box.querySelector('.gvl-cur'),note=box.querySelector('.gvl-note'),im=[...inn.querySelectorAll('img')],all=[...box.querySelectorAll('img')],bt=[...box.querySelectorAll('.gvl-caps button')];
+  const box=$('gvl'),inn=box.querySelector('.gvl-in'),cur=box.querySelector('.gvl-cur'),im=[...inn.querySelectorAll('img')],all=[...box.querySelectorAll('img')],bt=[...box.querySelectorAll('.gvl-caps button')];
   // [사진, 머무는 시간, 휴대폰에서 볼 자리(0 왼쪽~1 오른쪽), 누를 곳]
   const PLAY={song:[['s0',900,0,[20.5,32.6]],['s1',900,0],['s2',900,0,[28.9,94.5]],['s3',700,1],['s4',1900,1]],
     word:[['w0',800,0,[12.3,34.9]],['w1',800,0,[20.5,73.8]],['w2',1000,0,[28,94.5]],['w3',2000,1]],
     order:[['o0',700,.5,[50,24.6]],['o1',500,.5],['o2',900,.5,[68,76.5]],['o3',1000,.5,[70.6,71.8]],['o4',1000,0],['o5',2000,0]]};
   const K=Object.keys(PLAY);let run=0,seen=false;
   const frame=([f,,x])=>{im.forEach(e=>e.classList.toggle('is-on',e.dataset.f===f));inn.style.setProperty('--f',x)};
-  const pick=k=>{bt.forEach(b=>{const on=b.dataset.k===k;b.classList.toggle('is-on',on);b.setAttribute('aria-pressed',on)});note.classList.toggle('is-on',k!=='song')};
+  const pick=k=>{bt.forEach(b=>{const on=b.dataset.k===k;b.classList.toggle('is-on',on);b.setAttribute('aria-pressed',on)})};
   const load=()=>{const a=all.filter(e=>!e.src);a.forEach(e=>e.src=e.dataset.src);return Promise.all(a.map(e=>e.decode().catch(()=>{})))};
   async function play(k){const id=++run;
     for(;;){
@@ -7117,7 +7222,10 @@ async function afterLogin(u){
   const [{data:ms,error},{data:cs,error:e2}]=await Promise.all([sb.from('members').select('name,church_id,role').eq('user_id',u.id).order('joined_at'),sb.from('churches').select('*')]);
   if(error||e2){showGate();$('gErr').textContent='서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요';return;}
   const was=inWas(u.id)&&CH&&!ms.some(m=>m.church_id===CH); // 이 사람이 이 브라우저에서 쓰던 교회에서 빠졌을 때
-  if(!ms.length){CHURCHES=[];canMake=!cs.some(c=>c.created_by===u.id);showJoin(u);if(was){inSet('');$('jErr').textContent='쓰던 교회에서 나가게 되었어요. 다시 들어가려면 관리자에게 새 초대 링크를 받아 주세요';}return;}
+  if(!ms.length){CHURCHES=[];canMake=!cs.some(c=>c.created_by===u.id);showJoin(u);if(was){inSet('');$('jErr').textContent=$('pkErr').textContent='쓰던 교회에서 나가게 되었어요. 다시 들어가려면 관리자에게 새 초대 링크를 받아 주세요';}return;}
+  // 14단계 전 서버(함수 없음)면 묻지 않아요. 순서는 SQL → 화면
+  const ag=await sb.rpc('agreed');if(ag.error&&ag.error.code!=='PGRST202'){showGate();$('gErr').textContent='서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요';return;}
+  if(!ag.error&&ag.data!==true&&!await askAgree()){await goOut();return;}
   CHURCHES=ms.map(m=>({id:m.church_id,my:m.name,...cs.find(c=>c.id===m.church_id)}));canMake=!cs.some(c=>c.created_by===u.id);
   if(was){inSet('');showGone('removed');return;}
   const open=ms.filter(m=>!CHURCHES.find(c=>c.id===m.church_id)?.suspended_at),now=ms.find(m=>m.church_id===CH);
@@ -7135,18 +7243,30 @@ async function afterLogin(u){
   offerKakaoLink(u);
   const jc=store.get('joinCode',null);if(jc)openInvite(jc); // 이미 들어온 사람이 다른 교회 초대 링크를 눌렀을 때
 }
-// 교회에 아직 안 들어간 사람: 초대 코드와 교회에서 쓸 이름을 받아요
-function showJoin(u){const md=u.user_metadata||{};
-  $('jCode').value=store.get('joinCode',null)||'';if(!$('jName').value)$('jName').value=String(md.name||md.full_name||md.nickname||md.preferred_username||'').trim().slice(0,10);
-  $('jErr').textContent='';showGate('join');
+// 교회에 아직 안 들어간 사람: 초대 링크로 왔으면 코드 넣기, 아니면 '무료로 시작 / 초대 코드' 고르기
+function showJoin(u){const md=u.user_metadata||{},nick=String(md.name||md.full_name||md.nickname||md.preferred_username||'').trim().slice(0,10);
+  $('jCode').value=store.get('joinCode',null)||'';if(!$('jName').value)$('jName').value=nick;if(!$('gfName').value)$('gfName').value=nick;
+  $('jErr').textContent=$('gfErr').textContent=$('pkErr').textContent='';showGate($('jCode').value?'join':'pick');
   $('jGo').onclick=async()=>{const code=$('jCode').value.trim(),name=normName($('jName').value),err=$('jErr');err.textContent='';
     if(!code)return err.textContent='초대 코드를 넣어 주세요';if(name.length<2)return err.textContent='이름을 2글자 이상 적어 주세요';
+    if(!agreedIn('jAgree'))return err.textContent='이용약관과 개인정보 처리방침에 동의해 주세요';
     const go=$('jGo');go.disabled=true;
-    try{const {data,error}=await sb.rpc('join_church',{p_code:code,p_name:name});
+    try{await agreeNow();const {data,error}=await sb.rpc('join_church',{p_code:code,p_name:name});
       if(error)throw new Error('서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요');if(!data.ok)throw new Error(data.error);
       store.set('joinCode',null);toast(`${data.church}에 들어왔어요`);await afterLogin(u);}
+    catch(x){err.textContent=x.message||String(x);}finally{go.disabled=false;}};
+  $('gfGo').onclick=async()=>{const church=normName($('gfChurch').value),name=normName($('gfName').value),err=$('gfErr');err.textContent='';
+    if(church.length<2)return err.textContent='교회 이름을 2글자 이상 적어 주세요';if(name.length<2)return err.textContent='이름을 2글자 이상 적어 주세요';
+    if(!agreedIn('gfAgree'))return err.textContent='이용약관과 개인정보 처리방침에 동의해 주세요';
+    const go=$('gfGo');go.disabled=true;
+    try{await agreeNow();const {data,error}=await sb.rpc('create_church',{p_church:church,p_name:name});
+      if(error)throw new Error('서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요');if(!data.ok)throw new Error(data.error);
+      toast(`새 교회를 만들었어요: ${data.church}. 팀원 초대로 팀원을 불러 주세요`);await afterLogin(u);}
     catch(x){err.textContent=x.message||String(x);}finally{go.disabled=false;}};}
-$('jOut').onclick=async()=>{await liveWipe();await sb.auth.signOut();me=null;$('jName').value='';showGate();};
+async function goOut(){await liveWipe();await sb.auth.signOut();me=null;$('jName').value=$('gfName').value='';showGate();}
+$('jOut').onclick=goOut;
+$('pkFree').onclick=()=>showGate('free');$('pkCode').onclick=()=>showGate('join');
+document.querySelectorAll('[data-gback]').forEach(b=>b.onclick=()=>showGate('pick'));
 // 옛 방식(이름+암호)으로 들어온 팀원에게 카카오 연결을 권해요
 const hasKakao=u=>(u.identities||[]).some(i=>i.provider==='kakao');
 async function linkKakao(){sessionStorage.setItem('cj_linking','1');const {error}=await sb.auth.linkIdentity({provider:'kakao',options:{redirectTo:backTo()}});
@@ -7254,7 +7374,7 @@ $('chNewF').onsubmit=e=>{e.preventDefault();const church=normName($('chName').va
 $('churchBtn').onclick=()=>openChurch();
 document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>b.dataset.ch==='join'?openJoin():openMake());
 $('chClose').onclick=()=>$('chDlg').close();$('chDlg').addEventListener('click',e=>{if(e.target.id==='chDlg')$('chDlg').close();});
-$('jMake').onclick=openMake;
+$('jMake').onclick=()=>showGate('free');
 
 // ---- 팀원 관리(교회 관리자) · 전체 관리(호감) ----
 const ymd=t=>{const d=new Date(t);return`${d.getFullYear()}. ${d.getMonth()+1}. ${d.getDate()}.`;};

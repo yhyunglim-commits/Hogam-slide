@@ -4,7 +4,7 @@
 
 - **화면**은 GitHub Pages에 올려요.
 - **로그인, 함께 쓰는 곡 보관함과 예배 기록, 편집 기록**은 Supabase 무료 플랜에 저장해요.
-- **악보 읽기와 맞춤법 검사**는 Google Gemini 무료 API로 해요.
+- **악보 읽기와 맞춤법 검사**는 Claude API(유료)로 해요.
 
 처음 한 번, 30분 정도 걸려요. 순서대로 따라 하시면 돼요.
 
@@ -16,7 +16,7 @@
 |---|---|---|
 | GitHub 계정 | 화면 올리기 | https://github.com |
 | Supabase 계정 | 로그인과 저장소 | https://supabase.com (GitHub 계정으로 가입할 수 있어요) |
-| Google 계정 | 악보 읽기 AI 키 | https://aistudio.google.com |
+| Claude 계정 | 악보 읽기 AI 키 | https://platform.claude.com |
 
 ---
 
@@ -35,11 +35,11 @@
 2. 이 폴더의 `supabase/schema.sql` 파일을 메모장으로 열어 **전체를 복사해 붙여 넣고**, **Run**을 누르세요.
 3. 아래에 `Success`가 나오면 끝이에요.
 
-## 3단계 · Gemini 키 받기
+## 3단계 · Claude 키 받기
 
-1. https://aistudio.google.com 에 Google 계정으로 들어가세요.
-2. **Get API key**를 누르고 **Create API key**를 누르세요.
-3. 나온 키(`AIza…`로 시작)를 복사해 두세요.
+1. https://platform.claude.com 에 들어가 결제 수단을 넣으세요. 월 사용 상한도 꼭 정해 두세요.
+2. **API Keys**에서 **Create Key**를 누르세요.
+3. 나온 키(`sk-ant-…`로 시작)를 복사해 두세요.
 
 ## 4단계 · 서버 기능 올리기 (Edge Functions)
 
@@ -56,11 +56,11 @@ Supabase 왼쪽 메뉴 **Edge Functions**에서 하는 일이에요.
 
 | Name | Value |
 |---|---|
-| `GEMINI_API_KEY` | 3단계에서 복사한 키 |
+| `ANTHROPIC_API_KEY` | 3단계에서 복사한 키 |
 
-> **선택 · Claude로 읽기(유료):** `ANTHROPIC_API_KEY`에 Claude API 키(https://platform.claude.com)를 넣으면 Claude가 먼저 읽고, 안 될 때만 Gemini가 대신해요. 기본 모델은 악보를 꼼꼼히 읽는 `claude-sonnet-5-5`예요. 비용을 줄이려면 `CLAUDE_MODEL`에 `claude-haiku-5-5`를 넣으세요.
+> 기본 모델은 악보를 꼼꼼히 읽는 `claude-sonnet-5-5`예요. 비용을 줄이려면 `CLAUDE_MODEL`에 `claude-haiku-5-5`를 넣으세요.
 
-> 선택: 다른 Gemini 모델을 쓰고 싶으면 `GEMINI_MODEL`을 추가해요. 비워 두면 `gemini-3.8-flash`를 써요.
+> 무료 Gemini 예비는 2026-11-26에 뺐어요. 무료 키로 보낸 악보는 Google이 서비스 개선에 쓸 수 있어서, 여러 교회가 쓰는 서비스에는 맞지 않아요. 예전에 넣은 `GEMINI_API_KEY`는 지워도 돼요.
 
 > 선택: 한 사람이 하루(24시간)에 AI를 쓸 수 있는 횟수는 기본 200번이에요. 바꾸려면 `AI_DAILY_LIMIT`에 숫자를 넣으세요. 악보 한 곡 읽기는 1~2번, 맞춤법 검사는 2번으로 세요.
 
@@ -112,7 +112,7 @@ Supabase 왼쪽 메뉴 **Edge Functions**에서 하는 일이에요.
   - 이 저장소의 `.github/workflows/keepalive.yml`이 사흘마다 자동으로 깨워요.
   - 저장소에 60일 동안 아무 변화가 없으면 GitHub가 이 자동 실행을 멈출 수 있어요. 그럴 땐 저장소 **Actions** 탭에서 다시 켜 주세요.
   - 혹시 잠들었다면 Supabase 대시보드에서 **Restore**를 누르면 데이터 그대로 깨어나요.
-- **Gemini 무료 API**는 하루에 쓸 수 있는 횟수가 정해져 있어요. 넘으면 "오늘 무료 사용량을 거의 다 썼어요"라고 나오니, 잠시 뒤나 다음 날 다시 하면 돼요. 무료로 보낸 악보와 가사는 Google이 서비스 개선에 쓸 수 있어요.
+- **Claude API**는 쓴 만큼 돈이 나가요. platform.claude.com에서 월 사용 상한을 정해 두세요. AI가 붐비면 "1~2분 뒤 다시 시도"라고 나와요.
 - 저장 공간은 500MB예요. 가사와 작은 썸네일만 저장해서 몇 년은 넉넉해요.
 
 ## 관리자가 하는 일

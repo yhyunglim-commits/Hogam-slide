@@ -87,9 +87,13 @@ create table if not exists public.team_settings (
   updated_by_name text,
   updated_at      timestamptz not null default now()
 );
+-- 탈퇴 처리 중인지(14단계): 로그인한 사람(화면)은 이 표시를 켤 수 없어요
+create or replace function public.forgetting() returns boolean
+language sql stable as $$ select auth.uid() is null and coalesce(current_setting('hogam.forget', true), '') = '1' $$;
 create or replace function public.stamp_setting() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
+  if public.forgetting() then return new; end if; -- 탈퇴 처리 중엔 이름만 바꿔요 (14단계)
   if tg_op = 'UPDATE' and new.church_id is distinct from old.church_id then raise exception '다른 교회로 옮길 수 없어요'; end if;
   new.updated_by_name := public.my_name(new.church_id);
   new.updated_at := now();
@@ -106,6 +110,7 @@ alter table public.songs add column if not exists verified_at timestamptz;
 create or replace function public.song_verify_guard() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
+  if public.forgetting() then return new; end if; -- 탈퇴 처리 중엔 이름만 바꿔요 (14단계)
   if tg_op = 'UPDATE' and new.result is distinct from old.result and new.verified_at is not distinct from old.verified_at then
     new.verified_by := null; new.verified_at := null;           -- 가사가 바뀌었으니 다시 확인해야 해요
   elsif new.verified_at is not null and (tg_op = 'INSERT' or old.verified_at is null or new.verified_at is distinct from old.verified_at) then
@@ -122,6 +127,7 @@ end $$;
 create or replace function public.stamp_editor() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
+  if public.forgetting() then return new; end if; -- 탈퇴 처리 중엔 이름만 바꿔요 (14단계)
   -- 두 교회에 속한 사람이 한 교회 것을 다른 교회로 옮기지 못하게
   if tg_op = 'UPDATE' and new.church_id is distinct from old.church_id then raise exception '다른 교회로 옮길 수 없어요'; end if;
   new.updated_by_name := public.my_name(new.church_id);
@@ -152,6 +158,7 @@ declare
   v_church uuid := case tg_op when 'DELETE' then old.church_id else new.church_id end;
   v_name text := public.my_name(v_church);
 begin
+  if public.forgetting() then return null; end if; -- 탈퇴 처리 중엔 기록을 남기지 않아요 (14단계)
   if tg_op = 'DELETE' then
     if tg_table_name = 'songs' then v_id := old.title; v_sum := old.title;
     else v_id := old.id; v_sum := old.name; end if;
@@ -490,6 +497,7 @@ declare
   v_name text := regexp_replace(btrim(coalesce(p_name, '')), '\s+', ' ', 'g');
 begin
   if v_uid is null then raise exception '먼저 로그인해 주세요'; end if;
+  if not public.agreed() then return jsonb_build_object('ok', false, 'error', '이용약관과 개인정보 처리방침에 먼저 동의해 주세요'); end if; -- 14단계
   if (select count(*) from public.join_attempts where user_id = v_uid and at > now() - interval '15 minutes') >= 5 then
     return jsonb_build_object('ok', false, 'error', '초대 코드를 여러 번 틀렸어요. 15분 뒤에 다시 해 주세요');
   end if;
@@ -546,6 +554,7 @@ declare
   v_name   text := regexp_replace(btrim(coalesce(p_name, '')), '\s+', ' ', 'g');
 begin
   if v_uid is null then raise exception '먼저 로그인해 주세요'; end if;
+  if not public.agreed() then return jsonb_build_object('ok', false, 'error', '이용약관과 개인정보 처리방침에 먼저 동의해 주세요'); end if; -- 14단계
   if char_length(v_church) < 2 or char_length(v_church) > 20 then
     return jsonb_build_object('ok', false, 'error', '교회 이름은 2~20글자로 적어 주세요');
   end if;
@@ -575,6 +584,7 @@ create index if not exists services_trash on public.services (deleted_at) where 
 create or replace function public.stamp_trash() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
+  if public.forgetting() then return new; end if; -- 탈퇴 처리 중엔 이름만 바꿔요 (14단계)
   if tg_op = 'INSERT' then
     new.deleted_at := null; new.deleted_by_name := null;
     return new;
@@ -1130,3 +1140,65 @@ revoke execute on function public.church_usage(), public.super_set_limits(uuid, 
 grant execute on function public.church_usage(), public.super_set_limits(uuid, int, int, int), public.super_seen(uuid), public.super_new_count(), public.ai_left() to authenticated;
 
 select cron.schedule('hogam-clear-super-log', '35 18 * * *', 'select public.clear_old_super_log()');
+
+-- ───────────── 14단계 추가 (2026-11-26): 이용약관·개인정보 동의 · 편집 기록 1년 · 탈퇴한 팀원 ─────────────
+-- 약관 판 번호. terms.html·privacy.html을 바꿔 다시 동의를 받아야 하면 이 숫자와 index.html의 TERMS_VER를 같이 올려요.
+create or replace function public.terms_ver() returns int language sql immutable as $$ select 1 $$;
+-- 누가 몇 판에 언제 동의했는지. 화면에서는 직접 못 읽고 아래 함수로만 써요.
+create table if not exists public.consents (
+  user_id uuid primary key references auth.users on delete cascade,
+  ver     int not null,
+  at      timestamptz not null default now()
+);
+alter table public.consents enable row level security;
+revoke all on public.consents from anon, authenticated;
+-- 지금 판에 동의했나 (교회 만들기·들어가기가 이걸로 막아요)
+create or replace function public.agreed() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.consents where user_id = auth.uid() and ver >= public.terms_ver());
+$$;
+create or replace function public.agree_terms(p_ver int) returns jsonb
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception '먼저 로그인해 주세요'; end if;
+  if p_ver is distinct from public.terms_ver() then
+    return jsonb_build_object('ok', false, 'error', '약관이 새로 바뀌었어요. 화면을 새로고침한 뒤 다시 동의해 주세요');
+  end if;
+  insert into public.consents (user_id, ver) values (auth.uid(), p_ver)
+    on conflict (user_id) do update set ver = excluded.ver, at = now();
+  return jsonb_build_object('ok', true);
+end $$;
+revoke execute on function public.terms_ver(), public.agreed(), public.agree_terms(int) from public, anon;
+grant execute on function public.terms_ver(), public.agreed(), public.agree_terms(int) to authenticated;
+
+-- 편집 기록은 1년만 보관해요 (개인정보 처리방침 3번)
+create or replace function public.clear_old_edit_log() returns void
+language sql security definer set search_path = public as $$
+  delete from public.edit_log where at < now() - interval '1 year';
+$$;
+revoke execute on function public.clear_old_edit_log() from public, anon, authenticated;
+select cron.schedule('hogam-clear-edit-log', '40 18 * * *', 'select public.clear_old_edit_log()');
+
+-- 탈퇴(Authentication에서 사용자 지우기)하면 남은 기록의 이름을 '탈퇴한 팀원'으로 바꿔요.
+-- 팀원 명단이 함께 지워지기 전에 이름을 알아야 해서 '지우기 전'에 돌아요. 곡·예배는 교회 것이라 그대로 남아요.
+create or replace function public.forget_user() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare m record; v text := '탈퇴한 팀원';
+begin
+  perform set_config('hogam.forget', '1', true);
+  update public.edit_log set name = v where user_id = old.id;
+  for m in select church_id, name from public.members where user_id = old.id loop
+    update public.edit_log set target_id = v, summary = v where church_id = m.church_id and target_type = 'member' and target_id = m.name;
+    update public.songs set created_by_name = v where church_id = m.church_id and created_by_name = m.name;
+    update public.songs set updated_by_name = v where church_id = m.church_id and updated_by_name = m.name;
+    update public.services set created_by_name = v where church_id = m.church_id and created_by_name = m.name;
+    update public.services set updated_by_name = v where church_id = m.church_id and updated_by_name = m.name;
+    update public.team_settings set updated_by_name = v where church_id = m.church_id and updated_by_name = m.name;
+    update public.songs set verified_by = v where church_id = m.church_id and verified_by = m.name;
+    update public.services set deleted_by_name = v where church_id = m.church_id and deleted_by_name = m.name;
+  end loop;
+  perform set_config('hogam.forget', '', true);
+  return old;
+end $$;
+revoke execute on function public.forget_user() from public, anon, authenticated;
+create or replace trigger hogam_forget_user before delete on auth.users for each row execute function public.forget_user();

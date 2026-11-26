@@ -34,6 +34,11 @@ const free = P();
 if ((await free.api('churches?select=id')).length) { console.error('church-join-reset.sql 을 먼저 넣어 주세요'); process.exit(2); }
 const { code: CODE } = await B.api('rpc/get_invite', { method: 'POST', body: {} });
 let NEW, N, T;
+await check('약관에 동의하기 전에는 교회를 못 만듦 (14단계)', async () => {
+  const r = await free.rpc('create_church', { p_church: '새교회', p_name: '만든이' });
+  if (r.ok || !/동의/.test(r.error)) return JSON.stringify(r);
+  if (!(await free.rpc('agree_terms', { p_ver: 1 })).ok) return '동의가 안 됨';
+});
 
 await check('교회 이름·내 이름이 너무 짧으면 못 만듦', async () => {
   const a = await free.rpc('create_church', { p_church: '가', p_name: '만든이' }), b = await free.rpc('create_church', { p_church: '새교회', p_name: '가' });

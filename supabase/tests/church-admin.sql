@@ -11,6 +11,7 @@ begin
   insert into public.churches (id, name) values (ca::uuid, '관리시험A'), (cb::uuid, '관리시험B');
   insert into public.members (user_id, name, church_id, role) values ((u||1)::uuid,'관리자',ca::uuid,'admin'), ((u||2)::uuid,'팀원',ca::uuid,'member'), ((u||4)::uuid,'남관리자',cb::uuid,'admin');
   insert into public.super_admins values ((u||5)::uuid);
+  insert into public.consents (user_id, ver) select (u || i)::uuid, public.terms_ver() from generate_series(1, 5) i where i <> 3; -- 3은 시험 안에서 동의
   insert into public.services (church_id, id, name, text) values (ca::uuid,'adm-1','예배','내용'), (ca::uuid,'adm-2','예배2','내용');
   insert into public.services (church_id, id, name, text) values (cb::uuid,'adm-3','비밀예배','비밀내용');
   insert into public.songs (church_id, title, result) values (cb::uuid,'비밀제목','{"t":"비밀가사"}');
@@ -18,6 +19,17 @@ begin
   -- 관리시험B 는 오래 안 쓴 교회로: 위에서 생긴 기록(user_id 없음)은 사용으로 안 세요
   for t in select * from (values
     -- 누구(0=서버), 교회, 무엇, 바라는 것, 이름
+    (3,'','select join_church(''ABCDEFGH'',''새사람'')->>''error''','%동의%','동의 전에는 교회에 못 들어감'),
+    (3,'','select create_church(''새교회'',''새사람'')->>''error''','%동의%','동의 전에는 교회를 못 만듦'),
+    (3,'','select agreed()::text','false','(아직 동의 안 함)'),
+    (3,'','select agree_terms(99)->>''ok''','false','다른 판 번호로는 동의 안 됨'),
+    (-1,'','select agree_terms(1)','ERR:%','로그인 안 하면 동의 못 함'),
+    (3,'','select agree_terms(terms_ver())->>''ok''','true','동의'),
+    (3,'','select agreed()::text','true','동의가 남음'),
+    (3,'','select count(*) from consents','ERR:%permission%','동의 표를 직접 못 읽음'),
+    (3,'','with x as (update consents set ver=99 returning 1) select count(*) from x','ERR:%permission%','동의 표를 직접 못 고침'),
+    (3,'','select set_config(''hogam.forget'',''1'',true) || forgetting()::text','1false','화면에서는 탈퇴 표시를 못 켬'),
+    (3,'','select set_config(''hogam.forget'','''',true)','','(되돌림)'),
     (2,ca,'select get_invite()->>''code''','________','팀원도 초대 링크를 만듦'),
     (1,ca,'select get_invite()->>''code'' = ''{code}''','true','기한 안에는 같은 링크'),
     (0,'','select round(extract(epoch from invite_expires_at-now())/86400)::int from churches where id=''{a}''','7','기한은 7일'),
@@ -221,7 +233,24 @@ begin
     (-1,'','select church_usage()','ERR:%permission%','로그인 안 하면 남은 양을 못 봄'),
     (0,'','with x as (update super_log set at=now()-interval ''366 days'' where church_id=''{b}'' returning 1) select (count(*)>0)::text from x','true','(1년 전으로)'),
     (0,'','select clear_old_super_log()::text','%','(날마다 정리)'),
-    (0,'','select count(*) from super_log where church_id=''{b}''','0','1년 지난 기록은 지움')
+    (0,'','select count(*) from super_log where church_id=''{b}''','0','1년 지난 기록은 지움'),
+    (2,ca,'with x as (update services set text=''팀원이 고침'' where id=''adm-2'' returning 1) select count(*) from x','1','(팀원이 예배를 고침)'),
+    (0,'','select updated_by_name from services where id=''adm-2''','팀원','(고친 사람 이름이 적힘)'),
+    (0,'','select set_config(''t.v'', version::text || updated_at::text, false) from services where id=''adm-2''','%','(판 번호·시각 기억)'),
+    (0,'','select (count(*)>0)::text from edit_log where name=''팀원''','true','(편집 기록에 이름이 있음)'),
+    (0,'','with x as (delete from auth.users where id=''{u}2'' returning 1) select count(*) from x','1','(탈퇴 처리)'),
+    (0,'','select count(*) from edit_log where name=''팀원''','0','탈퇴하면 편집 기록에 이름이 안 남음'),
+    (0,'','select (count(*)>0)::text from edit_log where name=''탈퇴한 팀원''','true','탈퇴한 팀원으로 바뀜'),
+    (0,'','select updated_by_name from services where id=''adm-2''','탈퇴한 팀원','예배의 고친 사람도 바뀜'),
+    (0,'','select (version::text || updated_at::text = current_setting(''t.v''))::text from services where id=''adm-2''','true','판 번호·고친 시각은 그대로'),
+    (0,'','select count(*) from services where id=''adm-2''','1','예배는 교회에 남음'),
+    (0,'','select count(*) from members where user_id=''{u}2''','0','팀원 명단에서 빠짐'),
+    (0,'','select count(*) from consents where user_id=''{u}2''','0','동의 기록도 지움'),
+    (0,'','select string_agg(name,'','' order by name) from members','남관리자,두곳','다른 교회 팀원은 그대로'),
+    (0,'','with x as (update edit_log set at=now()-interval ''366 days'' where church_id=''{a}'' returning 1) select (count(*)>0)::text from x','true','(편집 기록을 1년 전으로)'),
+    (0,'','select clear_old_edit_log()::text','%','(날마다 정리)'),
+    (0,'','select count(*) from edit_log where church_id=''{a}''','0','1년 지난 편집 기록은 지움'),
+    (0,'','select count(*) from cron.job where jobname=''hogam-clear-edit-log''','1','날마다 정리 예약')
   ) as x(who, church, sql, want, label) loop
     perform set_config('request.jwt.claims', case when t.who > 0 then json_build_object('sub', u || t.who, 'role', 'authenticated')::text else '' end, true);
     perform set_config('request.jwt.claim.sub', case when t.who > 0 then u || t.who else '' end, true);

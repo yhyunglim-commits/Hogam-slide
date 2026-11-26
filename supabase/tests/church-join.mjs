@@ -46,6 +46,13 @@ await check('들어가기 전에는 어느 교회도, 초대 코드도 안 보�
   const c = await N4.api('churches?select=id,invite_code'), s = await N4.api('songs?select=title');
   if (c.length || s.length) return `교회 ${c.length}, 곡 ${s.length}`;
 });
+await check('약관에 동의하기 전에는 맞는 코드로도 못 들어감 (14단계)', async () => {
+  const r = await N4.join(CODE, '새교인');
+  if (r.ok || !/동의/.test(r.error)) return JSON.stringify(r);
+});
+await check('동의하면 들어갈 준비가 됨', async () => {
+  for (const X of [N4, N5]) { const r = await X.api('rpc/agree_terms', { method: 'POST', body: { p_ver: 1 } }); if (!r.ok) return JSON.stringify(r); }
+});
 await check('틀린 초대 코드는 막힘', async () => {
   const r = await N4.join('ZZZZZZZZ', '새교인');
   if (r.ok || !/맞지 않거나/.test(r.error)) return JSON.stringify(r);

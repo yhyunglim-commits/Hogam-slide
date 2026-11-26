@@ -1,9 +1,7 @@
 // 호감슬라이드 — 악보 읽기 · 맞춤법 검사
-// Secrets에 ANTHROPIC_API_KEY 가 있으면 Claude가 먼저 읽고, 안 되면 Gemini가 대신해요.
-// ANTHROPIC_API_KEY 가 없으면 Gemini(무료)만 써요.
+// Claude(Anthropic)로만 읽어요. 비밀값(Secrets): ANTHROPIC_API_KEY (선택: CLAUDE_MODEL)
 // Supabase › Edge Functions 에 "ai" 라는 이름으로 만들어요. 함수 설정의 "Verify JWT"는 꺼 주세요.
 // (팀원인지는 이 코드가 직접 확인해요)
-// 비밀값(Secrets): GEMINI_API_KEY  (선택: GEMINI_MODEL, 기본 gemini-3.8-flash)
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const cors = {
@@ -53,88 +51,31 @@ async function handle(req: Request, hold: Hold): Promise<Response> {
       if (error) console.error("ai_end", error.message);
     };
 
-    // ── Claude 먼저 (키가 있을 때만) ──
+    // ── Claude로 읽어요 (무료 Gemini 예비는 2026-11-26에 뺐어요: 무료 키는 보낸 사진을 Google이 쓸 수 있어서) ──
     const ak = Deno.env.get("ANTHROPIC_API_KEY");
-    if (ak) {
-      const content: unknown[] = [];
-      for (const im of images.slice(0, 8)) content.push({ type: "image", source: { type: "base64", media_type: im.mime || "image/jpeg", data: im.data } });
-      content.push({ type: "text", text: String(prompt ?? "") });
-      for (let attempt = 0; attempt < 2; attempt++) {
-        const cr = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "x-api-key": ak, "anthropic-version": "2023-06-01" },
-          body: JSON.stringify({ model: Deno.env.get("CLAUDE_MODEL") || "claude-sonnet-5-5", max_tokens: 8000, messages: [{ role: "user", content }] }),
-        });
-        const cj = await cr.json().catch(() => ({}));
-        if (cr.ok) {
-          const text = (cj?.content ?? []).filter((b: { type: string }) => b.type === "text").map((b: { text: string }) => b.text).join("");
-          hold.got = !!text.trim(); hold.by = "claude"; hold.tin = cj?.usage?.input_tokens; hold.tout = cj?.usage?.output_tokens;
-          return reply({ text, by: "claude" });
-        }
-        if (![429, 500, 529, 503].includes(cr.status)) break; // 키 오류 같은 문제면 바로 Gemini로
-        if (attempt === 0) await new Promise((r) => setTimeout(r, 2500));
+    if (!ak) return reply({ error: "관리자가 아직 AI 키를 넣지 않았어요" }, 500);
+    const content: unknown[] = [];
+    for (const im of images.slice(0, 8)) content.push({ type: "image", source: { type: "base64", media_type: im.mime || "image/jpeg", data: im.data } });
+    content.push({ type: "text", text: String(prompt ?? "") });
+    let status = 0;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const cr = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": ak, "anthropic-version": "2023-06-01" },
+        body: JSON.stringify({ model: Deno.env.get("CLAUDE_MODEL") || "claude-sonnet-5-5", max_tokens: 8000, messages: [{ role: "user", content }] }),
+      });
+      const cj = await cr.json().catch(() => ({}));
+      if (cr.ok) {
+        const text = (cj?.content ?? []).filter((b: { type: string }) => b.type === "text").map((b: { text: string }) => b.text).join("");
+        hold.got = !!text.trim(); hold.by = "claude"; hold.tin = cj?.usage?.input_tokens; hold.tout = cj?.usage?.output_tokens;
+        return reply({ text, by: "claude" });
       }
+      status = cr.status;
+      if (![429, 500, 529, 503].includes(cr.status)) break; // 키 오류 같은 문제면 다시 해 봐도 같아요
+      if (attempt < 2) await new Promise((r) => setTimeout(r, attempt === 0 ? 2500 : 6000));
     }
-
-    // ── Gemini (무료) ──
-    const key = Deno.env.get("GEMINI_API_KEY");
-    if (!key) return reply({ error: ak ? "Claude가 답하지 못했고, Gemini 키도 없어요" : "관리자가 아직 AI 키를 넣지 않았어요" }, 500);
-    const first = (tier === "complex" && Deno.env.get("GEMINI_MODEL_COMPLEX")) || Deno.env.get("GEMINI_MODEL") || "gemini-3.8-flash";
-    // 붐빌 때 차례로 써 볼 다른 모델들 (Secrets의 GEMINI_FALLBACK 에 쉼표로 바꿔 적을 수 있어요)
-    const fallbacks = (Deno.env.get("GEMINI_FALLBACK") ?? "gemini-flash-lite-latest,gemini-flash-latest,gemini-3.8-flash-lite,gemini-2.5-flash-lite")
-      .split(",").map((x) => x.trim()).filter((x) => x && x !== first);
-    const models = [first, ...fallbacks];
-
-    const parts: unknown[] = [];
-    for (const im of images.slice(0, 8)) parts.push({ inline_data: { mime_type: im.mime || "image/jpeg", data: im.data } });
-    parts.push({ text: String(prompt ?? "") });
-
-    const call = (model: string, fast: boolean) => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts }],
-        generationConfig: {
-          temperature: 0.2, responseMimeType: "application/json",
-          ...(fast ? { thinkingConfig: { thinkingLevel: Deno.env.get("GEMINI_THINKING") || "low" } } : {}),
-        },
-      }),
-    });
-    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-    const busy = (st: number, msg: string) => st === 503 || st === 500 || /high demand|overloaded|unavailable/i.test(msg);
-
-    let r: Response | null = null, j: any = null, lastMsg = "";
-    const tried: string[] = [];
-    outer: for (const model of models) {
-      // 같은 모델로 최대 3번 (2초, 5초 쉬고) 다시 해 봐요
-      for (let attempt = 0; attempt < 3; attempt++) {
-        let fast = true;
-        r = await call(model, fast); j = await r.json().catch(() => ({}));
-        if (r.status === 400 && /think/i.test(j?.error?.message ?? "")) { fast = false; r = await call(model, fast); j = await r.json().catch(() => ({})); }
-        if (r.ok) break outer;
-        lastMsg = j?.error?.message ?? "";
-        if (r.status === 404 || /no longer available|not found|not supported/i.test(lastMsg)) continue outer; // 없는 모델이면 다음 모델로
-        if (r.status === 429) {
-          tried.push(model + ": " + (/limit: 0\b/.test(lastMsg) ? "무료 한도 없음" : /per ?day|PerDay|daily/i.test(lastMsg) ? "오늘 한도 끝" : "분당 한도"));
-          if (/per ?day|PerDay|daily|limit: 0\b/i.test(lastMsg)) continue outer; // 이 모델 한도가 끝났으면 다른 모델로 (모델마다 한도가 따로예요)
-          if (attempt < 2) { await sleep(attempt === 0 ? 5000 : 12000); continue; } // 분당 한도면 잠깐 쉬고 다시
-          continue outer;
-        }
-        if (!busy(r.status, lastMsg)) break outer;
-        if (attempt < 2) await sleep(attempt === 0 ? 2000 : 5000);
-      }
-    }
-    if (!r) return reply({ error: "AI가 답하지 못했어요" }, 502);
-    if (r.status === 429) {
-      const day = tried.every((t) => !t.endsWith("분당 한도"));
-      return reply({ error: (day ? "Gemini 무료 한도를 다 썼어요. 내일 다시 하거나 Claude 쪽 호감슬라이드로 읽어 주세요" : "Gemini 무료 요청이 몰렸어요. 1~2분 뒤 다시 시도해 주세요") + ` (${tried.join(" · ")})`, code: "rate_limited" }, 429);
-    }
-    if (!r.ok && busy(r.status, lastMsg)) return reply({ error: "Google AI가 지금 붐벼서 답하지 못했어요. 1~2분 뒤 ‘다시 시도’를 눌러 주세요", code: "busy" }, 503);
-    if (!r.ok) return reply({ error: lastMsg || "AI가 답하지 못했어요" }, 502);
-    const text = (j?.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? "").join("");
-    const um = j?.usageMetadata;
-    hold.got = !!text.trim(); hold.by = "gemini"; hold.tin = um?.promptTokenCount; hold.tout = (um?.candidatesTokenCount ?? 0) + (um?.thoughtsTokenCount ?? 0);
-    return reply({ text });
+    if ([429, 500, 529, 503].includes(status)) return reply({ error: "AI가 지금 붐벼서 답하지 못했어요. 1~2분 뒤 ‘다시 시도’를 눌러 주세요", code: "busy" }, 503);
+    return reply({ error: "AI가 답하지 못했어요. 계속 안 되면 호감에게 알려 주세요" }, 502);
   } catch (_e) {
     return reply({ error: "AI 요청을 처리하지 못했어요" }, 500);
   }
