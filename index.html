@@ -2481,7 +2481,16 @@ body.szing,body.szing *{user-select:none!important;-webkit-user-select:none!impo
 .lvrow{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}.lvrow .sp{margin-left:auto}
 .lvrow h2{font-size:16px;margin:0}
 .lvtop{display:grid;grid-template-columns:1fr auto 1fr;gap:10px 14px;align-items:center}.lvtop .lvbtns{justify-content:center}
-.lvst{font-weight:700;font-size:15px;color:var(--text3)}.lvst.on{font-size:20px;letter-spacing:.06em;line-height:1;color:#fff;background:#D92D23;border-radius:8px;padding:8px 14px}
+.lvst{font-weight:700;font-size:15px;color:var(--text3)}
+/* 방송국 ON AIR 표시등: 붉은 유리판에 흰 글자, 켜지면 은은하게 빛나요 */
+.lvst.on{position:relative;display:inline-flex;align-items:center;gap:10px;font:800 19px/1 "Noto Sans KR",var(--sans);letter-spacing:.16em;color:#fff;padding:9px 16px 9px 14px;border-radius:7px;
+  background:linear-gradient(#ff3b30,#c8102e 60%,#a50d26);border:1px solid #5a0610;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -2px 6px rgba(0,0,0,.35),0 0 0 2px #1b1b1d,0 0 18px rgba(255,40,40,.55);text-shadow:0 0 6px rgba(255,255,255,.65)}
+.lvst.on::before{content:"";width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px rgba(255,255,255,.9);animation:onair 1.6s ease-in-out infinite}
+@keyframes onair{50%{opacity:.35}}
+#dlLive.onair{background:linear-gradient(#ff3b30,#c8102e);color:#fff;box-shadow:0 0 0 1px #5a0610,0 0 14px rgba(255,40,40,.5);letter-spacing:.12em}#dlLive.onair i{color:#fff}
+.lvtg[aria-pressed=true]{color:#fff!important;font-weight:700}#lvBgGreen[aria-pressed=true]{background:#00b140!important}#lvBlack[aria-pressed=true]{background:#000!important;box-shadow:0 0 0 1px #888}#lvClear[aria-pressed=true]{background:#0a84ff!important}
+.lvsep{width:1px;align-self:stretch;background:var(--line);margin:0 4px}
+@media(prefers-reduced-motion:reduce){.lvst.on::before{animation:none}}
 .lvclk{font:500 14px ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
 .lvnote{background:var(--warn-soft);color:var(--warn-ink);border-radius:10px;padding:8px 14px;font-size:13px}
 .lvwork{display:grid;gap:14px;min-width:0;align-content:start}
@@ -3078,7 +3087,7 @@ header.doc>.rglive.intop{position:absolute;left:calc(100% - 292px + 14px);top:50
 </dialog>
 <div class="livebox" id="livebox" role="dialog" aria-modal="true" aria-labelledby="lvName">
   <div class="lvtop"><div class="lvrow"><span class="lvst" id="lvSt" role="status"></span><h2 id="lvName">송출</h2><span class="lvclk" id="lvClk"></span></div>
-    <div class="lvrow lvbtns"><button type="button" class="btn" id="lvBgPic">원본 그대로</button><button type="button" class="btn" id="lvBgGreen" title="방송 장비에서 초록을 빼고 자막만 얹을 때">초록 배경</button><button type="button" class="btn" id="lvBlack" aria-pressed="false" title="단축키 B">검은 화면</button><button type="button" class="btn" id="lvFull">전체 화면</button><button type="button" class="btn" id="lvClear" aria-pressed="false" title="단축키 C">자막만 지우기</button><button type="button" class="btn" id="lvEdit">편집으로 돌아가기</button><button type="button" class="btn danger" id="lvEnd">송출 끝내기</button></div><span class="lvend"></span></div>
+    <div class="lvrow lvbtns"><button type="button" class="btn lvtg" id="lvBgGreen" aria-pressed="false" title="방송 장비에서 초록을 빼고 자막만 얹을 때 · 한 번 더 누르면 원래 배경">초록 배경</button><button type="button" class="btn lvtg" id="lvBlack" aria-pressed="false" title="단축키 B · 한 번 더 누르면 꺼져요">검은 화면</button><button type="button" class="btn lvtg" id="lvClear" aria-pressed="false" title="단축키 C · 한 번 더 누르면 꺼져요">자막만 지우기</button><span class="lvsep" aria-hidden="true"></span><button type="button" class="btn" id="lvEdit">편집으로 돌아가기</button><button type="button" class="btn danger" id="lvEnd">송출 끝내기</button></div><span class="lvend"></span></div>
   <div class="lvnote lvrow hidden" id="lvGone"><span>송출 창이 닫혀 있어요. 다시 열면 같은 화면부터 이어져요.</span><button type="button" class="btn sm sp" id="lvReopen">송출 창 다시 열기</button></div>
   <div class="lvnote lvrow hidden" id="lvChg"><span id="lvChgTx"></span><button type="button" class="btn sm sp" id="lvApply">반영</button><button type="button" class="btn sm" id="lvLater">나중에</button></div>
   <div class="lvwork">
@@ -7463,7 +7472,7 @@ function liveKeepPos(){if(!LIVE)return;const{i,bg,black,clear,t0}=LIVE;liveKv('r
 
 /* 송출 창: 이 창을 새로고침해도 이름으로 다시 찾아 이어 써요 */
 function liveOpen(scr){
-  const f=scr?`popup,left=${scr.availLeft},top=${scr.availTop},width=${scr.availWidth},height=${scr.availHeight}`:'popup,width=1280,height=720';
+  const f=scr?`popup,left=${scr.availLeft},top=${scr.availTop},width=${scr.availWidth},height=${scr.availHeight}${liveFsOk?',fullscreen':''}`:'popup,width=1280,height=720';
   let w=null;try{w=window.open('','hogamLive',f);}catch(e){}
   if(!w){toast('송출 창이 막혔어요. 주소 칸에서 팝업을 허용해 주세요');return false;}
   liveWin=w;liveDress();w.focus();return true;
@@ -7521,12 +7530,12 @@ function liveUI(){
   $('dlLive').lastElementChild.textContent=on?'ON AIR':'송출';
   if(!on){$('livebox').classList.remove('on');$('lvPill').classList.add('hidden');return;}
   const shown=$('livebox').classList.contains('on');$('lvPill').classList.toggle('hidden',shown);$('lvPill').textContent=open?'ON AIR · 조작 화면 열기':'송출 이어가기';
-  $('lvSt').textContent=open?'ON AIR':'송출 창 닫힘';$('lvSt').classList.toggle('on',!!open);$('lvGone').classList.toggle('hidden',!!open);
-  $('lvNow').classList.toggle('live',!!open);$('lvFull').disabled=!open;
+  $('lvSt').textContent=open?'ON AIR':'송출 창 닫힘';$('lvSt').classList.toggle('on',!!open);$('dlLive').classList.toggle('onair',on);$('lvGone').classList.toggle('hidden',!!open);
+  $('lvNow').classList.toggle('live',!!open);
   $('lvNowT').textContent='현재 슬라이드'+(LIVE.black?' · 검은 화면':LIVE.clear?' · 자막 지움':'');
   const n=LIVE.slides[LIVE.i+1];$('lvPos').textContent=`${LIVE.i+1} / ${LIVE.slides.length} · `+(n?`다음은 ${LIVE.groups[n.g].tag}`:'마지막 화면이에요');
   $('lvBlack').setAttribute('aria-pressed',LIVE.black);$('lvClear').setAttribute('aria-pressed',LIVE.clear);
-  $('lvBgPic').setAttribute('aria-pressed',LIVE.bg!=='green');$('lvBgGreen').setAttribute('aria-pressed',LIVE.bg==='green');
+  $('lvBgGreen').setAttribute('aria-pressed',LIVE.bg==='green');
   [...$('lvGrid').children].forEach((b,i)=>{const c=i===LIVE.i;if(c&&b.getAttribute('aria-current')!=='true'&&shown)b.scrollIntoView({block:'nearest'});b.setAttribute('aria-current',c);});
 }
 function liveShow(){$('livebox').classList.add('on');liveUI();livePaint();$('lvGo').focus();}
@@ -7546,36 +7555,38 @@ addEventListener('keydown',e=>{if(!$('livebox').classList.contains('on')||$('gat
   liveKey(e);if(e.key==='Escape')e.stopImmediatePropagation();},true); // Esc는 전체 화면에서 나올 때 쓰니 송출을 닫지 않아요
 $('lvPrev').onclick=()=>liveMove(LIVE.i-1);$('lvGo').onclick=()=>liveMove(LIVE.i+1);
 $('lvBlack').onclick=()=>{LIVE.black=!LIVE.black;liveNow();};$('lvClear').onclick=()=>{LIVE.clear=!LIVE.clear;LIVE.black=false;liveNow();};
-$('lvBgPic').onclick=()=>{LIVE.bg='pic';liveNow();};$('lvBgGreen').onclick=()=>{LIVE.bg='green';liveNow();};
+$('lvBgGreen').onclick=()=>{LIVE.bg=LIVE.bg==='green'?'pic':'green';liveNow();};
 $('lvOrder0').onclick=()=>{const cur=LIVE.slides[LIVE.i],n=s=>+s.id.split(':').pop();LIVE.slides.sort((a,b)=>a.g-b.g||n(a)-n(b));LIVE.custom=false;LIVE.i=LIVE.slides.indexOf(cur);liveBuild();liveNow();liveKeepSoon();};
-$('lvEdit').onclick=()=>{$('livebox').classList.remove('on');liveUI();};
+$('lvEdit').onclick=()=>{$('livebox').classList.remove('on');liveUI();const s=LIVE&&LIVE.slides[LIVE.i];if(!s)return;
+  const all=songGroups().flatMap(g=>g.items.map((sc,n)=>({sc,id:g.items[0].type+(g.chunk??'')+':'+n}))),i=all.findIndex(x=>x.id===s.id);if(i>=0){setPage('slides');setTimeout(()=>openSlide(i),60);}};
 $('lvPill').onclick=()=>liveShow();
 $('lvReopen').onclick=()=>{if(liveOpen(liveScr))liveUI();};
-// 크롬은 이 창의 누름을 송출 창에 넘겨줄 수 있어요. 안 되는 브라우저는 송출 창을 직접 눌러요
-$('lvFull').onclick=()=>{const w=liveWin;if(!w||w.closed)return;
-  w.onmessage=ev=>{if(ev.source===window&&ev.data==='full')w.document.documentElement.requestFullscreen().catch(()=>toast('송출 창을 한 번 눌러 주세요'));};
-  try{w.postMessage('full',{targetOrigin:location.origin,delegate:'fullscreen'});}catch(e){toast('송출 창을 한 번 눌러 주세요');}};
 $('lvEnd').onclick=async()=>{if(!confirm('송출을 끝낼까요? 예배당 화면의 송출 창도 닫혀요.'))return;await liveWipe();toast('송출을 끝냈어요');};
 
 /* 시작 창: 미리 받아 두기 → 화면 고르기 → 시작 */
-let liveScr=null,liveScrList=[];
+let liveScr=null,liveScrList=[],liveFsOk=false;
+// 고른 송출 화면은 이 컴퓨터에 기억해요 (이름·자리로 다시 찾아요)
+const scrKey=s=>s?[s.label||'',s.left,s.top,s.width,s.height].join('|'):'';
+function liveScrPick(s){liveScr=s;store.set('liveScrPref',scrKey(s));}
 function liveScrUI(){const b=$('lvScr');b.innerHTML='';if(!('getScreenDetails' in window)){b.textContent='이 브라우저에서는 송출 창을 예배당 화면으로 끌어 옮겨 주세요. 크롬을 쓰면 자동으로 보내요.';$('lvFind').classList.add('hidden');return;}
   if(!liveScrList.length){b.textContent='두 번째 화면을 찾으면 그쪽으로 바로 열어요. 안 찾으면 창을 끌어 옮기면 돼요.';return;}
   if(liveScrList.length<2)b.textContent='두 번째 화면이 안 보여요. 화면 복제(미러링)가 아닌 확장으로 연결했는지 봐 주세요.';
-  liveScrList.forEach((s,i)=>{const l=document.createElement('label');l.innerHTML='<input type="radio" name="lvS"> <span></span>';l.lastChild.textContent=`${s.label||'화면 '+(i+1)} (${s.width}×${s.height})${s.isPrimary?' · 주 화면':''}`;const r=l.firstChild;r.checked=s===liveScr;r.onchange=()=>liveScr=s;b.appendChild(l);});}
-async function liveFind(){try{const d=await window.getScreenDetails();liveScrList=[...d.screens];liveScr=liveScrList.find(s=>s!==d.currentScreen&&!s.isPrimary)||liveScrList.find(s=>s!==d.currentScreen)||null;liveScrUI();}catch(e){toast('화면 찾기를 허용하지 않았어요. 송출 창을 끌어 옮기면 돼요');}}
+  liveScrList.forEach((s,i)=>{const l=document.createElement('label');l.innerHTML='<input type="radio" name="lvS"> <span></span>';l.lastChild.textContent=`${s.label||'화면 '+(i+1)} (${s.width}×${s.height})${s.isPrimary?' · 주 화면':''}`;const r=l.firstChild;r.checked=s===liveScr;r.onchange=()=>liveScrPick(s);b.appendChild(l);});
+  if(liveScr){const p=document.createElement('p');p.className='hint';p.textContent='고른 화면을 기억해 두었다가, 다음부터 송출을 누르면 그 화면에 바로 전체 화면으로 띄워요.';b.appendChild(p);}}
+async function liveFind(){try{const d=await window.getScreenDetails();liveScrList=[...d.screens];const pref=store.get('liveScrPref','');liveScr=liveScrList.find(s=>pref&&scrKey(s)===pref)||liveScrList.find(s=>s!==d.currentScreen&&!s.isPrimary)||liveScrList.find(s=>s!==d.currentScreen)||null;liveFsOk=!!liveScr;liveScrUI();}catch(e){toast('화면 찾기를 허용하지 않았어요. 송출 창을 끌어 옮기면 돼요');}}
 $('lvFind').onclick=liveFind;
 $('dlLive').onclick=async()=>{
   if(LIVE){liveShow();return;}
-  liveNew=null;const no=++liveBusy;$('lvStart').disabled=true;$('lvDlg').showModal();liveScrUI();
-  try{if((await navigator.permissions.query({name:'window-management'})).state==='granted')liveFind();}catch(e){}
+  liveNew=null;const no=++liveBusy;$('lvStart').disabled=true;$('lvDlg').showModal();liveScrUI();let auto=false;
+  // 기억해 둔 화면이 지금 연결돼 있으면, 누른 그 순간 그 화면에 송출 창을 먼저 띄워 두고 준비되면 바로 시작해요
+  try{if((await navigator.permissions.query({name:'window-management'})).state==='granted'){await liveFind();const pref=store.get('liveScrPref','');if(pref&&liveScr&&scrKey(liveScr)===pref&&liveOpen(liveScr)){auto=true;$('lvPrep').textContent='기억해 둔 화면에 송출 창을 띄웠어요. 준비되면 바로 시작해요.';}}}catch(e){}
   try{const d=await liveBake((n,t)=>{if(no===liveBusy)$('lvPrep').textContent=`화면을 이 컴퓨터에 받고 있어요 (${n}/${t})`;},()=>no!==liveBusy);
-    if(!d||no!==liveBusy)return;liveNew=d;$('lvPrep').textContent=`준비됐어요. 화면 ${d.slides.length}장을 받아 두어서 인터넷이 끊겨도 넘길 수 있어요.`;$('lvStart').disabled=!d.slides.length;}
+    if(!d||no!==liveBusy)return;liveNew=d;$('lvPrep').textContent=`준비됐어요. 화면 ${d.slides.length}장을 받아 두어서 인터넷이 끊겨도 넘길 수 있어요.`;$('lvStart').disabled=!d.slides.length;if(auto&&d.slides.length&&liveWin&&!liveWin.closed)$('lvStart').click();}
   catch(e){$('lvPrep').textContent='준비하지 못했어요: '+(e?.message||e);}
 };
 $('lvX').onclick=()=>$('lvDlg').close();$('lvDlg').addEventListener('close',()=>{liveBusy++;});
 $('lvStart').onclick=()=>{const d=liveNew;if(!d)return;LIVE={...d,i:0,bg:'pic',black:false,clear:false,t0:Date.now()};
-  if(!liveOpen(liveScr)){LIVE=null;return;}
+  if(!(liveWin&&!liveWin.closed)&&!liveOpen(liveScr)){LIVE=null;return;}if(liveScr)store.set('liveScrPref',scrKey(liveScr));liveDress();
   $('lvDlg').close();liveBuild();liveShow();liveKeep(d);liveKeepPos();try{navigator.wakeLock?.request('screen').catch(()=>{});}catch(e){}};
 
 /* 이 컴퓨터에서 편집한 것은 바로 송출에 나가요. 다른 예배를 열었거나 팀원이 바꾼 모양은 '반영'을 눌러야 나가요 */

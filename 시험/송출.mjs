@@ -66,10 +66,10 @@ try{
   await key('1','Digit1');await key('Enter');is('번호+Enter로 바로 감',await ev(`return LIVE.i`)===0);
   await key('b','KeyB');is('검은 화면',(await pix(P)).endsWith(':0,0,0'));await key('b','KeyB');is('검은 화면 풀면 돌아옴',await pix(P)===first);
   await key('c','KeyC');const cl=await pix(P);is('자막만 지움 (글자 없음 · 검정 아님)',cl!==first&&!cl.endsWith(':0,0,0'));await key('c','KeyC');
-  await ev(`$('lvBgGreen').click()`);await z(600);is('초록 배경',(await pix(P)).endsWith(':0,177,64'));await shot('4-green.png',P);await ev(`$('lvBgPic').click()`);await z(500);
+  await ev(`$('lvBgGreen').click()`);await z(600);is('초록 배경',(await pix(P)).endsWith(':0,177,64'));await shot('4-green.png',P);is('초록 배경 단추가 켜짐 표시',await ev(`return $('lvBgGreen').getAttribute('aria-pressed')==='true'`));await ev(`$('lvBgGreen').click()`);await z(500);is('한 번 더 누르면 꺼짐',await ev(`return $('lvBgGreen').getAttribute('aria-pressed')==='false'`));
   is('배경으로 돌아오면 첫 그림과 같음',await pix(P)===first);
   // 문구 · 배치
-  is('ON AIR · 현재 슬라이드 · 원본 그대로',await ev(`return $('lvSt').textContent==='ON AIR'&&$('lvNowT').textContent==='현재 슬라이드'&&$('lvBgPic').textContent==='원본 그대로'&&!document.getElementById('lvOrd')`));
+  is('ON AIR 표시등 · 현재 슬라이드 · 원본·전체 화면 단추는 없음',await ev(`return $('lvSt').textContent==='ON AIR'&&$('lvSt').classList.contains('on')&&$('dlLive').classList.contains('onair')&&$('lvNowT').textContent==='현재 슬라이드'&&!$('lvBgPic')&&!$('lvFull')&&!document.getElementById('lvOrd')`));
   is('이전·다음이 정중앙',await ev(`const a=$('lvPrev').getBoundingClientRect(),b=$('lvGo').getBoundingClientRect(),p=$('livebox');return Math.abs((a.left+b.right)/2-p.clientWidth/2)<3`));
   is('위 단추가 가운데',await ev(`const r=document.querySelector('.lvbtns').getBoundingClientRect();return Math.abs((r.left+r.right)/2-$('livebox').clientWidth/2)<3`));
   // 끌어서 순서 바꾸기 (첫 화면을 맨 뒤로)
@@ -107,7 +107,7 @@ try{
   await ev(`window.__f=0;const o=document.documentElement;o.requestFullscreen=()=>{window.__f++;return Promise.resolve();}`,P);
   for(const type of ['mousePressed','mouseReleased'])await send('Input.dispatchMouseEvent',{type,x:200,y:200,button:'left',clickCount:1},P);await z(500);
   is('송출 창을 누르면 전체 화면을 요청함',await ev(`const n=window.__f;delete document.documentElement.requestFullscreen;return n===1`,P));
-  await ev(`$('lvFull').click()`);await z(1200);is('조작 창 단추로 전체 화면',await ev(`return !!document.fullscreenElement`,P));
+  is('편집으로 돌아가면 지금 나가는 장이 크게 열림',await ev(`const W=ms=>new Promise(r=>setTimeout(r,ms));liveShow();await W(200);const id=LIVE.slides[LIVE.i].id;$('lvEdit').click();await W(400);const L=songGroups().flatMap(g=>g.items.map((sc,n)=>g.items[0].type+(g.chunk??'')+':'+n)),ok=$('slidebox').classList.contains('on')&&L[sbI]===id;closeSlide();liveShow();return ok`));
   const ms=await ev(`const g=songGroups,one=g();window.__g=songGroups;songGroups=()=>one.map(x=>({...x,items:Array(20).fill(x.items[0])}));const t=performance.now(),d=await liveBake();songGroups=g;return Math.round((performance.now()-t))+'ms · '+d.slides.length+'장 · '+(d.slides.reduce((a,s)=>a+s.full.size+s.clear.size+s.green.size+s.thumb.size,0)/1048576).toFixed(1)+'MB'`);console.log('받아 두는 시간',ms);
   // 하루 지난 것 · 나가기
   await ev(`$('lvEnd').click()`);await z(900);is('끝내면 창이 닫히고 저장한 그림도 지워짐',(await pages()).length===1&&await ev(`return (await liveKv('readonly',o=>o.getAllKeys())).length`)===0);
