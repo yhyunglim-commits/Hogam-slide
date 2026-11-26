@@ -1742,7 +1742,7 @@ input[type=checkbox]{width:18px!important;height:18px!important;flex:none}
 #lookBox.vert .rg{padding:10px 0!important}#lookBox.vert .rgh{font-size:13px!important;margin-bottom:6px!important}
 #lookBox.vert .lktabs .seg2{display:grid;grid-template-columns:1fr 1fr;width:100%}#lookBox.vert .lkscope .seg2{display:grid;grid-template-columns:1fr 1fr;width:100%}
 #lookBox.vert #lookCtl>.rg{border-top:1px solid var(--line)}
-.tp-pick{display:grid;gap:6px;margin-bottom:6px}
+.tp-pick{display:grid;gap:6px;margin:12px 0!important} /* 위아래 줄과 같은 간격 */
 .tp-pick select{width:100%;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--sunken);color:var(--text);padding:0 8px;font:inherit;font-size:14px}
 .tp-tabs{display:grid!important;grid-template-columns:repeat(3,1fr)}
 .tp-tabs button[aria-selected=true]{background:var(--surface);color:var(--text);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.12)}
@@ -5009,7 +5009,7 @@ function renderShots(){
     if(!total){box.innerHTML='<div class="empty">자막 결과가 생기면 화면마다 미리보기가 나와요.</div>';return;}
     if(curPage!=='slides'){box.dataset.stale='1';return;}delete box.dataset.stale;
     const selG=shotSel==='all'?null:groups.find(g=>gKey(g)===shotSel);
-    const cols=+getComputedStyle(box).getPropertyValue('--cols')||3,cw=cols>=3?480:cols===2?720:960;
+    const cols=+getComputedStyle(box).getPropertyValue('--cols')||3,cw=Math.round(Math.min(1600,Math.max(320,((box.clientWidth||1440)-60)/cols)));
     let n0=0;groups.forEach(g=>{if(!selG||g===selG)box.appendChild(shotGroupEl(g,groups,n0,{cw}));n0+=g.items.length;});
     renderSelBar();
   },fontsReady?120:0);
@@ -5027,7 +5027,7 @@ function renderPv(groups=songGroups()){
   col.querySelectorAll('[data-pvz]').forEach(b=>b.disabled=+b.dataset.pvz<0?PVC>=3:PVC<=1);
   if(!g){body.innerHTML=`<div class="empty">${kind==='info'?'왼쪽에서 화면을 넣으면 여기에 나와요.':kind==='song'?'‘찬양 자막에 넣기’를 누르면 고른 곡의 슬라이드가 여기 나와요.':'왼쪽에 본문을 붙여 넣으면 슬라이드가 나와요.'}</div>`;col.querySelector('[data-pvmeta]').textContent='';return;}
   let n0=0;for(const x of groups){if(x===g)break;n0+=x.items.length;}
-  const sc=body.scrollTop;body.innerHTML='';body.appendChild(shotGroupEl(g,groups,n0,{cw:Math.round(720/PVC)}));body.scrollTop=sc;markFollow(kind,false);
+  const sc=body.scrollTop;body.innerHTML='';body.appendChild(shotGroupEl(g,groups,n0,{cw:Math.round(Math.min(1280,Math.max(320,((body.clientWidth||720)-24)/PVC)))})); // 보이는 크기만큼 그려요 (작게 그려 늘리면 흐려요)body.scrollTop=sc;markFollow(kind,false);
   col.querySelector('[data-pvmeta]').textContent=`${g.items.length}장`;}
 document.querySelectorAll('[data-pvz]').forEach(b=>b.onclick=()=>{PVC=Math.min(3,Math.max(1,PVC-(+b.dataset.pvz)));store.set('pvc',PVC);renderPv();});
 // 자막 따라가기: 글쓴이 커서가 있는 줄의 슬라이드로 미리보기가 저절로 가요
