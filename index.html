@@ -2993,7 +2993,7 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
           <button type="button" class="gpk-c" id="pkCode"><span class="gpk-t">초대 코드로 들어가기</span><span class="gpk-d">팀원에게 받은 링크나 8글자 코드가 있으면, 그 교회로 바로 들어가요.</span><span class="gpk-go">코드 넣기</span></button>
         </div>
         <p class="gnote">새로 만들 수 있는 교회는 한 사람당 1곳이에요. 초대받아 들어가는 교회는 따로예요.</p>
-        <button type="button" class="glink" id="jOut">다른 카카오 계정으로 시작하기</button>
+        <button type="button" class="glink" data-gout>로그아웃</button>
       </div>
       <div id="gFree" class="hidden">
         <h2 class="gjt">우리 교회 시작하기 <em class="gfree">무료</em></h2>
@@ -3005,6 +3005,7 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
         <button class="gpri" id="gfGo" type="button">무료로 시작하기</button>
         <div class="gquota"><b>무료로 쓸 수 있는 만큼</b><span>AI 악보·주보 읽기<em>한 달 50번</em></span><span>팀원<em>5명까지</em></span><span>저장 공간<em>50MB</em></span><small>곡·예배 만들기, 편집, 송출, 내려받기는 횟수 없이 써요. 만든 사람이 이 교회의 관리자가 돼요.</small></div>
         <button type="button" class="glink" data-gback>← 다시 고르기</button>
+        <button type="button" class="glink" data-gout>로그아웃</button>
       </div>
       <div id="gJoin" class="hidden">
         <h2 class="gjt">교회에 들어가기</h2>
@@ -3013,8 +3014,10 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
         <fieldset class="gagree" id="jAgree"></fieldset>
         <p class="gerr" id="jErr" role="alert"></p>
         <button class="gpri" id="jGo" type="button">들어가기</button>
+        <p class="ghint">초대 코드를 잃어버렸으면 교회 팀원에게 다시 받을 수 있어요. 팀원 누구나 '팀원 초대'로 보낼 수 있어요.</p>
         <button type="button" class="glink gfreelink" id="jMake">초대 코드가 없나요? 무료로 우리 교회 시작하기 →</button>
         <button type="button" class="glink" data-gback>← 다시 고르기</button>
+        <button type="button" class="glink" data-gout>로그아웃</button>
       </div>
     </div>
   </form>
@@ -7107,8 +7110,10 @@ async function fnErrMsg(error,fn){
 (()=>{const q=new URLSearchParams(location.search);const c=q.get('join');if(!c)return;store.set('joinCode',c);q.delete('join');
   history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);})();
 const backTo=()=>location.origin+location.pathname;
-$('gKakao').onclick=async()=>{$('gErr').textContent='';
-  const {error}=await sb.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:backTo()}});
+// 로그아웃하면 표시를 남겨요. 브라우저에 카카오 로그인이 남아 있어 같은 계정으로 바로 들어가지 않게, 다음 한 번은 카카오가 계정을 다시 물어요
+const askKakao=()=>{try{localStorage.setItem('cj_kakaoAsk','1');}catch(e){}};
+$('gKakao').onclick=async()=>{$('gErr').textContent='';let ask=false;try{ask=!!localStorage.getItem('cj_kakaoAsk');localStorage.removeItem('cj_kakaoAsk');}catch(e){}
+  const {error}=await sb.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:backTo(),...(ask?{queryParams:{prompt:'login'}}:{})}});
   if(error)$('gErr').textContent='카카오 로그인을 시작하지 못했어요. 잠시 뒤 다시 해 주세요';};
 // 옛 로그인(이름+암호)은 따로 알려 준 주소(?old)로 왔을 때만 열어요. 팀원이 모두 카카오를 연결하면 없애요
 $('gOld').classList.toggle('hidden',!new URLSearchParams(location.search).has('old'));
@@ -7263,8 +7268,8 @@ function showJoin(u){const md=u.user_metadata||{},nick=String(md.name||md.full_n
       if(error)throw new Error('서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요');if(!data.ok)throw new Error(data.error);
       toast(`새 교회를 만들었어요: ${data.church}. 팀원 초대로 팀원을 불러 주세요`);await afterLogin(u);}
     catch(x){err.textContent=x.message||String(x);}finally{go.disabled=false;}};}
-async function goOut(){await liveWipe();await sb.auth.signOut();me=null;$('jName').value=$('gfName').value='';showGate();}
-$('jOut').onclick=goOut;
+async function goOut(){askKakao();await liveWipe();await sb.auth.signOut();me=null;$('jName').value=$('gfName').value='';showGate();}
+document.querySelectorAll('[data-gout]').forEach(b=>b.onclick=goOut);
 $('pkFree').onclick=()=>showGate('free');$('pkCode').onclick=()=>showGate('join');
 document.querySelectorAll('[data-gback]').forEach(b=>b.onclick=()=>showGate('pick'));
 // 옛 방식(이름+암호)으로 들어온 팀원에게 카카오 연결을 권해요
@@ -7290,7 +7295,7 @@ async function copyInvite(){let inv=null;
   if(!phone)return toastUndo(msg,()=>{},'확인',6000);
   // 공유 창이 막히면 '보내기'를 눌러 다시 열 수 있게
   toastUndo(msg,()=>send().catch(()=>{}),'보내기',12000);send().catch(()=>{});}
-$('logout').onclick=async()=>{const old=!$('linkKakao').hidden;if(!confirm(old?'아직 카카오를 연결하지 않았어요. 나가면 다음에도 이름과 개인 암호로 들어와야 해요. 나갈까요?':'나갈까요? 다음에 카카오로 다시 들어오면 돼요.'))return;closeSet();saveSession();await flushSessions();await liveWipe();await sb?.auth.signOut();me=null;if(old)location.href=backTo()+'?old';else location.reload();};
+$('logout').onclick=async()=>{const old=!$('linkKakao').hidden;if(!confirm(old?'아직 카카오를 연결하지 않았어요. 나가면 다음에도 이름과 개인 암호로 들어와야 해요. 나갈까요?':'나갈까요? 다음에 카카오로 다시 들어오면 돼요.'))return;closeSet();saveSession();await flushSessions();askKakao();await liveWipe();await sb?.auth.signOut();me=null;if(old)location.href=backTo()+'?old';else location.reload();};
 
 // 예배 이름 칸을 글자 길이에 맞춰서, 저장 시각이 이름 바로 옆에 붙게
 function fitTitle(){const el=$('docTitle');if(!el)return;const m=fitTitle.m||(fitTitle.m=Object.assign(document.createElement('span'),{style:'position:absolute;visibility:hidden;white-space:pre;left:-9999px;top:0'}));
@@ -7525,7 +7530,7 @@ function showGone(why,church){liveWipe();
   if(!$('goneDlg').open)$('goneDlg').showModal();}
 $('goneDlg').addEventListener('cancel',e=>e.preventDefault());
 $('goneDlg').addEventListener('close',()=>{if(!me)$('goneDlg').showModal();}); // Esc를 두 번 누르면 브라우저가 닫아 버려요
-$('goneOut').onclick=async()=>{await liveWipe();await sb.auth.signOut();location.reload();};
+$('goneOut').onclick=async()=>{askKakao();await liveWipe();await sb.auth.signOut();location.reload();};
 
 let chan=null;
 async function bootRemote(){

@@ -75,8 +75,12 @@ try{
   is('초대 링크로 오면 바로 교회에 들어가기 (코드 채움)',await ev(`return ${vis('gJoin')}&&$('jCode').value==='XYZXYZXY'`));
   await ev(`store.set('joinCode',null)`);
   // 5) 다른 카카오 계정으로 = 로그아웃
-  await fake();await ev(`await afterLogin(U);$('jOut').click();await new Promise(r=>setTimeout(r,300))`);
-  is('다른 카카오 계정으로 → 로그아웃하고 첫 화면',await ev(`return OUT===1&&${vis('gStart')}&&${vis('gvl')}`));
+  is('세 화면 모두 로그아웃 단추',await ev(`return ['gPick','gFree','gJoin'].every(id=>[...$(id).querySelectorAll('[data-gout]')].some(b=>b.textContent==='로그아웃'))`));
+  await fake();await ev(`localStorage.removeItem('cj_kakaoAsk');await afterLogin(U);document.querySelector('#gPick [data-gout]').click();await new Promise(r=>setTimeout(r,300))`);
+  is('로그아웃하고 첫 화면',await ev(`return OUT===1&&${vis('gStart')}&&${vis('gvl')}`));
+  await ev(`window.KK=[];sb.auth.signInWithOAuth=async o=>{KK.push(o.options);return {error:null};};$('gKakao').click();await new Promise(r=>setTimeout(r,200));$('gKakao').click();await new Promise(r=>setTimeout(r,200))`);
+  is('로그아웃 뒤 첫 카카오 로그인은 계정을 다시 물음, 그다음은 평소대로',await ev(`return KK.length===2&&KK[0].queryParams?.prompt==='login'&&!KK[1].queryParams`));
+  await fake();await ev(`showGate('join')`);is('초대 코드 화면에 잃어버렸을 때 안내',await ev(`return $('gJoin').textContent.includes('잃어버렸으면')`));
   // 6) 이미 쓰던 사람: 동의 안 했으면 창
   const member=[{name:'옛팀원',church_id:'c1',role:'member'}];
   await fake({ms:member,agreed:false});ev(`await afterLogin(U)`).catch(()=>{});
