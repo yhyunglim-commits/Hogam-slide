@@ -60,7 +60,7 @@ try{
     for(const k of ks){nItem++;const tag=`${nm}${big?' 크게':''} · ${k}`;
       await prep(p,st,big);const pt=await ev(`return at(CV,'${k}')`);if(!pt){noReach.push(tag);continue;}
       await click(pt);
-      if(!await ev(`return ED&&ED.keys.join()==='${k}'&&$('sbInl').hidden&&document.querySelectorAll('.edfr').length===1&&document.querySelectorAll('.edfr i').length===(isShape('${k}')?8:4)`)){badSel.push(tag);continue;}
+      if(!await ev(`return ED&&ED.keys.join()==='${k}'&&$('sbInl').hidden&&document.querySelectorAll('.edfr').length===1&&document.querySelectorAll('.edfr i').length===8`)){badSel.push(tag);continue;}
       // 크기
       const before=await ev(`return regs(CV)`),a=await ev(`return handle('se')`),sz=await ev(`return edSizes(edOf(CV).sc,'${k}').map(x=>edVal(edOf(CV).sc,x))`);
       const bw=await ev(`const b=CV.getBoundingClientRect();return[b.width,b.height]`),r0=before[k];
@@ -111,7 +111,7 @@ try{
     await keys('d',4);await z(300);is('⌘D로 복제',await ev(`return objsOf(find('song')).length===2`));
     for(const type of ['keyDown','keyUp'])await send('Input.dispatchKeyEvent',{type,key:'Delete',code:'Delete',windowsVirtualKeyCode:46},S);await z(300);is('Delete로 새 글상자 지움',await ev(`return objsOf(find('song')).length===1`));
     is('저장했다 다시 열어도 그대로',await ev(`const t=textOv(ovLine()[0]),s=find('song');return objParse(t.v[s.ovKey].objs).length===1`));}
-  await prep('info:a1','full',false);{await ev(`lookSlideKey=find('info:a1').ovKey;buildLookUI();document.querySelector('[data-ins=shape]').click();await W(500);window.CV=cvOf('info:a1')`);
+  await prep('info:a1','full',false);{await ev(`lookSlideKey=find('info:a1').ovKey;buildLookUI();document.querySelector('[data-ins=shape]').click();await W(200);document.querySelector('.tp-pop [data-k=rect]').click();await W(500);window.CV=cvOf('info:a1')`);
     is('+ 도형으로 이 장에 넣고 골라짐',await ev(`const o=objsOf(find('info:a1')).filter(q=>q.t==='shape');return o.length===1&&ED&&ED.keys[0]==='o:'+o[0].id`));
     is('도형은 점이 8개',await ev(`return document.querySelectorAll('.edfr i').length===8`));
     const r0=await ev(`return regs(CV)[ED.keys[0]]`),hE=await ev(`return handle('e')`);await drag(hE,[hE[0]+40,hE[1]]);await z(300);
@@ -127,6 +127,12 @@ try{
     is('기울임 단추는 그 글자만',await ev(`window.CV=cvOf('song');const l=edOf(CV).lay.texts;return LOOK.song.lyricsIt===true&&l.find(t=>t.kind==='lyrics').it&&!l.find(t=>t.kind==='title').it`));
     is('파워포인트에도 기울임',await ev(`const c=document.createElement('canvas');c.width=1920;c.height=1080;const l=drawScreen(c,find('song'),0,{noText:true});return !!l.texts.find(t=>t.kind==='lyrics').it`));}
   is('툴바에 되돌리기 화살표가 없음 · 갓피아 아이콘이 보임',await ev(`const i=document.querySelector('.tlink img');setPage('word');await W(700);const r=!$('lkUndo')&&!$('lkRedo')&&i.complete&&i.naturalWidth>0;setPage('slides');await W(500);return r`));
+  // 도형 고르기 · 아래 문구 정렬
+  await prep('song','',false);{await ev(`lookSlideKey=find('song').ovKey;buildLookUI();document.querySelector('[data-ins=shape]').click();await W(200);return 1`);
+    is('도형 말풍선에 6가지',await ev(`return [...document.querySelectorAll('.tp-pop [data-k]')].map(b=>b.dataset.k).join()==='rect,round,ellipse,tri,arrow,line'`));
+    await ev(`document.querySelector('.tp-pop [data-k=ellipse]').click();await W(500);return 1`);
+    is('고른 모양으로 들어가고 모양 탭이 열림',await ev(`const o=objsOf(find('song'));return o.length===1&&o[0].kind==='ellipse'&&!!$('tpFill')&&!document.querySelector('.tp-pop')`));
+    is('아래 문구 왼쪽·오른쪽 정렬',await ev(`const c=document.createElement('canvas');c.width=1920;c.height=1080;const x=a=>{LOOK.song.fAlign=a;return drawScreen(c,find('song'),0).regions.find(q=>q.k==='footer').x;};const l=x('left'),m=x('center'),r=x('right');LOOK.song.fAlign=undefined;return l<200&&m>600&&r>m+300`));}
   // 블록 지정한 글자만
   await prep('song','',false);{await dbl(await ev(`return at(CV,'lyrics')`));await z(200);
     await ev(`const t=$('sbInl'),a=t.value.indexOf('찬송');t.setSelectionRange(a,a+2);t.dispatchEvent(new Event('select'))`);

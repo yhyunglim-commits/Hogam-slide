@@ -52,7 +52,7 @@ try{
   await ev(`setPage('slides')`);await z(900);
   const total=await ev(`return allShots().length`);is(`화면이 생김 (${total}장)`,total>=3);is('투명 자막 화면이 들어 있음',await ev(`return allShots().some(isCaption)`));
   // 참고 구절 자막(투명)도 검사
-  await z(300);is('송출 단추가 맨 위 줄, 편집 칸 왼쪽 선에 맞춤',await ev(`const r=$('rgLive'),b=$('dlLive').getBoundingClientRect(),p=$('pbar').getBoundingClientRect();return r.parentElement.matches('header.doc')&&Math.abs(b.left-(p.left+14))<3&&b.bottom<=document.querySelector('header.doc').getBoundingClientRect().bottom`));
+  await z(300);is('송출 단추가 맨 위 줄, 미리보기 오른쪽 선에 맞춤',await ev(`const r=$('rgLive'),b=$('dlLive').getBoundingClientRect(),p=$('pbar').getBoundingClientRect();return r.parentElement.matches('header.doc')&&Math.abs(b.right-(p.left-28))<3&&b.bottom<=document.querySelector('header.doc').getBoundingClientRect().bottom`));
   is('폭 1440에서도 송출 단추가 다 보임',await ev(`const r=$('dlLive').getBoundingClientRect();return r.width>0&&r.right<=innerWidth&&document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)?.closest('#dlLive')!==null`));
   is('참고 구절에서도 하나만 남아 있음',await ev(`lookTab='quote';buildLookUI();await 0;await 0;const ok=document.querySelectorAll('#dlLive').length===1;lookTab='song';buildLookUI();return ok`));
   await ev(`setPage('slides');$('dlLive').click()`);is('받아 두기가 끝나 시작 단추가 켜짐',await until(`!$('lvStart').disabled`));await shot('1-start.png',S);

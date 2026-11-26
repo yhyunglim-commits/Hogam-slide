@@ -104,6 +104,7 @@ try{
   is('이상한 저장 글이 와도 안 깨짐',await ev(`return Object.keys(textBg('〔순서〕 {"k":"bg","v":{"song":{"b":"../../x"},"g:a":{"b":"advent-5","d":999},"z":1}}')).join()==='g:a'&&Object.keys(textBg('〔순서〕 {"k":"bg","v":null}')).length===0`));
   await ev(`document.documentElement.dataset.theme='light';await bgOpen(gr('곧 오소서'));bgTab='절기';bgList()`);await z(900);await shot('6-light.png',S);
   await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true},S);await z(500);await shot('7-phone.png',S);is('휴대폰 폭에서 창이 안 넘침',await ev(`const r=$('bgDlg').getBoundingClientRect();return r.right<=innerWidth&&$('bgDlg').scrollWidth<=$('bgDlg').clientWidth+1`));
+  is('보관함 탭이 추천·모두로 시작하고 모두에는 사진이 다 나옴',await ev(`await bgOpen(null,'song');await new Promise(r=>setTimeout(r,800));const tabs=[...$('bgTabs').children].map(b=>b.textContent);bgTab='모두';bgList();const n=$('bgList').querySelectorAll('[data-b]').length;$('bgDlg').close();bgTab='추천';return tabs[0]==='추천'&&tabs[1]==='모두'&&n===BGL.length+BGC.length`));
   is('코드 오류 없음',!errs.filter(e=>!/fetch|network|invalid|Failed/i.test(e)).length);if(errs.length)console.log(errs.slice(0,3).map(e=>e.slice(0,200)));
 }catch(e){bad++;console.log('멈춤',e.message);}
 console.log(`통과 ${ok} · 실패 ${bad}`);ch.kill();srv.close();await z(500);fs.rmSync(tmp,{recursive:true,force:true});process.exit(bad?1:0);
