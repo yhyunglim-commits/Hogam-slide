@@ -65,9 +65,9 @@ try{
   is('어둡게가 먹음',(await pick('nature-1','all','만복의 근원 하나님',0))[0]!==now[0]);
   const A=await ev(`return all()`);
   await ev(`lookTab='song';lookSlideKey=null;lookScope='all';buildLookUI();setRib('bg')`);await z(400);await shot('0-rib.png',S);
-  is('배경 창에서 보관함이 열림 (찬양 전체부터)',await ev(`const b=$('lookCtl').querySelector('.rg[data-k=bg] .bgopen'),r=b.getBoundingClientRect();b.click();await W(500);const ok=r.width>0&&$('bgDlg').open&&bgScope==='song'&&!ribOpen;$('bgDlg').close();return ok`));
-  is('슬라이드를 고르고 열면 그 곡부터',await ev(`lookSlideKey=gr('곧 오소서').items[0].ovKey;buildLookUI();setRib('bg');$('lookCtl').querySelector('.rg[data-k=bg] .bgopen').click();await W(400);const ok=bgScope==='this'&&bgPages[bgPi].g.title==='곧 오소서';$('bgDlg').close();lookSlideKey=null;buildLookUI();return ok`));
-  is('말씀·순서 탭에서도 열림',await ev(`const r=[];for(const t of ['word','info']){lookTab=t;buildLookUI();setRib('bg');$('lookCtl').querySelector('.rg[data-k=bg] .bgopen').click();await W(300);r.push(bgScope===t&&bgKind(bgPages[bgPi].s)===t);$('bgDlg').close()}lookTab='song';buildLookUI();return r.every(Boolean)`));
+  is('배경 창에서 보관함이 열림 (찬양 전체부터)',await ev(`const b=$('lookCtl').querySelector('[data-ins=bg]'),r=b.getBoundingClientRect();b.click();await W(500);const ok=r.width>0&&$('bgDlg').open&&bgScope==='song'&&!ribOpen;$('bgDlg').close();return ok`));
+  is('슬라이드를 고르고 열면 그 곡부터',await ev(`lookSlideKey=gr('곧 오소서').items[0].ovKey;buildLookUI();setRib('bg');$('lookCtl').querySelector('[data-ins=bg]').click();await W(400);const ok=bgScope==='this'&&bgPages[bgPi].g.title==='곧 오소서';$('bgDlg').close();lookSlideKey=null;buildLookUI();return ok`));
+  is('말씀·순서 탭에서도 열림',await ev(`const r=[];for(const t of ['word','info']){lookTab=t;buildLookUI();setRib('bg');$('lookCtl').querySelector('[data-ins=bg]').click();await W(300);r.push(bgScope===t&&bgKind(bgPages[bgPi].s)===t);$('bgDlg').close()}lookTab='song';buildLookUI();return r.every(Boolean)`));
   // 저장 · 다른 예배
   const id1=await ev(`return curSess`),txt=await ev(`return curS().text`);
   is('예배 글에 번호만 적힘 (그림이 안 들어감)',txt.includes('"k":"bg"')&&!txt.includes('data:image')&&txt.length<3000);

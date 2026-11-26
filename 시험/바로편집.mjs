@@ -111,7 +111,7 @@ try{
     await keys('d',4);await z(300);is('⌘D로 복제',await ev(`return objsOf(find('song')).length===2`));
     for(const type of ['keyDown','keyUp'])await send('Input.dispatchKeyEvent',{type,key:'Delete',code:'Delete',windowsVirtualKeyCode:46},S);await z(300);is('Delete로 새 글상자 지움',await ev(`return objsOf(find('song')).length===1`));
     is('저장했다 다시 열어도 그대로',await ev(`const t=textOv(ovLine()[0]),s=find('song');return objParse(t.v[s.ovKey].objs).length===1`));}
-  await prep('info:a1','full',false);{await ev(`lookSlideKey=find('info:a1').ovKey;buildLookUI();document.querySelector('[data-add=shape]').click();await W(500);window.CV=cvOf('info:a1')`);
+  await prep('info:a1','full',false);{await ev(`lookSlideKey=find('info:a1').ovKey;buildLookUI();document.querySelector('[data-ins=shape]').click();await W(500);window.CV=cvOf('info:a1')`);
     is('+ 도형으로 이 장에 넣고 골라짐',await ev(`const o=objsOf(find('info:a1')).filter(q=>q.t==='shape');return o.length===1&&ED&&ED.keys[0]==='o:'+o[0].id`));
     is('도형은 점이 8개',await ev(`return document.querySelectorAll('.edfr i').length===8`));
     const r0=await ev(`return regs(CV)[ED.keys[0]]`),hE=await ev(`return handle('e')`);await drag(hE,[hE[0]+40,hE[1]]);await z(300);

@@ -32,10 +32,10 @@ try{
     LOOK.quote.quoteStyle='caption';setPage('slides')`);await z(1500);
   // 배경·로고 넣는 칸
   await ev(`lookTab='song';MEDIA.song=null;setPage('slides')`);await z(700);
-  for(const[b,n]of[['bg','배경'],['logo','로고']]){await ev(`setRib('${b}')`);await z(250);is(n+' 칸: 비어 있으면 + 만'+(b==='bg'?' (와 보관함)':''),await ev(`const m=document.querySelector('.rg[data-k=${b}] .media2');return !!m.querySelector('.mplus')&&!m.querySelector('img')&&!m.querySelector('.mthumb')&&m.querySelectorAll('.btn').length===(${b==='bg'?2:1})`));}
-  await ev(`setRib('bg')`);await ev(`const c=document.createElement('canvas');c.width=160;c.height=90;c.getContext('2d').fillStyle='#964';c.getContext('2d').fillRect(0,0,160,90);const b=await new Promise(r=>c.toBlob(r)),dt=new DataTransfer();dt.items.add(new File([b],'a.png',{type:'image/png'}));const i=document.querySelector('.rg[data-k=bg] .media2 input');i.files=dt.files;i.dispatchEvent(new Event('change'))`);
-  is('+로 사진을 넣으면 + 자리에 작은 그림',await until(`MEDIA.song&&document.querySelector('.rg[data-k=bg] .media2 .mpic img')&&!document.querySelector('.rg[data-k=bg] .mplus')`,5000));await z(400);await shot('9-bg2.png',S);
-  await ev(`document.querySelector('.rg[data-k=bg] .mdel').click()`);await z(300);is('×로 사진을 지움',await ev(`return !MEDIA.song&&!!document.querySelector('.rg[data-k=bg] .mplus')`));await ev(`setRib(null)`);
+  is('넣기 줄: 텍스트·도형·미디어·배경·로고 한 줄',await ev(`const r=document.querySelector('#lookCtl .tp-add');return !!r&&[...r.children].map(c=>c.dataset.ins).join()==='text,shape,media,bg,logo'&&!document.querySelector('#lookCtl .media2')`));
+  await ev(`const c=document.createElement('canvas');c.width=160;c.height=90;c.getContext('2d').fillStyle='#964';c.getContext('2d').fillRect(0,0,160,90);const b=await new Promise(r=>c.toBlob(r)),dt=new DataTransfer();dt.items.add(new File([b],'a.png',{type:'image/png'}));const i=document.querySelector('#lookCtl [data-ins=logo] input');i.files=dt.files;i.dispatchEvent(new Event('change'))`);
+  is('로고를 넣으면 그 자리에 작은 그림과 ×',await until(`MEDIA.logo&&document.querySelector('#lookCtl [data-ins=logo] .tp-th')&&document.querySelector('#lookCtl [data-ins=logo] .tp-x')`,5000));
+  await ev(`document.querySelector('#lookCtl [data-ins=logo] .tp-x').click()`);await z(300);is('×로 로고를 지움',await ev(`return !MEDIA.logo&&!document.querySelector('#lookCtl [data-ins=logo] .tp-th')`));await ev(`setRib(null)`);
   // 호감 매뉴얼
   is('왼쪽 메뉴에는 없고 설정에 있음',await ev(`openSet();return !document.getElementById('openMan')&&$('setMan').getBoundingClientRect().width>0`));is('의견 보내기 단추',await ev(`return $('openMail').textContent.includes('의견 보내기')`));await ev(`$('setMan').click()`);await z(900);is('설정에서 매뉴얼이 열림',await ev(`return $('manDlg').open&&!$('setbox').classList.contains('on')`));const tabs=await ev(`return MAN.length`);let full=0;
   for(let i=0;i<tabs;i++){await ev(`$('manToc').children[${i}].click()`);await z(250);if(await ev(`const im=[...$('manPage').querySelectorAll('img')];for(const x of im){x.loading='eager';await x.decode().catch(()=>{});}return MAN[${i}][0]==='news'?$('manPage').textContent.includes('1.0'):im.length>1&&im.every(x=>x.naturalWidth>100)`))full++;}
@@ -69,7 +69,7 @@ try{
   await ev(`$('lvBgGreen').click()`);await z(600);is('초록 배경',(await pix(P)).endsWith(':0,177,64'));await shot('4-green.png',P);is('초록 배경 단추가 켜짐 표시',await ev(`return $('lvBgGreen').getAttribute('aria-pressed')==='true'`));await ev(`$('lvBgGreen').click()`);await z(500);is('한 번 더 누르면 꺼짐',await ev(`return $('lvBgGreen').getAttribute('aria-pressed')==='false'`));
   is('배경으로 돌아오면 첫 그림과 같음',await pix(P)===first);
   // 문구 · 배치
-  is('ON AIR 표시등 · 현재 슬라이드 · 원본·전체 화면 단추는 없음',await ev(`return $('lvSt').textContent==='ON AIR'&&$('lvSt').classList.contains('on')&&$('dlLive').classList.contains('onair')&&$('lvNowT').textContent==='현재 슬라이드'&&!$('lvBgPic')&&!$('lvFull')&&!document.getElementById('lvOrd')`));
+  is('ON AIR 표시등(편집 쪽과 같은 아이콘, 맨 위는 깜빡임) · 원본·전체 화면 단추는 없음',await ev(`return $('lvSt').textContent==='ON AIR'&&!!$('lvSt').querySelector('.ph-broadcast')&&getComputedStyle($('dlLive')).animationName==='onair'&&!$('lvPill')&&$('lvSt').classList.contains('on')&&$('dlLive').classList.contains('onair')&&$('lvNowT').textContent==='현재 슬라이드'&&!$('lvBgPic')&&!$('lvFull')&&!document.getElementById('lvOrd')`));
   is('이전·다음이 정중앙',await ev(`const a=$('lvPrev').getBoundingClientRect(),b=$('lvGo').getBoundingClientRect(),p=$('livebox');return Math.abs((a.left+b.right)/2-p.clientWidth/2)<3`));
   is('위 단추가 가운데',await ev(`const r=document.querySelector('.lvbtns').getBoundingClientRect();return Math.abs((r.left+r.right)/2-$('livebox').clientWidth/2)<3`));
   // 끌어서 순서 바꾸기 (첫 화면을 맨 뒤로)
@@ -85,7 +85,7 @@ try{
   await z(400);const edited=await pix(P);is(`편집하면 단추 없이 나감 (${fast}ms)`,fast>0&&edited!==first);is('바꾼 송출 순서는 지켜짐',await ids()===o1);
   // 팀원이 바꾼 모양은 저절로 안 나감
   await ev(`teamApply('look',{...LOOK,song:{...LOOK.song,size:LOOK.song.size+1}})`);await z(2500);is('팀원이 바꾼 모양은 저절로 안 나감',await pix(P)===edited);
-  await ev(`$('lvPill').click()`);is('팀원 모양 알림',await until(`!$('lvChg').classList.contains('hidden')&&$('lvChgTx').textContent.includes('팀원')`,4000));
+  await ev(`$('dlLive').click()`);is('팀원 모양 알림',await until(`!$('lvChg').classList.contains('hidden')&&$('lvChgTx').textContent.includes('팀원')`,4000));
   await ev(`$('lvApply').click()`);is('반영을 누르면 나감',await until(`LIVE.sig===liveSig()&&$('lvChg').classList.contains('hidden')`)&&(await z(800),await pix(P))!==edited);
   await ev(`$('lvOrder0').click()`);is('원래 순서로',await ids()===o0);
   // 인터넷 끊기 → 처음부터 끝까지, 창 닫았다 열기
@@ -98,9 +98,9 @@ try{
   await off(false);
   // 조작 창 새로고침
   await ev(`liveMove(2);LIVE.bg='green';liveNow()`);await z(600);const kg=await pix(P);await open();
-  is('새로고침 뒤 이어가기 단추',await until(`LIVE&&!$('lvPill').classList.contains('hidden')`,8000));is('같은 자리 · 같은 배경',await ev(`return LIVE.i===2&&LIVE.bg==='green'`));
+  is('새로고침 뒤 맨 위 단추가 송출 이어가기',await until(`LIVE&&$('dlLive').textContent.includes('송출 이어가기')`,8000));is('같은 자리 · 같은 배경',await ev(`return LIVE.i===2&&LIVE.bg==='green'`));
   is('새로고침해도 송출 창은 그대로 남음',!!(await popT())&&await pix(P)===kg);
-  await ev(`$('lvPill').click()`);await ev(`$('lvReopen').click()`);await z(800);is('다시 이어지고 창은 하나',(await pages()).length===2);
+  await ev(`$('dlLive').click()`);await ev(`$('lvReopen').click()`);await z(800);is('다시 이어지고 창은 하나',(await pages()).length===2);
   await key('ArrowLeft');is('이어서 넘기면 송출 창이 바뀜',await pix(P)!==kg);
   await key('ArrowRight','ArrowRight',P);is('이어진 뒤 송출 창 키도 됨',await ev(`return LIVE.i`)===2);
   // 전체 화면: 크롬은 시험이 흉내 낸 클릭에는 전체 화면을 안 내줘서, 요청을 보내는지만 봐요 (진짜 전환은 손으로 확인)
@@ -109,6 +109,7 @@ try{
   is('송출 창을 누르면 전체 화면을 요청함',await ev(`const n=window.__f;delete document.documentElement.requestFullscreen;return n===1`,P));
   is('편집으로 돌아가면 지금 나가는 장이 크게 열림',await ev(`const W=ms=>new Promise(r=>setTimeout(r,ms));liveShow();await W(200);const id=LIVE.slides[LIVE.i].id;$('lvEdit').click();await W(400);const L=songGroups().flatMap(g=>g.items.map((sc,n)=>g.items[0].type+(g.chunk??'')+':'+n)),ok=$('slidebox').classList.contains('on')&&L[sbI]===id;closeSlide();liveShow();return ok`));
   const ms=await ev(`const g=songGroups,one=g();window.__g=songGroups;songGroups=()=>one.map(x=>({...x,items:Array(20).fill(x.items[0])}));const t=performance.now(),d=await liveBake();songGroups=g;return Math.round((performance.now()-t))+'ms · '+d.slides.length+'장 · '+(d.slides.reduce((a,s)=>a+s.full.size+s.clear.size+s.green.size+s.thumb.size,0)/1048576).toFixed(1)+'MB'`);console.log('받아 두는 시간',ms);
+  is('송출 중에는 다른 탭에서도 맨 위 ON AIR가 보임',await ev(`setPage('song');await new Promise(r=>setTimeout(r,300));const r=$('dlLive').getBoundingClientRect().width>0;setPage('slides');return r`));
   // 하루 지난 것 · 나가기
   await ev(`$('lvEnd').click()`);await z(900);is('끝내면 창이 닫히고 저장한 그림도 지워짐',(await pages()).length===1&&await ev(`return (await liveKv('readonly',o=>o.getAllKeys())).length`)===0);
   await ev(`await liveKv('readwrite',o=>o.put({at:Date.now()-25*3600e3,ch:'x'},'data:x'))`);await open();await z(800);is('하루 지난 그림은 지워짐',await ev(`return (await liveKv('readonly',o=>o.getAllKeys())).length`)===0);
