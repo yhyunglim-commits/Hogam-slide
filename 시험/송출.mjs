@@ -32,10 +32,10 @@ try{
     LOOK.quote.quoteStyle='caption';setPage('slides')`);await z(1500);
   // 배경·로고 넣는 칸
   await ev(`lookTab='song';MEDIA.song=null;setPage('slides')`);await z(700);
-  for(const[b,n]of[['bg','사진'],['logo','로고']]){await ev(`setRib('${b}')`);await z(250);is(n+' 칸: 이름과 + 만',await ev(`const m=document.querySelector('.rg[data-k=${b}] .media2');return m.textContent.trim()==='${n} 없음'&&m.querySelectorAll('.btn').length===1`));is(n+' 칸: 아이콘과 +가 한 줄',await ev(`const y=q=>{const r=document.querySelector('.rg[data-k=${b}] .media2 '+q).getBoundingClientRect();return r.top+r.height/2};return Math.abs(y('.mthumb i')-y('.mplus'))<2`));if(b==='bg'){is('배경 창이 작음 (사진 없을 때)',await ev(`const r=document.querySelector('.rg[data-k=bg] .rgp').getBoundingClientRect();return r.width<=180&&r.height<=110&&r.right<=innerWidth`));await shot('9-bg.png',S);}}
+  for(const[b,n]of[['bg','배경'],['logo','로고']]){await ev(`setRib('${b}')`);await z(250);is(n+' 칸: 비어 있으면 + 만'+(b==='bg'?' (와 보관함)':''),await ev(`const m=document.querySelector('.rg[data-k=${b}] .media2');return !!m.querySelector('.mplus')&&!m.querySelector('img')&&!m.querySelector('.mthumb')&&m.querySelectorAll('.btn').length===(${b==='bg'?2:1})`));}
   await ev(`setRib('bg')`);await ev(`const c=document.createElement('canvas');c.width=160;c.height=90;c.getContext('2d').fillStyle='#964';c.getContext('2d').fillRect(0,0,160,90);const b=await new Promise(r=>c.toBlob(r)),dt=new DataTransfer();dt.items.add(new File([b],'a.png',{type:'image/png'}));const i=document.querySelector('.rg[data-k=bg] .media2 input');i.files=dt.files;i.dispatchEvent(new Event('change'))`);
-  is('+로 사진을 넣음',await until(`MEDIA.song&&document.querySelector('.rg[data-k=bg] .media2 img')`,5000));await z(400);await shot('9-bg2.png',S);
-  await ev(`document.querySelector('.rg[data-k=bg] .mx').click()`);await z(300);is('×로 사진을 지움',await ev(`return !MEDIA.song&&document.querySelector('.rg[data-k=bg] .mname').textContent==='사진 없음'`));await ev(`setRib(null)`);
+  is('+로 사진을 넣으면 + 자리에 작은 그림',await until(`MEDIA.song&&document.querySelector('.rg[data-k=bg] .media2 .mpic img')&&!document.querySelector('.rg[data-k=bg] .mplus')`,5000));await z(400);await shot('9-bg2.png',S);
+  await ev(`document.querySelector('.rg[data-k=bg] .mdel').click()`);await z(300);is('×로 사진을 지움',await ev(`return !MEDIA.song&&!!document.querySelector('.rg[data-k=bg] .mplus')`));await ev(`setRib(null)`);
   // 호감 매뉴얼
   is('왼쪽 메뉴에는 없고 설정에 있음',await ev(`openSet();return !document.getElementById('openMan')&&$('setMan').getBoundingClientRect().width>0`));is('의견 보내기 단추',await ev(`return $('openMail').textContent.includes('의견 보내기')`));await ev(`$('setMan').click()`);await z(900);is('설정에서 매뉴얼이 열림',await ev(`return $('manDlg').open&&!$('setbox').classList.contains('on')`));const tabs=await ev(`return MAN.length`);let full=0;
   for(let i=0;i<tabs;i++){await ev(`$('manToc').children[${i}].click()`);await z(250);if(await ev(`const im=[...$('manPage').querySelectorAll('img')];for(const x of im){x.loading='eager';await x.decode().catch(()=>{});}return MAN[${i}][0]==='news'?$('manPage').textContent.includes('1.0'):im.length>1&&im.every(x=>x.naturalWidth>100)`))full++;}
@@ -52,9 +52,9 @@ try{
   await ev(`setPage('slides')`);await z(900);
   const total=await ev(`return allShots().length`);is(`화면이 생김 (${total}장)`,total>=3);is('투명 자막 화면이 들어 있음',await ev(`return allShots().some(isCaption)`));
   // 참고 구절 자막(투명)도 검사
-  await z(300);is('송출 단추가 아래 문구 바로 옆',await ev(`return $('rgLive').previousElementSibling?.dataset.k==='foot'`));
+  await z(300);is('송출 단추가 맨 위 줄, 편집 칸 왼쪽 선에 맞춤',await ev(`const r=$('rgLive'),b=$('dlLive').getBoundingClientRect(),p=$('pbar').getBoundingClientRect();return r.parentElement.matches('header.doc')&&Math.abs(b.left-(p.left+14))<3&&b.bottom<=document.querySelector('header.doc').getBoundingClientRect().bottom`));
   is('폭 1440에서도 송출 단추가 다 보임',await ev(`const r=$('dlLive').getBoundingClientRect();return r.width>0&&r.right<=innerWidth&&document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)?.closest('#dlLive')!==null`));
-  is('참고 구절에서도 하나만 남아 있음',await ev(`lookTab='quote';buildLookUI();await 0;await 0;const ok=document.querySelectorAll('#lookCtl #dlLive').length===1;lookTab='song';buildLookUI();return ok`));
+  is('참고 구절에서도 하나만 남아 있음',await ev(`lookTab='quote';buildLookUI();await 0;await 0;const ok=document.querySelectorAll('#dlLive').length===1;lookTab='song';buildLookUI();return ok`));
   await ev(`setPage('slides');$('dlLive').click()`);is('받아 두기가 끝나 시작 단추가 켜짐',await until(`!$('lvStart').disabled`));await shot('1-start.png',S);
   await ev(`$('lvStart').click()`);await z(1500);
   const popT=async()=>(await pages()).find(t=>t.targetId!==main);let pt=await popT();is('송출 창이 열림',!!pt);let P=await attach(pt.targetId);await z(500);
