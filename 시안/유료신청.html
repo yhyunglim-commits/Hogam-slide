@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>호감슬라이드 유료 1단계 시안</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#EEF0F4;--surface:#FFFFFF;--sunken:#F4F5F8;--line:#E3E6EC;--text:#1B1F27;--text2:#4E5562;--text3:#6B7280;
+  --pri:#1E7BF0;--pri-soft:#E5F0FE;--good:#1F8F62;--good-soft:#E3F4EC;--warn:#B86A00;--warn-soft:#FFF2DC;--bad:#C8323A;--bad-soft:#FDE8E9;
+  --font:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{--bg:#101216;--surface:#1A1D23;--sunken:#22262E;--line:#2E333C;--text:#EEF0F3;--text2:#B5BBC6;--text3:#9098A5;--pri:#4C9BFF;--pri-soft:#1C2D45;--good:#4CC28A;--good-soft:#173328;--warn:#F0A63A;--warn-soft:#3A2C12;--bad:#F06A70;--bad-soft:#3D1C1F;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 var(--font);word-break:keep-all;padding:28px max(16px,env(safe-area-inset-left,0px)) 80px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{margin:0;font-size:26px;font-weight:900;letter-spacing:-.03em}
+.lead{margin:6px 0 0;color:var(--text2)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tabs button{border:1px solid var(--line);background:var(--surface);color:var(--text2);border-radius:999px;padding:9px 16px;font:600 14px var(--font);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--text);color:var(--surface);border-color:var(--text)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--text2);font-size:14px}
+.note b{color:var(--text)}
+.note ul{margin:6px 0 0;padding-left:18px}
+.stage{background:var(--sunken);border-radius:20px;padding:28px max(12px,3vw);display:flex;justify-content:center;gap:24px;flex-wrap:wrap;align-items:flex-start}
+[hidden]{display:none!important}
+.dlg{background:var(--surface);border-radius:18px;box-shadow:0 24px 60px -20px rgba(0,0,0,.35);width:100%;max-width:460px;padding:22px}
+.dlg h2{margin:0 0 4px;font-size:19px}
+.sub{margin:0 0 16px;color:var(--text2);font-size:14px}
+label.gl{display:block;margin-bottom:12px}
+label.gl>span,.lab{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:5px}
+.opt{font-weight:400;color:var(--text3)}
+input[type=text],input[type=tel]{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px;padding:11px 12px;font:15px var(--font)}
+.row{display:flex;gap:8px}
+.row input{flex:1;min-width:0}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px;padding:10px 14px;font:600 14px var(--font);cursor:pointer;white-space:nowrap}
+.btn.sm{padding:6px 10px;font-size:13px}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+.btn.danger{color:var(--bad)}
+.btn.wide{width:100%;padding:13px;font-size:15px}
+.addr{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--sunken);font-size:14px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.addr small{color:var(--text3)}
+details{border:1px dashed var(--line);border-radius:10px;padding:8px 12px;margin-bottom:12px}
+details summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--text2)}
+details[open] summary{margin-bottom:10px}
+.agree{font-size:13px;color:var(--text2);margin:4px 0 14px;display:flex;gap:8px;align-items:flex-start}
+.quota{margin-top:14px;background:var(--pri-soft);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--text2)}
+.quota b{display:block;color:var(--text);margin-bottom:6px}
+.quota span{display:flex;justify-content:space-between}
+.quota em{font-style:normal;font-weight:700;color:var(--pri)}
+.quota small{display:block;margin-top:6px}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;vertical-align:middle}
+.t-free{background:var(--good-soft);color:var(--good)}
+.t-wait{background:var(--warn-soft);color:var(--warn)}
+.t-ok{background:var(--good-soft);color:var(--good)}
+.t-no{background:var(--sunken);color:var(--text3)}
+.t-ref{background:var(--bad-soft);color:var(--bad)}
+.t-new{background:var(--bad);color:#fff}
+/* 곡 읽기 칸 (앱 왼쪽 패널 일부) */
+.panel{background:var(--surface);border-radius:16px;padding:18px;width:100%;max-width:380px;box-shadow:0 10px 30px -18px rgba(0,0,0,.3)}
+.panel h3{margin:0 0 10px;font-size:15px}
+.aileft{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;background:var(--bad-soft);color:var(--bad);margin-bottom:10px}
+.aileft.wait{background:var(--warn-soft);color:var(--warn)}
+.aimore{border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px;color:var(--text2);margin-bottom:12px}
+.aimore b{display:block;color:var(--text);font-size:14px;margin-bottom:2px}
+.aimore .btn{margin-top:10px}
+.song{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px;font-size:14px}
+.song small{color:var(--text3)}
+/* 충전 신청 창 */
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.pick button{text-align:left;border:1.5px solid var(--line);background:var(--surface);color:var(--text);border-radius:12px;padding:12px;font:inherit;cursor:pointer}
+.pick button[aria-pressed="true"]{border-color:var(--pri);background:var(--pri-soft)}
+.pick b{display:block;font-size:15px}
+.pick small{color:var(--text3);font-size:12px}
+.pick .won{display:block;font-weight:900;font-size:17px;margin-top:4px}
+.acct{border-radius:12px;background:var(--sunken);padding:12px 14px;margin-bottom:12px;font-size:14px}
+.acct .num{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:2px}
+.acct .num b{font-size:16px;letter-spacing:.02em}
+.steps{margin:0 0 14px;padding:0;list-style:none;font-size:13px;color:var(--text2);display:flex;flex-direction:column;gap:6px}
+.steps li{display:flex;gap:8px}
+.steps i{flex:none;width:20px;height:20px;border-radius:50%;background:var(--pri-soft);color:var(--pri);font-style:normal;font-weight:700;font-size:12px;display:grid;place-items:center}
+.fine{font-size:12px;color:var(--text3);margin:10px 0 0}
+.fine a{color:inherit}
+.toast{background:var(--text);color:var(--surface);border-radius:12px;padding:12px 16px;font-size:14px;max-width:380px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+/* 교회 정보 창 */
+.bars{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.bar .top{display:flex;justify-content:space-between;font-size:13px;color:var(--text2)}
+.bar .top b{color:var(--text)}
+.track{height:8px;background:var(--sunken);border-radius:99px;overflow:hidden;display:flex;margin-top:4px}
+.track i{display:block;height:100%}
+.leg{display:flex;gap:12px;font-size:12px;color:var(--text3);margin-top:4px}
+.leg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;background:var(--c)}
+h3.sec{font-size:14px;margin:18px 0 8px;display:flex;justify-content:space-between;align-items:center}
+.list{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;font-size:14px}
+.list li+li{border-top:1px solid var(--line)}
+.list small{display:block;color:var(--text3);font-size:12px}
+.info{font-size:14px;border:1px solid var(--line);border-radius:12px;padding:12px}
+.info div{display:flex;gap:10px;padding:2px 0}
+.info dt{width:64px;flex:none;color:var(--text3)}
+.info dd{margin:0}
+/* 관리 홈 */
+.adm{background:var(--surface);border-radius:18px;width:100%;padding:22px;box-shadow:0 24px 60px -20px rgba(0,0,0,.25)}
+.adm h2{margin:0 0 14px;font-size:20px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.kpi{border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.kpi span{font-size:13px;color:var(--text2)}
+.kpi b{display:block;font-size:24px;font-weight:900;letter-spacing:-.02em}
+.kpi small{color:var(--text3);font-size:12px}
+.kpi .track{margin-top:8px}
+.filters{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:var(--surface);color:var(--text2);border-radius:999px;padding:6px 12px;font:600 13px var(--font);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--pri-soft);border-color:var(--pri);color:var(--pri)}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-size:12px;color:var(--text3);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line)}
+.tbl td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl td small{display:block;color:var(--text3);font-size:12px}
+.tbl tr.pending td{background:color-mix(in srgb,var(--warn-soft) 45%,transparent)}
+.acts{display:flex;gap:6px;justify-content:flex-end}
+.confirm{margin-top:16px;border:1px solid var(--line);border-radius:14px;padding:16px;max-width:420px;background:var(--surface);box-shadow:0 16px 40px -18px rgba(0,0,0,.35)}
+.confirm b{display:block;margin-bottom:4px}
+.confirm p{margin:0 0 12px;font-size:14px;color:var(--text2)}
+@media (max-width:760px){.kpis{grid-template-columns:1fr}.tbl .hide-s{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>유료 1단계 시안</h1>
+    <p class="lead">AI 충전·용량 추가 신청과 새 교회 주소. 위 탭을 눌러 화면을 바꿔 보세요. 숫자와 이름은 예시예요.</p>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="시안 화면">
+    <button role="tab" aria-selected="true" data-t="1">① 새 교회 시작</button>
+    <button role="tab" aria-selected="false" data-t="2">② AI 다 씀 → 충전 신청</button>
+    <button role="tab" aria-selected="false" data-t="3">③ 교회 정보 창</button>
+    <button role="tab" aria-selected="false" data-t="4">④ 관리 홈 · 유료 신청·입금</button>
+  </nav>
+
+  <!-- ① 새 교회 시작 -->
+  <section data-p="1">
+    <div class="note"><b>바뀌는 것:</b> 교회 주소가 필수가 돼요. '주소 찾기'를 누르면 카카오 우편번호 창이 뜨고, 고르면 아래처럼 들어가요. 교단·대표 전화는 접어 둔 선택 칸이에요. 무료 안내는 '처음 AI 50번 · 20MB'로 바뀌어요. 교회 창의 '새 교회 만들기'도 같은 칸이 생겨요.</div>
+    <div class="stage">
+      <div class="dlg">
+        <h2>우리 교회 시작하기 <span class="tag t-free">FREE</span></h2>
+        <p class="sub">교회 이름과 주소를 적으면 바로 시작해요.</p>
+        <label class="gl"><span>교회 이름</span><input type="text" value="호감교회"></label>
+        <div class="gl" style="margin-bottom:12px"><span class="lab">교회 주소</span>
+          <div class="addr"><div>서울 성동구 한림말5길 33-9<br><small>우편번호 04700</small></div><button type="button" class="btn sm">다시 찾기</button></div>
+        </div>
+        <label class="gl"><span>상세 주소 <span class="opt">(선택 · 층, 호)</span></span><input type="text" value="2층"></label>
+        <details><summary>교단 · 대표 전화 (선택)</summary>
+          <label class="gl"><span>교단</span><input type="text" placeholder="예) 대한예수교장로회"></label>
+          <label class="gl" style="margin:0"><span>대표 전화</span><input type="tel" placeholder="예) 02-1234-5678"></label>
+        </details>
+        <label class="gl"><span>교회에서 쓸 내 이름</span><input type="text" value="김목자"></label>
+        <div class="agree"><input type="checkbox" checked id="ag"><label for="ag">이용약관과 개인정보 처리방침에 동의해요</label></div>
+        <button type="button" class="btn pri wide">무료로 시작하기</button>
+        <div class="quota"><b>무료로 쓸 수 있는 만큼</b>
+          <span>AI 악보·주보 읽기<em>처음 50번</em></span><span>팀원<em>5명까지</em></span><span>사진·로고 저장 공간<em>20MB</em></span>
+          <small>곡·예배 만들기, 편집, 송출, 내려받기는 횟수 없이 써요. 같은 주소의 교회가 이미 있으면 처음 50번은 드리지 않아요.</small></div>
+      </div>
+      <div class="dlg" style="max-width:340px">
+        <h2 style="font-size:16px">주소 칸, 고르기 전</h2>
+        <p class="sub">처음엔 단추 하나만 있어요.</p>
+        <div class="row"><input type="text" placeholder="주소를 찾아 골라 주세요" readonly><button type="button" class="btn">주소 찾기</button></div>
+        <p class="fine">눌러 보면 카카오 우편번호 창이 이 자리에 열려요(휴대폰에서는 화면 전체).</p>
+        <h2 style="font-size:16px;margin-top:18px">같은 주소일 때 (만든 뒤 알림)</h2>
+        <div class="toast" style="margin-top:8px">호감교회를 만들었어요. 같은 주소의 교회가 이미 있어서 처음 무료 AI 50번은 없어요. 필요하면 충전해서 써 주세요.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② AI 다 씀 → 충전 신청 -->
+  <section data-p="2" hidden>
+    <div class="note"><b>바뀌는 것:</b> 남은 횟수가 'AI 0번 남음'으로 보이고, 다 쓰면 그 자리에 '충전 신청'이 떠요. 관리자가 아니어도 팀원 누구나 신청해요. 신청하면 바로 5번이 열리고, 호감이 입금을 확인하면 나머지 45번이 들어와요.
+      <ul><li>초기 교회(매달 50번)는 '이번 달 AI 0번 남음 · 다음 달 1일에 50번' 문구가 같이 나와요.</li><li>맞춤법은 0.2번씩 빠져서 '0.8번 남음'처럼 보일 수 있어요.</li></ul></div>
+    <div class="stage">
+      <div class="panel">
+        <h3>악보 읽기</h3>
+        <span class="aileft">AI 0번 남음</span>
+        <div class="aimore"><b>AI 횟수를 다 썼어요</b>50번에 5천 원, 악보 한 곡에 100원이에요. 신청하면 바로 5번을 먼저 쓸 수 있어요. 붙여 넣은 가사는 지금도 화면에서 줄을 나눌 수 있어요.
+          <div><button type="button" class="btn pri">충전 신청</button></div></div>
+        <div class="song"><span>주 하나님 지으신 모든 세계<br><small>악보 2장</small></span><span class="tag t-no">기다림</span></div>
+        <div class="song"><span>내 영혼이 은총 입어<br><small>악보 1장</small></span><span class="tag t-no">기다림</span></div>
+      </div>
+      <div class="dlg">
+        <h2>충전 신청</h2>
+        <p class="sub">호감교회 · 신청한 팀원 김목자</p>
+        <div class="pick">
+          <button type="button" aria-pressed="true"><b>AI 50번</b><small>악보·주보 읽기, 기한 없음</small><span class="won">5,000원</span></button>
+          <button type="button" aria-pressed="false"><b>용량 50MB 추가</b><small>사진·로고, 한 번 사면 계속</small><span class="won">5,000원</span></button>
+        </div>
+        <ol class="steps">
+          <li><i>1</i>아래 계좌로 5,000원을 보내 주세요.</li>
+          <li><i>2</i>보낸 사람 이름을 적고 '신청하기'를 눌러 주세요. AI 5번이 바로 열려요.</li>
+          <li><i>3</i>호감이 입금을 확인하면 나머지 45번이 들어와요.</li>
+        </ol>
+        <div class="acct">입금 계좌<div class="num"><b>토스뱅크 1002-6805-7619</b><button type="button" class="btn sm">복사</button></div><small>받는 사람 윤형림(호감)</small></div>
+        <label class="gl"><span>입금자 이름</span><input type="text" value="김목자"></label>
+        <button type="button" class="btn pri wide">신청하기</button>
+        <p class="fine">입금이 확인되지 않으면 신청이 취소되고, 먼저 쓴 횟수는 남은 횟수에서 빠져요. 충전한 AI는 7일 안에 한 번도 안 썼으면 전액, 그 뒤엔 남은 횟수만큼 돌려드려요. <a href="#">이용약관</a></p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:380px;width:100%">
+        <div class="toast">신청했어요. AI 5번을 지금 바로 쓸 수 있어요. 입금이 확인되면 45번이 더 들어와요.</div>
+        <div class="panel"><h3>신청한 뒤</h3><span class="aileft wait">AI 5번 남음 · 입금 확인 중</span>
+          <p class="fine" style="margin:0">확인 중일 때 또 신청하면 "입금 확인 중인 신청이 있어요"라고 막아요(교회마다 한 번에 하나).</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ 교회 정보 창 -->
+  <section data-p="3" hidden>
+    <div class="note"><b>바뀌는 것:</b> 옆 메뉴 '교회 정보' 창에 남은 AI가 어디서 왔는지(처음 무료·충전)와 신청 내역이 보여요. 팀원 모두 봐요. '교회 정보(주소)'는 관리자에게만 보이고 고칠 수 있어요. 초기 2곳은 여기서 주소를 채우면 돼요. '더 필요해요'를 누르면 ②의 충전 신청 창이 열려요.</div>
+    <div class="stage">
+      <div class="dlg" style="max-width:500px">
+        <h2>호감교회</h2>
+        <p class="sub">팀원 4명 · 내가 관리자</p>
+        <div class="bars">
+          <div class="bar"><div class="top"><span>AI 남은 횟수</span><b>42.4번</b></div>
+            <div class="track"><i style="width:30%;background:var(--good)"></i><i style="width:55%;background:var(--pri)"></i></div>
+            <div class="leg"><span style="--c:var(--good)">처음 무료 12.4번</span><span style="--c:var(--pri)">충전 30번</span></div></div>
+          <div class="bar"><div class="top"><span>팀원</span><b>4 / 5명</b></div><div class="track"><i style="width:80%;background:var(--pri)"></i></div></div>
+          <div class="bar"><div class="top"><span>사진·로고 용량</span><b>14.2 / 20MB</b></div><div class="track"><i style="width:71%;background:var(--pri)"></i></div></div>
+        </div>
+        <button type="button" class="btn pri">더 필요해요 (충전·용량 추가)</button>
+        <h3 class="sec">신청 내역</h3>
+        <ul class="list">
+          <li><span>AI 50번 · 5,000원<small>11월 27일 · 김목자 신청 · 입금자 김목자</small></span><span class="tag t-wait">입금 확인 중</span></li>
+          <li><span>AI 50번 · 5,000원<small>11월 3일 · 이집사 신청 · 입금자 이영희</small></span><span class="tag t-ok">충전됨</span></li>
+          <li><span>용량 50MB · 5,000원<small>10월 20일 · 김목자 신청</small></span><span class="tag t-no">취소됨</span></li>
+        </ul>
+        <h3 class="sec">교회 정보 <span class="tag t-no">관리자와 호감만 봐요</span></h3>
+        <dl class="info">
+          <div><dt>주소</dt><dd>서울 성동구 한림말5길 33-9, 2층 (04700)</dd></div>
+          <div><dt>교단</dt><dd>—</dd></div>
+          <div><dt>대표 전화</dt><dd>—</dd></div>
+        </dl>
+        <p style="margin:8px 0 0"><button type="button" class="btn sm">고치기</button></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ④ 관리 홈 -->
+  <section data-p="4" hidden>
+    <div class="note"><b>바뀌는 것:</b> 관리 홈 '유료 신청·입금' 카드가 열려요(지금은 '3단계'로 막혀 있음). 카드에는 확인 중 수와 NEW가 붙고, 위 '확인할 일' 숫자에도 더해져요. 페이지를 열면 NEW가 꺼져요.
+      <ul><li>승인·취소·환불됨은 누르면 확인 창이 한 번 더 떠요(목록 아래 예시). 승인은 한 번만, 취소는 확인 중일 때만, 환불됨은 승인한 것만 돼요.</li><li>서버 전체 사용량이 400MB를 넘으면 막대가 주황색이 되고 'Pro로 올릴 때'라고 알려요.</li></ul></div>
+    <div class="stage">
+      <div class="adm">
+        <h2>유료 신청·입금</h2>
+        <div class="kpis">
+          <div class="kpi"><span>입금 확인 중</span><b>2건</b><small>가장 오래된 것 1일 전</small></div>
+          <div class="kpi"><span>이번 달 승인</span><b>15,000원</b><small>AI 2건 · 용량 1건</small></div>
+          <div class="kpi"><span>서버 전체 사용량</span><b>38MB</b><small>무료 요금제 500MB 중 · 400MB면 Pro로</small><div class="track"><i style="width:7.6%;background:var(--good)"></i></div></div>
+        </div>
+        <div class="filters"><button type="button" aria-pressed="true">확인 중 2</button><button type="button" aria-pressed="false">전체</button><button type="button" aria-pressed="false">승인</button><button type="button" aria-pressed="false">취소·환불</button></div>
+        <table class="tbl">
+          <thead><tr><th>신청</th><th>교회</th><th>종류</th><th>입금자</th><th class="hide-s">신청한 팀원</th><th>상태</th><th></th></tr></thead>
+          <tbody>
+            <tr class="pending"><td><span class="tag t-new">NEW</span> 11. 27. 14:05<small>오늘</small></td><td>호감교회</td><td>AI 50번<small>5,000원</small></td><td><b>김목자</b></td><td class="hide-s">김목자</td><td><span class="tag t-wait">확인 중</span></td>
+              <td><div class="acts"><button type="button" class="btn sm pri">입금 확인·승인</button><button type="button" class="btn sm">취소</button></div></td></tr>
+            <tr class="pending"><td>11. 26. 09:12<small>1일 전</small></td><td>은혜교회</td><td>용량 50MB<small>5,000원</small></td><td><b>박은혜</b></td><td class="hide-s">박전도사</td><td><span class="tag t-wait">확인 중</span></td>
+              <td><div class="acts"><button type="button" class="btn sm pri">입금 확인·승인</button><button type="button" class="btn sm">취소</button></div></td></tr>
+            <tr><td>11. 20. 18:40</td><td>새빛교회</td><td>AI 50번<small>5,000원</small></td><td>최빛나</td><td class="hide-s">최집사</td><td><span class="tag t-ok">승인</span><small>11. 21.</small></td>
+              <td><div class="acts"><button type="button" class="btn sm danger">환불됨</button></div></td></tr>
+            <tr><td>11. 12. 10:02</td><td>(지워진 교회) 소망교회</td><td>AI 50번<small>5,000원</small></td><td>정소망</td><td class="hide-s">정소망</td><td><span class="tag t-ref">환불됨</span><small>11. 14.</small></td><td></td></tr>
+          </tbody>
+        </table>
+        <div class="confirm"><b>호감교회 AI 50번을 승인할까요?</b><p>입금자 <b style="display:inline">김목자</b> · 5,000원이 통장에 들어온 걸 확인했을 때만 눌러 주세요. 승인하면 45번이 더 들어가요(먼저 연 5번 포함 50번).</p>
+          <div class="acts" style="justify-content:flex-start"><button type="button" class="btn pri">승인</button><button type="button" class="btn">돌아가기</button></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+document.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('[role=tab]').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('section[data-p]').forEach(s=>s.hidden=s.dataset.p!==b.dataset.t);});
+document.querySelectorAll('.pick button,.filters button').forEach(b=>b.onclick=()=>b.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b)));
+</script>
+</body>
+</html>

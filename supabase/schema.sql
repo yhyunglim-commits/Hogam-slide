@@ -1564,20 +1564,6 @@ language sql security definer set search_path = public as $$
 $$;
 select cron.schedule('hogam-clear-pay', '45 18 * * *', 'select public.clear_old_pay()');
 
--- 교회 관리자가 보는 남은 양: 충전 잔액까지
-create or replace function public.church_usage() returns jsonb
-language plpgsql stable security definer set search_path = public as $$
-declare c public.churches;
-begin
-  select * into c from public.churches where id = public.my_church();
-  if not found then raise exception '팀원만 볼 수 있어요'; end if;
-  return jsonb_build_object('ai_limit', c.ai_limit, 'member_limit', c.member_limit, 'mb_limit', c.mb_limit,
-    'members',  (select count(*) from public.members where church_id = c.id),
-    'ai_month', (select coalesce(sum(n), 0) from public.ai_daily where church_id = c.id and day >= date_trunc('month', now() at time zone 'Asia/Seoul')::date),
-    'free', trim_scale(round(c.free_pts / 5.0, 1)), 'paid', trim_scale(round(c.paid_pts / 5.0, 1)),
-    'bytes',    (select sum(v::bigint) from jsonb_each_text(public.church_bytes(c.id)) x(k, v)));
-end $$;
-
 -- 관리 홈: 교회 정보와 남은 횟수, 새 신청 수, 서버 전체 크기
 create or replace function public.super_church(p_church uuid) returns jsonb
 language plpgsql stable security definer set search_path = public as $$
@@ -1619,7 +1605,45 @@ begin
                      from (select * from public.super_log order by id desc limit 5) l left join public.churches ch on ch.id = l.church_id));
 end $$;
 
-revoke execute on function public.info_error(jsonb), public.road_key(text), public.month_pts(uuid), public.clear_old_pay() from public, anon, authenticated;
+-- 남은 AI(번, 소수 한 자리): 매달 무료 남은 것 + 처음 무료 + 충전(마이너스는 0으로)
+create or replace function public.ai_left_of(c public.churches) returns numeric
+language sql stable security definer set search_path = public as $$
+  select trim_scale(round((greatest(c.ai_limit * 5 - public.month_pts(c.id), 0) + greatest(c.free_pts, 0) + greatest(c.paid_pts, 0)) / 5.0, 1));
+$$;
+-- 교회 관리자가 보는 남은 양: 어디서 온 횟수인지까지
+create or replace function public.church_usage() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare c public.churches;
+begin
+  select * into c from public.churches where id = public.my_church();
+  if not found then raise exception '팀원만 볼 수 있어요'; end if;
+  return jsonb_build_object('ai_limit', c.ai_limit, 'member_limit', c.member_limit, 'mb_limit', c.mb_limit,
+    'members',  (select count(*) from public.members where church_id = c.id),
+    'ai_month', (select coalesce(sum(n), 0) from public.ai_daily where church_id = c.id and day >= date_trunc('month', now() at time zone 'Asia/Seoul')::date),
+    'month', trim_scale(round(greatest(c.ai_limit * 5 - public.month_pts(c.id), 0) / 5.0, 1)),
+    'free', trim_scale(round(c.free_pts / 5.0, 1)), 'paid', trim_scale(round(c.paid_pts / 5.0, 1)), 'left', public.ai_left_of(c),
+    'bytes',    (select sum(v::bigint) from jsonb_each_text(public.church_bytes(c.id)) x(k, v)));
+end $$;
+-- 관리 홈 교회 목록: 남은 AI를 더해요 ('다 씀'을 매달 한도가 아니라 남은 횟수로 봐요)
+create or replace function public.super_churches() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_today date := (now() at time zone 'Asia/Seoul')::date;
+begin
+  if not public.is_super() then raise exception '전체 관리자만 볼 수 있어요'; end if;
+  return (select coalesce(jsonb_agg(jsonb_build_object('id', c.id, 'name', c.name, 'created_at', c.created_at, 'suspended_at', c.suspended_at,
+            'ai_limit', c.ai_limit, 'member_limit', c.member_limit, 'mb_limit', c.mb_limit, 'ai_left', public.ai_left_of(c),
+            'is_new',   not exists (select 1 from public.church_memos m where m.church_id = c.id and m.seen_at is not null),
+            'members',  (select count(*) from public.members m where m.church_id = c.id),
+            'admins',   (select count(*) from public.members m where m.church_id = c.id and m.role = 'admin'),
+            'services', (select count(*) from public.services s where s.church_id = c.id and s.deleted_at is null),
+            'songs',    (select count(*) from public.songs s where s.church_id = c.id),
+            'ai_month', (select coalesce(sum(d.n), 0) from public.ai_daily d where d.church_id = c.id and d.day >= date_trunc('month', v_today)),
+            'ai_today', (select coalesce(sum(d.n), 0) from public.ai_daily d where d.church_id = c.id and d.day = v_today),
+            'bytes',    (select sum(v::bigint) from jsonb_each_text(public.church_bytes(c.id)) x(k, v)),
+            'last_used', public.church_last_used(c.id)) order by c.created_at), '[]'::jsonb) from public.churches c);
+end $$;
+
+revoke execute on function public.info_error(jsonb), public.road_key(text), public.month_pts(uuid), public.ai_left_of(public.churches), public.clear_old_pay() from public, anon, authenticated;
 revoke execute on function public.create_church(text, text, jsonb), public.church_info_get(uuid), public.church_info_set(uuid, jsonb),
   public.pay_request(text, text), public.pay_mine(), public.super_pay_list(), public.super_pay_seen(), public.super_pay_set(bigint, text) from public, anon;
 grant execute on function public.create_church(text, text, jsonb), public.church_info_get(uuid), public.church_info_set(uuid, jsonb),

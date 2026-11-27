@@ -32,6 +32,7 @@ const fake=(o={})=>ev(`window.CALLS=[];window.MS=${JSON.stringify(o.ms||[])};win
     if(f==='create_church'||f==='join_church')return {data:{ok:false,error:'(시험) 멈춤'},error:null};
     return {data:null,error:null};};
   sb.auth.signOut=async()=>{OUT++;return {error:null};};
+  window.daum={Postcode:function(o){this.embed=el=>{el.innerHTML='<button type="button" id="fakePick">고르기</button>';el.querySelector('button').onclick=()=>o.oncomplete({roadAddress:'서울 성동구 한림말5길 33-9',zonecode:'04700'});};}};
   if(${JSON.stringify(!!(o.ms||[]).length)})CH='c1';window.U={id:'u1',user_metadata:{nickname:'카카오닉'},identities:[{provider:'kakao'}]};`);
 const vis=id=>`(()=>{const e=$('${id}');return !!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden'})()`;
 const calls=()=>ev(`return CALLS.map(c=>c[0]).filter(f=>f!=='is_super').join(',')`);
@@ -42,7 +43,7 @@ try{
   is('초대 코드 없이 오면 고르기 화면',await ev(`return ${vis('gPick')}&&!${vis('gStart')}&&!${vis('gJoin')}&&!${vis('gFree')}`));
   is('고르기 화면에서는 노트북 소개가 숨음',await ev(`return !${vis('gvl')}`));
   is('카드 두 장이 나란히 (넓은 화면)',await ev(`const a=$('pkFree').getBoundingClientRect(),b=$('pkCode').getBoundingClientRect();return Math.abs(a.top-b.top)<2&&a.right<=b.left&&Math.abs(a.height-b.height)<2`));
-  is('무료 카드에 한도 세 가지',await ev(`const t=$('pkFree').textContent;return t.includes('무료')&&t.includes('50번')&&t.includes('5명')&&t.includes('50MB')`));
+  is('무료 카드에 한도 세 가지',await ev(`const t=$('pkFree').textContent;return t.includes('무료')&&t.includes('처음 50번')&&t.includes('5명')&&t.includes('20MB')`));
   await shot('1-pick.png');
   // 2) 무료로 시작
   await ev(`$('pkFree').click()`);
@@ -51,6 +52,16 @@ try{
   is('약관 링크 두 개는 새 창으로',await ev(`const a=[...$('gfAgree').querySelectorAll('a')];return a.length===2&&a[0].getAttribute('href')==='terms.html'&&a[1].getAttribute('href')==='privacy.html'&&a.every(x=>x.target==='_blank')`));
   for(const f of ['terms.html','privacy.html'])is(f+' 이 열림',(await fetch(host+'/'+f)).status===200);
   await ev(`$('gfChurch').value='호감교회';$('gfGo').click();await new Promise(r=>setTimeout(r,300))`);
+  is('주소를 안 고르면 막고 서버를 안 부름',await ev(`return $('gfErr').textContent.includes('주소')`)&&(await calls())==='');
+  is('주소 칸은 처음엔 단추만 (검색 칸 닫힘)',await ev(`return !$('gfAddr').querySelector('[data-pick]').getClientRects().length&&$('gfAddr').querySelector('[data-find]').textContent==='주소 찾기'`));
+  await ev(`$('gfAddr').querySelector('[data-find]').click();await new Promise(r=>setTimeout(r,200))`);
+  is('주소 찾기 → 우편번호 검색이 칸 아래에 열림',await ev(`return !!$('gfAddr').querySelector('[data-pick]').getClientRects().length&&!!$('fakePick')`));
+  await shot('2a-addr.png');
+  await ev(`$('fakePick').click();await new Promise(r=>setTimeout(r,100))`);
+  is('고르면 도로명 주소·우편번호가 들어가고 검색 칸이 닫히고 상세 주소로',await ev(`const b=$('gfAddr');return b.querySelector('[data-road]').value==='서울 성동구 한림말5길 33-9'&&b.dataset.zip==='04700'&&b.querySelector('[data-pick]').hidden&&document.activeElement===b.querySelector('[data-detail]')`));
+  await ev(`const b=$('gfAddr');b.querySelector('[data-detail]').value=' 2층 ';b.querySelector('details').open=true;b.querySelector('[data-phone]').value='02-가나';$('gfGo').click();await new Promise(r=>setTimeout(r,200))`);
+  is('전화번호가 이상하면 막음',await ev(`return $('gfErr').textContent.includes('전화번호')`)&&(await calls())==='');
+  await ev(`$('gfAddr').querySelector('[data-phone]').value='02-1234-5678';$('gfGo').click();await new Promise(r=>setTimeout(r,300))`);
   is('동의 안 하면 막고 서버를 안 부름',await ev(`return $('gfErr').textContent.includes('동의')`)&&(await calls())==='');
   is('모두 동의를 누르면 둘 다 체크',await ev(`const b=$('gfAgree'),all=b.querySelector('[data-all]');all.click();return [...b.querySelectorAll('[data-one]')].every(x=>x.checked)`));
   is('하나를 끄면 모두 동의도 꺼짐',await ev(`const b=$('gfAgree');b.querySelectorAll('[data-one]')[1].click();return !b.querySelector('[data-all]').checked`));
@@ -60,6 +71,7 @@ try{
   await shot('2-free.png');
   await ev(`$('gfChurch').value='호감교회';$('gfGo').click();await new Promise(r=>setTimeout(r,500))`);
   is('동의를 먼저 남기고 교회를 만듦',(await calls())==='agree_terms,create_church'&&await ev(`return CALLS[0][1].p_ver===1&&CALLS[1][1].p_church==='호감교회'&&CALLS[1][1].p_name==='카카오닉'`));
+  is('교회 정보를 같이 보냄 (도로명·상세·우편번호·전화)',await ev(`const i=CALLS[1][1].p_info;return i.road==='서울 성동구 한림말5길 33-9'&&i.detail==='2층'&&i.zip==='04700'&&i.phone==='02-1234-5678'&&i.denom===''`));
   is('서버 답(오류)을 그대로 보여 줌',await ev(`return $('gfErr').textContent==='(시험) 멈춤'`));
   // 3) 다시 고르기 · 초대 코드
   await ev(`document.querySelector('#gFree [data-gback]').click()`);is('다시 고르기',await ev(`return ${vis('gPick')}`));

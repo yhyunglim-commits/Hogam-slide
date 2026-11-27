@@ -2375,6 +2375,59 @@ body[data-wmode=w] #wordPanel .qstyle{display:none!important}
 .chdlg label span{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px}.chdlg label input{width:100%;box-sizing:border-box;height:42px;font-size:16px}
 .chdlg .btn.pri{height:42px;justify-content:center}
 .chdlg .hint2{margin:0;font-size:13px;color:var(--text3)}
+/* 교회 주소 (17단계): 첫 화면 · 새 교회 · 교회 정보 고치기 */
+.addrbox{display:flex;flex-direction:column;min-width:0}.chdlg .addrbox{gap:12px}
+.addrf>span{display:block}.chdlg .addrf>span{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.addrbox small{font-weight:400;opacity:.8}
+.addrrow{display:flex;gap:8px;min-width:0}.addrrow input{flex:1;min-width:0;cursor:pointer}
+.addrfind{flex:none;border:1px solid var(--line2);background:var(--surface);color:var(--text);border-radius:12px;padding:0 14px;font:700 14px inherit;font-family:inherit;cursor:pointer}
+#gate .addrfind{border-radius:14px;padding:0 18px;font-size:15px;border:1.5px solid var(--line);background:var(--fill);color:var(--ink)}
+#gate .addrpick{background:#fff;border-color:var(--line)}#gate .addrbar{color:var(--sub);border-color:var(--line)}#gate .addrbar button{color:var(--sub)}
+#gate .addropt{border-color:var(--line)}#gate .addropt summary{color:var(--sub)}
+.addrpick{margin-top:8px;border:1px solid var(--line2);border-radius:12px;overflow:hidden;background:var(--surface)}.addrpick[hidden]{display:none}
+.addrbar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 6px 6px 12px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--line)}
+.addrbar button{border:0;background:none;color:var(--text2);font:600 13px inherit;font-family:inherit;padding:6px 8px;cursor:pointer}
+.addrembed{height:440px}
+@media (max-width:560px){.addrembed{height:70vh}}
+.addropt{border:1px dashed var(--line2);border-radius:12px;padding:8px 12px;margin-top:14px;max-width:380px;box-sizing:border-box}.chdlg .addropt{margin:0;max-width:none}
+.addropt summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--text2)}.addropt[open] summary{margin-bottom:4px}
+.chdlg .addropt label{display:block;margin-top:8px}
+/* 충전 신청 · 신청 내역 · 교회 정보 */
+#chMore{margin-top:8px}
+.paylist{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.paylist li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;font-size:14px}.paylist li+li{border-top:1px solid var(--line)}
+.paylist small{display:block;color:var(--text3);font-size:12px}
+.paytag{flex:none;white-space:nowrap;font-size:12px;font-weight:700;border-radius:99px;padding:2px 9px;background:var(--chip);color:var(--text2)}
+.paytag.pending{background:var(--warn-soft);color:var(--warn-ink)}.paytag.approved{background:var(--ok-soft);color:var(--ok)}.paytag.refunded{background:var(--bad-soft);color:var(--bad)}
+.chonly{font-size:12px;font-weight:500;color:var(--text3);margin-left:6px}
+.chinfo{margin:0 0 8px;font-size:14px;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.chinfo div{display:flex;gap:10px;padding:2px 0}.chinfo dt{width:64px;flex:none;color:var(--text3)}.chinfo dd{margin:0;overflow-wrap:anywhere}
+#chInfoF{margin-top:8px;display:flex;flex-direction:column;gap:12px}#chInfoF[hidden]{display:none}
+.paysub{margin:2px 0 0;font-size:14px;color:var(--text2)}
+.paypick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.paypick button{text-align:left;border:1.5px solid var(--line2);background:var(--surface);color:var(--text);border-radius:12px;padding:12px;font:inherit;cursor:pointer}
+.paypick button[aria-pressed=true]{border-color:var(--pri);background:var(--pri-soft,var(--sunken))}
+.paypick b{display:block;font-size:15px}.paypick small{display:block;color:var(--text3);font-size:12px}.paypick em{display:block;font-style:normal;font-weight:900;font-size:17px;margin-top:4px}
+.paysteps{margin:0 0 12px;padding-left:20px;font-size:13.5px;color:var(--text2);display:flex;flex-direction:column;gap:4px}
+.payacct{display:flex;justify-content:space-between;align-items:center;gap:10px;border-radius:12px;background:var(--sunken);padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--text2)}
+.payacct b{display:block;font-size:16px;color:var(--text);letter-spacing:.01em}.payacct small{display:block;font-size:12px}
+.paydlg label{display:block;margin-bottom:12px}.paydlg #payGo{width:100%}
+.payfine{margin:10px 0 0;font-size:12px;color:var(--text3)}.payfine a{color:inherit}
+.aisrc{font-size:12px;color:var(--text3)}
+/* 관리 홈 유료 신청·입금 */
+.aother.apay{max-width:none}.apay .admkpi{grid-template-columns:repeat(3,minmax(0,1fr))}
+.apay .sptr{margin-top:8px}.apay .sptr i.hi{background:var(--amber)}
+.apflt{display:flex;gap:6px;flex-wrap:wrap}.apflt button{border:1px solid var(--line);background:var(--surface);color:var(--text2);border-radius:99px;padding:6px 12px;font:600 13px inherit;font-family:inherit;cursor:pointer}
+.apflt button[aria-pressed=true]{background:var(--pri-soft,var(--sunken));border-color:var(--pri);color:var(--pri)}
+.aptw{overflow-x:auto;min-width:0}.aother.apay{min-width:0}.aptbl{width:100%;border-collapse:collapse;font-size:14px}.aptbl th{text-align:left;font-size:12px;color:var(--text3);font-weight:600;padding:8px;border-bottom:1px solid var(--line)}
+.aptbl td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}.aptbl td small{display:block;color:var(--text3);font-size:12px}
+.aptbl tr.pending td{background:var(--warn-soft)}.aptbl .acts{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.aptbl .acts .btn{height:34px;padding:0 12px;font-size:13px}
+.apconf{border:1px solid var(--line2);border-radius:14px;padding:14px 16px;max-width:460px;display:flex;flex-direction:column;gap:10px}.apconf p{margin:0;font-size:14px;color:var(--text2)}
+@media (max-width:760px){.apay .admkpi{grid-template-columns:1fr}
+  .aptbl,.aptbl tbody{display:block}.aptbl thead{display:none}
+  .aptbl tr{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px}.aptbl tr.pending{background:var(--warn-soft)}
+  .aptbl td,.aptbl tr.pending td{display:block;border:0;padding:0;background:none}.aptbl td.hs{display:none}.aptbl td:last-child{grid-column:1/-1}.aptbl td:last-child:has(.acts:empty){display:none}
+  .aptbl .acts{justify-content:stretch}.aptbl .acts .btn{flex:1;height:40px}}
 /* 약관 동의 칸 (첫 화면 · 동의 창 같이) */
 .gagree{margin:18px 0 0;padding:14px 16px;border:1px solid var(--line2);border-radius:14px;display:flex;flex-direction:column;gap:10px;min-width:0;box-sizing:border-box}
 .gagree legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -3096,20 +3149,21 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
         <h2 class="gjt">어떻게 시작할까요?</h2>
         <p class="gerr" id="pkErr" role="alert"></p>
         <div class="gpk">
-          <button type="button" class="gpk-c gpk-free" id="pkFree"><span class="gpk-tag">처음이라면 여기</span><span class="gpk-t">우리 교회 시작하기 <em class="gfree">FREE</em></span><span class="gpk-d">교회 공간을 새로 만들고, 팀원을 초대해서 같이 써요. 만든 사람이 관리자가 돼요.</span><span class="gpk-l"><span><i class="ph ph-check" aria-hidden="true"></i>AI 악보·주보 읽기 한 달 50번</span><span><i class="ph ph-check" aria-hidden="true"></i>팀원 5명까지</span><span><i class="ph ph-check" aria-hidden="true"></i>저장 공간 50MB</span></span><span class="gpk-go">무료로 시작하기</span></button>
+          <button type="button" class="gpk-c gpk-free" id="pkFree"><span class="gpk-tag">처음이라면 여기</span><span class="gpk-t">우리 교회 시작하기 <em class="gfree">FREE</em></span><span class="gpk-d">교회 공간을 새로 만들고, 팀원을 초대해서 같이 써요. 만든 사람이 관리자가 돼요.</span><span class="gpk-l"><span><i class="ph ph-check" aria-hidden="true"></i>AI 악보·주보 읽기 처음 50번</span><span><i class="ph ph-check" aria-hidden="true"></i>팀원 5명까지</span><span><i class="ph ph-check" aria-hidden="true"></i>사진·로고 저장 공간 20MB</span></span><span class="gpk-go">무료로 시작하기</span></button>
           <button type="button" class="gpk-c" id="pkCode"><span class="gpk-t">초대 코드로 들어가기</span><span class="gpk-d">팀원에게 받은 링크나 8글자 코드가 있으면, 그 교회로 바로 들어가요.</span><span class="gpk-go">코드 넣기</span></button>
         </div>
         <div class="gfootrow"><button type="button" class="glink" id="pkAdm" hidden>← 관리 홈으로</button><button type="button" class="glink" data-gout>로그아웃</button></div>
       </div>
       <div id="gFree" class="hidden">
         <h2 class="gjt">우리 교회 시작하기 <em class="gfree">FREE</em></h2>
-        <p class="gsub">두 칸만 적으면 바로 시작해요.</p>
+        <p class="gsub">교회 이름과 주소를 적으면 바로 시작해요.</p>
         <label class="gl"><span>교회 이름</span><input id="gfChurch" type="text" maxlength="20" autocomplete="off" placeholder="예) 호감교회"></label>
+        <div class="addrbox" id="gfAddr"></div>
         <label class="gl"><span>교회에서 쓸 내 이름</span><input id="gfName" type="text" maxlength="10" autocomplete="off" placeholder="예) 김목자"></label>
         <fieldset class="gagree" id="gfAgree"></fieldset>
         <p class="gerr" id="gfErr" role="alert"></p>
         <button class="gpri" id="gfGo" type="button">무료로 시작하기</button>
-        <div class="gquota"><b>무료로 쓸 수 있는 만큼</b><span>AI 악보·주보 읽기<em>한 달 50번</em></span><span>팀원<em>5명까지</em></span><span>저장 공간<em>50MB</em></span><small>곡·예배 만들기, 편집, 송출, 내려받기는 횟수 없이 써요. 만든 사람이 이 교회의 관리자가 돼요.</small></div>
+        <div class="gquota"><b>무료로 쓸 수 있는 만큼</b><span>AI 악보·주보 읽기<em>처음 50번</em></span><span>팀원<em>5명까지</em></span><span>사진·로고 저장 공간<em>20MB</em></span><small>곡·예배 만들기, 편집, 송출, 내려받기는 횟수 없이 써요. 만든 사람이 이 교회의 관리자가 돼요. 같은 주소의 교회가 이미 있으면 처음 50번은 드리지 않아요.</small></div>
         <div class="gfootrow"><button type="button" class="glink" data-gback>← 돌아가기</button><button type="button" class="glink" data-gout>로그아웃</button></div>
       </div>
       <div id="gJoin" class="hidden">
@@ -3258,7 +3312,10 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
 <dialog class="maildlg chdlg" id="chDlg" aria-labelledby="chTitle">
   <div class="chhead"><h2 id="chTitle">교회</h2><button type="button" class="btn ghost ibtn" id="chClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
   <p class="cherr" id="chErr" role="alert"></p>
-  <div id="chPick"><div class="tmuse" id="chUse" hidden></div><button type="button" class="btn" id="chMore" hidden>더 필요해요</button>
+  <div id="chPick"><div class="tmuse" id="chUse" hidden></div><button type="button" class="btn" id="chMore" hidden>더 필요해요 (충전·용량 추가)</button>
+    <div id="chPay" hidden><h3 class="chh">신청 내역</h3><ul class="paylist" id="chPayList"></ul></div>
+    <div id="chInfo" hidden><h3 class="chh">교회 정보 <small class="chonly">관리자와 호감만 봐요</small></h3><dl class="chinfo" id="chInfoV"></dl><button type="button" class="btn" id="chInfoEdit">고치기</button>
+      <div id="chInfoF" hidden><div class="addrbox" id="chInfoAddr"></div><div class="spacts"><button type="button" class="btn pri" id="chInfoSave">저장</button><button type="button" class="btn" id="chInfoNo">취소</button></div></div></div>
     <h3 class="chh" id="chPickT" hidden>교회 바꾸기</h3><ul class="chlist" id="chList"></ul>
     <div class="setrows"><button type="button" data-ch="join"><i class="ph ph-sign-in" aria-hidden="true"></i>다른 교회 들어가기</button><button type="button" data-ch="new" id="chMake2"><i class="ph ph-plus-circle" aria-hidden="true"></i>새 교회 만들기</button></div></div>
   <form id="chJoinF"><div id="chJoin" hidden>
@@ -3267,9 +3324,24 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
     <button type="submit" class="btn pri" id="chJoinGo">들어가기</button></div></form>
   <form id="chNewF"><div id="chNew" hidden>
     <label><span>교회 이름</span><input type="text" id="chName" maxlength="20" autocomplete="off" placeholder="예) 호감교회"></label>
+    <div class="addrbox" id="chAddr"></div>
     <label><span>교회에서 쓸 이름</span><input type="text" id="chName2" maxlength="10" autocomplete="off" placeholder="예) 김목자"></label>
-    <p class="hint2">교회는 한 사람이 한 곳만 만들 수 있어요.</p>
+    <p class="hint2">교회는 한 사람이 한 곳만 만들 수 있어요. 같은 주소의 교회가 이미 있으면 처음 무료 AI 50번은 없어요.</p>
     <button type="submit" class="btn pri" id="chNewGo">만들기</button></div></form>
+</dialog>
+<dialog class="maildlg chdlg paydlg" id="payDlg" aria-labelledby="payTitle">
+  <div class="chhead"><h2 id="payTitle">충전 신청</h2><button type="button" class="btn ghost ibtn" id="payClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
+  <p class="paysub" id="paySub"></p>
+  <p class="cherr" id="payErr" role="alert"></p>
+  <div class="paypick" role="group" aria-label="신청할 것">
+    <button type="button" data-k="ai" aria-pressed="true"><b>AI 50번</b><small>악보·주보 읽기, 기한 없음</small><em>5,000원</em></button>
+    <button type="button" data-k="mb" aria-pressed="false"><b>용량 50MB 추가</b><small>사진·로고, 한 번 사면 계속</small><em>5,000원</em></button>
+  </div>
+  <ol class="paysteps"><li>아래 계좌로 5,000원을 보내 주세요.</li><li id="payS2"></li><li id="payS3"></li></ol>
+  <div class="payacct"><div><span>입금 계좌</span><b id="payAcct"></b><small id="payTo"></small></div><button type="button" class="btn" id="payCopy">복사</button></div>
+  <label><span>입금자 이름</span><input type="text" id="payName" maxlength="20" autocomplete="off" placeholder="통장에 찍히는 보낸 사람 이름"></label>
+  <button type="button" class="btn pri" id="payGo">신청하기</button>
+  <p class="payfine" id="payFine"></p>
 </dialog>
 <dialog class="maildlg chdlg" id="tmDlg" aria-labelledby="tmTitle">
   <div class="chhead"><h2 id="tmTitle">팀원 관리</h2><button type="button" class="btn ghost ibtn" id="tmClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
@@ -3282,8 +3354,9 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
     <nav class="admside" id="admSide" aria-label="관리 메뉴">
       <div class="admbrand"><b>호감슬라이드</b><span class="admbadge">마스터</span></div>
       <button type="button" data-p="home"><i class="ph ph-squares-four" aria-hidden="true"></i><span>관리 홈</span></button><button type="button" data-p="churches"><i class="ph ph-buildings" aria-hidden="true"></i><span>교회 관리</span></button><button type="button" data-p="usage"><i class="ph ph-chart-bar" aria-hidden="true"></i><span>사용 현황</span></button><button type="button" data-p="terms"><i class="ph ph-shield-check" aria-hidden="true"></i><span>약관·동의</span></button><button type="button" data-p="mail"><i class="ph ph-chat-text" aria-hidden="true"></i><span>문의</span></button><button type="button" data-p="log"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i><span>마스터 기록</span></button>
+      <button type="button" data-p="pay"><i class="ph ph-credit-card" aria-hidden="true"></i><span>유료 신청·입금</span></button>
       <p class="admsep">다음 단계</p>
-      <button type="button" data-p="pay"><i class="ph ph-credit-card" aria-hidden="true"></i><span>유료 신청·입금</span></button><button type="button" data-p="forms"><i class="ph ph-swatches" aria-hidden="true"></i><span>양식 배포</span></button><button type="button" data-p="manual"><i class="ph ph-book-open" aria-hidden="true"></i><span>매뉴얼·새 소식</span></button>
+      <button type="button" data-p="forms"><i class="ph ph-swatches" aria-hidden="true"></i><span>양식 배포</span></button><button type="button" data-p="manual"><i class="ph ph-book-open" aria-hidden="true"></i><span>매뉴얼·새 소식</span></button>
       <div class="admsidefoot"><button type="button" class="btn" id="admEnter"><i class="ph ph-sign-in" aria-hidden="true"></i>교회로 들어가기</button><button type="button" class="btn ghost" id="admOut">로그아웃</button></div>
     </nav>
     <main class="admmain">
@@ -3668,8 +3741,8 @@ async function sample(prompt,opts={}){
   const images=[];
   for(const b0 of (opts.images||[])){let x=b0;if(x.size>350e3)x=await smaller(x,opts.imgMax||1600);images.push({mime:x.type||'image/jpeg',data:await blobToB64(x)});}
   const {data,error}=await sb.functions.invoke('ai',{body:{prompt,images,tier:opts.modelTier,job:opts.job?.id,kind:opts.job?.kind}});aiLeft();
-  if(error){let code;try{code=(await error.context.clone().json()).code;}catch(e){}throw{message:await fnErrMsg(error,'ai'),code};}
-  if(data?.error)throw{message:data.error,code:data.code};
+  if(error){let code;try{code=(await error.context.clone().json()).code;}catch(e){}const message=await fnErrMsg(error,'ai');if(code==='charge')aiCharge(message);throw{message,code};}
+  if(data?.error){if(data.code==='charge')aiCharge(data.error);throw{message:data.error,code:data.code};}
   return{text:data?.text||''};
 }
 // AI 작업 하나(악보 1곡 · 주보 1번 · 맞춤법 1번): 안에서 여러 번 불러도 서버가 1번으로 세요
@@ -3686,16 +3759,22 @@ let AIQ=null,aiAt=0,RU=null; // RU: 옆 메뉴 막대의 팀원 수·용량. AI�
 async function aiLeft(now){if(!sb||!me)return;const my=me;if(!now)await new Promise(r=>setTimeout(r,800));if(me!==my)return;aiAt=Date.now();const n=aiAt;
   const {data,error}=await sb.rpc('ai_left');if(me!==my||n!==aiAt)return;AIQ=error||!data?null:data;aiDraw();
   if(AIQ&&(!RU||RU.me!==my||Date.now()-RU.at>60000)){const u=await sb.rpc('church_usage');if(me===my&&u.data){RU={me:my,at:Date.now(),d:u.data};aiDraw();}}}
-async function aiOut(){if(AIQ&&AIQ.left<=0)await aiLeft(true);return!!AIQ&&AIQ.left<=0;}
+async function aiOut(){if(AIQ&&AIQ.left<1)await aiLeft(true);return!!AIQ&&AIQ.left<1;}
+// 남은 AI는 맞춤법(0.2번) 때문에 소수 한 자리까지 보여요 (17단계)
+const aiN=n=>Number(n||0).toLocaleString('ko',{maximumFractionDigits:1});
+const aiUse=q=>({ai_limit:q.limit,left:q.left,month:q.month,free:q.free,paid:q.paid});
 function aiDraw(){const q=AIQ,need=busy?0:pendingSongs().length;
-  const ru=$('railUse');ru.hidden=!q;if(q)ru.innerHTML=useBars({...(RU&&RU.me===me?RU.d:{}),ai_limit:q.limit,ai_month:q.limit-q.left});
-  document.querySelectorAll('.aileft').forEach(e=>{e.hidden=!q;if(!q)return;e.className='aileft'+(q.left<=0?' no':q.left<=10?' lo':'');
-    e.textContent=q.left>0?`이번 달 AI ${q.left}번 남음`+(e.dataset.n&&need?` · ${need}번 써요`:''):q.limit?'이번 달 AI를 다 썼어요':'AI가 꺼져 있어요';});
-  document.querySelectorAll('.aimore').forEach(e=>{e.hidden=!q||q.left>0;if(e.hidden)return;const ad=me?.role==='admin';
-    e.querySelector('span').textContent=(q.limit?`다음 달 1일에 ${q.limit}번이 다시 생겨요.`:'')+' 붙여 넣은 가사는 지금도 화면에서 줄을 나눌 수 있어요.';e.querySelector('button').textContent=ad?'더 필요해요':'관리자에게 요청하기';});}
-function aiMore(){const c=CHURCHES.find(x=>x.id===me?.church)?.name||'';
-  if(me?.role!=='admin'){copy(`호감슬라이드의 이번 달 AI를 다 썼어요. 더 쓸 수 있게 호감에게 알려 주세요. (${c})`);return;}
-  const b=$('mailBody');if(!b.value.trim())b.value=`AI 횟수가 더 필요해요.\n교회: ${c}\n한 달에 쓰고 싶은 횟수: `;document.querySelector('#mailKind [data-k=문의]')?.click();$('mailDlg').showModal();b.focus();}
+  const ru=$('railUse');ru.hidden=!q;if(q)ru.innerHTML=useBars({...(RU&&RU.me===me?RU.d:{}),...aiUse(q)});
+  document.querySelectorAll('.aileft').forEach(e=>{e.hidden=!q;if(!q)return;const L=+q.left;e.className='aileft'+(L<1?' no':L<=10?' lo':'');
+    e.textContent=(L>0?`AI ${aiN(L)}번 남음`+(e.dataset.n&&need?` · ${need}번 써요`:''):'AI를 다 썼어요')+(q.pending?' · 입금 확인 중':'');});
+  document.querySelectorAll('.aimore').forEach(e=>{e.hidden=!q||+q.left>=1;if(e.hidden)return;
+    e.querySelector('span').textContent=(q.pending?'충전 신청의 입금을 확인하고 있어요. 확인되면 AI 45번이 더 들어와요.'
+      :q.limit?`이번 달 무료 AI를 다 썼어요. 다음 달 1일에 ${q.limit}번이 다시 생겨요. 지금 더 쓰려면 충전해 주세요(50번 5천 원).`
+      :'AI 횟수를 다 썼어요. 50번에 5천 원이고, 신청하면 바로 5번을 먼저 쓸 수 있어요.')+' 붙여 넣은 가사는 지금도 화면에서 줄을 나눌 수 있어요.';
+    e.querySelector('button').textContent=q.pending?'신청 내역 보기':'충전 신청';});}
+function aiMore(){if(AIQ?.pending){openChurch();return;}openPay('ai');}
+// AI가 '다 썼어요'로 막히면 그 자리에서 충전 신청으로 이어요
+async function aiCharge(m){await aiLeft(true);toastUndo(m||'AI 횟수를 다 썼어요',()=>aiMore(),AIQ?.pending?'신청 내역':'충전 신청',7000);}
 setTimeout(()=>{const mk=n=>{const e=document.createElement('span');e.className='aileft';e.hidden=true;if(n)e.dataset.n=1;return e;},box=()=>{const d=document.createElement('div');d.className='aimore';d.hidden=true;d.innerHTML='<span></span><button type="button" class="btn"></button>';d.querySelector('button').onclick=aiMore;return d;};
   const cb=$('convertBtn');cb.parentElement.prepend(mk(1));cb.closest('.pf').prepend(box());
   document.querySelectorAll('#contibox [data-read]').forEach(b=>{b.before(mk());b.closest('.cfoot').before(box());});aiDraw();},0);
@@ -3948,7 +4027,7 @@ async function convertOne(s,f,expand){
           v=await askJSON(convPrompt(s,f,expand),opts);
           if(!v||!Array.isArray(v.sections)||!v.sections.length)throw{message:'악보에서 가사를 찾지 못했어요. 가사가 보이게 찍혔는지 확인해 주세요.'};
           lastErr=null;break;
-        }catch(e){lastErr=e;v=null;if(['not_granted','rate_limited','quota'].includes(e?.code))break;}
+        }catch(e){lastErr=e;v=null;if(['not_granted','rate_limited','quota','charge'].includes(e?.code))break;}
       }
       // 붙여 넣은 가사는 AI가 바쁘거나 한도가 끝나도, 이 화면의 줄바꿈 엔진으로 나눠서 쓸 수 있게 해요
       if(lastErr&&s.mode==='text'&&lastErr.code!=='not_granted'){
@@ -3973,7 +4052,7 @@ async function readSongs(){
   let todo=pendingSongs();if(!todo.length)return;
   busy=true;updateConvertBtn();aiSkip=0;
   // 남은 횟수만큼 앞에서부터. 붙여 넣은 가사는 횟수가 없어도 화면에서 줄을 나눠요
-  await aiLeft(true);if(AIQ){let n=AIQ.left;const all=todo;todo=all.filter(s=>n>0?(n--,true):s.mode==='text');aiSkip=all.length-todo.length;}
+  await aiLeft(true);if(AIQ){let n=Math.floor(AIQ.left);const all=todo;todo=all.filter(s=>n>0?(n--,true):s.mode==='text');aiSkip=all.length-todo.length;}
   if(!todo.length){busy=false;updateConvertBtn();return;}const st=$('convStatus');st.className='status';
   const f=FMT,expand=$('optExpand').checked;let n=0;
   // 두 곡씩 동시에 읽어요 (무료 사용량 한도 안에서)
@@ -6017,7 +6096,7 @@ addEventListener('paste',ev=>{if(!$('contibox').classList.contains('on')||$('con
   const t=(ev.clipboardData?.getData('text')||'').trim();if(!t)return;ev.preventDefault();setContiMode('paste');const a=$('contiIn');a.value=[a.value.trim(),t].filter(Boolean).join('\n');contiReady();a.focus();});
 async function readConti(){const img=contiMode==='image',raw=img?'':$('contiIn').value.trim(),imgs=img?CPG.map(p=>p.blob):[]; // 지금 보이는 칸만 읽어요
   if(!raw&&!imgs.length){toast('사진이나 글을 먼저 넣어 주세요');return;}
-  if(await aiOut()){toast('이번 달 AI를 다 썼어요');return;}
+  if(await aiOut()){aiCharge();return;}
   const job=aiJob('bulletin');
   const b=$(CPANE[contiMode]).querySelector('[data-read]');contiBusy=true;contiReady();const t0=b.innerHTML;b.innerHTML='<span class="spin"></span> 읽는 중…';
   try{const v=await askJSON(contiPrompt(raw,imgs.length),imgs.length?{job,images:imgs,imgMax:2200}:{job,modelTier:'simple'});const list=Array.isArray(v)?v:v&&v.items;
@@ -7402,13 +7481,13 @@ function showJoin(u){const md=u.user_metadata||{},nick=String(md.name||md.full_n
       if(error)throw new Error('서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요');if(!data.ok)throw new Error(data.error);
       store.set('joinCode',null);toast(`${data.church}에 들어왔어요`);await afterLogin(u);}
     catch(x){err.textContent=x.message||String(x);}finally{go.disabled=false;}};
-  $('gfGo').onclick=async()=>{const church=normName($('gfChurch').value),name=normName($('gfName').value),err=$('gfErr');err.textContent='';
-    if(church.length<2)return err.textContent='교회 이름을 2글자 이상 적어 주세요';if(name.length<2)return err.textContent='이름을 2글자 이상 적어 주세요';
+  $('gfGo').onclick=async()=>{const church=normName($('gfChurch').value),name=normName($('gfName').value),info=addrVal('gfAddr'),err=$('gfErr');err.textContent='';
+    if(church.length<2)return err.textContent='교회 이름을 2글자 이상 적어 주세요';const ae=addrErr(info);if(ae)return err.textContent=ae;if(name.length<2)return err.textContent='이름을 2글자 이상 적어 주세요';
     if(!agreedIn('gfAgree'))return err.textContent='이용약관과 개인정보 처리방침에 동의해 주세요';
     const go=$('gfGo');go.disabled=true;
-    try{await agreeNow();const {data,error}=await sb.rpc('create_church',{p_church:church,p_name:name});
+    try{await agreeNow();const {data,error}=await sb.rpc('create_church',{p_church:church,p_name:name,p_info:info});
       if(error)throw new Error('서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요');if(!data.ok)throw new Error(data.error);
-      toast(`새 교회를 만들었어요: ${data.church}. 팀원 초대로 팀원을 불러 주세요`);await afterLogin(u);}
+      toast(madeMsg(data),data.free===false?7000:2200);await afterLogin(u);}
     catch(x){err.textContent=x.message||String(x);}finally{go.disabled=false;}};}
 async function goOut(){askKakao();await liveWipe();await sb.auth.signOut();me=null;$('jName').value=$('gfName').value='';showGate();}
 document.querySelectorAll('[data-gout]').forEach(b=>b.onclick=goOut);
@@ -7510,8 +7589,29 @@ function chMode(m){$('chPick').hidden=m!=='pick';$('chJoin').hidden=m!=='join';$
   $('chTitle').textContent=m==='pick'?(CHURCHES.find(x=>x.id===me?.church)?.name||'교회'):m==='join'?'다른 교회 들어가기':'새 교회 만들기';if(!$('chDlg').open)$('chDlg').showModal();
   ({join:$('chCode').value?$('chName1'):$('chCode'),new:$('chName')})[m]?.focus();}
 const myName=()=>me?.name||$('jName').value||'';
+const madeMsg=d=>`새 교회를 만들었어요: ${d.church}. `+(d.free===false?'같은 주소의 교회가 이미 있어서 처음 무료 AI 50번은 없어요. 필요하면 충전해서 써 주세요':'팀원 초대로 팀원을 불러 주세요');
+// 교회 주소 칸 (17단계): 카카오(다음) 우편번호 검색을 칸 아래에 열어요. 무료 · 키 없음
+const addrHTML=()=>`<div class="gl addrf"><span>교회 주소</span><div class="addrrow"><input type="text" data-road readonly placeholder="주소 찾기를 눌러 골라 주세요" aria-label="교회 주소"><button type="button" class="addrfind" data-find>주소 찾기</button></div>
+  <div class="addrpick" data-pick hidden><div class="addrbar"><span>도로명이나 건물 이름으로 찾아 골라 주세요</span><button type="button" data-close>닫기</button></div><div class="addrembed" data-embed></div></div></div>
+  <label class="gl"><span>상세 주소 <small>(선택 · 층, 호)</small></span><input type="text" data-detail maxlength="100" autocomplete="off" placeholder="예) 2층"></label>
+  <details class="addropt"><summary>교단 · 대표 전화 (선택)</summary><label class="gl"><span>교단</span><input type="text" data-denom maxlength="30" autocomplete="off" placeholder="예) 대한예수교장로회"></label><label class="gl"><span>대표 전화</span><input type="tel" data-phone maxlength="20" autocomplete="off" placeholder="예) 02-1234-5678"></label></details>`;
+let pcP=null;
+const loadPostcode=()=>window.daum?.Postcode?Promise.resolve():pcP||(pcP=new Promise((res,rej)=>{const x=document.createElement('script');x.src='https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';x.onload=res;x.onerror=()=>{pcP=null;x.remove();rej();};document.head.appendChild(x);}));
+const addrQ=(id,k)=>$(id).querySelector(`[data-${k}]`);
+function addrVal(id){const b=$(id),v=k=>normName(addrQ(id,k).value);return{road:v('road'),detail:v('detail'),zip:b.dataset.zip||'',denom:v('denom'),phone:v('phone')};}
+function addrSet(id,c){const b=$(id);addrQ(id,'road').value=c?.road||'';addrQ(id,'detail').value=c?.detail||'';addrQ(id,'denom').value=c?.denom||'';addrQ(id,'phone').value=c?.phone||'';b.dataset.zip=c?.zip||'';
+  addrQ(id,'pick').hidden=true;addrQ(id,'embed').innerHTML='';b.querySelector('details').open=!!(c?.denom||c?.phone);}
+const addrErr=v=>!v.road?'교회 주소를 찾아 골라 주세요':!/^[0-9 ()+-]*$/.test(v.phone)?'전화번호는 숫자와 -만 적어 주세요':'';
+async function addrFind(id){const pick=addrQ(id,'pick'),em=addrQ(id,'embed'),err=$(id).closest('#gate')?$('gfErr'):$('chErr');err.textContent='';
+  try{await loadPostcode();}catch(e){err.textContent='주소 찾기를 불러오지 못했어요. 인터넷 연결을 확인해 주세요';return;}
+  em.innerHTML='';pick.hidden=false;
+  new daum.Postcode({width:'100%',height:'100%',oncomplete:d=>{addrQ(id,'road').value=d.roadAddress||d.autoRoadAddress||d.address||'';$(id).dataset.zip=d.zonecode||'';pick.hidden=true;em.innerHTML='';addrQ(id,'detail').focus();}}).embed(em,{autoClose:false});
+  pick.scrollIntoView({block:'nearest'});}
+['gfAddr','chAddr','chInfoAddr'].forEach(id=>{$(id).innerHTML=addrHTML();addrQ(id,'find').onclick=addrQ(id,'road').onclick=()=>addrFind(id);
+  addrQ(id,'close').onclick=()=>{addrQ(id,'pick').hidden=true;addrQ(id,'embed').innerHTML='';addrQ(id,'find').focus();};});
+setTimeout(()=>{try{const m=sessionStorage.getItem('hogam_note');if(m){sessionStorage.removeItem('hogam_note');toast(m,7000);}}catch(e){}},1500);
 function openJoin(code=''){closeSet();closeRail();$('chCode').value=code;$('chName1').value=myName();chMode('join');}
-function openMake(){closeSet();closeRail();$('chName').value='';$('chName2').value=myName();chMode('new');}
+function openMake(){closeSet();closeRail();$('chName').value='';addrSet('chAddr',null);$('chName2').value=myName();chMode('new');}
 function openInvite(code){const k=String(code).replace(/[^A-Za-z0-9]/g,'').toUpperCase(),c=CHURCHES.find(x=>x.invite_code===k);store.set('joinCode',null);
   if(c){if(c.id===me.church)toast(`이미 ${c.name}에 들어와 있어요`);else{closeConti();openChurch();$('chErr').textContent=`이미 ${c.name}에 들어와 있어요. 아래에서 고르면 바꿔요`;}return;}
   closeConti();openJoin(k);}
@@ -7521,15 +7621,15 @@ async function chSend(btn,fn,args){const err=$('chErr');err.textContent='';btn.d
     if(me){const why=await flushAll();if(why)throw new Error(why);}
     const {data,error}=await sb.rpc(fn,args);
     if(error)throw new Error('서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요');if(!data.ok)throw new Error(data.error);
-    store.set('joinCode',null);if(fn==='create_church')canMake=false;
+    store.set('joinCode',null);if(fn==='create_church'){canMake=false;try{sessionStorage.setItem('hogam_note',madeMsg(data));}catch(e){}}
     await goChurch(data.church_id);
   }catch(x){err.textContent=x.message||String(x);}finally{btn.disabled=false;}}
 $('chJoinF').onsubmit=e=>{e.preventDefault();const code=$('chCode').value.trim(),name=normName($('chName1').value);
   if(!code)return $('chErr').textContent='초대 코드를 넣어 주세요';if(name.length<2)return $('chErr').textContent='이름을 2글자 이상 적어 주세요';
   chSend($('chJoinGo'),'join_church',{p_code:code,p_name:name});};
-$('chNewF').onsubmit=e=>{e.preventDefault();const church=normName($('chName').value),name=normName($('chName2').value);
-  if(church.length<2)return $('chErr').textContent='교회 이름을 2글자 이상 적어 주세요';if(name.length<2)return $('chErr').textContent='이름을 2글자 이상 적어 주세요';
-  chSend($('chNewGo'),'create_church',{p_church:church,p_name:name});};
+$('chNewF').onsubmit=e=>{e.preventDefault();const church=normName($('chName').value),name=normName($('chName2').value),info=addrVal('chAddr');
+  if(church.length<2)return $('chErr').textContent='교회 이름을 2글자 이상 적어 주세요';const ae=addrErr(info);if(ae)return $('chErr').textContent=ae;if(name.length<2)return $('chErr').textContent='이름을 2글자 이상 적어 주세요';
+  chSend($('chNewGo'),'create_church',{p_church:church,p_name:name,p_info:info});};
 $('churchBtn').onclick=()=>openChurch();
 document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>b.dataset.ch==='join'?openJoin():openMake());
 $('chClose').onclick=()=>$('chDlg').close();$('chDlg').addEventListener('click',e=>{if(e.target.id==='chDlg')$('chDlg').close();});
@@ -7542,14 +7642,53 @@ const tmUl=t=>$(t.all?'spTeam':'tmList'),tmErr=m=>{$(TM?.all?'spErr':'tmErr').te
 const tmFail='불러오지 못했어요. 인터넷 연결을 확인해 주세요';
 async function openTeam(t){TM=t;if(!t.all){closeSet();closeRail();if(!$('tmDlg').open)$('tmDlg').showModal();}
   tmErr('');tmUl(t).innerHTML='<li class="empty">불러오는 중…</li>';if(!t.all)tmUse(t);await tmLoad();}
-const useBars=d=>spM('이번 달 AI',d.ai_month,d.ai_limit,n=>spNum(n)+'번')+(d.member_limit==null?'':spM('팀원',d.members,d.member_limit,n=>spNum(n)+'명')+spM('용량',d.bytes,d.mb_limit*1048576,spSize));
+// AI는 남은 횟수와 어디서 온 것인지(17단계). 옛 서버(left 없음)면 예전처럼 한 달 막대
+const aiBar=d=>{if(d.left==null)return spM('이번 달 AI',d.ai_month,d.ai_limit,n=>spNum(n)+'번');
+  const src=[d.ai_limit>0?`이번 달 무료 ${aiN(d.month)}`:'',+d.free>0?`처음 무료 ${aiN(d.free)}`:'',+d.paid>0?`충전 ${aiN(d.paid)}`:''].filter(Boolean).join(' · ');
+  return`<span class="spm"><span><span>AI 남은 횟수</span><span>${aiN(Math.max(0,+d.left))}번</span></span>${src?`<small class="aisrc">${src}</small>`:''}</span>`;};
+const useBars=d=>aiBar(d)+(d.member_limit==null?'':spM('팀원',d.members,d.member_limit,n=>spNum(n)+'명')+spM('용량',d.bytes,d.mb_limit*1048576,spSize));
 // 교회 정보 창의 사용량: 팀원 모두 봐요
 async function useBox(id){const u=$(id),my=me;u.hidden=!my;if(!my||!sb)return;u.innerHTML='<p>사용량을 불러오는 중…</p>';
   const {data:d,error}=await sb.rpc('church_usage');if(me!==my)return;u.innerHTML=error||!d?'<p>사용량을 불러오지 못했어요.</p>':useBars(d);if(d){RU={me:my,at:Date.now(),d};aiDraw();}}
-function openChurch(){closeRail();hideTip();chMode('pick');useBox('chUse');$('chMore').hidden=me?.role!=='admin';}
-$('chMore').onclick=()=>{$('chDlg').close();aiMore();};
+function openChurch(){closeRail();hideTip();chMode('pick');useBox('chUse');$('chMore').hidden=!me;chExtra();}
+$('chMore').onclick=()=>openPay();
+// 신청 내역(팀원 모두) · 교회 정보(관리자만). 옛 서버면 아무것도 안 보여요
+let CHI=null;
+const PAYK={ai:'AI 50번',mb:'용량 50MB'},PAYS={pending:'입금 확인 중',approved:'승인',cancelled:'취소됨',refunded:'환불됨'};
+const payLi=x=>`<li><span>${PAYK[x.kind]||''} · ${spNum(x.amount)}원<small>${ymd(x.at)} · ${esc(x.user_name)} 신청 · 입금자 ${esc(x.payer)}</small></span><span class="paytag ${esc(x.status)}">${x.status==='approved'?(x.kind==='ai'?'충전됨':'늘어남'):PAYS[x.status]||''}</span></li>`;
+async function chExtra(){const my=me;$('chPay').hidden=$('chInfo').hidden=$('chInfoF').hidden=true;$('chInfoEdit').hidden=false;if(!my||!sb)return;const ad=my.role==='admin';
+  const [p,i]=await Promise.all([sb.rpc('pay_mine'),ad?sb.rpc('church_info_get',{p_church:my.church}):null]);if(me!==my||!$('chDlg').open)return;
+  if(!p.error&&Array.isArray(p.data)&&p.data.length){$('chPayList').innerHTML=p.data.slice(0,10).map(payLi).join('');$('chPay').hidden=false;}
+  if(ad&&i&&!i.error){CHI=i.data;chInfoDraw();$('chInfo').hidden=false;}}
+function chInfoDraw(){const c=CHI,row=(a,b)=>`<div><dt>${a}</dt><dd>${b?esc(b):'—'}</dd></div>`;
+  $('chInfoV').innerHTML=c?row('주소',[c.road,c.detail].filter(Boolean).join(', ')+(c.zip?` (${c.zip})`:''))+row('교단',c.denom)+row('대표 전화',c.phone):'<div><dd>아직 적지 않았어요. 교회 주소를 채워 주세요.</dd></div>';
+  $('chInfoEdit').textContent=c?'고치기':'채우기';}
+$('chInfoEdit').onclick=()=>{addrSet('chInfoAddr',CHI);$('chInfoF').hidden=false;$('chInfoEdit').hidden=true;$('chInfoAddr').querySelector('[data-find]').focus();};
+$('chInfoNo').onclick=()=>{$('chInfoF').hidden=true;$('chInfoEdit').hidden=false;$('chErr').textContent='';};
+$('chInfoSave').onclick=async e=>{const info=addrVal('chInfoAddr'),ae=addrErr(info),bt=e.target,my=me;$('chErr').textContent='';if(ae)return $('chErr').textContent=ae;
+  bt.disabled=true;const {data,error}=await sb.rpc('church_info_set',{p_church:my.church,p_info:info});bt.disabled=false;if(me!==my)return;
+  if(error||!data?.ok){$('chErr').textContent=data?.error||'저장하지 못했어요. 인터넷 연결을 확인해 주세요';return;}
+  CHI={...(CHI||{}),...info};chInfoDraw();$('chInfoF').hidden=true;$('chInfoEdit').hidden=false;toast('교회 정보를 저장했어요');};
+// 충전 신청 창 (팀원 누구나). 계좌는 화면에 보여 주는 것이라 비밀이 아니에요
+const PAY_ACCT='토스뱅크 1002-6805-7619',PAY_TO='윤형림(호감)';let PAYKIND='ai';
+function payKind(k){PAYKIND=k;$('payDlg').querySelectorAll('.paypick button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+  $('payTitle').textContent=k==='ai'?'충전 신청':'용량 추가 신청';
+  $('payS2').textContent=k==='ai'?'보낸 사람 이름을 적고 ‘신청하기’를 눌러 주세요. AI 5번이 바로 열려요.':'보낸 사람 이름을 적고 ‘신청하기’를 눌러 주세요.';
+  $('payS3').textContent=k==='ai'?'호감이 입금을 확인하면 나머지 45번이 들어와요.':'호감이 입금을 확인하면 사진·로고 용량이 50MB 늘어나요.';
+  $('payFine').innerHTML=(k==='ai'?'입금이 확인되지 않으면 신청이 취소되고, 먼저 쓴 횟수는 남은 횟수에서 빠져요. 충전한 AI는 7일 안에 한 번도 안 썼으면 전액, 그 뒤엔 남은 횟수만큼 돌려드려요.':'용량 추가는 7일 안에 기본 20MB를 넘기지 않았으면 전액 돌려드려요. 한 번 늘린 용량은 다른 교회로 옮길 수 없어요.')+' <a href="terms.html" target="_blank" rel="noopener">이용약관</a>';}
+function openPay(k='ai'){if(!me)return;closeSet();closeRail();if($('chDlg').open)$('chDlg').close();if($('tmDlg').open)$('tmDlg').close();
+  $('paySub').textContent=`${CHURCHES.find(x=>x.id===me.church)?.name||''} · 신청한 팀원 ${me.name||''}`;$('payErr').textContent='';$('payName').value=me.name||'';
+  $('payAcct').textContent=PAY_ACCT;$('payTo').textContent='받는 사람 '+PAY_TO;payKind(k);$('payDlg').showModal();$('payName').focus();}
+$('payDlg').querySelectorAll('.paypick button').forEach(b=>b.onclick=()=>payKind(b.dataset.k));
+$('payCopy').onclick=()=>copy(PAY_ACCT.replace(/^\S+\s/,''));
+$('payClose').onclick=()=>$('payDlg').close();$('payDlg').addEventListener('click',e=>{if(e.target.id==='payDlg')$('payDlg').close();});
+$('payGo').onclick=async()=>{const payer=normName($('payName').value),err=$('payErr'),bt=$('payGo'),k=PAYKIND,my=me;err.textContent='';
+  if(!payer)return err.textContent='입금자 이름을 적어 주세요';bt.disabled=true;
+  const {data,error}=await sb.rpc('pay_request',{p_kind:k,p_payer:payer});bt.disabled=false;if(me!==my)return;
+  if(error||!data){err.textContent='서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요';return;}if(!data.ok){err.textContent=data.error;return;}
+  $('payDlg').close();RU=null;toast(k==='ai'?'신청했어요. AI 5번을 지금 바로 쓸 수 있어요. 입금이 확인되면 45번이 더 들어와요':'신청했어요. 입금이 확인되면 용량이 50MB 늘어나요',5000);await aiLeft(true);};
 async function tmUse(t){const u=$('tmUse');u.hidden=true;const {data:d,error}=await sb.rpc('church_usage');if(TM!==t||error||!d)return;
-  u.innerHTML=useBars(d)+'<button type="button" class="btn">더 필요해요</button>';u.querySelector('button').onclick=()=>{$('tmDlg').close();aiMore();};u.hidden=false;}
+  u.innerHTML=useBars(d)+'<button type="button" class="btn">더 필요해요 (충전·용량 추가)</button>';u.querySelector('button').onclick=()=>openPay();u.hidden=false;}
 async function tmLoad(){const t=TM;if(!t)return;
   const {data,error}=t.all?await sb.rpc('super_members',{p_church:t.church}):await sb.from('members').select('user_id,name,role,joined_at').eq('church_id',t.church).order('joined_at');
   const ul=tmUl(t);if(TM!==t||!ul)return;ul.innerHTML='';if(error){tmErr(tmFail);return;}
@@ -7582,8 +7721,10 @@ const spM=(l,v,x,f)=>{const p=x>0?spPct(v,x):0;return`<span class="spm"><span><s
 // 새 교회 알림: 전체 관리 단추의 숫자와 내 이름 옆 점
 async function spBadge(){if($('openSuper').hidden){$('spDot').hidden=true;return;}const {data,error}=await sb.rpc('super_new_count');if(error)return;$('spBadge').textContent=data;$('spBadge').hidden=$('spDot').hidden=!data;}
 setInterval(()=>{if(sb&&me&&document.visibilityState==='visible'&&!$('openSuper').hidden)spBadge();},300000);
-function spNeed(c){if(c.is_new)return'새로 만들어졌어요';if(c.suspended_at)return'';if(!c.admins)return'관리자가 없어요';const d=spAgo(c.last_used||c.created_at);if(c.ai_limit&&c.ai_month>=c.ai_limit)return'이번 달 AI를 다 썼어요';if(c.bytes>=c.mb_limit*1048576)return'용량이 찼어요';if(c.members>=c.member_limit)return'팀원이 다 찼어요';
-  if(c.ai_limit&&c.ai_month>=c.ai_limit*.8)return'AI를 80% 넘게 썼어요';return d>30?`${d}일 동안 쓰지 않았어요`:'';}
+// AI를 다 썼나: 남은 횟수(17단계)로 봐요. 옛 서버면 한 달 한도로
+const aiOutC=c=>c.ai_left!=null?+c.ai_left<=0:!!c.ai_limit&&+c.ai_month>=+c.ai_limit;
+function spNeed(c){if(c.is_new)return'새로 만들어졌어요';if(c.suspended_at)return'';if(!c.admins)return'관리자가 없어요';const d=spAgo(c.last_used||c.created_at);if(aiOutC(c))return'AI를 다 썼어요';if(c.bytes>=c.mb_limit*1048576)return'용량이 찼어요';if(c.members>=c.member_limit)return'팀원이 다 찼어요';
+  if(c.ai_left!=null?+c.ai_left<10:c.ai_limit&&c.ai_month>=c.ai_limit*.8)return'AI가 얼마 안 남았어요';return d>30?`${d}일 동안 쓰지 않았어요`:'';}
 const SPF={all:['전체',()=>true],need:['확인 필요',c=>!!spNeed(c)],off:['쉬는 중',c=>!!c.suspended_at]};
 // 사용 중 불: 최근 10분 안에 저장·AI 기록이 있으면 깜박, 오늘 쓴 교회는 켜짐만
 const spLiveK=c=>!c.last_used||c.suspended_at?'':Date.now()-Date.parse(c.last_used)<6e5?'blink':spAgo(c.last_used)===0?'on':'';
@@ -7602,7 +7743,7 @@ function spDraw(){
   const L=SP.filter(c=>SPF[spF][1](c)&&c.name.includes(q)).sort((a,b)=>!!b.is_new-!!a.is_new||!!spNeed(b)-!!spNeed(a)||!!a.suspended_at-!!b.suspended_at||new Date(b.last_used||0)-new Date(a.last_used||0));
   if(!L.length)g.innerHTML='<p class="spempty">맞는 교회가 없어요</p>';
   L.forEach(c=>{const b=document.createElement('button'),w=spNeed(c);b.type='button';b.className='spcard';
-    b.innerHTML=`<span class="sptop"><span class="spname">${spLive(c)}<b></b></span>${spTag(c)}</span><span class="spfacts">${[['팀원',`${spNum(c.members)} / ${spNum(c.member_limit)}명`],['예배',spNum(c.services)+'개'],['마지막 사용',spLast(c)],['곡',spNum(c.songs)+'개'],['오늘 AI',spNum(c.ai_today)+'번'],['만든 날',ymd(c.created_at).slice(2)]].map(x=>`<span><small>${x[0]}</small><b>${x[1]}</b></span>`).join('')}</span>${spM('이번 달 AI',c.ai_month,c.ai_limit,n=>spNum(n)+'번')}${spM('용량',c.bytes,c.mb_limit*1048576,spSize)}<span class="spneed${w?' w':''}">${w||'확인할 일 없음'}</span>`;
+    b.innerHTML=`<span class="sptop"><span class="spname">${spLive(c)}<b></b></span>${spTag(c)}</span><span class="spfacts">${[['팀원',`${spNum(c.members)} / ${spNum(c.member_limit)}명`],['예배',spNum(c.services)+'개'],['마지막 사용',spLast(c)],['곡',spNum(c.songs)+'개'],['오늘 AI',spNum(c.ai_today)+'번'],['만든 날',ymd(c.created_at).slice(2)]].map(x=>`<span><small>${x[0]}</small><b>${x[1]}</b></span>`).join('')}</span>${c.ai_left!=null?`<span class="spm"><span><span>AI 남은 횟수</span><span>${aiN(c.ai_left)}번 · 이번 달 ${spNum(c.ai_month)}번 씀</span></span></span>`:spM('이번 달 AI',c.ai_month,c.ai_limit,n=>spNum(n)+'번')}${spM('용량',c.bytes,c.mb_limit*1048576,spSize)}<span class="spneed${w?' w':''}">${w||'확인할 일 없음'}</span>`;
     b.querySelector('b').textContent=c.name;b.onclick=()=>spOpen(c);g.appendChild(b);});}
 async function spOpen(c){const n=++spN;spCur=c;spTab='info';spD=null;$('spTitle').textContent=c.name;$('spBack').hidden=false;$('spHome').hidden=true;$('spOne').hidden=false;$('spErr').textContent=$('spOk').textContent='';
   $('adm').scrollTop=0;spPane();$('spTitle').focus();
@@ -7613,8 +7754,8 @@ function spPane(){const c=spCur,row=(a,b)=>`<div class="sprow"><span>${a}</span>
   $('spTabs').innerHTML=[['info','정보'],['use','사용'],['team','팀원'],['limit','제한']].map(x=>`<button type="button" data-t="${x[0]}" aria-pressed="${x[0]===spTab}">${x[1]}</button>`).join('');
   if(spTab==='team'){p.innerHTML='<ul class="tmlist" id="spTeam"></ul>';openTeam({church:c.id,name:c.name,all:true});return;}
   if(!spD){p.innerHTML='<p class="spempty">불러오는 중…</p>';return;}
-  if(spTab==='limit'){const F=[['ai_limit','한 달 AI','번',0,5000,50],['member_limit','팀원 (관리자 포함)','명',1,200,5],['mb_limit','용량','MB',1,5000,50]],d=spD;
-    p.innerHTML=`<div class="spbox">${F.map(f=>`<div class="sprow"><label for="sp_${f[0]}">${f[1]}</label><input type="number" inputmode="numeric" id="sp_${f[0]}" min="${f[3]}" max="${f[4]}" value="${c[f[0]]}"><em>${f[2]}</em></div>`).join('')}</div><div class="spacts"><button type="button" class="btn pri" id="spLim">제한 저장</button><button type="button" class="btn" id="spLimBase">기본값으로</button></div><p class="spnote">기본값은 AI 50번 · 팀원 5명 · 용량 50MB예요. AI를 0으로 하면 꺼져요. 넘어도 있던 팀원은 그대로이고, 예배와 곡은 저장돼요.</p><h3>호감이 바꾼 기록 (1년)</h3><div class="spbox" id="spHist"></div>`;
+  if(spTab==='limit'){const F=[['ai_limit','매달 무료 AI','번',0,5000,0],['member_limit','팀원 (관리자 포함)','명',1,200,5],['mb_limit','용량','MB',1,5000,20]],d=spD;
+    p.innerHTML=`<div class="spbox">${F.map(f=>`<div class="sprow"><label for="sp_${f[0]}">${f[1]}</label><input type="number" inputmode="numeric" id="sp_${f[0]}" min="${f[3]}" max="${f[4]}" value="${c[f[0]]}"><em>${f[2]}</em></div>`).join('')}</div><div class="spacts"><button type="button" class="btn pri" id="spLim">제한 저장</button><button type="button" class="btn" id="spLimBase">기본값으로</button></div><p class="spnote">기본값은 매달 무료 AI 0번 · 팀원 5명 · 용량 20MB예요. 매달 무료는 초기 교회처럼 따로 드릴 때만 올려요. 처음 무료와 충전 횟수는 ‘유료 신청·입금’에서 바뀌어요. 넘어도 있던 팀원은 그대로이고, 예배와 곡은 저장돼요.</p><h3>호감이 바꾼 기록 (1년)</h3><div class="spbox" id="spHist"></div>`;
     $('spHist').innerHTML=d.history.length?d.history.map(()=>'<div class="sprow"><span></span><b></b></div>').join(''):'<div class="sprow"><span>아직 없음</span></div>';
     d.history.forEach((x,i)=>{const w=$('spHist').children[i];w.querySelector('span').textContent=x.what;w.querySelector('b').textContent=ymd(x.at);});
     $('spLimBase').onclick=()=>F.forEach(f=>{$('sp_'+f[0]).value=f[5];});
@@ -7626,7 +7767,7 @@ function spPane(){const c=spCur,row=(a,b)=>`<div class="sprow"><span>${a}</span>
       if(spTab==='limit'){spPane();$('spOk').textContent='제한을 바꿨어요';}};return;}
   if(spTab==='use'){const k=spD.ai_days.map(Number),mx=Math.max(...k),B=spD.bytes;
     p.innerHTML=`<div class="spbox">${row('이번 달 AI',spNum(c.ai_month)+'번')+row('오늘 AI',spNum(c.ai_today)+'번')+row('마지막 사용',spLast(c))}</div><h3>최근 14일 AI 사용</h3><div class="spbox"><div class="spbars" role="img" aria-label="최근 14일 AI 사용, 가장 많은 날 ${mx}번">${k.map(x=>`<i style="height:${mx?x/mx*100:0}%" title="${x}번"></i>`).join('')}</div><div class="spax"><span>13일 전</span><span>가장 많은 날 ${spNum(mx)}번</span><span>오늘</span></div></div><h3>이번 달 무엇에 썼나</h3><div class="spbox">${(spD.ai_kinds||[]).filter(x=>+x.n||+x.claude_in||+x.gemini_in).map(x=>row(AIK[x.kind]||'기타',`${spNum(x.n)}번<small>Claude ${spNum(x.claude_in)} / ${spNum(x.claude_out)}<br>Gemini ${spNum(x.gemini_in)} / ${spNum(x.gemini_out)}</small>`)).join('')||row('아직 없음','')}</div><p class="spnote">작은 글씨는 보낸 양 / 받은 양(토큰)이에요. 가사와 사진 내용은 남기지 않아요.</p><h3>용량 (어림)</h3><div class="spbox">${[['배경 사진 · 로고','media'],['예배','services'],['곡','songs'],['설정','settings'],['편집 기록','log']].map(x=>row(x[0],spSize(B[x[1]]))).join('')+row('모두',spSize(c.bytes))}</div>`;return;}
-  p.innerHTML=`${c.is_new?'<div class="spnew"><span>새로 만들어진 교회예요</span><button type="button" class="btn pri" id="spSeen">확인했어요</button></div>':''}<div class="spbox"><div class="sprow"><span>상태</span>${spTag(c)}</div>${row('만든 날',ymd(c.created_at))+row('관리자','')+row('팀원',spNum(c.members)+'명')+row('예배 · 곡',`${spNum(c.services)}개 · ${spNum(c.songs)}곡`)}</div><h3>호감 메모</h3><textarea id="spMemo" maxlength="2000" aria-label="호감 메모" placeholder="호감만 보는 메모"></textarea><div class="spacts"><button type="button" class="btn pri" id="spSave">메모 저장</button><button type="button" class="btn${c.suspended_at?'':' danger'}" id="spSus">${c.suspended_at?'다시 열기':'교회 멈추기'}</button></div><p class="spnote">${c.suspended_at?'쉬고 있는 교회예요. 팀원이 열 수 없어요.':'멈추면 팀원이 이 교회를 열 수 없어요. 자료는 그대로 있어요.'} 예배와 곡의 내용은 호감에게도 보이지 않아요.</p>`;
+  p.innerHTML=`${c.is_new?'<div class="spnew"><span>새로 만들어진 교회예요</span><button type="button" class="btn pri" id="spSeen">확인했어요</button></div>':''}<div class="spbox"><div class="sprow"><span>상태</span>${spTag(c)}</div>${row('만든 날',ymd(c.created_at))+row('관리자','')+row('팀원',spNum(c.members)+'명')+row('예배 · 곡',`${spNum(c.services)}개 · ${spNum(c.songs)}곡`)+(spD.free!=null?row('AI 남은 횟수',`${aiN(c.ai_left)}번<small>처음 무료 ${aiN(spD.free)} · 충전 ${aiN(spD.paid)}${c.ai_limit?` · 매달 무료 ${spNum(c.ai_limit)}`:''}</small>`):'')}</div>${spD.info!==undefined?`<h3>교회 정보</h3><div class="spbox">${spD.info?row('주소',esc([spD.info.road,spD.info.detail].filter(Boolean).join(', ')+(spD.info.zip?` (${spD.info.zip})`:'')))+row('교단',esc(spD.info.denom||'—'))+row('대표 전화',esc(spD.info.phone||'—')):row('아직 없음','')}</div>`:''}<h3>호감 메모</h3><textarea id="spMemo" maxlength="2000" aria-label="호감 메모" placeholder="호감만 보는 메모"></textarea><div class="spacts"><button type="button" class="btn pri" id="spSave">메모 저장</button><button type="button" class="btn${c.suspended_at?'':' danger'}" id="spSus">${c.suspended_at?'다시 열기':'교회 멈추기'}</button></div><p class="spnote">${c.suspended_at?'쉬고 있는 교회예요. 팀원이 열 수 없어요.':'멈추면 팀원이 이 교회를 열 수 없어요. 자료는 그대로 있어요.'} 예배와 곡의 내용은 호감에게도 보이지 않아요.</p>`;
   p.querySelectorAll('.sprow b')[1].textContent=spD.admins.join(', ')||'없음';const ta=$('spMemo');ta.value=spD.draft??spD.memo;ta.oninput=()=>{if(spD)spD.draft=ta.value;};
   if($('spSeen'))$('spSeen').onclick=async e=>{const bt=e.target;bt.disabled=true;$('spErr').textContent=$('spOk').textContent='';const {error}=await sb.rpc('super_seen',{p_church:c.id});bt.disabled=false;
     if(error){if(spCur===c)$('spErr').textContent='바꾸지 못했어요. 다시 해 주세요';return;}
@@ -7666,16 +7807,55 @@ function admGo(p,quiet){if(ADMP==='churches'&&p!=='churches'&&!spLeave())return;
   const c=ADMC[p];$('admT').textContent=p==='home'?'관리 홈':p==='churches'?'교회 관리':c?.t||'';$('adm').scrollTop=0;
   if(c?.sig){const s2=admLs.get('seen',{});if(s2[p]!==c.sig){s2[p]=c.sig;admLs.set('seen',s2);document.querySelector(`#admGrid [data-k=${p}] .anew`)?.remove();}}
   if(p==='churches'){spF='all';$('spQ').value='';spHome();}
-  else if(p!=='home'&&c){$('admOther').innerHTML=`<div class="aother">${c.page||c.body}</div>`;$('admOther').querySelector('[data-copy]')?.addEventListener('click',()=>copy(HOGAM_MAIL));if(p==='manual'&&!quiet)openMan();}
+  else if(p!=='home'&&c){$('admOther').innerHTML=`<div class="aother">${c.page||c.body}</div>`;$('admOther').querySelector('[data-copy]')?.addEventListener('click',()=>copy(HOGAM_MAIL));if(p==='manual'&&!quiet)openMan();if(p==='pay')admPay();}
   if(!quiet)$('admT').focus();}
 $('admSide').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>admGo(b.dataset.p));
 function hideAdm(){$('adm').hidden=true;}
+// 유료 신청·입금 (17단계): 열면 NEW가 꺼져요. 승인·취소·환불됨은 아래 확인 칸에서 한 번 더 눌러요
+let APAY=null,APF='pending',APC=null;
+const APA={approve:['승인','입금 확인·승인'],cancel:['취소','취소'],refund:['환불됨','환불됨']};
+async function admPay(){const o=$('admOther');APC=null;o.innerHTML='<div class="aother apay"><p class="anote">불러오는 중…</p></div>';
+  const {data,error}=await sb.rpc('super_pay_list');if(ADMP!=='pay')return;
+  if(error||!data){o.innerHTML='<div class="aother apay"><p class="anote">불러오지 못했어요. 인터넷 연결을 확인하고 다시 열어 주세요.</p></div>';return;}
+  APAY=data;apDraw();
+  if(data.list.some(x=>x.is_new)){const r=await sb.rpc('super_pay_seen');if(!r.error){if(ADMD)ADMD[0].pay_new=0;document.querySelector('#admGrid [data-k=pay] .anew')?.remove();}}}
+function apDraw(){const d=APAY,L=d.list,o=$('admOther'),pend=L.filter(x=>x.status==='pending'),mon=new Date();mon.setDate(1);mon.setHours(0,0,0,0);
+  const ok=L.filter(x=>x.status==='approved'&&x.done_at&&new Date(x.done_at)>=mon),db=Number(d.db_bytes||0),hi=db>=400*1048576;
+  const F={pending:['확인 중',x=>x.status==='pending'],all:['전체',()=>true],approved:['승인',x=>x.status==='approved'],off:['취소·환불',x=>x.status==='cancelled'||x.status==='refunded']};
+  const old=pend.length?Math.max(...pend.map(x=>spAgo(x.at))):0,rows=L.filter(F[APF][1]);
+  const btn=(x,a,cls)=>`<button type="button" class="btn${cls}" data-id="${x.id}" data-a="${a}">${APA[a][1]}</button>`;
+  o.innerHTML=`<div class="aother apay"><div class="admkpi">
+    <div class="akpi"><span>입금 확인 중</span><b>${pend.length}건</b><small>${pend.length?(old?`가장 오래된 것 ${old}일 전`:'모두 오늘'):'기다리는 신청 없음'}</small></div>
+    <div class="akpi"><span>이번 달 승인</span><b>${spNum(ok.reduce((t,x)=>t+Number(x.amount),0))}원</b><small>AI ${ok.filter(x=>x.kind==='ai').length}건 · 용량 ${ok.filter(x=>x.kind==='mb').length}건</small></div>
+    <div class="akpi"><span>서버 전체 사용량</span><b>${spSize(db)}</b><small>${hi?'Pro로 올릴 때예요 (400MB 넘음)':'무료 요금제 500MB 중 · 400MB면 Pro로'}</small><span class="sptr"><i class="${hi?'hi':''}" style="width:${Math.min(100,db/(500*1048576)*100)}%"></i></span></div></div>
+    <div class="apflt">${Object.keys(F).map(k=>`<button type="button" data-f="${k}" aria-pressed="${k===APF}">${F[k][0]} ${L.filter(F[k][1]).length}</button>`).join('')}</div>
+    <p class="cherr" id="apErr" role="alert"></p>
+    ${rows.length?`<div class="aptw"><table class="aptbl"><thead><tr><th>신청</th><th>교회</th><th>종류</th><th>입금자</th><th class="hs">신청한 팀원</th><th>상태</th><th><span class="sr">처리</span></th></tr></thead><tbody>${rows.map(x=>`<tr class="${x.status==='pending'?'pending':''}">
+      <td>${x.is_new?'<em class="anew">NEW</em> ':''}${ymd(x.at)}<small>${spAgo(x.at)?spAgo(x.at)+'일 전':'오늘'}</small></td>
+      <td>${x.church_id?'':'(지워진 교회) '}${esc(x.church_name)}</td><td>${PAYK[x.kind]||''}<small>${spNum(x.amount)}원</small></td><td><b>${esc(x.payer)}</b></td><td class="hs">${esc(x.user_name)}</td>
+      <td><span class="paytag ${esc(x.status)}">${PAYS[x.status]||''}</span>${x.done_at?`<small>${ymd(x.done_at)}</small>`:''}</td>
+      <td><div class="acts">${x.status==='pending'?btn(x,'approve',' pri')+btn(x,'cancel',''):x.status==='approved'?btn(x,'refund',' danger'):''}</div></td></tr>`).join('')}</tbody></table></div>`:'<p class="anote">맞는 신청이 없어요.</p>'}
+    <div id="apConf"></div></div>`;
+  o.querySelector('.apflt').onclick=e=>{const b=e.target.closest('button');if(b){APF=b.dataset.f;APC=null;apDraw();o.querySelector(`.apflt [data-f=${APF}]`).focus();}};
+  o.querySelectorAll('.aptbl [data-a]').forEach(b=>b.onclick=()=>{APC={id:+b.dataset.id,a:b.dataset.a};apConf();});
+  apConf();}
+function apConf(){const box=$('apConf');if(!box)return;const x=APC&&APAY.list.find(y=>y.id===APC.id);if(!x){box.innerHTML='';return;}
+  const what=`${esc(x.church_name)} ${PAYK[x.kind]}`,a=APC.a;
+  const msg=a==='approve'?`입금자 <b>${esc(x.payer)}</b> · ${spNum(x.amount)}원이 통장에 들어온 걸 확인했을 때만 눌러 주세요. `+(x.kind==='ai'?'승인하면 45번이 더 들어가요(먼저 연 5번 포함 50번).':'승인하면 용량이 50MB 늘어나요.')
+    :a==='cancel'?(x.kind==='ai'?'입금이 안 됐을 때 눌러요. 먼저 연 AI 5번을 남은 횟수에서 빼요(이미 썼으면 마이너스가 돼요).':'입금이 안 됐을 때 눌러요.')
+    :(x.kind==='ai'?'돈을 돌려준 뒤 눌러요. 남은 충전 횟수에서 50번까지 빼요.':'돈을 돌려준 뒤 눌러요. 용량을 50MB 내려요.');
+  box.innerHTML=`<div class="apconf" role="group" aria-label="확인"><b>${what}을 ${APA[a][0]}할까요?</b><p>${msg}</p><div class="spacts"><button type="button" class="btn${a==='approve'?' pri':a==='refund'?' danger':''}" id="apYes">${APA[a][0]}</button><button type="button" class="btn" id="apNo">돌아가기</button></div></div>`;
+  $('apNo').onclick=()=>{APC=null;apConf();};$('apYes').focus();
+  $('apYes').onclick=async e=>{const bt=e.target;bt.disabled=true;$('apErr').textContent='';const {data,error}=await sb.rpc('super_pay_set',{p_id:x.id,p_action:a});
+    if(ADMP!=='pay')return;if(error||!data?.ok){bt.disabled=false;$('apErr').textContent=data?.error||'처리하지 못했어요. 다시 해 주세요';return;}
+    toast(`${x.church_name} ${PAYK[x.kind]} · ${APA[a][0]}했어요`);await admPay();
+    const h=await sb.rpc('super_home');if(!h.error&&ADMD){ADMD[0]=h.data;admRender(...ADMD);}};}
 function admRender(h,cs){
   const now=Date.now(),D=864e5,li=(a,b)=>`<li>${a}<em>${b}</em></li>`;
   const newC=cs.filter(c=>c.is_new),sus=cs.filter(c=>c.suspended_at),idle=cs.filter(c=>!c.suspended_at&&(!c.last_used||now-Date.parse(c.last_used)>30*D)),
-    full=cs.filter(c=>+c.ai_month>=+c.ai_limit),week=cs.filter(c=>now-Date.parse(c.created_at)<7*D),bytes=cs.reduce((t,c)=>t+Number(c.bytes||0),0),notYet=Math.max(0,h.people-h.agreed);
+    full=cs.filter(aiOutC),week=cs.filter(c=>now-Date.parse(c.created_at)<7*D),bytes=cs.reduce((t,c)=>t+Number(c.bytes||0),0),notYet=Math.max(0,h.people-h.agreed);
   $('admKpi').innerHTML=[['교회',spNum(cs.length),`이번 주 새 교회 ${week.length}`],['이번 달 AI 읽기',spNum(h.ai_month),`서비스 한도 ${spNum(h.ai_service)}`],
-    ['팀원',spNum(h.people),`약관 동의 ${spNum(h.agreed)} · 아직 ${spNum(notYet)}`],['확인할 일',spNum(newC.length+full.length),`새 교회 ${newC.length} · 한도 다 씀 ${full.length}`]]
+    ['팀원',spNum(h.people),`약관 동의 ${spNum(h.agreed)} · 아직 ${spNum(notYet)}`],['확인할 일',spNum(newC.length+full.length+(+h.pay_pending||0)),`새 교회 ${newC.length} · AI 다 씀 ${full.length}`+(+h.pay_pending?` · 입금 ${spNum(h.pay_pending)}`:'')]]
     .map(([a,b,c])=>`<div class="akpi"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join('');
   const mx=Math.max(1,...h.ai_days),tok=h.tokens||{};
   const C={
@@ -7683,7 +7863,7 @@ function admRender(h,cs){
     usage:{t:'사용 현황',ic:'ph-chart-bar',cnt:full.length?`한도 다 씀 ${full.length}`:'정상',warn:!!full.length,sig:full.map(c=>c.id).join(),
       body:`<div class="aspark" role="img" aria-label="최근 14일 AI 읽기, 가장 많은 날 ${mx}번">${h.ai_days.map(n=>`<i style="height:${Math.round(n/mx*100)}%" title="${n}번"></i>`).join('')}</div><ul>${li('서비스 전체 한도',`${spNum(h.ai_month)} / ${spNum(h.ai_service)}`)+li('이번 달 보낸·받은 토큰',`${spNum(tok.claude_in)} · ${spNum(tok.claude_out)}`)+li('용량 합계',spSize(bytes))}</ul>`,
       page:`<div class="aspark" role="img" aria-label="최근 14일 AI 읽기">${h.ai_days.map(n=>`<i style="height:${Math.round(n/mx*100)}%" title="${n}번"></i>`).join('')}</div><ul>${li('서비스 전체 한도',`${spNum(h.ai_month)} / ${spNum(h.ai_service)}`)+li('이번 달 보낸·받은 토큰',`${spNum(tok.claude_in)} · ${spNum(tok.claude_out)}`)+li('용량 합계',spSize(bytes))}</ul><h3 style="margin:8px 0 0;font-size:15px">교회별 이번 달 AI</h3><div class="ausage">${[...cs].sort((a,b)=>b.ai_month-a.ai_month).map(c=>`<div class="aurow"><b>${esc(c.name)}</b>${spM('',+c.ai_month,+c.ai_limit,spNum)}<span class="ausz">${spSize(c.bytes)}</span></div>`).join('')}</div>`},
-    pay:{t:'유료 신청·입금',ic:'ph-credit-card',cnt:'3단계',later:1,body:'<p class="anote">월 1만 원 · 1년 10만 원 · AI 50번 충전 5천 원. 입금 확인과 승인을 여기서 해요.</p>'},
+    pay:{t:'유료 신청·입금',ic:'ph-credit-card',cnt:+h.pay_pending?`확인 중 ${spNum(h.pay_pending)}`:'없음',warn:!!+h.pay_pending,nw:+h.pay_new>0,body:`<ul>${li('입금 확인 중',spNum(h.pay_pending||0)+'건')+li('새 신청',spNum(h.pay_new||0)+'건')+li('서버 전체 사용량',h.db_bytes==null?'—':spSize(h.db_bytes)+' / 500MB')}</ul><p class="anote">AI 50번 · 용량 50MB, 각 5천 원. 입금을 확인하고 승인해요.</p>`},
     terms:{t:'약관·동의',ic:'ph-shield-check',cnt:`${h.terms_ver}판`,body:`<ul>${li('동의한 팀원',spNum(h.agreed))+li('아직 안 한 팀원',spNum(notYet))}</ul><div class="alinks"><a href="terms.html" target="_blank" rel="noopener">이용약관</a><a href="privacy.html" target="_blank" rel="noopener">개인정보 처리방침</a></div>`},
     mail:{t:'문의',ic:'ph-chat-text',cnt:'메일',body:`<ul>${li('받는 곳',esc(HOGAM_MAIL))}</ul><div class="alinks"><a href="https://mail.google.com" target="_blank" rel="noopener">Gmail 열기</a><button type="button" class="btn ghost" data-copy>주소 복사</button></div>`},
     log:{t:'마스터 기록',ic:'ph-clock-counter-clockwise',cnt:'1년 보관',body:h.log.length?`<ul>${h.log.map(l=>li(esc(l.what),`${esc(l.church||'')} · ${ymd(l.at)}`)).join('')}</ul>`:'<p class="anote">아직 기록이 없어요.</p>'},
@@ -7691,7 +7871,7 @@ function admRender(h,cs){
     manual:{t:'매뉴얼·새 소식',ic:'ph-book-open',cnt:'보기',body:`<ul>${li('매뉴얼 주제',MAN.length+'개')+li('마지막 새 소식',NEWS[0]?`${NEWS[0].v} (${NEWS[0].d})`:'없음')}</ul><p class="anote">고치기는 다음 단계에서 여기로 옮겨요.</p>`}};
   ADMC=C;
   const seen=admLs.get('seen',{}),ord=admLs.get('order',[]),keys=[...ord.filter(k=>C[k]),...ADM_ORDER.filter(k=>!ord.includes(k))];
-  $('admGrid').innerHTML=keys.map(k=>{const c=C[k],nw=c.sig&&c.sig!==(seen[k]||'');
+  $('admGrid').innerHTML=keys.map(k=>{const c=C[k],nw=c.nw??(c.sig&&c.sig!==(seen[k]||''));
     return `<article class="acard${c.later?' later':''}" data-k="${k}"><div class="ah"><button type="button" class="adrag" aria-label="‘${c.t}’ 카드 옮기기 (화살표 키)"><i class="ph ph-dots-six-vertical" aria-hidden="true"></i></button><span class="aic"><i class="ph ${c.ic}" aria-hidden="true"></i></span><b>${c.t}</b>${nw?'<em class="anew">NEW</em>':''}<span class="acnt${c.warn?' warn':''}">${c.cnt}</span></div>${c.body}<button type="button" class="btn aopen">열기</button></article>`;}).join('');
   $('admGrid').querySelectorAll('.acard').forEach(el=>{const k=el.dataset.k,c=C[k];
     el.querySelector('.aopen')?.addEventListener('click',()=>admGo(k));

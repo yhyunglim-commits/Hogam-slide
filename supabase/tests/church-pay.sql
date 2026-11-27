@@ -49,6 +49,8 @@ begin
     (0,'','select ai_begin(''{u}1'',''{a}'',''{j}2'',''spell'')->>''ok''','true','맞춤법 1번'),
     (0,'','{pts}','5,4,0','다음은 처음 무료 · 맞춤법은 1점'),
     (1,ca,'select ai_left()->>''left''','0.8','남은 횟수 0.8'),
+    (1,ca,'select church_usage()->>''left''','0.8','관리 화면 남은 횟수도 같음'),
+    (5,'','select (select x->>''ai_left'' from jsonb_array_elements(super_churches()) x where x->>''id''=''{a}'')','0.8','호감 교회 목록에도 남은 횟수'),
     (0,'','select ai_begin(''{u}1'',''{a}'',''{j}3'',''score'')->>''code''','charge','모자라면 충전 안내'),
     (0,'','{pts}','5,4,0','막힌 요청은 안 뺌'),
     (0,'','select ai_begin(''{u}1'',''{a}'',null,''spell'')->>''ok''','true','(맞춤법)'),
