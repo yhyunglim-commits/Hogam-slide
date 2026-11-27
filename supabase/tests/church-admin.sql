@@ -259,7 +259,14 @@ begin
     (5,'','select set_my_name(''{a}'',''몰래'')->>''error''','%팀원만%','팀원이 아닌 교회 이름은 못 바꿈'),
     (5,cb,'select count(*) from members where church_id=''{b}'' and name=''새 이름''','1','다른 사람 이름은 그대로'),
     (-1,'','select set_my_name(''{b}'',''몰래'')','ERR:%','로그인 안 하면 못 바꿈'),
-    (4,cb,'with x as (update members set name=''직접'' returning 1) select count(*) from x','ERR:%permission%','표를 직접 고쳐 바꾸지 못함')
+    (4,cb,'with x as (update members set name=''직접'' returning 1) select count(*) from x','ERR:%permission%','표를 직접 고쳐 바꾸지 못함'),
+    (4,cb,'select super_home()','ERR:%전체 관리자만%','교회 관리자는 관리 홈 숫자를 못 봄 (16단계)'),
+    (-1,'','select super_home()','ERR:%','로그인 안 하면 못 봄'),
+    (5,'','select (super_home()->>''ai_service'')','3000','마스터는 관리 홈 숫자를 봄'),
+    (5,'','select jsonb_array_length(super_home()->''ai_days'')::text','14','최근 14일'),
+    (5,'','select (super_home()->>''people'')::int = (select count(distinct user_id) from members)','true','팀원 수 = 교회에 속한 사람 수'),
+    (5,'','select (super_home()->>''agreed'')::int <= (super_home()->>''people'')::int','true','동의한 사람은 팀원 수를 넘지 않음'),
+    (5,'','select jsonb_array_length(super_home()->''log'') <= 5','true','마스터 기록은 최근 5개')
   ) as x(who, church, sql, want, label) loop
     perform set_config('request.jwt.claims', case when t.who > 0 then json_build_object('sub', u || t.who, 'role', 'authenticated')::text else '' end, true);
     perform set_config('request.jwt.claim.sub', case when t.who > 0 then u || t.who else '' end, true);

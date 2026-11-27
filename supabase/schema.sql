@@ -1225,3 +1225,25 @@ begin
 end $$;
 revoke execute on function public.set_my_name(uuid, text) from public, anon;
 grant execute on function public.set_my_name(uuid, text) to authenticated;
+
+-- ───────────── 16단계 추가 (2026-11-27): 마스터 관리 홈 ─────────────
+-- 관리 홈 위쪽 숫자와 카드에 쓸 서비스 전체 모음. 교회별 숫자는 super_churches()로 따로 받아요.
+create or replace function public.super_home() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_today date := (now() at time zone 'Asia/Seoul')::date;
+begin
+  if not public.is_super() then raise exception '전체 관리자만 볼 수 있어요'; end if;
+  return jsonb_build_object(
+    'ai_month',   public.ai_used(null),
+    'ai_service', 3000,
+    'ai_days',    (select jsonb_agg(coalesce((select sum(d.n) from public.ai_daily d where d.day = v_today - g.i), 0) order by g.i desc) from generate_series(0, 13) g(i)),
+    'tokens',     (select jsonb_build_object('claude_in', coalesce(sum(claude_in), 0), 'claude_out', coalesce(sum(claude_out), 0))
+                     from public.ai_kinds where day >= date_trunc('month', v_today)),
+    'people',     (select count(distinct user_id) from public.members),
+    'agreed',     (select count(distinct m.user_id) from public.members m join public.consents c on c.user_id = m.user_id and c.ver >= public.terms_ver()),
+    'terms_ver',  public.terms_ver(),
+    'log',        (select coalesce(jsonb_agg(jsonb_build_object('at', l.at, 'what', l.what, 'church', ch.name) order by l.id desc), '[]'::jsonb)
+                     from (select * from public.super_log order by id desc limit 5) l left join public.churches ch on ch.id = l.church_id));
+end $$;
+revoke execute on function public.super_home() from public, anon;
+grant execute on function public.super_home() to authenticated;

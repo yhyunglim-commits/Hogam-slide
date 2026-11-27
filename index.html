@@ -2084,6 +2084,8 @@ body{font-family:var(--sans)}
 #gate .gwrap{position:relative}
 #gate .gform{display:block;width:auto;max-width:520px;padding:0;margin:0;background:none;border:0;box-shadow:none}
 #gate .hidden{display:none!important}
+#gate [hidden]{display:none!important}
+#gate #gPick .gfootrow{margin:14px auto 0}
 #gate .gsetup{padding:16px;border-radius:16px;background:var(--fill);font-size:14px;line-height:1.6}
 #gate .ginv{margin:0 0 16px;padding:13px 16px;border-radius:16px;background:var(--lilac);color:#4A3FB5;font-size:14.5px;line-height:1.55}
 #gate .gerr{margin:12px 0 0;min-height:0;font-size:14px;font-weight:600;color:#D93A40}
@@ -2486,6 +2488,80 @@ button.stile:hover{border-color:var(--pri)}
 .stile.out .sic{color:#D93A40}
 .stile.master{border-color:var(--pri)}
 @media (max-width:620px){.sgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* 마스터 관리 홈 (2026-11-27, 시안/설정-관리홈.html ③) */
+.adm{position:fixed;inset:0;z-index:85;overflow-y:auto;background:var(--canvas);color:var(--text);padding:calc(env(safe-area-inset-top,0px) + 24px) max(16px,env(safe-area-inset-right,0px)) 60px max(16px,env(safe-area-inset-left,0px))}
+.adm[hidden]{display:none}
+.admlay{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:start}
+.admside{position:sticky;top:0;display:flex;flex-direction:column;gap:2px;padding:4px 0}
+.admbrand{display:flex;align-items:center;gap:8px;padding:6px 10px 14px}.admbrand b{font-size:17px;font-weight:900;letter-spacing:-.03em}
+.admside>button{display:flex;align-items:center;gap:10px;border:0;background:transparent;color:var(--text2);border-radius:10px;padding:10px 12px;font:600 14.5px var(--sans,inherit);text-align:left;cursor:pointer}
+.admside>button i{font-size:18px}
+.admside>button:hover{background:var(--surface)}
+.admside>button[aria-current="page"]{background:var(--surface);color:var(--pri);box-shadow:var(--card-edge,0 0 0 1px var(--line))}
+.admsep{margin:14px 12px 4px;font-size:12px;font-weight:700;color:var(--text3)}
+.admsidefoot{display:flex;flex-direction:column;gap:6px;margin-top:18px;padding:0 4px}
+.admsidefoot .btn{justify-content:center}
+.admmain{display:flex;flex-direction:column;gap:16px;min-width:0}
+.admmain>h1{margin:4px 0 0;font-size:24px;font-weight:900;letter-spacing:-.03em}
+.admmain>h1:focus{outline:0}
+.admmain section{display:flex;flex-direction:column;gap:16px;min-width:0}
+.admmain section[hidden]{display:none}
+.admmain .spwrap{max-width:none;padding:0;margin:0}
+.admmain .sphead #spClose{display:none}
+.aother{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;max-width:720px}
+.aother ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;font-size:14.5px;color:var(--text2)}
+.aother li{display:flex;justify-content:space-between;gap:12px}.aother li em{font-style:normal;font-weight:600;color:var(--text);text-align:right;overflow-wrap:anywhere}
+.aother .anote{margin:0;font-size:13.5px;color:var(--text3)}.aother .alinks{display:flex;gap:12px;flex-wrap:wrap}
+.ausage{display:flex;flex-direction:column;gap:2px}
+.aurow{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,2fr) 90px;gap:14px;align-items:center;padding:10px 4px;border-top:1px solid var(--line);font-size:14px}
+.aurow:first-child{border-top:0}.aurow b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.aurow small{color:var(--text3)}
+.aurow .sptr{display:block}.aurow .ausz{text-align:right;font-variant-numeric:tabular-nums;color:var(--text2)}
+.splive{width:9px;height:9px;border-radius:50%;background:var(--line2);flex:none;margin-top:7px}
+.splive.on{background:#30A46C}
+.splive.blink{background:#30A46C;box-shadow:0 0 0 0 rgba(48,164,108,.6);animation:spBlink 1.4s ease-in-out infinite}
+@keyframes spBlink{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(48,164,108,.55)}50%{opacity:.35;box-shadow:0 0 0 5px rgba(48,164,108,0)}}
+@media (prefers-reduced-motion:reduce){.splive.blink{animation:none}}
+.sptop .spname{display:flex;gap:8px;align-items:flex-start;min-width:0}
+.acnlive{display:inline-flex;align-items:center;gap:8px}.acnlive .splive{margin:0}
+.admtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.admtop h1{margin:0;font-size:24px;font-weight:900;letter-spacing:-.03em}
+.admtop h1:focus{outline:0}
+.admbadge{font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--pri);color:#fff}
+.admact{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.adm .cherr:empty{display:none}
+.admkpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.akpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;min-width:0}
+.akpi span{font-size:13px;color:var(--text3)}
+.akpi b{display:block;font-size:26px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:2px}
+.akpi small{font-size:12.5px;color:var(--text3)}
+.admbar{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:var(--text3);flex-wrap:wrap}
+.admgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.acard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:box-shadow .15s,opacity .15s}
+.acard.later{border-style:dashed}
+.acard.dragging{opacity:.55;box-shadow:0 12px 30px -10px rgba(0,0,0,.35)}
+.ah{display:flex;align-items:center;gap:8px}
+.adrag{width:26px;height:30px;margin-left:-6px;border:0;border-radius:8px;background:transparent;color:var(--text3);display:grid;place-items:center;cursor:grab;touch-action:none;font-size:18px}
+.adrag:active{cursor:grabbing}
+.adrag:hover,.adrag:focus-visible{background:var(--sunken);color:var(--text)}
+.aic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--sunken);color:var(--pri);font-size:18px;flex:none}
+.ah b{font-size:15.5px}
+.anew{font-style:normal;font-size:11px;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:6px;background:#E5484D;color:#fff}
+.acnt{margin-left:auto;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--sunken);color:var(--text3);white-space:nowrap}
+.acnt.warn{background:#FFF2DC;color:#9A5800}
+.acard ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--text2)}
+.acard li{display:flex;justify-content:space-between;gap:10px;min-width:0}
+.acard li em{font-style:normal;color:var(--text);font-weight:600;font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere}
+.acard .anote{margin:0;font-size:12.5px;color:var(--text3)}
+.acard .aopen{margin-top:auto;align-self:flex-start}
+.acard .alinks{display:flex;gap:12px;flex-wrap:wrap;margin-top:auto;font-size:13.5px}
+.aspark{display:flex;align-items:flex-end;gap:3px;height:40px}
+.aspark i{flex:1;min-height:2px;background:var(--pri);opacity:.7;border-radius:3px 3px 0 0}
+.aspark i:last-child{opacity:1}
+@media (max-width:860px){.admkpi{grid-template-columns:repeat(2,minmax(0,1fr))}.admgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admlay{grid-template-columns:minmax(0,1fr);gap:12px}.admside{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:4px;scrollbar-width:none}
+  .admbrand,.admsep{display:none}.admside>button{flex:none;white-space:nowrap}.admsidefoot{flex-direction:row;margin:0 0 0 8px;padding:0}.admsidefoot .btn{white-space:nowrap}
+  .aurow{grid-template-columns:minmax(0,1fr) 80px}.aurow .sptr{grid-column:1/-1}}
+@media (max-width:560px){.admgrid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:380px){.sgrid{grid-template-columns:minmax(0,1fr)}.stile.wide{flex-wrap:wrap}}
 .setrows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .setrows>button{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 14px;border:0;background:var(--surface);color:var(--text);font:inherit;font-size:15px;text-align:left;cursor:pointer}
@@ -3018,17 +3094,15 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
       </div>
       <div id="gPick" class="hidden">
         <h2 class="gjt">어떻게 시작할까요?</h2>
-        <p class="gsub">초대받지 않았어도 바로 쓸 수 있어요.</p>
         <p class="gerr" id="pkErr" role="alert"></p>
         <div class="gpk">
-          <button type="button" class="gpk-c gpk-free" id="pkFree"><span class="gpk-tag">처음이라면 여기</span><span class="gpk-t">우리 교회 시작하기 <em class="gfree">무료</em></span><span class="gpk-d">교회 공간을 새로 만들고, 팀원을 초대해서 같이 써요. 만든 사람이 관리자가 돼요.</span><span class="gpk-l"><span><i class="ph ph-check" aria-hidden="true"></i>AI 악보·주보 읽기 한 달 50번</span><span><i class="ph ph-check" aria-hidden="true"></i>팀원 5명까지</span><span><i class="ph ph-check" aria-hidden="true"></i>저장 공간 50MB</span></span><span class="gpk-go">무료로 시작하기</span></button>
+          <button type="button" class="gpk-c gpk-free" id="pkFree"><span class="gpk-tag">처음이라면 여기</span><span class="gpk-t">우리 교회 시작하기 <em class="gfree">FREE</em></span><span class="gpk-d">교회 공간을 새로 만들고, 팀원을 초대해서 같이 써요. 만든 사람이 관리자가 돼요.</span><span class="gpk-l"><span><i class="ph ph-check" aria-hidden="true"></i>AI 악보·주보 읽기 한 달 50번</span><span><i class="ph ph-check" aria-hidden="true"></i>팀원 5명까지</span><span><i class="ph ph-check" aria-hidden="true"></i>저장 공간 50MB</span></span><span class="gpk-go">무료로 시작하기</span></button>
           <button type="button" class="gpk-c" id="pkCode"><span class="gpk-t">초대 코드로 들어가기</span><span class="gpk-d">팀원에게 받은 링크나 8글자 코드가 있으면, 그 교회로 바로 들어가요.</span><span class="gpk-go">코드 넣기</span></button>
         </div>
-        <p class="gnote">새로 만들 수 있는 교회는 한 사람당 1곳이에요. 초대받아 들어가는 교회는 따로예요.</p>
-        <button type="button" class="glink" data-gout>로그아웃</button>
+        <div class="gfootrow"><button type="button" class="glink" id="pkAdm" hidden>← 관리 홈으로</button><button type="button" class="glink" data-gout>로그아웃</button></div>
       </div>
       <div id="gFree" class="hidden">
-        <h2 class="gjt">우리 교회 시작하기 <em class="gfree">무료</em></h2>
+        <h2 class="gjt">우리 교회 시작하기 <em class="gfree">FREE</em></h2>
         <p class="gsub">두 칸만 적으면 바로 시작해요.</p>
         <label class="gl"><span>교회 이름</span><input id="gfChurch" type="text" maxlength="20" autocomplete="off" placeholder="예) 호감교회"></label>
         <label class="gl"><span>교회에서 쓸 내 이름</span><input id="gfName" type="text" maxlength="10" autocomplete="off" placeholder="예) 김목자"></label>
@@ -3036,7 +3110,7 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
         <p class="gerr" id="gfErr" role="alert"></p>
         <button class="gpri" id="gfGo" type="button">무료로 시작하기</button>
         <div class="gquota"><b>무료로 쓸 수 있는 만큼</b><span>AI 악보·주보 읽기<em>한 달 50번</em></span><span>팀원<em>5명까지</em></span><span>저장 공간<em>50MB</em></span><small>곡·예배 만들기, 편집, 송출, 내려받기는 횟수 없이 써요. 만든 사람이 이 교회의 관리자가 돼요.</small></div>
-        <div class="gfootrow"><button type="button" class="glink" data-gback>← 다시 고르기</button><button type="button" class="glink" data-gout>로그아웃</button></div>
+        <div class="gfootrow"><button type="button" class="glink" data-gback>← 돌아가기</button><button type="button" class="glink" data-gout>로그아웃</button></div>
       </div>
       <div id="gJoin" class="hidden">
         <h2 class="gjt">교회에 들어가기</h2>
@@ -3046,7 +3120,7 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
         <fieldset class="gagree" id="jAgree"></fieldset>
         <p class="gerr" id="jErr" role="alert"></p>
         <button class="gpri" id="jGo" type="button">들어가기</button>
-        <div class="gfootrow"><button type="button" class="glink" data-gback>← 다시 고르기</button><button type="button" class="glink" data-gout>로그아웃</button></div>
+        <div class="gfootrow"><button type="button" class="glink" data-gback>← 돌아가기</button><button type="button" class="glink" data-gout>로그아웃</button></div>
       </div>
     </div>
   </form>
@@ -3203,6 +3277,28 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
   <div class="tmuse" id="tmUse" hidden></div>
   <ul class="tmlist" id="tmList"></ul>
 </dialog>
+<div class="adm" id="adm" hidden role="region" aria-labelledby="admT">
+  <div class="admlay">
+    <nav class="admside" id="admSide" aria-label="관리 메뉴">
+      <div class="admbrand"><b>호감슬라이드</b><span class="admbadge">마스터</span></div>
+      <button type="button" data-p="home"><i class="ph ph-squares-four" aria-hidden="true"></i><span>관리 홈</span></button><button type="button" data-p="churches"><i class="ph ph-buildings" aria-hidden="true"></i><span>교회 관리</span></button><button type="button" data-p="usage"><i class="ph ph-chart-bar" aria-hidden="true"></i><span>사용 현황</span></button><button type="button" data-p="terms"><i class="ph ph-shield-check" aria-hidden="true"></i><span>약관·동의</span></button><button type="button" data-p="mail"><i class="ph ph-chat-text" aria-hidden="true"></i><span>문의</span></button><button type="button" data-p="log"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i><span>마스터 기록</span></button>
+      <p class="admsep">다음 단계</p>
+      <button type="button" data-p="pay"><i class="ph ph-credit-card" aria-hidden="true"></i><span>유료 신청·입금</span></button><button type="button" data-p="forms"><i class="ph ph-swatches" aria-hidden="true"></i><span>양식 배포</span></button><button type="button" data-p="manual"><i class="ph ph-book-open" aria-hidden="true"></i><span>매뉴얼·새 소식</span></button>
+      <div class="admsidefoot"><button type="button" class="btn" id="admEnter"><i class="ph ph-sign-in" aria-hidden="true"></i>교회로 들어가기</button><button type="button" class="btn ghost" id="admOut">로그아웃</button></div>
+    </nav>
+    <main class="admmain">
+      <h1 id="admT" tabindex="-1">관리 홈</h1>
+      <p class="cherr" id="admErr" role="alert"></p>
+      <section id="admHome">
+        <div class="admkpi" id="admKpi" aria-live="polite"></div>
+        <div class="admbar"><span>카드 왼쪽 위 ⋮⋮ 를 끌면 자리를 옮겨요. 키보드는 ⋮⋮ 에서 화살표 키.</span><button type="button" class="btn ghost" id="admReset">처음 순서로</button></div>
+        <div class="admgrid" id="admGrid"></div>
+      </section>
+      <section id="admChurches" hidden></section>
+      <section id="admOther" hidden></section>
+    </main>
+  </div>
+</div>
 <dialog class="spdlg" id="spDlg" aria-labelledby="spTitle">
   <div class="spwrap">
     <div class="sphead"><button type="button" class="btn ghost ibtn" id="spBack" aria-label="교회 목록으로" hidden><i class="ph ph-arrow-left" aria-hidden="true"></i></button><h2 id="spTitle" tabindex="-1">전체 관리</h2><button type="button" class="btn ghost ibtn" id="spClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
@@ -7273,7 +7369,7 @@ async function afterLogin(u){
   const [{data:ms,error},{data:cs,error:e2}]=await Promise.all([sb.from('members').select('name,church_id,role').eq('user_id',u.id).order('joined_at'),sb.from('churches').select('*')]);
   if(error||e2){showGate();$('gErr').textContent='서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요';return;}
   const was=inWas(u.id)&&CH&&!ms.some(m=>m.church_id===CH); // 이 사람이 이 브라우저에서 쓰던 교회에서 빠졌을 때
-  if(!ms.length){CHURCHES=[];canMake=!cs.some(c=>c.created_by===u.id);showJoin(u);if(was){inSet('');$('jErr').textContent=$('pkErr').textContent='쓰던 교회에서 나가게 되었어요. 다시 들어가려면 관리자에게 새 초대 링크를 받아 주세요';}return;}
+  if(!ms.length){CHURCHES=[];canMake=!cs.some(c=>c.created_by===u.id);if((await sb.rpc('is_super')).data===true){showAdm(u);return;}showJoin(u);if(was){inSet('');$('jErr').textContent=$('pkErr').textContent='쓰던 교회에서 나가게 되었어요. 다시 들어가려면 관리자에게 새 초대 링크를 받아 주세요';}return;}
   // 14단계 전 서버(함수 없음)면 묻지 않아요. 순서는 SQL → 화면
   const ag=await sb.rpc('agreed');if(ag.error&&ag.error.code!=='PGRST202'){showGate();$('gErr').textContent='서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요';return;}
   if(!ag.error&&ag.data!==true&&!await askAgree()){await goOut();return;}
@@ -7318,6 +7414,7 @@ async function goOut(){askKakao();await liveWipe();await sb.auth.signOut();me=nu
 document.querySelectorAll('[data-gout]').forEach(b=>b.onclick=goOut);
 $('pkFree').onclick=()=>showGate('free');$('pkCode').onclick=()=>showGate('join');
 document.querySelectorAll('[data-gback]').forEach(b=>b.onclick=()=>showGate('pick'));
+$('pkAdm').onclick=()=>showAdm();
 // 옛 방식(이름+암호)으로 들어온 팀원에게 카카오 연결을 권해요
 const hasKakao=u=>(u.identities||[]).some(i=>i.provider==='kakao');
 async function linkKakao(){sessionStorage.setItem('cj_linking','1');const {error}=await sb.auth.linkIdentity({provider:'kakao',options:{redirectTo:backTo()}});
@@ -7488,9 +7585,12 @@ setInterval(()=>{if(sb&&me&&document.visibilityState==='visible'&&!$('openSuper'
 function spNeed(c){if(c.is_new)return'새로 만들어졌어요';if(c.suspended_at)return'';if(!c.admins)return'관리자가 없어요';const d=spAgo(c.last_used||c.created_at);if(c.ai_limit&&c.ai_month>=c.ai_limit)return'이번 달 AI를 다 썼어요';if(c.bytes>=c.mb_limit*1048576)return'용량이 찼어요';if(c.members>=c.member_limit)return'팀원이 다 찼어요';
   if(c.ai_limit&&c.ai_month>=c.ai_limit*.8)return'AI를 80% 넘게 썼어요';return d>30?`${d}일 동안 쓰지 않았어요`:'';}
 const SPF={all:['전체',()=>true],need:['확인 필요',c=>!!spNeed(c)],off:['쉬는 중',c=>!!c.suspended_at]};
+// 사용 중 불: 최근 10분 안에 저장·AI 기록이 있으면 깜박, 오늘 쓴 교회는 켜짐만
+const spLiveK=c=>!c.last_used||c.suspended_at?'':Date.now()-Date.parse(c.last_used)<6e5?'blink':spAgo(c.last_used)===0?'on':'';
+const spLive=c=>{const k=spLiveK(c);return k?`<i class="splive ${k}" role="img" aria-label="${k==='blink'?'지금 쓰는 중':'오늘 씀'}" title="${k==='blink'?'지금 쓰는 중 (10분 안)':'오늘 씀'}"></i>`:'';};
 const spTag=c=>`<span class="sptag${c.suspended_at?' off':''}">${c.suspended_at?'쉬는 중':'사용 중'}</span>`;
-async function openSuper(){closeSet();closeRail();spF='all';$('spQ').value='';if(!$('spDlg').open)$('spDlg').showModal();await spHome();}
-async function spHome(){const n=++spN;TM=null;spCur=null;$('spTitle').textContent='전체 관리';$('spBack').hidden=true;$('spOne').hidden=true;$('spHome').hidden=false;$('spErr').textContent=$('spOk').textContent='';
+async function openSuper(){closeSet();closeRail();showAdm(null,'churches');}
+async function spHome(){const n=++spN;TM=null;spCur=null;$('spTitle').textContent='교회 목록';$('spBack').hidden=true;$('spOne').hidden=true;$('spHome').hidden=false;$('spErr').textContent=$('spOk').textContent='';
   if(!SP.length)$('spGrid').innerHTML='<p class="spempty">불러오는 중…</p>';
   const {data,error}=await sb.rpc('super_churches');if(n!==spN)return;
   if(error){SP=[];$('spSum').innerHTML=$('spFlt').innerHTML=$('spGrid').innerHTML='';$('spErr').textContent=tmFail;return;}
@@ -7502,10 +7602,10 @@ function spDraw(){
   const L=SP.filter(c=>SPF[spF][1](c)&&c.name.includes(q)).sort((a,b)=>!!b.is_new-!!a.is_new||!!spNeed(b)-!!spNeed(a)||!!a.suspended_at-!!b.suspended_at||new Date(b.last_used||0)-new Date(a.last_used||0));
   if(!L.length)g.innerHTML='<p class="spempty">맞는 교회가 없어요</p>';
   L.forEach(c=>{const b=document.createElement('button'),w=spNeed(c);b.type='button';b.className='spcard';
-    b.innerHTML=`<span class="sptop"><b></b>${spTag(c)}</span><span class="spfacts">${[['팀원',`${spNum(c.members)} / ${spNum(c.member_limit)}명`],['예배',spNum(c.services)+'개'],['마지막 사용',spLast(c)],['곡',spNum(c.songs)+'개'],['오늘 AI',spNum(c.ai_today)+'번'],['만든 날',ymd(c.created_at).slice(2)]].map(x=>`<span><small>${x[0]}</small><b>${x[1]}</b></span>`).join('')}</span>${spM('이번 달 AI',c.ai_month,c.ai_limit,n=>spNum(n)+'번')}${spM('용량',c.bytes,c.mb_limit*1048576,spSize)}<span class="spneed${w?' w':''}">${w||'확인할 일 없음'}</span>`;
+    b.innerHTML=`<span class="sptop"><span class="spname">${spLive(c)}<b></b></span>${spTag(c)}</span><span class="spfacts">${[['팀원',`${spNum(c.members)} / ${spNum(c.member_limit)}명`],['예배',spNum(c.services)+'개'],['마지막 사용',spLast(c)],['곡',spNum(c.songs)+'개'],['오늘 AI',spNum(c.ai_today)+'번'],['만든 날',ymd(c.created_at).slice(2)]].map(x=>`<span><small>${x[0]}</small><b>${x[1]}</b></span>`).join('')}</span>${spM('이번 달 AI',c.ai_month,c.ai_limit,n=>spNum(n)+'번')}${spM('용량',c.bytes,c.mb_limit*1048576,spSize)}<span class="spneed${w?' w':''}">${w||'확인할 일 없음'}</span>`;
     b.querySelector('b').textContent=c.name;b.onclick=()=>spOpen(c);g.appendChild(b);});}
 async function spOpen(c){const n=++spN;spCur=c;spTab='info';spD=null;$('spTitle').textContent=c.name;$('spBack').hidden=false;$('spHome').hidden=true;$('spOne').hidden=false;$('spErr').textContent=$('spOk').textContent='';
-  $('spDlg').scrollTop=0;spPane();$('spTitle').focus();
+  $('adm').scrollTop=0;spPane();$('spTitle').focus();
   const [a,b]=await Promise.all([sb.rpc('super_church',{p_church:c.id}),sb.rpc('super_members',{p_church:c.id})]);if(n!==spN)return;
   if(a.error||b.error){$('spErr').textContent=tmFail;$('spPane').innerHTML='';return;}
   spD={...a.data,admins:b.data.filter(m=>m.role==='admin').map(m=>m.name)};spPane();}
@@ -7545,10 +7645,75 @@ const spLeave=()=>!spD||spD.draft===undefined||spD.draft===spD.memo||confirm('�
 $('spBack').onclick=()=>{if(spLeave()){spD=null;spHome();}};$('spQ').oninput=spDraw;
 $('spFlt').onclick=e=>{const b=e.target.closest('button');if(b){spF=b.dataset.f;spDraw();$('spFlt').querySelector(`[data-f=${spF}]`).focus();}};
 $('spTabs').onclick=e=>{const b=e.target.closest('button');if(b){spTab=b.dataset.t;$('spErr').textContent=$('spOk').textContent='';spPane();if(spTab==='limit')spHist();$('spTabs').querySelector(`[data-t=${spTab}]`).focus();}};
-$('spClose').onclick=()=>{if(spLeave())$('spDlg').close();};
+$('spClose').onclick=()=>{if(spLeave())admGo('home');};
 $('spDlg').addEventListener('cancel',e=>{e.preventDefault();if(spCur)$('spBack').click();else $('spDlg').close();});
 $('spDlg').addEventListener('close',()=>{spN++;TM=null;spCur=null;spD=null;});
-$('openTeam').onclick=()=>openTeam({church:me.church});$('openSuper').onclick=openSuper;
+$('openTeam').onclick=()=>openTeam({church:me.church});$('openSuper').onclick=()=>{closeSet();showAdm();};
+// ---- 마스터 관리 홈 (16단계). 카드 순서와 '본 것'은 이 기기에만 기억해요 ----
+let ADM_U=null;
+const admLs={get(k,d){try{return JSON.parse(localStorage.getItem('hogam_adm_'+k))??d;}catch(e){return d;}},set(k,v){try{localStorage.setItem('hogam_adm_'+k,JSON.stringify(v));}catch(e){}}};
+const ADM_ORDER=['churches','usage','pay','terms','mail','log','forms','manual'];
+let ADMC={},ADMP='home',ADMD=null;
+$('admChurches').appendChild(document.querySelector('#spDlg .spwrap'));
+async function showAdm(u,p='home'){if(u)ADM_U=u;hideGate();$('adm').hidden=false;$('admErr').textContent='';admGo(p,true);
+  const [h,c]=await Promise.all([sb.rpc('super_home'),sb.rpc('super_churches')]);
+  if(h.error||c.error){$('admErr').textContent='관리 숫자를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요';return;}
+  ADMD=[h.data,c.data||[]];admRender(...ADMD);if(ADMP!=='home'&&ADMP!=='churches')admGo(ADMP,true);}
+// 사이드바: 관리 홈 · 교회 관리 · 카드별 페이지
+function admGo(p,quiet){if(ADMP==='churches'&&p!=='churches'&&!spLeave())return;ADMP=p;
+  $('admSide').querySelectorAll('[data-p]').forEach(b=>b.dataset.p===p?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'));
+  $('admHome').hidden=p!=='home';$('admChurches').hidden=p!=='churches';$('admOther').hidden=p==='home'||p==='churches';
+  const c=ADMC[p];$('admT').textContent=p==='home'?'관리 홈':p==='churches'?'교회 관리':c?.t||'';$('adm').scrollTop=0;
+  if(c?.sig){const s2=admLs.get('seen',{});if(s2[p]!==c.sig){s2[p]=c.sig;admLs.set('seen',s2);document.querySelector(`#admGrid [data-k=${p}] .anew`)?.remove();}}
+  if(p==='churches'){spF='all';$('spQ').value='';spHome();}
+  else if(p!=='home'&&c){$('admOther').innerHTML=`<div class="aother">${c.page||c.body}</div>`;$('admOther').querySelector('[data-copy]')?.addEventListener('click',()=>copy(HOGAM_MAIL));if(p==='manual'&&!quiet)openMan();}
+  if(!quiet)$('admT').focus();}
+$('admSide').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>admGo(b.dataset.p));
+function hideAdm(){$('adm').hidden=true;}
+function admRender(h,cs){
+  const now=Date.now(),D=864e5,li=(a,b)=>`<li>${a}<em>${b}</em></li>`;
+  const newC=cs.filter(c=>c.is_new),sus=cs.filter(c=>c.suspended_at),idle=cs.filter(c=>!c.suspended_at&&(!c.last_used||now-Date.parse(c.last_used)>30*D)),
+    full=cs.filter(c=>+c.ai_month>=+c.ai_limit),week=cs.filter(c=>now-Date.parse(c.created_at)<7*D),bytes=cs.reduce((t,c)=>t+Number(c.bytes||0),0),notYet=Math.max(0,h.people-h.agreed);
+  $('admKpi').innerHTML=[['교회',spNum(cs.length),`이번 주 새 교회 ${week.length}`],['이번 달 AI 읽기',spNum(h.ai_month),`서비스 한도 ${spNum(h.ai_service)}`],
+    ['팀원',spNum(h.people),`약관 동의 ${spNum(h.agreed)} · 아직 ${spNum(notYet)}`],['확인할 일',spNum(newC.length+full.length),`새 교회 ${newC.length} · 한도 다 씀 ${full.length}`]]
+    .map(([a,b,c])=>`<div class="akpi"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join('');
+  const mx=Math.max(1,...h.ai_days),tok=h.tokens||{};
+  const C={
+    churches:{t:'교회 관리',ic:'ph-buildings',cnt:`${cs.length}곳`,sig:newC.map(c=>c.id).join(),body:`<ul>${li('<span class="acnlive"><i class="splive blink" aria-hidden="true"></i>지금 쓰는 중</span>',cs.filter(c=>spLiveK(c)==='blink').length)+li('새 교회 (확인 전)',newC.length)+li('쉬는 교회',sus.length)+li('30일 넘게 안 쓴 교회',idle.length)}</ul>`},
+    usage:{t:'사용 현황',ic:'ph-chart-bar',cnt:full.length?`한도 다 씀 ${full.length}`:'정상',warn:!!full.length,sig:full.map(c=>c.id).join(),
+      body:`<div class="aspark" role="img" aria-label="최근 14일 AI 읽기, 가장 많은 날 ${mx}번">${h.ai_days.map(n=>`<i style="height:${Math.round(n/mx*100)}%" title="${n}번"></i>`).join('')}</div><ul>${li('서비스 전체 한도',`${spNum(h.ai_month)} / ${spNum(h.ai_service)}`)+li('이번 달 보낸·받은 토큰',`${spNum(tok.claude_in)} · ${spNum(tok.claude_out)}`)+li('용량 합계',spSize(bytes))}</ul>`,
+      page:`<div class="aspark" role="img" aria-label="최근 14일 AI 읽기">${h.ai_days.map(n=>`<i style="height:${Math.round(n/mx*100)}%" title="${n}번"></i>`).join('')}</div><ul>${li('서비스 전체 한도',`${spNum(h.ai_month)} / ${spNum(h.ai_service)}`)+li('이번 달 보낸·받은 토큰',`${spNum(tok.claude_in)} · ${spNum(tok.claude_out)}`)+li('용량 합계',spSize(bytes))}</ul><h3 style="margin:8px 0 0;font-size:15px">교회별 이번 달 AI</h3><div class="ausage">${[...cs].sort((a,b)=>b.ai_month-a.ai_month).map(c=>`<div class="aurow"><b>${esc(c.name)}</b>${spM('',+c.ai_month,+c.ai_limit,spNum)}<span class="ausz">${spSize(c.bytes)}</span></div>`).join('')}</div>`},
+    pay:{t:'유료 신청·입금',ic:'ph-credit-card',cnt:'3단계',later:1,body:'<p class="anote">월 1만 원 · 1년 10만 원 · AI 50번 충전 5천 원. 입금 확인과 승인을 여기서 해요.</p>'},
+    terms:{t:'약관·동의',ic:'ph-shield-check',cnt:`${h.terms_ver}판`,body:`<ul>${li('동의한 팀원',spNum(h.agreed))+li('아직 안 한 팀원',spNum(notYet))}</ul><div class="alinks"><a href="terms.html" target="_blank" rel="noopener">이용약관</a><a href="privacy.html" target="_blank" rel="noopener">개인정보 처리방침</a></div>`},
+    mail:{t:'문의',ic:'ph-chat-text',cnt:'메일',body:`<ul>${li('받는 곳',esc(HOGAM_MAIL))}</ul><div class="alinks"><a href="https://mail.google.com" target="_blank" rel="noopener">Gmail 열기</a><button type="button" class="btn ghost" data-copy>주소 복사</button></div>`},
+    log:{t:'마스터 기록',ic:'ph-clock-counter-clockwise',cnt:'1년 보관',body:h.log.length?`<ul>${h.log.map(l=>li(esc(l.what),`${esc(l.church||'')} · ${ymd(l.at)}`)).join('')}</ul>`:'<p class="anote">아직 기록이 없어요.</p>'},
+    forms:{t:'양식 배포',ic:'ph-swatches',cnt:'2단계',later:1,body:`<ul>${li('공용 디자인 양식',PRESETS.length+'개')}</ul><p class="anote">새 양식을 모든 교회에 보내는 일은 다음 단계에서 만들어요.</p>`},
+    manual:{t:'매뉴얼·새 소식',ic:'ph-book-open',cnt:'보기',body:`<ul>${li('매뉴얼 주제',MAN.length+'개')+li('마지막 새 소식',NEWS[0]?`${NEWS[0].v} (${NEWS[0].d})`:'없음')}</ul><p class="anote">고치기는 다음 단계에서 여기로 옮겨요.</p>`}};
+  ADMC=C;
+  const seen=admLs.get('seen',{}),ord=admLs.get('order',[]),keys=[...ord.filter(k=>C[k]),...ADM_ORDER.filter(k=>!ord.includes(k))];
+  $('admGrid').innerHTML=keys.map(k=>{const c=C[k],nw=c.sig&&c.sig!==(seen[k]||'');
+    return `<article class="acard${c.later?' later':''}" data-k="${k}"><div class="ah"><button type="button" class="adrag" aria-label="‘${c.t}’ 카드 옮기기 (화살표 키)"><i class="ph ph-dots-six-vertical" aria-hidden="true"></i></button><span class="aic"><i class="ph ${c.ic}" aria-hidden="true"></i></span><b>${c.t}</b>${nw?'<em class="anew">NEW</em>':''}<span class="acnt${c.warn?' warn':''}">${c.cnt}</span></div>${c.body}<button type="button" class="btn aopen">열기</button></article>`;}).join('');
+  $('admGrid').querySelectorAll('.acard').forEach(el=>{const k=el.dataset.k,c=C[k];
+    el.querySelector('.aopen')?.addEventListener('click',()=>admGo(k));
+    el.querySelector('[data-copy]')?.addEventListener('click',()=>copy(HOGAM_MAIL));});
+}
+function admSave(){admLs.set('order',[...$('admGrid').children].map(e=>e.dataset.k));}
+// 끌어서 옮기기: 마우스·손가락 모두 (pointer). 키보드는 화살표
+$('admGrid').addEventListener('pointerdown',e=>{const h=e.target.closest('.adrag');if(!h)return;e.preventDefault();const card=h.closest('.acard'),g=$('admGrid');card.classList.add('dragging');
+  const box=$('adm'),edge=60;let last=null,auto=null;
+  const scroll=()=>{if(!last)return;const y=last.clientY,dy=y<edge?-12:y>innerHeight-edge?12:0;if(dy){box.scrollTop+=dy;place(last);}};
+  const place=ev=>{const t=document.elementsFromPoint(ev.clientX,ev.clientY).find(x=>x.classList?.contains('acard')&&x!==card);if(!t)return;const r=t.getBoundingClientRect(),after=ev.clientY>r.top+r.height/2||(ev.clientX>r.left+r.width/2&&ev.clientY>r.top);g.insertBefore(card,after?t.nextSibling:t);};
+  const mv=ev=>{last=ev;if(!auto)auto=setInterval(scroll,16);place(ev);};
+  // 카드가 자리를 옮기면 손잡이가 잡고 있던 포인터를 놓쳐서, 문서 전체에서 따라가요
+  const up=()=>{clearInterval(auto);auto=null;last=null;card.classList.remove('dragging');document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',up);admSave();h.focus();};
+  document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up);});
+$('admGrid').addEventListener('keydown',e=>{const h=e.target.closest('.adrag');if(!h)return;const card=h.closest('.acard'),g=$('admGrid');
+  if(['ArrowLeft','ArrowUp'].includes(e.key)&&card.previousElementSibling){g.insertBefore(card,card.previousElementSibling);}
+  else if(['ArrowRight','ArrowDown'].includes(e.key)&&card.nextElementSibling){g.insertBefore(card.nextElementSibling,card);}else return;
+  e.preventDefault();e.stopPropagation();h.focus();admSave();});
+$('admReset').onclick=()=>{admLs.set('order',[]);showAdm();};
+$('admEnter').onclick=()=>{hideAdm();if(me)return;$('pkAdm').hidden=false;showJoin(ADM_U);};
+$('admOut').onclick=async()=>{hideAdm();await goOut();};
 $('tmClose').onclick=()=>$('tmDlg').close();$('tmDlg').addEventListener('click',e=>{if(e.target.id==='tmDlg')$('tmDlg').close();});
 
 // ---- 내보내졌거나 멈춘 교회: 1분마다 · 화면으로 돌아올 때 · 저장이 안 될 때 확인해요 ----

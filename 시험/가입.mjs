@@ -26,7 +26,7 @@ const shot=async f=>{if(SHOT)fs.writeFileSync(path.join(SHOT,f),Buffer.from((awa
 const fake=(o={})=>ev(`window.CALLS=[];window.MS=${JSON.stringify(o.ms||[])};window.AGREED=${JSON.stringify(o.agreed??false)};window.OUT=0;
   const q=d=>{const x={select:()=>x,eq:()=>x,order:()=>x,then:r=>r({data:d,error:null})};return x;};
   sb.from=t=>q(t==='members'?MS:t==='churches'?[{id:'c1',name:'옛교회'}]:[]);
-  sb.rpc=async(f,a)=>{CALLS.push([f,a]);
+  sb.rpc=async(f,a)=>{if(f==='is_super')return {data:false,error:null};CALLS.push([f,a]);
     if(f==='agreed')return AGREED==='missing'?{data:null,error:{code:'PGRST202'}}:{data:AGREED,error:null};
     if(f==='agree_terms')return {data:{ok:a.p_ver===1},error:null};
     if(f==='create_church'||f==='join_church')return {data:{ok:false,error:'(시험) 멈춤'},error:null};
@@ -34,7 +34,7 @@ const fake=(o={})=>ev(`window.CALLS=[];window.MS=${JSON.stringify(o.ms||[])};win
   sb.auth.signOut=async()=>{OUT++;return {error:null};};
   if(${JSON.stringify(!!(o.ms||[]).length)})CH='c1';window.U={id:'u1',user_metadata:{nickname:'카카오닉'},identities:[{provider:'kakao'}]};`);
 const vis=id=>`(()=>{const e=$('${id}');return !!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden'})()`;
-const calls=()=>ev(`return CALLS.map(c=>c[0]).join(',')`);
+const calls=()=>ev(`return CALLS.map(c=>c[0]).filter(f=>f!=='is_super').join(',')`);
 try{
   await send('Page.navigate',{url:base},S);await until(`document.readyState==='complete'&&typeof afterLogin==='function'`);await z(1200);
   // 1) 교회도 초대 링크도 없는 사람 → 고르기
