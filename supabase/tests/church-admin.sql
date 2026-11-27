@@ -8,7 +8,8 @@ declare
 begin
   if (select count(*) from public.songs) > 50 then raise exception '곡이 너무 많아요. 실제 서버 같아서 멈췄어요'; end if;
   for i in 1..5 loop insert into auth.users (id, email) values ((u || i)::uuid, 'admin-sql-' || i || '@hogamslide.app'); end loop;
-  insert into public.churches (id, name) values (ca::uuid, '관리시험A'), (cb::uuid, '관리시험B');
+  insert into public.churches (id, name, ai_limit) values (ca::uuid, '관리시험A', 50); -- A는 초기 교회처럼 매달 50번 (17단계)
+  insert into public.churches (id, name) values (cb::uuid, '관리시험B');
   insert into public.members (user_id, name, church_id, role) values ((u||1)::uuid,'관리자',ca::uuid,'admin'), ((u||2)::uuid,'팀원',ca::uuid,'member'), ((u||4)::uuid,'남관리자',cb::uuid,'admin');
   insert into public.super_admins values ((u||5)::uuid);
   insert into public.consents (user_id, ver) select (u || i)::uuid, public.terms_ver() from generate_series(1, 5) i where i <> 3; -- 3은 시험 안에서 동의
@@ -113,7 +114,7 @@ begin
     (5,'','select ((super_church(''{b}'')->''bytes''->>''media'')::int > 0)::text','true','사진 용량을 셈'),
     (5,'','select (super_churches()::text || super_church(''{b}'')::text) like ''%비밀%''','false','예배·곡·사진 내용은 안 나옴'),
     (5,'','select string_agg(k, '','' order by k) from jsonb_object_keys((select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')) k','admins,ai_limit,ai_month,ai_today,bytes,created_at,id,is_new,last_used,mb_limit,member_limit,members,name,services,songs,suspended_at','내보내는 칸은 허용 목록뿐'),
-    (5,'','select string_agg(k, '','' order by k) from jsonb_object_keys(super_church(''{b}'')) k','ai_days,ai_kinds,bytes,history,memo','자세히도 허용 목록뿐'),
+    (5,'','select string_agg(k, '','' order by k) from jsonb_object_keys(super_church(''{b}'')) k','ai_days,ai_kinds,bytes,free,history,info,memo,paid','자세히도 허용 목록뿐'),
     (5,'','select super_set_memo(''{b}'',''호감메모'')','true','메모 저장'),
     (5,'','select super_church(''{b}'')->>''memo''','호감메모','메모 읽기'),
     (5,'','select super_set_memo(''{b}'',repeat(''가'',2001))','ERR:%2000%','메모는 2000글자까지'),
@@ -132,7 +133,7 @@ begin
     (0,'','select clear_old_ai()::text','%','(날마다 정리)'),
     (0,'','select count(*) from ai_daily where church_id=''{b}''','0','13개월 지난 횟수는 지움'),
     -- 13단계
-    (5,'','select (select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''ai_limit'' || '','' || ((select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''member_limit'') || '','' || ((select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''mb_limit'')','50,5,50','새 교회 기본 한도'),
+    (5,'','select (select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''ai_limit'' || '','' || ((select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''member_limit'') || '','' || ((select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''mb_limit'')','0,5,20','새 교회 기본 한도 (17단계: 매달 무료 0 · 20MB)'),
     (5,'','select (select x from jsonb_array_elements(super_churches()) x where x->>''id''=''{b}'')->>''is_new''','true','새 교회로 알림'),
     (5,'','select (super_new_count() >= 2)::text','true','새 교회 수'),
     (5,'','select super_seen(''{b}'')','true','확인했어요'),
@@ -143,9 +144,9 @@ begin
     (4,cb,'select super_set_limits(''{b}'',999,99,99)','ERR:%전체 관리자만%','교회 관리자는 한도를 못 바꿈'),
     (4,cb,'with x as (update churches set ai_limit=999 returning 1) select count(*) from x','ERR:%permission%','표를 직접 고쳐도 한도를 못 바꿈'),
     (5,'','select super_set_limits(''{b}'',-1,5,50)','ERR:%범위%','이상한 숫자는 막힘'),
-    (5,'','select super_set_limits(''{b}'',2,5,50)','true','AI 한도 2번으로'),
-    (5,'','select super_church(''{b}'')->''history''->0->>''what''','한 달 AI 50번 → 2번','바꾼 기록: 전 값 → 새 값'),
-    (5,'','select super_set_limits(''{b}'',2,5,50)','true','(같은 값 다시 저장)'),
+    (5,'','select super_set_limits(''{b}'',2,5,20)','true','AI 한도 2번으로'),
+    (5,'','select super_church(''{b}'')->''history''->0->>''what''','한 달 AI 0번 → 2번','바꾼 기록: 전 값 → 새 값'),
+    (5,'','select super_set_limits(''{b}'',2,5,20)','true','(같은 값 다시 저장)'),
     (5,'','select count(*) from jsonb_array_elements(super_church(''{b}'')->''history'') h where h->>''what'' like ''한 달 AI%''','1','안 바뀌면 기록 안 함'),
     (4,cb,'select ai_begin(''{u}4'',''{b}'',''d0000000-0000-4000-8000-000000000001'',''score'')','ERR:%permission%','AI 잡기를 바로 못 부름'),
     (4,cb,'select ai_end(''d0000000-0000-4000-8000-000000000001'',true,''claude'',1,1)','ERR:%permission%','AI 끝내기를 바로 못 부름'),
@@ -195,9 +196,9 @@ begin
     (0,'','select ai_begin(''{u}4'',''{b}'',null,''score'')->>''ok''','true','다음 달이면 다시 됨 · 작업 번호가 없어도 됨'),
     (0,'','select ai_begin(''{u}4'',''{b}'',null,''score'')->>''ok''','true','작업 번호가 없으면 부를 때마다'),
     (0,'','select n::text from ai_daily where church_id=''{b}'' and day=(now() at time zone ''Asia/Seoul'')::date','2','번호 없이 두 번이면 2번'),
-    (5,'','select super_set_limits(''{b}'',0,5,50)','true','(AI 0번)'),
-    (0,'','select ai_begin(''{u}4'',''{b}'',''d0000000-0000-4000-8000-000000000005'',''score'')->>''error''','이 교회는 지금 AI를%','0이면 꺼짐'),
-    (5,'','select super_set_limits(''{b}'',100,5,50)','true','(되돌림)'),
+    (5,'','select super_set_limits(''{b}'',0,5,20)','true','(AI 0번)'),
+    (0,'','select ai_begin(''{u}4'',''{b}'',''d0000000-0000-4000-8000-000000000005'',''score'')->>''code''','charge','매달 0번에 잔액도 없으면 충전 안내'),
+    (5,'','select super_set_limits(''{b}'',100,5,20)','true','(되돌림)'),
     (0,'','with x as (insert into ai_daily values (''{a}'',(now() at time zone ''Asia/Seoul'')::date,3000,now()) on conflict (church_id,day) do update set n=3000 returning 1) select count(*) from x','1','(전체 3000번)'),
     (0,'','select ai_begin(''{u}4'',''{b}'',''d0000000-0000-4000-8000-000000000005'',''score'')->>''error''','지금은 AI를 쓸 수 없어요%','서비스 전체 한도'),
     (0,'','with x as (update ai_jobs set at=now()-interval ''2 days'' returning 1) select (count(*)>0)::text from x','true','(이틀 전으로)'),
@@ -205,7 +206,7 @@ begin
     (0,'','select clear_old_ai()::text','%','(날마다 정리)'),
     (0,'','select (select count(*) from ai_jobs)+(select count(*) from ai_kinds where church_id=''{b}'')','0','작업은 하루, 원가는 13개월 뒤 지움'),
     (4,cb,'select church_usage()->>''member_limit''','5','교회 관리자는 남은 양을 봄'),
-    (4,cb,'select string_agg(k, '','' order by k) from jsonb_object_keys(church_usage()) k','ai_limit,ai_month,bytes,mb_limit,member_limit,members','남은 양도 허용 목록뿐'),
+    (4,cb,'select string_agg(k, '','' order by k) from jsonb_object_keys(church_usage()) k','ai_limit,ai_month,bytes,free,mb_limit,member_limit,members,paid','남은 양도 허용 목록뿐'),
     (1,ca,'select church_usage()','ERR:%팀원만%','교회 밖 사람은 남은 양을 못 봄'),
     (4,ca,'select church_usage()->>''ai_month''','3000','팀원도 자기 교회 사용량을 봄'),
     (5,'','select super_set_limits(''{b}'',100,1,50)','true','(팀원 한도 1명)'),

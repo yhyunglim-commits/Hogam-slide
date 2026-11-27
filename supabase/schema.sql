@@ -1247,3 +1247,380 @@ begin
 end $$;
 revoke execute on function public.super_home() from public, anon;
 grant execute on function public.super_home() to authenticated;
+
+-- ───────────── 17단계 추가 (2026-11-27): 유료 1단계 · AI 충전 · 용량 추가 · 교회 정보 ─────────────
+-- AI 횟수는 속으로 5배 숫자(점)로 세요. 악보·주보 1번 = 5점, 맞춤법 1번 = 1점(5번을 1번으로).
+-- 빠지는 순서: 매달 무료(ai_limit, 초기 교회만) → 처음 무료(free_pts, 교회마다 한 번) → 충전 잔액(paid_pts, 취소하면 마이너스도 돼요).
+do $$ begin
+  if not exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'churches' and column_name = 'free_pts') then
+    alter table public.churches add column free_pts int not null default 0;
+    alter table public.churches add column paid_pts int not null default 0;
+    update public.churches set mb_limit = 20 where mb_limit = 50; -- 처음 한 번만: 기존 교회도 20MB로
+  end if;
+end $$;
+alter table public.churches alter column ai_limit set default 0;  -- 새 교회는 매달 무료 없음
+alter table public.churches alter column mb_limit set default 20;
+alter table public.ai_daily add column if not exists month_pts int not null default 0; -- 매달 무료에서 뺀 점
+alter table public.ai_jobs  add column if not exists from_month int not null default 0;
+alter table public.ai_jobs  add column if not exists from_free  int not null default 0;
+alter table public.ai_jobs  add column if not exists from_paid  int not null default 0;
+
+-- 교회 정보: 호감과 그 교회 관리자만 봐요 (churches는 팀원 모두 보니까 따로 둬요)
+create table if not exists public.church_info (
+  church_id  uuid primary key references public.churches on delete cascade,
+  road       text not null,          -- 도로명 주소 (우편번호 검색에서 고른 것)
+  road_key   text not null,          -- 같은 주소 찾기용 (띄어쓰기 뺀 것)
+  detail     text not null default '',
+  zip        text not null default '',
+  denom      text not null default '',
+  phone      text not null default '',
+  updated_at timestamptz not null default now()
+);
+create index if not exists church_info_road on public.church_info (road_key);
+alter table public.church_info enable row level security;
+revoke all on public.church_info from public, anon, authenticated;
+
+-- 교회 정보 검사: 잘못되면 오류 글, 맞으면 null
+create or replace function public.info_error(p jsonb) returns text
+language sql immutable as $$
+  select case
+    when char_length(btrim(coalesce(p->>'road', ''))) not between 5 and 200 then '교회 주소를 골라 주세요'
+    when char_length(coalesce(p->>'detail', '')) > 100 then '상세 주소는 100글자까지 적을 수 있어요'
+    when coalesce(p->>'zip', '') !~ '^([0-9]{5})?$' then '우편번호가 맞지 않아요'
+    when char_length(coalesce(p->>'denom', '')) > 30 then '교단은 30글자까지 적을 수 있어요'
+    when coalesce(p->>'phone', '') !~ '^[0-9 ()+-]{0,20}$' then '전화번호는 숫자와 -만 적어 주세요'
+  end;
+$$;
+create or replace function public.road_key(p text) returns text
+language sql immutable as $$ select lower(regexp_replace(coalesce(p, ''), '\s+', '', 'g')) $$;
+
+-- 새 교회 만들기: 이름·주소 필수. 같은 도로명 주소의 교회가 이미 있으면 처음 무료 50번은 없어요.
+create or replace function public.create_church(p_church text, p_name text, p_info jsonb) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare
+  v_uid    uuid := auth.uid();
+  v_ch     public.churches;
+  v_church text := regexp_replace(btrim(coalesce(p_church, '')), '\s+', ' ', 'g');
+  v_name   text := regexp_replace(btrim(coalesce(p_name, '')), '\s+', ' ', 'g');
+  v_err    text := public.info_error(coalesce(p_info, '{}'));
+  v_road   text := regexp_replace(btrim(coalesce(p_info->>'road', '')), '\s+', ' ', 'g');
+  v_free   boolean;
+begin
+  if v_uid is null then raise exception '먼저 로그인해 주세요'; end if;
+  if not public.agreed() then return jsonb_build_object('ok', false, 'error', '이용약관과 개인정보 처리방침에 먼저 동의해 주세요'); end if;
+  if char_length(v_church) < 2 or char_length(v_church) > 20 then
+    return jsonb_build_object('ok', false, 'error', '교회 이름은 2~20글자로 적어 주세요');
+  end if;
+  if char_length(v_name) < 2 or char_length(v_name) > 10 then
+    return jsonb_build_object('ok', false, 'error', '이름은 2~10글자로 적어 주세요');
+  end if;
+  if v_err is not null then return jsonb_build_object('ok', false, 'error', v_err); end if;
+  perform pg_advisory_xact_lock(hashtext('hogam_road:' || public.road_key(v_road))); -- 같은 주소로 동시에 만들어도 무료는 한 곳만
+  v_free := not exists (select 1 from public.church_info where road_key = public.road_key(v_road));
+  insert into public.churches (name, created_by, free_pts) values (v_church, v_uid, case when v_free then 250 else 0 end)
+    on conflict (created_by) do nothing returning * into v_ch;
+  if v_ch.id is null then
+    return jsonb_build_object('ok', false, 'error', '교회는 한 사람이 한 곳만 만들 수 있어요');
+  end if;
+  insert into public.church_info (church_id, road, road_key, detail, zip, denom, phone)
+    values (v_ch.id, v_road, public.road_key(v_road), btrim(coalesce(p_info->>'detail', '')), coalesce(p_info->>'zip', ''),
+            btrim(coalesce(p_info->>'denom', '')), btrim(coalesce(p_info->>'phone', '')));
+  insert into public.members (user_id, name, church_id, role) values (v_uid, v_name, v_ch.id, 'admin');
+  insert into public.edit_log (church_id, user_id, name, action, target_type, target_id, summary)
+    values (v_ch.id, v_uid, v_name, 'join', 'member', v_name, v_name);
+  return jsonb_build_object('ok', true, 'church', v_ch.name, 'church_id', v_ch.id, 'free', v_free);
+end $$;
+-- 옛 화면(주소 없이 만들기)은 막아요
+create or replace function public.create_church(p_church text, p_name text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception '먼저 로그인해 주세요'; end if;
+  if not public.agreed() then return jsonb_build_object('ok', false, 'error', '이용약관과 개인정보 처리방침에 먼저 동의해 주세요'); end if;
+  return jsonb_build_object('ok', false, 'error', '교회 주소가 필요해요. 화면을 새로고침한 뒤 다시 해 주세요');
+end $$;
+
+-- 교회 정보 보기·고치기: 그 교회 관리자와 호감만. 나중에 고쳐도 처음 무료는 그대로예요.
+create or replace function public.church_info_get(p_church uuid) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not (public.is_admin(p_church) or public.is_super()) then raise exception '교회 관리자만 볼 수 있어요'; end if;
+  return (select jsonb_build_object('road', road, 'detail', detail, 'zip', zip, 'denom', denom, 'phone', phone, 'updated_at', updated_at)
+            from public.church_info where church_id = p_church);
+end $$;
+create or replace function public.church_info_set(p_church uuid, p_info jsonb) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_err text := public.info_error(coalesce(p_info, '{}')); v_road text := regexp_replace(btrim(coalesce(p_info->>'road', '')), '\s+', ' ', 'g');
+begin
+  if not public.is_admin(p_church) then raise exception '교회 관리자만 고칠 수 있어요'; end if;
+  if v_err is not null then return jsonb_build_object('ok', false, 'error', v_err); end if;
+  insert into public.church_info (church_id, road, road_key, detail, zip, denom, phone)
+    values (p_church, v_road, public.road_key(v_road), btrim(coalesce(p_info->>'detail', '')), coalesce(p_info->>'zip', ''),
+            btrim(coalesce(p_info->>'denom', '')), btrim(coalesce(p_info->>'phone', '')))
+    on conflict (church_id) do update set road = excluded.road, road_key = excluded.road_key, detail = excluded.detail,
+      zip = excluded.zip, denom = excluded.denom, phone = excluded.phone, updated_at = now();
+  return jsonb_build_object('ok', true);
+end $$;
+
+-- 이번 달 매달 무료에서 쓴 점
+create or replace function public.month_pts(c uuid) returns bigint
+language sql stable security definer set search_path = public as $$
+  select coalesce(sum(month_pts), 0) from public.ai_daily
+   where church_id = c and day >= date_trunc('month', now() at time zone 'Asia/Seoul')::date;
+$$;
+
+-- AI 부르기 전: 빠지는 순서대로 점을 빼고 어디서 뺐는지 적어 둬요 (실패하면 그대로 돌려주려고)
+create or replace function public.ai_begin(p_user uuid, p_church uuid, p_job uuid, p_kind text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_day date := (now() at time zone 'Asia/Seoul')::date; c public.churches; j public.ai_jobs; v_id uuid := coalesce(p_job, gen_random_uuid());
+  v_kind text := case when p_kind in ('score', 'bulletin', 'spell', 'format') then p_kind else 'other' end;
+  v_cost int := case when p_kind = 'spell' then 1 else 5 end;
+  v_mleft int; v_m int := 0; v_f int := 0; v_p int := 0; v_rest int;
+begin
+  perform pg_advisory_xact_lock(hashtext('hogam_ai'));
+  select * into c from public.churches where id = p_church for update;
+  if not found then raise exception '교회를 찾지 못했어요'; end if;
+  select * into j from public.ai_jobs where id = v_id;
+  if found and (j.user_id <> p_user or j.church_id <> p_church or j.kind <> v_kind or j.calls >= 3 or j.at < now() - interval '10 minutes') then
+    return jsonb_build_object('ok', false, 'code', 'job', 'error', '다시 시작해 주세요');
+  end if;
+  if j.id is null or not j.charged then
+    v_mleft := greatest(c.ai_limit * 5 - public.month_pts(p_church), 0);
+    if v_mleft + greatest(c.free_pts, 0) + greatest(c.paid_pts, 0) < v_cost then
+      return jsonb_build_object('ok', false, 'code', 'charge', 'error',
+        case when c.ai_limit > 0 then '이번 달 AI ' || c.ai_limit || '번을 다 썼어요. 다음 달 1일에 다시 되고, 지금 더 쓰려면 충전을 신청해 주세요'
+             else 'AI 횟수를 다 썼어요. 충전을 신청하면 바로 5번을 먼저 쓸 수 있어요' end);
+    end if;
+    if public.ai_used(null) >= 3000 then
+      return jsonb_build_object('ok', false, 'code', 'quota', 'error', '지금은 AI를 쓸 수 없어요. 호감슬라이드에 문의해 주세요');
+    end if;
+    v_m := least(v_cost, v_mleft); v_rest := v_cost - v_m;
+    v_f := least(v_rest, greatest(c.free_pts, 0)); v_rest := v_rest - v_f;
+    v_p := v_rest;
+    update public.churches set free_pts = free_pts - v_f, paid_pts = paid_pts - v_p where id = p_church;
+    insert into public.ai_daily (church_id, day, n, month_pts) values (p_church, v_day, 1, v_m)
+      on conflict (church_id, day) do update set n = ai_daily.n + 1, month_pts = ai_daily.month_pts + v_m, last_at = now();
+    insert into public.ai_kinds (church_id, day, kind, n) values (p_church, v_day, v_kind, 1)
+      on conflict (church_id, day, kind) do update set n = ai_kinds.n + 1;
+  end if;
+  insert into public.ai_jobs (id, church_id, user_id, kind, day, calls, pending, charged, from_month, from_free, from_paid)
+    values (v_id, p_church, p_user, v_kind, v_day, 1, 1, true, v_m, v_f, v_p)
+    on conflict (id) do update set calls = ai_jobs.calls + 1, pending = ai_jobs.pending + 1, charged = true,
+      day        = case when ai_jobs.charged then ai_jobs.day        else excluded.day end,
+      from_month = case when ai_jobs.charged then ai_jobs.from_month else excluded.from_month end,
+      from_free  = case when ai_jobs.charged then ai_jobs.from_free  else excluded.from_free end,
+      from_paid  = case when ai_jobs.charged then ai_jobs.from_paid  else excluded.from_paid end;
+  insert into public.ai_usage (user_id, church_id) values (p_user, p_church);
+  return jsonb_build_object('ok', true, 'job', v_id);
+end $$;
+-- AI를 부른 뒤: 한 번도 답을 못 받았으면 뺀 곳으로 그대로 돌려줘요
+create or replace function public.ai_end(p_job uuid, p_ok boolean, p_by text, p_in int, p_out int) returns void
+language plpgsql security definer set search_path = public as $$
+declare j public.ai_jobs; v_in int := greatest(coalesce(p_in, 0), 0); v_out int := greatest(coalesce(p_out, 0), 0);
+begin
+  perform pg_advisory_xact_lock(hashtext('hogam_ai'));
+  update public.ai_jobs set pending = greatest(pending - 1, 0), ok = ok or coalesce(p_ok, false) where id = p_job returning * into j;
+  if not found then return; end if;
+  update public.ai_kinds set
+      claude_in = claude_in + case when p_by = 'claude' then v_in else 0 end, claude_out = claude_out + case when p_by = 'claude' then v_out else 0 end,
+      gemini_in = gemini_in + case when p_by = 'gemini' then v_in else 0 end, gemini_out = gemini_out + case when p_by = 'gemini' then v_out else 0 end
+   where church_id = j.church_id and day = j.day and kind = j.kind;
+  if j.pending = 0 and not j.ok and j.charged then
+    update public.ai_jobs set charged = false, from_month = 0, from_free = 0, from_paid = 0 where id = p_job;
+    update public.ai_daily set n = greatest(n - 1, 0), month_pts = greatest(month_pts - j.from_month, 0) where church_id = j.church_id and day = j.day;
+    update public.ai_kinds set n = greatest(n - 1, 0) where church_id = j.church_id and day = j.day and kind = j.kind;
+    update public.churches set free_pts = free_pts + j.from_free, paid_pts = paid_pts + j.from_paid where id = j.church_id;
+  end if;
+end $$;
+
+-- 남은 AI 횟수 (팀원 모두): 번 단위, 맞춤법 때문에 소수 한 자리까지
+create or replace function public.ai_left() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare c public.churches; v_m numeric;
+begin
+  select * into c from public.churches where id = public.my_church();
+  if not found then raise exception '팀원만 볼 수 있어요'; end if;
+  v_m := greatest(c.ai_limit * 5 - public.month_pts(c.id), 0) / 5.0;
+  return jsonb_build_object('limit', c.ai_limit, 'month', trim_scale(round(v_m, 1)), 'free', trim_scale(round(c.free_pts / 5.0, 1)), 'paid', trim_scale(round(c.paid_pts / 5.0, 1)),
+    'left', trim_scale(round(v_m + greatest(c.free_pts, 0) / 5.0 + greatest(c.paid_pts, 0) / 5.0, 1)),
+    'pending', exists (select 1 from public.pay_requests where church_id = c.id and status = 'pending'));
+end $$;
+
+-- 유료 신청 · 입금 기록 (교회가 지워지거나 신청한 사람이 탈퇴해도 5년 남겨요)
+create table if not exists public.pay_requests (
+  id             bigint generated always as identity primary key,
+  at             timestamptz not null default now(),
+  church_id      uuid references public.churches on delete set null,
+  church_name    text not null,
+  kind           text not null check (kind in ('ai', 'mb')),
+  amount         int not null,             -- 원
+  user_id        uuid references auth.users on delete set null,
+  user_name      text not null,
+  payer          text not null,            -- 입금자 이름
+  status         text not null default 'pending' check (status in ('pending', 'approved', 'cancelled', 'refunded')),
+  done_at        timestamptz,
+  seen_at        timestamptz                -- 호감이 본 때 (NEW)
+);
+create index if not exists pay_requests_church on public.pay_requests (church_id, at desc);
+alter table public.pay_requests enable row level security;
+revoke all on public.pay_requests from public, anon, authenticated;
+
+-- 신청 (팀원 누구나): 교회마다 처리 안 된 신청은 하나만. AI는 바로 5번(25점)을 먼저 열어 줘요.
+create or replace function public.pay_request(p_kind text, p_payer text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare c public.churches; v_payer text := regexp_replace(btrim(coalesce(p_payer, '')), '\s+', ' ', 'g'); v_id bigint;
+begin
+  if p_kind is null or p_kind not in ('ai', 'mb') then raise exception '신청 종류가 맞지 않아요'; end if;
+  select * into c from public.churches where id = public.my_church() for update;
+  if not found then raise exception '팀원만 신청할 수 있어요'; end if;
+  if c.suspended_at is not null then return jsonb_build_object('ok', false, 'error', '멈춘 교회는 신청할 수 없어요'); end if;
+  if char_length(v_payer) < 1 or char_length(v_payer) > 20 then
+    return jsonb_build_object('ok', false, 'error', '입금자 이름을 20글자 안으로 적어 주세요');
+  end if;
+  if exists (select 1 from public.pay_requests where church_id = c.id and status = 'pending') then
+    return jsonb_build_object('ok', false, 'error', '입금 확인 중인 신청이 있어요. 확인이 끝난 뒤 다시 신청해 주세요');
+  end if;
+  insert into public.pay_requests (church_id, church_name, kind, amount, user_id, user_name, payer)
+    values (c.id, c.name, p_kind, 5000, auth.uid(), public.my_name(c.id), v_payer) returning id into v_id;
+  if p_kind = 'ai' then update public.churches set paid_pts = paid_pts + 25 where id = c.id; end if;
+  return jsonb_build_object('ok', true, 'id', v_id);
+end $$;
+-- 우리 교회 신청 목록 (팀원 모두)
+create or replace function public.pay_mine() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_c uuid := public.my_church();
+begin
+  if v_c is null then raise exception '팀원만 볼 수 있어요'; end if;
+  return (select coalesce(jsonb_agg(jsonb_build_object('id', id, 'at', at, 'kind', kind, 'amount', amount, 'user_name', user_name,
+            'payer', payer, 'status', status, 'done_at', done_at) order by id desc), '[]'::jsonb)
+            from (select * from public.pay_requests where church_id = v_c order by id desc limit 50) x);
+end $$;
+
+-- 관리 홈 '유료 신청·입금' (호감만)
+create or replace function public.super_pay_list() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.is_super() then raise exception '전체 관리자만 볼 수 있어요'; end if;
+  return jsonb_build_object(
+    'db_bytes', pg_database_size(current_database()),
+    'list', (select coalesce(jsonb_agg(jsonb_build_object('id', p.id, 'at', p.at, 'church_id', p.church_id, 'church_name', p.church_name,
+               'kind', p.kind, 'amount', p.amount, 'user_name', p.user_name, 'payer', p.payer, 'status', p.status, 'done_at', p.done_at,
+               'is_new', p.seen_at is null) order by p.id desc), '[]'::jsonb)
+             from (select * from public.pay_requests order by id desc limit 200) p));
+end $$;
+create or replace function public.super_pay_seen() returns int
+language plpgsql security definer set search_path = public as $$
+declare n int;
+begin
+  if not public.is_super() then raise exception '전체 관리자만 할 수 있어요'; end if;
+  update public.pay_requests set seen_at = now() where seen_at is null;
+  get diagnostics n = row_count;
+  return n;
+end $$;
+-- 승인(입금 확인, 한 번만) · 취소(입금 안 됨, 먼저 연 5번을 뺌) · 환불됨(남은 충전에서 50번까지 빼거나 50MB 내림)
+create or replace function public.super_pay_set(p_id bigint, p_action text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare r public.pay_requests; c public.churches; v_take int; v_what text;
+begin
+  if not public.is_super() then raise exception '전체 관리자만 할 수 있어요'; end if;
+  select * into r from public.pay_requests where id = p_id for update;
+  if not found then return jsonb_build_object('ok', false, 'error', '신청을 찾지 못했어요'); end if;
+  if p_action in ('approve', 'cancel') and r.status <> 'pending' then
+    return jsonb_build_object('ok', false, 'error', '이미 처리한 신청이에요');
+  elsif p_action = 'refund' and r.status <> 'approved' then
+    return jsonb_build_object('ok', false, 'error', '승인한 신청만 환불됨으로 바꿀 수 있어요');
+  elsif p_action is null or p_action not in ('approve', 'cancel', 'refund') then
+    raise exception '처리 종류가 맞지 않아요';
+  end if;
+  select * into c from public.churches where id = r.church_id for update;
+  if not found and p_action <> 'cancel' then return jsonb_build_object('ok', false, 'error', '지워진 교회예요'); end if;
+  if r.kind = 'ai' then
+    if p_action = 'approve' then
+      update public.churches set paid_pts = paid_pts + 225 where id = c.id; v_what := 'AI 충전 승인 (+50번)';
+    elsif p_action = 'cancel' then
+      update public.churches set paid_pts = paid_pts - 25 where id = r.church_id; v_what := 'AI 충전 신청 취소 (먼저 연 5번 뺌)';
+    else
+      v_take := least(250, greatest(c.paid_pts, 0));
+      update public.churches set paid_pts = paid_pts - v_take where id = c.id;
+      v_what := 'AI 충전 환불됨 (남은 ' || trim_scale(round(v_take / 5.0, 1)) || '번 뺌)';
+    end if;
+  else
+    if p_action = 'approve' then
+      update public.churches set mb_limit = least(mb_limit + 50, 5000) where id = c.id; v_what := '용량 추가 승인 (+50MB)';
+    elsif p_action = 'cancel' then
+      v_what := '용량 추가 신청 취소';
+    else
+      update public.churches set mb_limit = greatest(mb_limit - 50, 1) where id = c.id; v_what := '용량 추가 환불됨 (-50MB)';
+    end if;
+  end if;
+  update public.pay_requests set status = case p_action when 'approve' then 'approved' when 'cancel' then 'cancelled' else 'refunded' end,
+         done_at = now(), seen_at = coalesce(seen_at, now()) where id = p_id;
+  if r.church_id is not null and found then insert into public.super_log (church_id, what) values (r.church_id, v_what || ' · ' || r.payer); end if;
+  return jsonb_build_object('ok', true);
+end $$;
+
+create or replace function public.clear_old_pay() returns void
+language sql security definer set search_path = public as $$
+  delete from public.pay_requests where at < now() - interval '5 years';
+$$;
+select cron.schedule('hogam-clear-pay', '45 18 * * *', 'select public.clear_old_pay()');
+
+-- 교회 관리자가 보는 남은 양: 충전 잔액까지
+create or replace function public.church_usage() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare c public.churches;
+begin
+  select * into c from public.churches where id = public.my_church();
+  if not found then raise exception '팀원만 볼 수 있어요'; end if;
+  return jsonb_build_object('ai_limit', c.ai_limit, 'member_limit', c.member_limit, 'mb_limit', c.mb_limit,
+    'members',  (select count(*) from public.members where church_id = c.id),
+    'ai_month', (select coalesce(sum(n), 0) from public.ai_daily where church_id = c.id and day >= date_trunc('month', now() at time zone 'Asia/Seoul')::date),
+    'free', trim_scale(round(c.free_pts / 5.0, 1)), 'paid', trim_scale(round(c.paid_pts / 5.0, 1)),
+    'bytes',    (select sum(v::bigint) from jsonb_each_text(public.church_bytes(c.id)) x(k, v)));
+end $$;
+
+-- 관리 홈: 교회 정보와 남은 횟수, 새 신청 수, 서버 전체 크기
+create or replace function public.super_church(p_church uuid) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_today date := (now() at time zone 'Asia/Seoul')::date;
+begin
+  if not public.is_super() then raise exception '전체 관리자만 볼 수 있어요'; end if;
+  return jsonb_build_object(
+    'memo',  coalesce((select memo from public.church_memos where church_id = p_church), ''),
+    'bytes', public.church_bytes(p_church),
+    'info',  public.church_info_get(p_church),
+    'free',  (select trim_scale(round(free_pts / 5.0, 1)) from public.churches where id = p_church),
+    'paid',  (select trim_scale(round(paid_pts / 5.0, 1)) from public.churches where id = p_church),
+    'history', (select coalesce(jsonb_agg(jsonb_build_object('at', l.at, 'what', l.what) order by l.id desc), '[]'::jsonb)
+                  from (select * from public.super_log where church_id = p_church order by id desc limit 100) l),
+    'ai_kinds', (select coalesce(jsonb_agg(to_jsonb(x) order by x.n desc, x.kind), '[]'::jsonb) from (
+                   select kind, sum(n) as n, sum(claude_in) as claude_in, sum(claude_out) as claude_out, sum(gemini_in) as gemini_in, sum(gemini_out) as gemini_out
+                     from public.ai_kinds where church_id = p_church and day >= date_trunc('month', v_today) group by kind) x),
+    'ai_days', (select jsonb_agg(coalesce(d.n, 0) order by g.i desc) from generate_series(0, 13) g(i)
+                  left join public.ai_daily d on d.church_id = p_church and d.day = v_today - g.i));
+end $$;
+create or replace function public.super_home() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_today date := (now() at time zone 'Asia/Seoul')::date;
+begin
+  if not public.is_super() then raise exception '전체 관리자만 볼 수 있어요'; end if;
+  return jsonb_build_object(
+    'ai_month',   public.ai_used(null),
+    'ai_service', 3000,
+    'ai_days',    (select jsonb_agg(coalesce((select sum(d.n) from public.ai_daily d where d.day = v_today - g.i), 0) order by g.i desc) from generate_series(0, 13) g(i)),
+    'tokens',     (select jsonb_build_object('claude_in', coalesce(sum(claude_in), 0), 'claude_out', coalesce(sum(claude_out), 0))
+                     from public.ai_kinds where day >= date_trunc('month', v_today)),
+    'people',     (select count(distinct user_id) from public.members),
+    'agreed',     (select count(distinct m.user_id) from public.members m join public.consents c on c.user_id = m.user_id and c.ver >= public.terms_ver()),
+    'terms_ver',  public.terms_ver(),
+    'pay_new',    (select count(*) from public.pay_requests where seen_at is null),
+    'pay_pending',(select count(*) from public.pay_requests where status = 'pending'),
+    'db_bytes',   pg_database_size(current_database()),
+    'log',        (select coalesce(jsonb_agg(jsonb_build_object('at', l.at, 'what', l.what, 'church', ch.name) order by l.id desc), '[]'::jsonb)
+                     from (select * from public.super_log order by id desc limit 5) l left join public.churches ch on ch.id = l.church_id));
+end $$;
+
+revoke execute on function public.info_error(jsonb), public.road_key(text), public.month_pts(uuid), public.clear_old_pay() from public, anon, authenticated;
+revoke execute on function public.create_church(text, text, jsonb), public.church_info_get(uuid), public.church_info_set(uuid, jsonb),
+  public.pay_request(text, text), public.pay_mine(), public.super_pay_list(), public.super_pay_seen(), public.super_pay_set(bigint, text) from public, anon;
+grant execute on function public.create_church(text, text, jsonb), public.church_info_get(uuid), public.church_info_set(uuid, jsonb),
+  public.pay_request(text, text), public.pay_mine(), public.super_pay_list(), public.super_pay_seen(), public.super_pay_set(bigint, text) to authenticated;
