@@ -69,7 +69,18 @@ try{
   await ev(`$('jAgree').querySelector('[data-all]').click();$('jGo').click();await new Promise(r=>setTimeout(r,500))`);
   is('동의 → 교회 들어가기 순서',(await calls())==='agree_terms,join_church');
   await shot('3-join.png');
-  await ev(`$('jMake').click()`);is('초대 코드 화면에서 무료 시작으로',await ev(`return ${vis('gFree')}`));
+  is('들어가기 아래쪽은 다시 고르기·로그아웃 한 줄',await ev(`const r=document.querySelector('#gJoin .gfootrow');const [a,b]=[...r.children].map(x=>x.getBoundingClientRect());return r.children.length===2&&Math.abs(a.top-b.top)<2&&!document.querySelector('#gJoin #jMake')`));
+  // 첫 화면에서 초대 코드 넣고 시작
+  await ev(`store.set('joinCode',null);showGate();window.KK=[];sb.auth.signInWithOAuth=async o=>{KK.push(o);return {error:null};}`);
+  is('첫 화면: 초대 코드 링크가 보이고 코드 칸은 닫혀 있음',await ev(`return ${vis('gCodeOpen')}&&!${vis('gCodeBox')}`));
+  await ev(`$('gCodeOpen').click();$('gCodeGo').click();await new Promise(r=>setTimeout(r,150))`);
+  is('코드 없이 누르면 막고 카카오로 안 감',await ev(`return ${vis('gCodeBox')}&&$('gCodeErr').textContent.includes('초대 코드')&&KK.length===0`));
+  await ev(`$('gCode').value=' ab3d-ef7h ';$('gCodeGo').click();await new Promise(r=>setTimeout(r,200))`);
+  is('코드를 기억하고 카카오 로그인으로',await ev(`return store.get('joinCode',null)==='AB3DEF7H'&&KK.length===1`));
+  await shot('10-start-code.png');
+  await fake();await ev(`await afterLogin(U)`);
+  is('로그인 뒤 고르기 없이 코드가 채워진 들어가기',await ev(`return ${vis('gJoin')}&&$('jCode').value==='AB3DEF7H'`));
+  await ev(`store.set('joinCode',null)`);
   // 4) 초대 링크로 온 사람은 바로 코드 넣기
   await ev(`store.set('joinCode','XYZXYZXY')`);await fake();await ev(`await afterLogin(U)`);
   is('초대 링크로 오면 바로 교회에 들어가기 (코드 채움)',await ev(`return ${vis('gJoin')}&&$('jCode').value==='XYZXYZXY'`));
@@ -113,6 +124,9 @@ try{
   is('서버가 막으면 이유를 보여 주고 이름은 그대로',await ev(`return $('setNameE').textContent.includes('같은 이름')&&me.name==='옛이름'`));
   await ev(`$('setNameI').value='  새   이름 ';$('setNameGo').click();await new Promise(r=>setTimeout(r,300))`);
   is('바꾸면 이 교회 번호로 서버에 보내고 화면 곳곳이 새 이름',await ev(`const c=CALLS.at(-1);return c[0]==='set_my_name'&&c[1].p_church==='c1'&&c[1].p_name==='새 이름'&&me.name==='새 이름'&&$('meName').textContent==='새 이름'&&$('setName').textContent==='새 이름'&&CHURCHES[0].my==='새 이름'&&$('setNameF').hidden`));
+  is('설정이 카드 격자(넓은 화면 3칸) · 교회 이름과 역할 표시',await ev(`openSet();return getComputedStyle(document.querySelector('.sgrid')).gridTemplateColumns.split(' ').length===3&&$('setRole').textContent==='호감교회 · 팀원'`));
+  is('카드: 팀원 초대·사용량·편집 기록·매뉴얼·문의·로그아웃이 보이고, 팀원에게 팀원 관리·관리 홈은 숨김',await ev(`const v=id=>$(id).getClientRects().length>0;return ['invite','setUse','openLog','setMan','setMail','logout'].every(v)&&!v('openTeam')&&!v('openSuper')`));
+  await shot('8-set.png');
   // 8) 휴대폰 폭
   await send('Page.navigate',{url:base},S);await until(`document.readyState==='complete'&&typeof afterLogin==='function'`);await z(800);
   await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:2,mobile:true},S);await z(300);
@@ -122,6 +136,9 @@ try{
   await ev(`$('pkFree').click()`);await z(200);
   is('휴대폰 폭: 무료 시작 화면도 안 넘침',await ev(`return document.documentElement.scrollWidth<=innerWidth&&$('gfAgree').getBoundingClientRect().right<=innerWidth`));
   await shot('6-phone-free.png');
+  await ev(`me={id:'u1',name:'옛이름',church:'c1',role:'admin'};CHURCHES=[{id:'c1',name:'호감교회',my:'옛이름'}];hideGate();openSet()`);await z(300);
+  is('휴대폰 폭: 설정 카드 2칸, 옆으로 안 넘침',await ev(`return getComputedStyle(document.querySelector('.sgrid')).gridTemplateColumns.split(' ').length===2&&document.querySelector('.setcard').scrollWidth<=innerWidth`));
+  await shot('9-phone-set.png');
   is('코드 오류 없음',!errs.filter(e=>!/fetch|network|invalid|Failed/i.test(e)).length);if(errs.length)console.log(errs.slice(0,3).map(e=>e.slice(0,200)));
 }catch(e){bad++;console.log('멈춤',e.message);}
 console.log(`통과 ${ok} · 실패 ${bad}`);ch.kill();srv.close();await z(500);fs.rmSync(tmp,{recursive:true,force:true});process.exit(bad?1:0);
