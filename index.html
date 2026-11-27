@@ -2455,7 +2455,14 @@ button.tmrow{width:100%;border:0;border-radius:12px;background:none;color:var(--
 .setbody{padding:4px 20px 20px;display:flex;flex-direction:column;gap:18px;overflow:auto}
 .setme{display:flex;align-items:center;gap:12px}
 .setme .av{width:44px;height:44px;border-radius:50%;background:var(--pri-grad);color:#fff;font-weight:700;display:grid;place-items:center;font-size:18px;flex:none}
-.setme b{font-size:17px}
+.setme b{font-size:17px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.setnamef{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:12px;background:var(--sunken)}
+.setnamef[hidden]{display:none}
+.setnamef label span{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.setnamef input{width:100%;box-sizing:border-box;height:40px;font-size:16px}
+.setnamef .hint2{margin:0;font-size:12.5px;color:var(--text3)}
+.setnamef .cherr:empty{display:none}
+.setnamef .row{display:flex;gap:8px;justify-content:flex-end}
 .setbody h3{margin:0 0 6px;font-size:13px;font-weight:600;color:var(--text3)}
 .setrows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .setrows>button{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 14px;border:0;background:var(--surface);color:var(--text);font:inherit;font-size:15px;text-align:left;cursor:pointer}
@@ -3083,7 +3090,8 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
 <div class="logbox setbox" id="setbox" role="dialog" aria-modal="true" aria-labelledby="setTitle">
   <div class="lcard setcard"><div class="lhead"><h2 id="setTitle">설정</h2><button class="btn ghost ibtn" id="setClose" aria-label="닫기"><i class="ph ph-x" aria-hidden="true"></i></button></div>
   <div class="setbody">
-    <div class="setme"><span class="av" id="setAv" aria-hidden="true"></span><b id="setName"></b></div>
+    <div class="setme"><span class="av" id="setAv" aria-hidden="true"></span><b id="setName"></b><button type="button" class="btn ghost ibtn" id="setNameEd" aria-label="내 이름 바꾸기" title="내 이름 바꾸기"><i class="ph ph-pencil-simple" aria-hidden="true"></i></button></div>
+    <form class="setnamef" id="setNameF" hidden><label><span>이 교회에서 쓸 이름</span><input type="text" id="setNameI" maxlength="10" autocomplete="off"></label><p class="hint2">지난 편집 기록에는 그때 이름이 그대로 남아요.</p><p class="cherr" id="setNameE" role="alert"></p><div class="row"><button type="button" class="btn" id="setNameX">취소</button><button type="submit" class="btn pri" id="setNameGo">저장</button></div></form>
     <div><h3>화면 밝기</h3><div class="seg2 settheme" role="radiogroup" aria-label="화면 밝기"><button type="button" role="radio" data-th="auto">자동</button><button type="button" role="radio" data-th="light">밝게</button><button type="button" role="radio" data-th="dark">어둡게</button></div></div>
     <div><h3>교회 · <span id="setChurch"></span></h3><div class="setrows"><button type="button" id="invite"><i class="ph ph-user-plus" aria-hidden="true"></i>팀원 초대</button><button type="button" id="openTeam" hidden><i class="ph ph-users" aria-hidden="true"></i>팀원 관리</button><button type="button" id="openLog"><i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>편집 기록</button><button type="button" data-ch="join"><i class="ph ph-sign-in" aria-hidden="true"></i>다른 교회 들어가기</button><button type="button" data-ch="new" id="chMake"><i class="ph ph-plus-circle" aria-hidden="true"></i>새 교회 만들기</button></div></div>
     <div><h3>도움말</h3><div class="setrows"><button type="button" id="setMan"><i class="ph ph-question" aria-hidden="true"></i>호감 매뉴얼</button></div></div>
@@ -4895,7 +4903,7 @@ function followOv(groups){
  mq.addEventListener('change',place);place();
  av.setAttribute('role','button');av.tabIndex=0;av.setAttribute('aria-label','설정 열기');av.removeAttribute('aria-hidden');
  const tog=()=>openSet();me.addEventListener('click',tog);av.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openSet();}});}
-function openSet(){closeRail();hideTip();$('setName').textContent=$('meName').textContent;$('setAv').textContent=$('meAv').textContent;$('setbox').classList.add('on');$('setClose').focus();}
+function openSet(){closeRail();hideTip();$('setNameF').hidden=true;$('setNameEd').hidden=!me;$('setName').textContent=$('meName').textContent;$('setAv').textContent=$('meAv').textContent;$('setbox').classList.add('on');$('setClose').focus();}
 function closeSet(){$('setbox').classList.remove('on');}
 $('setClose').onclick=closeSet;$('setbox').addEventListener('click',e=>{if(e.target.id==='setbox')closeSet();});
 addEventListener('keydown',e=>{if(e.key==='Escape')closeSet();});
@@ -7295,6 +7303,17 @@ async function copyInvite(){let inv=null;
   if(!phone)return toastUndo(msg,()=>{},'확인',6000);
   // 공유 창이 막히면 '보내기'를 눌러 다시 열 수 있게
   toastUndo(msg,()=>send().catch(()=>{}),'보내기',12000);send().catch(()=>{});}
+// 내 이름 바꾸기 (15단계): 이 교회 안에서만, 지난 기록은 그대로
+$('setNameEd').onclick=()=>{$('setNameF').hidden=false;$('setNameE').textContent='';$('setNameI').value=me?.name||'';$('setNameI').focus();$('setNameI').select();};
+$('setNameX').onclick=()=>{$('setNameF').hidden=true;$('setNameEd').focus();};
+$('setNameF').onsubmit=async e=>{e.preventDefault();const v=normName($('setNameI').value),err=$('setNameE'),go=$('setNameGo');err.textContent='';
+  if(v===me.name){$('setNameF').hidden=true;return;}if(v.length<2)return err.textContent='이름을 2글자 이상 적어 주세요';
+  go.disabled=true;try{const {data,error}=await sb.rpc('set_my_name',{p_church:me.church,p_name:v});
+    if(error)throw new Error('서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요');if(!data.ok)throw new Error(data.error);
+    me.name=data.name;const c=CHURCHES.find(x=>x.id===me.church);if(c)c.my=data.name;
+    $('meName').textContent=$('setName').textContent=me.name;$('meAv').textContent=$('setAv').textContent=me.name.slice(0,1);$('meAv').title=`내 계정 · ${me.name}`;
+    renderChurch();$('setNameF').hidden=true;toast('이름을 바꿨어요');}
+  catch(x){err.textContent=x.message;}finally{go.disabled=false;}};
 $('logout').onclick=async()=>{const old=!$('linkKakao').hidden;if(!confirm(old?'아직 카카오를 연결하지 않았어요. 나가면 다음에도 이름과 개인 암호로 들어와야 해요. 나갈까요?':'나갈까요? 다음에 카카오로 다시 들어오면 돼요.'))return;closeSet();saveSession();await flushSessions();askKakao();await liveWipe();await sb?.auth.signOut();me=null;if(old)location.href=backTo()+'?old';else location.reload();};
 
 // 예배 이름 칸을 글자 길이에 맞춰서, 저장 시각이 이름 바로 옆에 붙게

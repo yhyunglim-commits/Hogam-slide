@@ -101,6 +101,18 @@ try{
     await send('Page.navigate',{url:base},S);await until(`document.readyState==='complete'&&typeof afterLogin==='function'`);await z(800);
     await fake({ms:member,agreed:a});ev(`await afterLogin(U)`).catch(()=>{});await z(800);
     is(nm,await ev(`return !$('agDlg').open&&CALLS[0][0]==='agreed'`));}
+  // 내 이름 바꾸기 (설정)
+  await send('Page.navigate',{url:base},S);await until(`document.readyState==='complete'&&typeof openSet==='function'`);await z(800);
+  await ev(`window.CALLS=[];sb.rpc=async(f,a)=>{CALLS.push([f,a]);return a.p_name==='겹침이름'?{data:{ok:false,error:'이 교회에 같은 이름이 있어요'},error:null}:{data:{ok:true,name:a.p_name},error:null};};
+    me={id:'u1',name:'옛이름',church:'c1',role:'member'};CHURCHES=[{id:'c1',name:'호감교회',my:'옛이름'}];$('meName').textContent='옛이름';$('meAv').textContent='옛';hideGate();openSet();$('setNameEd').click()`);
+  await shot('7-name.png');
+  is('설정에서 연필 → 지금 이름이 채워진 칸',await ev(`return !$('setNameF').hidden&&$('setNameI').value==='옛이름'`));
+  await ev(`$('setNameI').value='가';$('setNameGo').click();await new Promise(r=>setTimeout(r,200))`);
+  is('한 글자는 막고 서버를 안 부름',await ev(`return $('setNameE').textContent.includes('2글자')&&!CALLS.length`));
+  await ev(`$('setNameI').value='겹침이름';$('setNameGo').click();await new Promise(r=>setTimeout(r,300))`);
+  is('서버가 막으면 이유를 보여 주고 이름은 그대로',await ev(`return $('setNameE').textContent.includes('같은 이름')&&me.name==='옛이름'`));
+  await ev(`$('setNameI').value='  새   이름 ';$('setNameGo').click();await new Promise(r=>setTimeout(r,300))`);
+  is('바꾸면 이 교회 번호로 서버에 보내고 화면 곳곳이 새 이름',await ev(`const c=CALLS.at(-1);return c[0]==='set_my_name'&&c[1].p_church==='c1'&&c[1].p_name==='새 이름'&&me.name==='새 이름'&&$('meName').textContent==='새 이름'&&$('setName').textContent==='새 이름'&&CHURCHES[0].my==='새 이름'&&$('setNameF').hidden`));
   // 8) 휴대폰 폭
   await send('Page.navigate',{url:base},S);await until(`document.readyState==='complete'&&typeof afterLogin==='function'`);await z(800);
   await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:2,mobile:true},S);await z(300);

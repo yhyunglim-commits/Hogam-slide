@@ -1202,3 +1202,26 @@ begin
 end $$;
 revoke execute on function public.forget_user() from public, anon, authenticated;
 create or replace trigger hogam_forget_user before delete on auth.users for each row execute function public.forget_user();
+
+-- ───────────── 15단계 추가 (2026-11-27): 설정에서 내 이름 바꾸기 ─────────────
+-- '교회에서 쓸 이름'을 그 교회 안에서만 바꿔요. 지난 기록(편집 기록·고친 사람)은 그때 이름 그대로 둬요.
+create or replace function public.set_my_name(p_church uuid, p_name text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_name text := regexp_replace(btrim(coalesce(p_name, '')), '\s+', ' ', 'g');
+begin
+  if auth.uid() is null then raise exception '먼저 로그인해 주세요'; end if;
+  if char_length(v_name) < 2 or char_length(v_name) > 10 then
+    return jsonb_build_object('ok', false, 'error', '이름은 2~10글자로 적어 주세요');
+  end if;
+  if not exists (select 1 from public.members where user_id = auth.uid() and church_id = p_church) then
+    return jsonb_build_object('ok', false, 'error', '이 교회 팀원만 바꿀 수 있어요');
+  end if;
+  begin
+    update public.members set name = v_name where user_id = auth.uid() and church_id = p_church;
+  exception when unique_violation then
+    return jsonb_build_object('ok', false, 'error', '이 교회에 같은 이름이 있어요. 이름 뒤에 직분이나 숫자를 붙여 주세요');
+  end;
+  return jsonb_build_object('ok', true, 'name', v_name);
+end $$;
+revoke execute on function public.set_my_name(uuid, text) from public, anon;
+grant execute on function public.set_my_name(uuid, text) to authenticated;

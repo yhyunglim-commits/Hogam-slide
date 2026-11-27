@@ -250,7 +250,16 @@ begin
     (0,'','with x as (update edit_log set at=now()-interval ''366 days'' where church_id=''{a}'' returning 1) select (count(*)>0)::text from x','true','(편집 기록을 1년 전으로)'),
     (0,'','select clear_old_edit_log()::text','%','(날마다 정리)'),
     (0,'','select count(*) from edit_log where church_id=''{a}''','0','1년 지난 편집 기록은 지움'),
-    (0,'','select count(*) from cron.job where jobname=''hogam-clear-edit-log''','1','날마다 정리 예약')
+    (0,'','select count(*) from cron.job where jobname=''hogam-clear-edit-log''','1','날마다 정리 예약'),
+    (4,cb,'select set_my_name(''{b}'',''새 이름'')->>''name''','새 이름','내 이름 바꾸기 (15단계)'),
+    (0,'','select count(*) from members where church_id=''{b}'' and name=''새 이름''','1','(바뀜)'),
+    (4,cb,'select set_my_name(''{b}'',''가'')->>''error''','%2~10%','너무 짧은 이름은 막음'),
+    (0,'','with x as (insert into members (user_id,name,church_id) values (''{u}5'',''옆사람'',''{b}'') returning 1) select count(*) from x','1','(같은 교회에 한 사람 더)'),
+    (4,cb,'select set_my_name(''{b}'',''옆사람'')->>''error''','%같은 이름%','같은 교회에 있는 이름은 막음'),
+    (5,'','select set_my_name(''{a}'',''몰래'')->>''error''','%팀원만%','팀원이 아닌 교회 이름은 못 바꿈'),
+    (5,cb,'select count(*) from members where church_id=''{b}'' and name=''새 이름''','1','다른 사람 이름은 그대로'),
+    (-1,'','select set_my_name(''{b}'',''몰래'')','ERR:%','로그인 안 하면 못 바꿈'),
+    (4,cb,'with x as (update members set name=''직접'' returning 1) select count(*) from x','ERR:%permission%','표를 직접 고쳐 바꾸지 못함')
   ) as x(who, church, sql, want, label) loop
     perform set_config('request.jwt.claims', case when t.who > 0 then json_build_object('sub', u || t.who, 'role', 'authenticated')::text else '' end, true);
     perform set_config('request.jwt.claim.sub', case when t.who > 0 then u || t.who else '' end, true);
