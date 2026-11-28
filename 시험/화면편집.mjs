@@ -59,13 +59,16 @@ try{
   // 1) 설교 전체 화면
   await prep('info:a4','full',true);await ev(`${sermonSet}drawSlide();await W(300);return 1`);
   const L1=await ev(`const l=edOf(bigCv).lay,W=bigCv.width,H=bigCv.height,g=k=>l.regions.find(r=>r.k===k);const t=g('ititle'),d=g('iband'),b=g('bandr'),w=g('itime'),n=g('inote');
-    return JSON.stringify({keys:l.regions.map(r=>r.k).sort().join(),tc:Math.abs(t.x+t.w/2-W/2)/W,ty:(t.y+t.h/2)/H,dr:(b.x+b.w)/W,dy:(b.y+b.h/2)/H,dIn:d.x>=b.x&&d.x+d.w<=b.x+b.w+1,wr:(w.x+w.w)/W,nr:(n.x+n.w)/W,wl:w.x/W,same:Math.abs((w.y+w.h/2)-(n.y+n.h/2))/H,date:l.texts.find(x=>x.kind==='iband').lines[0]})`);
+    return JSON.stringify({keys:l.regions.map(r=>r.k).sort().join(),tc:Math.abs(t.x+t.w/2-W/2)/W,ty:(t.y+t.h/2)/H,dr:(b.x+b.w)/W,dy:(b.y+b.h/2)/H,dIn:d.x>=b.x&&d.x+d.w<=b.x+b.w+1,wr:(w.x+w.w)/W,nr:(n.x+n.w)/W,nb:(n.y+n.h)/H,wy:w.y/H,date:l.texts.find(x=>x.kind==='iband').lines[0]})`);
   const S1=JSON.parse(L1);
   is('설교: 날짜·제목·구절·설교자·날짜 띠가 따로 (부제목은 없으면 안 보임)',S1.keys==='bandr,footer,iband,inote,itime,ititle');
   is('설교: 제목은 가운데(높이 44% 근처)',S1.tc<.01&&S1.ty>.4&&S1.ty<.48);
   is('설교: 날짜 띠는 오른쪽 위 끝에 붙고 날짜 글자는 띠 안',S1.dr>.999&&S1.dy<.2&&S1.dIn);
   is('설교: 날짜는 예배 이름에서 (만든 날 기준 연도) 2026.1.25',S1.date==='2026.1.25');
-  is('설교: 설교자는 오른쪽 아래(끝 92%), 구절은 그 왼쪽 같은 줄',Math.abs(S1.wr-.92)<.01&&S1.nr<S1.wl&&S1.same<.02);
+  is('설교: 설교자는 오른쪽 아래(끝 92%), 구절은 바로 위 줄 (오른쪽 끝을 맞춤)',Math.abs(S1.wr-.92)<.01&&Math.abs(S1.nr-.92)<.01&&S1.nb<=S1.wy+.001&&S1.wy-S1.nb<.05);
+  is('설교: 설교자는 칸 글 그대로 한 줄·같은 크기',await ev(`const ts=edOf(bigCv).lay.texts.filter(t=>t.kind==='itime');return ts.length===1&&ts[0].lines.join()==='최기순 목사'`));
+  is('설교: 설교자 크기를 바꿔도 구절 자리는 그대로',await ev(`const g=()=>JSON.stringify(edOf(bigCv).lay.regions.find(r=>r.k==='inote'));const a=g();LOOK.info.k_sermon_tmSize=6;drawSlide();await W(200);const b=g(),w=edOf(bigCv).lay.texts.find(t=>t.kind==='itime').size;delete LOOK.info.k_sermon_tmSize;drawSlide();await W(200);return a===b&&Math.abs(w-bigCv.width*.06)<1`));
+  is('설교: 설교자 블록 지정이 그 글자에 먹음',await ev(`const sc=edOf(bigCv).sc,ov=SLIDE_OV[sc.ovKey]||(SLIDE_OV[sc.ovKey]={});ov.runs=JSON.stringify([{k:'itime',t:'목사',n:0,s:{size:1.5,color:'#ff0000'}}]);drawSlide();await W(200);const t=edOf(bigCv).lay.texts.find(t=>t.kind==='itime'),seg=t.rl&&t.rl[0]&&t.rl[0][0];delete ov.runs;drawSlide();await W(200);return !!seg&&seg[0]===4&&seg[1]===6&&seg[2].color==='#ff0000'`));
   is('설교: 이름과 "목사"는 한 항목',await ev(`return edOf(bigCv).lay.regions.filter(r=>r.k==='itime').length===1`));
   is('설교: 기본값은 설교에만 (Pretendard 아주 굵게 · 8.2) · 표지는 그대로',await ev(`return lv(LOOK.info,'k_sermon_size','info')===8.2&&lv(LOOK.info,'k_sermon_weight','info')===800&&lv(LOOK.info,'k_cover_size','info')===lv(LOOK.info,'size','info')&&KL(LOOK.info,'cover').font===LOOK.info.font`));
   is('설교: 제목 색은 배경에서 뽑은 연한 색 (정하면 그 색)',await ev(`const t=edOf(bigCv).lay.texts.find(x=>x.kind==='ititle');const a=/^hsl\\(/.test(t.color);LOOK.info.k_sermon_color='#ff0000';drawSlide();await W(200);const b=edOf(bigCv).lay.texts.find(x=>x.kind==='ititle').color==='#ff0000';delete LOOK.info.k_sermon_color;drawSlide();await W(200);return a&&b`));
@@ -76,7 +79,9 @@ try{
   // 2) 순서 화면
   await prep('info:a2','full',true);await ev(`INFO.find(o=>o.id==='a2').body='대표기도\\n홍길동 장로';drawSlide();await W(300);return 1`);
   is('순서: 순서 이름과 맡은 이가 따로',await ev(`const l=edOf(bigCv).lay,h=l.regions.find(r=>r.k==='ihead'),n=l.regions.find(r=>r.k==='inotice');return !!h&&!!n&&n.y>h.y+h.h*.8`));
-  is('순서: 기본은 순서 이름 아주 굵게 · 맡은 이 보통·60% · 이름만 조금 굵게',await ev(`const l=edOf(bigCv).lay,h=l.texts.find(t=>t.kind==='ihead'),ns=l.texts.filter(t=>t.kind==='inotice');return +h.weight===800&&Math.abs(ns[0].size/h.size-.6)<.01&&ns[0].lines[0]==='홍길동'&&+ns[0].weight===700&&+ns[1].weight===500`));
+  is('순서: 기본은 순서 이름 아주 굵게 · 맡은 이 보통·60% · 한 덩어리 같은 굵기 · 가운데',await ev(`const l=edOf(bigCv).lay,h=l.texts.find(t=>t.kind==='ihead'),ns=l.texts.filter(t=>t.kind==='inotice');return +h.weight===800&&ns.length===1&&Math.abs(ns[0].size/h.size-.6)<.01&&ns[0].lines.join()==='홍길동 장로'&&+ns[0].weight===500&&ns[0].align==='center'&&Math.abs(ns[0].ax-bigCv.width/2)<2`));
+  is('순서: 맡은 이 앞 글자를 블록으로 줄이면 뒤 글자가 따라와 가운데 맞춤',await ev(`INFO.find(o=>o.id==='a2').body='특별찬양\\n옥수교회 윤광웅 장로';drawSlide();await W(200);const g=()=>edOf(bigCv).lay.regions.find(r=>r.k==='inotice');const a=g();const sc=edOf(bigCv).sc,ov=SLIDE_OV[sc.ovKey]||(SLIDE_OV[sc.ovKey]={});ov.runs=JSON.stringify([{k:'inotice',t:'옥수교회',n:0,s:{size:1.5}}]);drawSlide();await W(200);const t=edOf(bigCv).lay.texts.find(t=>t.kind==='inotice'),cv=bigCv,x=cv.getContext('2d');let L=0,R=0;const d=x.getImageData(0,0,cv.width,cv.height).data,r=g(),y0=Math.round(t.y0),y1=Math.round(t.y0+t.lh);let gap=0,run=0;for(let X=0;X<cv.width;X++){let hit=false;for(let Y=y0;Y<y1;Y+=2){const q=(Y*cv.width+X)*4;if(d[q]>235&&d[q+1]>235&&d[q+2]>235){hit=true;break;}}if(hit){if(!L)L=X;R=X;if(L)gap=Math.max(gap,run);run=0;}else if(L)run++;}delete ov.runs;drawSlide();await W(200);return !!t.rl&&Math.abs((L+R)/2-cv.width/2)<cv.width*.02&&(R-L)<a.w&&gap<t.size*.8`));
+  is('순서: 맡은 이를 눌러 고치면 글 상자가 한 줄 그대로 (줄이 안 깨짐)',await ev(`startInline('inotice');await W(150);const ta=$('sbInl'),r=edOf(bigCv).lay.regions.find(r=>r.k==='inotice'),z=bigCv.getBoundingClientRect().width/bigCv.width;const ok=!ta.hidden&&ta.value==='옥수교회 윤광웅 장로'&&ta.getBoundingClientRect().width>=r.w*z&&ta.scrollHeight<r.h*z*1.6;endInline(false);INFO.find(o=>o.id==='a2').body='대표기도\\n홍길동 장로';drawSlide();await W(200);return ok`));
   is('순서: 이름 붙여 부름 (순서 이름 · 맡은 이)',await ev(`const sc=edOf(bigCv).sc,l=edOf(bigCv).lay;return edName(l.regions.find(r=>r.k==='ihead'),sc)==='순서 이름'&&edName(l.regions.find(r=>r.k==='inotice'),sc)==='맡은 이'`));
   is('순서: 따로 고쳐도 한 칸에 합쳐 저장',await ev(`const sc=edOf(bigCv).sc;inC={sc,big:true};saveTextEdit('ihead','특별찬양');const a=INFO.find(o=>o.id==='a2').body;inC={sc:edOf(bigCv).sc,big:true};saveTextEdit('inotice','호산나 찬양대');const b=INFO.find(o=>o.id==='a2').body;inC=null;return a==='특별찬양\\n홍길동 장로'&&b==='특별찬양\\n호산나 찬양대'`));
   is('순서: 기본값을 바꾸면 그 값이 이김',await ev(`LOOK.info.k_notice_hdSize=4;drawSlide();await W(200);const h=edOf(bigCv).lay.texts.find(t=>t.kind==='ihead');const ok=Math.abs(h.size-bigCv.width*.04)<1;delete LOOK.info.k_notice_hdSize;return ok`));
@@ -90,14 +95,28 @@ try{
   is('찬양 자막 칸: 곡 제목 줄을 고르면 곡 제목',r.bar&&r.run.k==='title');
   r=JSON.parse(await pick(`setPage('word');await W(400);const ed=$('wEd'),i=ed.value.indexOf('독생자');ed.focus();ed.setSelectionRange(i,i+3);ed.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));return 1`));
   is('설교 본문 칸: 고르면 그 슬라이드 본문의 도구',r.bar&&r.run.k==='body'&&r.run.t==='독생자'&&r.run.ov.startsWith('w:'));
-  r=JSON.parse(await pick(`setPage('info');await W(300);infoSel=INFO.findIndex(o=>o.id==='a2');renderInfoList();renderInfoEd();await W(150);const el=$('infoEd').querySelector('[data-f=body]'),i=el.value.indexOf('홍길동');el.focus();el.setSelectionRange(i,i+3);el.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));return 1`));
+  r=JSON.parse(await pick(`setPage('info');await W(300);infoSel=INFO.findIndex(o=>o.id==='a2');renderInfoList();renderInfoEd();await W(150);const el=$('infoEd').querySelector('[data-f=nwho]'),i=el.value.indexOf('홍길동');el.focus();el.setSelectionRange(i,i+3);el.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));return 1`));
   is('순서 글 칸: 맡은 이를 고르면 맡은 이의 도구',r.bar&&r.run.k==='inotice'&&r.run.t==='홍길동');
-  r=JSON.parse(await pick(`const el=$('infoEd').querySelector('[data-f=body]');el.focus();el.setSelectionRange(0,2);el.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));return 1`));
-  is('순서 글 칸: 첫 줄을 고르면 순서 이름의 도구',r.bar&&r.run.k==='ihead');
+  r=JSON.parse(await pick(`const el=$('infoEd').querySelector('[data-f=nhead]');el.focus();el.setSelectionRange(0,2);el.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));return 1`));
+  is('순서 글 칸: 순서 이름 칸을 고르면 순서 이름의 도구',r.bar&&r.run.k==='ihead');
+  is('순서 글 칸: 순서 이름 · 맡은 이 두 칸, 고치면 한 칸에 합쳐 저장',await ev(`const o=INFO.find(o=>o.id==='a2'),h=$('infoEd').querySelector('[data-f=nhead]'),w=$('infoEd').querySelector('[data-f=nwho]');if(!h||!w||$('infoEd').querySelector('[data-f=body]'))return false;const a=h.value+'|'+w.value===o.body.replace('\\n','|');w.value='김철수 집사\\n이영희 권사';w.dispatchEvent(new Event('input'));h.value='특별찬양';h.dispatchEvent(new Event('input'));const b=o.body==='특별찬양\\n김철수 집사\\n이영희 권사';renderInfoEd();const c=$('infoEd').querySelector('[data-f=nhead]').value==='특별찬양'&&$('infoEd').querySelector('[data-f=nwho]').value==='김철수 집사\\n이영희 권사';return a&&b&&c`));
   r=JSON.parse(await pick(`infoSel=INFO.findIndex(o=>o.id==='a4');renderInfoEd();await W(150);const el=$('infoEd').querySelector('[data-f=who]');el.focus();el.setSelectionRange(0,3);el.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));return 1`));
   is('설교 글 칸: 설교자를 고르면 설교자의 도구',r.bar&&r.run.k==='itime');
   await ev(`const ta=$('outText');ta.focus();ta.setSelectionRange(3,3);ta.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));return 1`);
   is('그냥 누르기(고른 글자 없음)는 도구를 안 바꿈',await ev(`return lookRun&&lookRun.k==='itime'`));
+  // 방송 자막: 맡은 이·설교자도 한 덩어리 같은 굵기
+  await prep('info:a2','cap',true);
+  is('방송 자막 이름표: 맡은 이는 한 덩어리·같은 굵기',await ev(`INFO.find(o=>o.id==='a2').body='특별찬양\\n옥수교회 윤광웅 장로';drawSlide();await W(250);const ts=edOf(bigCv).lay.texts.filter(t=>t.lines.join('').trim());const m=ts.find(t=>t.lines.join()==='옥수교회 윤광웅 장로');const ok=!!m&&!ts.some(t=>t.lines.join()==='옥수교회')&&+m.weight===400;INFO.find(o=>o.id==='a2').body='대표기도\\n홍길동 장로';closeSlide();return ok`));
+  await prep('info:a4','cap',true);
+  is('방송 자막 설교: 설교자는 한 덩어리',await ev(`INFO.find(o=>o.id==='a4').who='총회장 정동균 목사';drawSlide();await W(250);const ts=edOf(bigCv).lay.texts;const ok=ts.some(t=>t.lines.join()==='총회장 정동균 목사')&&!ts.some(t=>t.lines.join()==='총회장');closeSlide();return ok`));
+  // 4) 미리보기 Shift 여러 개 고르기
+  await ev(`await rs();closeSlide?.();setPage('slides');shotSel='all';renderShots();await W(600);return 1`);
+  is('위쪽 탭: Shift로 두 묶음을 고르면 두 묶음 슬라이드만',await ev(`const tabs=[...document.querySelectorAll('#gtabs .gtab')];tabs[0].click();await W(400);tabs[1]=document.querySelectorAll('#gtabs .gtab')[1];tabs[1].dispatchEvent(new MouseEvent('click',{bubbles:true,shiftKey:true}));await W(500);const g=songGroups(),want=g[0].items.length+g[1].items.length,n=document.querySelectorAll('#shots .shotw').length,on=document.querySelectorAll('#gtabs .gtw.on').length;
+    document.querySelectorAll('#gtabs .gtab')[1].dispatchEvent(new MouseEvent('click',{bubbles:true,shiftKey:true}));await W(500);const n2=document.querySelectorAll('#shots .shotw').length;$('gtAll').click();await W(500);return Array.isArray(shotSel)===false&&on===2&&n===want&&n2===g[0].items.length`));
+  is('슬라이드: Shift로 여러 장 고르면 "고른 N장"으로 한 번에 바꿈',await ev(`const all0=[...document.querySelectorAll('#shots .shotw')],ws=[...all0.filter(w=>w.dataset.k.startsWith('word:')).slice(0,2),all0[0]];const b=i=>ws[i].querySelector('.shot');b(0).dispatchEvent(new MouseEvent('click',{bubbles:true}));await W(300);b(1).dispatchEvent(new MouseEvent('click',{bubbles:true,shiftKey:true}));await W(300);
+    const a=allShots(),k0=a.find(s=>shotKey(s)===ws[0].dataset.k).ovKey,k1=a.find(s=>shotKey(s)===ws[1].dataset.k).ovKey,lab=document.querySelector('.lkscope [data-sc=slide]').textContent;
+    lookScope='slide';buildLookUI();const inp=[...document.querySelectorAll('#lookBox input[type=number]')].find(i=>!i.disabled&&i.offsetParent);const v0=+inp.value;inp.value=v0+3;inp.dispatchEvent(new Event('input',{bubbles:true}));inp.dispatchEvent(new Event('change',{bubbles:true}));await W(300);
+    const o0=JSON.stringify(SLIDE_OV[k0]||{}),o1=JSON.stringify(SLIDE_OV[k1]||{});b(2).dispatchEvent(new MouseEvent('click',{bubbles:true}));await W(300);return lab==='고른 2장'&&o0!=='{}'&&o0===o1&&selKeys.size===0`));
   is('코드 오류 없음',!errs.filter(e=>!/fetch|network|invalid|Failed/i.test(e)).length);if(errs.length)console.log(errs.slice(0,3).map(e=>e.slice(0,300)));
 }catch(e){bad++;console.log('멈춤',e.stack);}
 console.log(`통과 ${ok} · 실패 ${bad}`);ch.kill();srv.close();await z(500);fs.rmSync(tmp,{recursive:true,force:true});process.exit(bad?1:0);
