@@ -5323,7 +5323,8 @@ function ensureGlyphs(){const t=[$('outText').value,$('wordText').value,$('quote
   txt=[...new Set(t.replace(/\s/g,''))].join(''),fs=Object.entries(LOOK).flatMap(([g,L])=>[...[...FPAIRS[g==='quote'?'word':g],['fFont','fWeight']].flatMap(([f,w])=>[[lv(L,w,g),lv(L,f,g)],[400,lv(L,f,g)]]),...(g==='info'?[300,500,700].flatMap(w=>[[w,L.font],[w,L.font2],[w,L.cFont]]):[])]).concat(Object.keys(LOOK.info).filter(k=>/^k_[a-z]+_\w*font2?$/i.test(k)).flatMap(k=>[400,500,700,800].map(w=>[w,LOOK.info[k]]))).concat(Object.values(SLIDE_OV).flatMap(o=>Object.keys(o).filter(k=>/font/i.test(k)).flatMap(k=>[400,500,700,800].map(w=>[w,o[k]])))).filter(f=>f[1]),key=txt+'|'+fs.join(',');
   if(!txt||key===_glyphKey)return;_glyphKey=key;
   Promise.all(fs.map(([w,f])=>document.fonts.load(`${w} 40px "${f}"`,txt).catch(()=>[]))).then(r=>{if(r.some(a=>a&&a.length&&a.some(ff=>ff.status==='loaded'))){CAPMW.clear();lookChanged();renderShots();}});}
-function renderShots(){
+let holdShots=0; // 미리보기를 눌러 자막 칸 탭만 맞출 때는 다시 그리지 않아요 (누른 그림이 바뀌면 고른 것과 두 번 누르기가 사라져요)
+function renderShots(){if(holdShots)return;
   ensureGlyphs();clearTimeout(shotT);shotT=setTimeout(()=>{
     const box=$('shots'),groups=songGroups();box.innerHTML='';shownGroups=groups;
     const total=groups.reduce((a,g)=>a+g.items.length,0);renderTabCounts(total);renderGroupTabs(groups,total);
@@ -5528,7 +5529,8 @@ addEventListener('keydown',e=>{if(!edOn()&&!((e.metaKey||e.ctrlKey)&&e.code==='K
   if(hit){e.preventDefault();e.stopImmediatePropagation();}},true);
 addEventListener('pointerdown',e=>{if(edOn()&&!ED.big&&!e.target.closest('.shotw,#lookBox,#sbInl,.edfr,#toast'))edClear();},true);
 // 미리보기에서 곡/본문을 고르면 자막 칸도 그 탭으로
-function syncEditorsTo(g){if(!g)return;const k=kindOf(g);
+function syncEditorsTo(g){if(!g)return;holdShots++;try{syncEditorsTo0(g);}finally{holdShots--;}}
+function syncEditorsTo0(g){const k=kindOf(g);
   if(k==='i'){const i=g.chunk-IBASE;if(i!==infoSel){infoSel=i;renderInfoList();renderInfoEd();}return;}
   if(k==='s'){if(songTab!==g.chunk){songTab=g.chunk;store.set('songTab',songTab);refreshOutMeta();}}
   else{const t={k:k==='q'?'q':'w',i:g.chunk-(k==='q'?20000:10000)};if(t.k!==WMODE)setWMode(t.k,true);if(t.k!==wTab.k||t.i!==wTab.i){wTab=t;store.set('wTab',wTab);renderWTabs();}}}

@@ -1,4 +1,5 @@
 // 슬라이드 바로 편집 시험: node 시험/바로편집.mjs  (크롬만 있으면 돼요. 실제 서버에는 붙지 않아요)
+// 느린 시험(10분쯤, 항목 146개를 하나씩 눌러 봐요): 슬라이드 편집(미리보기·바로 편집)을 고쳤을 때만 돌려요. 평소에는 다른 빠른 시험들로 충분해요 (2026-11-28 호감 결정)
 import http from 'http';import fs from 'fs';import os from 'os';import path from 'path';import {spawn} from 'child_process';import {fileURLToPath} from 'url';
 const ROOT=path.join(path.dirname(fileURLToPath(import.meta.url)),'..'),CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const SHOT=process.env.SHOT,tmp=fs.mkdtempSync(path.join(os.tmpdir(),'hogam-direct-')),z=ms=>new Promise(r=>setTimeout(r,ms));
@@ -48,11 +49,17 @@ try{
     window.find=p=>{const[g,id]=p.split(':');return all().find(s=>tabOf(s)===g&&(!id||s.iid===id)&&!s.blank);};
     window.cvOf=p=>{const s=find(p);return[...document.querySelectorAll('#shots .shotw[data-k="'+CSS.escape(shotKey(s))+'"] canvas')][0];};
     // 항목에서 다른 항목과 안 겹치는 점 (화면 좌표)
-    window.at=(cv,k)=>{const c=edOf(cv),r=c.lay.regions.find(q=>q.k===k);if(!r)return null;const b=cv.getBoundingClientRect(),zz=b.width/cv.width;for(const pass of [0,1])for(let i=1;i<12;i++)for(let j=1;j<12;j++){const e={clientX:b.left+(r.x+r.w*j/12)*zz,clientY:b.top+(r.y+r.h*i/12)*zz},h=edHit(cv,e),t=document.elementFromPoint(e.clientX,e.clientY);if(h&&h.k===k&&(t===cv||pass&&t.closest('.edfr'))){const ok=[[-1,-1],[1,1]].every(([dx,dy])=>edHit(cv,{clientX:e.clientX+dx,clientY:e.clientY+dy})?.k===k);if(ok)return[e.clientX,e.clientY];}}return null;};
+    window.at=(cv,k)=>{const c=edOf(cv),r=c.lay.regions.find(q=>q.k===k);if(!r)return null;const b=cv.getBoundingClientRect(),zz=b.width/cv.width;for(const pass of [0,1])for(let i=1;i<12;i++)for(let j=1;j<12;j++){const e={clientX:b.left+(r.x+r.w*j/12)*zz,clientY:b.top+(r.y+r.h*i/12)*zz},h=edHit(cv,e),t=document.elementFromPoint(e.clientX,e.clientY);if(h&&h.k===k&&t&&(t===cv||pass&&t.closest('.edfr'))){const ok=[[-1,-1],[1,1]].every(([dx,dy])=>edHit(cv,{clientX:e.clientX+dx,clientY:e.clientY+dy})?.k===k);if(ok)return[e.clientX,e.clientY];}}return null;};
     window.handle=h=>{const b=document.querySelector('.edfr i[data-h='+h+']').getBoundingClientRect();return[b.left+b.width/2,b.top+b.height/2];};
     window.regs=cv=>Object.fromEntries(edOf(cv).lay.regions.map(r=>[r.k,[r.x/cv.width,r.y/cv.height,r.w/cv.width,r.h/cv.height]]));return 1`);
   const KIND=[['song','','찬양'],['word','','본문'],['quote','body','참고 본문'],['quote','caption','참고 자막'],['quote','box2','두 색 상자'],['info:a1','full','표지'],['info:a2','full','안내'],['info:a3','full','광고'],['info:a4','full','설교'],['info:a5','full','고백문'],['info:a2','cap','안내 자막'],['info:a3','cap','광고 자막'],['info:a4','cap','설교 자막'],['info:a5','cap','고백문 자막']];
   const prep=async(p,st,big)=>{await ev(`await rs();look('${p}','${st}');renderShots();await W(350);${big?`openSlide(all().findIndex(s=>shotKey(s)===shotKey(find('${p}'))));await W(250);window.CV=bigCv;`:`window.CV=cvOf('${p}');CV.scrollIntoView({block:'center'});await W(120);`}return 1`);return ev(`return edOf(CV).lay.regions.filter(r=>r.k!=='logo').map(r=>r.k)`);};
+  // 0) 다른 탭의 슬라이드를 처음 눌러도 그림이 안 바뀌어 고른 것·두 번 누르기가 살아 있음 (자막 칸 탭만 맞춰요)
+  {const res=[];for(const[p,st,k,from]of [['quote','body','body','w'],['word','','body','q'],['song','','lyrics','q']]){await prep(p,st,false);
+    await ev(`wTab={k:'${from}',i:0};WMODE='${from}';songTab=-1;window.C0=CV`);const q=await ev(`return at(CV,'${k}')`);await click(q);
+    const one=await ev(`return document.contains(C0)&&ED&&ED.keys.join()==='${k}'`);await z(260);await click(q,{n:2});await z(150);
+    res.push(one&&await ev(`return !$('sbInl').hidden&&sbEditK==='${k}'`)?'':p+(one?' 두 번 누르기 안 열림':' 첫 클릭에 그림이 바뀜'));await ev(`endInline(false)`);}
+   const b=res.filter(Boolean);if(b.length)console.log('  '+b.join(', '));is('다른 탭 슬라이드도 처음 누르면 골라지고 두 번 누르면 열림',!b.length);}
   // 1) 고르기 · 2) 크기 · 3) 두 번 누르기: 화면 종류마다 모든 항목
   const badRest=[],badMove=[],badSel=[],badSize=[],badEdit=[],noReach=[];let nItem=0;
   for(const[p,st,nm]of KIND)for(const big of [false,true]){
