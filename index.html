@@ -2375,6 +2375,12 @@ body[data-wmode=w] #wordPanel .qstyle{display:none!important}
 .chdlg label span{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px}.chdlg label input{width:100%;box-sizing:border-box;height:42px;font-size:16px}
 .chdlg .btn.pri{height:42px;justify-content:center}
 .chdlg .hint2{margin:0;font-size:13px;color:var(--text3)}
+/* 호감 읽기 전용 보기 (18단계) */
+.viewbar{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 24px);box-sizing:border-box;padding:8px 10px 8px 16px;border-radius:14px;background:var(--warn-soft);color:var(--warn-ink);border:1px solid var(--warn-line);box-shadow:0 10px 30px -12px rgba(0,0,0,.35);font-size:14px}
+.viewbar[hidden]{display:none}.viewbar .btn{height:34px;padding:0 12px;font-size:13px}
+body.viewonly .toast{bottom:76px}
+@media (max-width:560px){.viewbar{left:10px;right:10px;transform:none;max-width:none;flex-wrap:nowrap;justify-content:space-between;font-size:12.5px;padding:6px 6px 6px 12px}.viewbar>i,.viewbar .vlong{display:none}.viewbar>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}body.viewonly .toast{bottom:64px}}
+body.viewonly #rgLive,body.viewonly #dlLive,body.viewonly #convertBtn,body.viewonly [data-read],body.viewonly .aimore,body.viewonly .aileft,body.viewonly #railUse,body.viewonly #invite,body.viewonly #churchBtn{display:none!important}
 /* 교회 주소 (17단계): 첫 화면 · 새 교회 · 교회 정보 고치기 */
 .addrbox{display:flex;flex-direction:column;min-width:0}.chdlg .addrbox{gap:12px}
 .addrf>span{display:block}.chdlg .addrf>span{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px}
@@ -2795,6 +2801,7 @@ header.doc>.rglive.intop{position:absolute;left:auto;right:calc(292px + 28px);to
 </style>
 </head>
 <body>
+<div class="viewbar" id="viewBar" role="status" hidden><i class="ph ph-eye" aria-hidden="true"></i><span><b>읽기 전용</b><span class="vlong">으로 보는 중</span> · <span id="viewName"></span><span class="vlong"> · 고쳐도 저장되지 않아요</span> · <span id="viewLeft"></span></span><button type="button" class="btn" id="viewOut">나가기<span class="vlong">(관리 홈으로)</span></button></div>
 <div class="shell">
   <aside class="rail" id="rail">
     <div class="brand"><div class="mk" aria-hidden="true"><img src="brand/logo.svg" alt=""></div><div><b class="brandtx"><span>호감 슬라이드</span><span lang="en" aria-hidden="true">HOGAM SLIDE</span></b></div></div>
@@ -3438,11 +3445,15 @@ function toast(m,ms=2200){const t=$('toast');t.textContent=m;t.classList.add('on
 let curPage=null; // 지금 보는 탭 페이지: song · word · slides (setPage에서 정해요)
 // 지금 교회: 탭마다 따로 기억하고(sessionStorage), 새 탭은 마지막에 쓰던 교회로 열어요
 let CH=null;try{CH=sessionStorage.getItem('cj_church')||localStorage.getItem('cj_lastChurch')||null;}catch(e){}
+// 호감 읽기 전용 보기(18단계): 이 탭에서만. 2시간이 지나거나 '나가기'를 누르면 끝나고, 받은 자료는 이 브라우저에서 지워요
+let VIEW=null;try{VIEW=JSON.parse(sessionStorage.getItem('hogam_view')||'null');}catch(e){}
+if(VIEW?.id)CH=VIEW.id;else VIEW=null;
 const OKSU='00000000-0000-0000-0000-000000000001';
 // 개인 취향만 교회와 상관없이 같이 쓰고, 나머지는 교회마다 따로 저장해요 (교회 것이 섞이지 않게)
 const MY_KEYS=new Set(['theme','railPinned','joinCode','folds','rail_hist','rail_lib','lkOpen','shotZoom','startOff','newsSeen','cols','histH','libW']);
 const storeKey=k=>'cj_'+(CH&&!MY_KEYS.has(k)?`c:${CH}:`:'')+k;
-const store={get(k,d){try{const v=localStorage.getItem(storeKey(k));return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){try{localStorage.setItem(storeKey(k),JSON.stringify(v));return true;}catch(e){return false;}}};
+let NOSTORE=false; // 읽기 전용 보기를 끝낼 때: 지운 뒤 닫히면서 다시 저장하지 않게
+const store={get(k,d){try{const v=localStorage.getItem(storeKey(k));return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){if(NOSTORE)return false;try{localStorage.setItem(storeKey(k),JSON.stringify(v));return true;}catch(e){return false;}}};
 function keepChurch(id){try{sessionStorage.setItem('cj_church',id);localStorage.setItem('cj_lastChurch',id);return sessionStorage.getItem('cj_church')===id;}catch(e){return false;}}
 // 교회를 나누기 전에 저장된 것은 옥수교회 것이에요. 옥수교회 팀원이 처음 열 때 한 번 옮겨요
 function moveOldStore(){Object.keys(localStorage).filter(k=>k.startsWith('cj_')&&!k.startsWith('cj_c:')&&k!=='cj_lastChurch'&&!MY_KEYS.has(k.slice(3))).forEach(k=>{
@@ -3730,9 +3741,17 @@ const AUTH_ERR=(()=>{const q=new URLSearchParams(location.search),h=new URLSearc
 let sending=0;
 async function churchFetch(url,o={}){const u=String(url?.url||url),db=u.includes('/rest/v1/'),fn=u.includes('/functions/v1/ai');
   if(!db&&!fn)return fetch(url,o);
+  if(VIEW&&(fn||(db&&o.method&&!['GET','HEAD'].includes(o.method)&&!VIEW_RPC.test(u))))return viewNo(u,fn);
   const h=new Headers(o.headers||{});if(CH)h.set('x-church',CH);
   const w=db&&o.method&&!['GET','HEAD'].includes(o.method);if(w)sending++;
   try{return await fetch(url,{...o,headers:h});}finally{if(w)sending--;}}
+const VIEW_RPC=/\/rest\/v1\/rpc\/(is_super|agreed|super_home|super_churches|super_church|super_members|super_new_count|super_pay_list)(\?|$)/;
+// 보기 중에 막은 요청의 답: 저장은 된 것처럼(이 탭 안에서만), 나머지 함수는 빈 답, AI는 안내
+function viewNo(u,fn){const J=(b,st=200)=>new Response(JSON.stringify(b),{status:st,headers:{'content-type':'application/json'}});
+  if(fn)return J({error:'읽기 전용으로 보는 중에는 AI를 쓸 수 없어요',code:'view'},403);
+  if(u.includes('/rpc/save_service'))return J({ok:true,version:null});
+  if(u.includes('/rpc/'))return J(null);
+  return new Response(null,{status:204});}
 const sb=(window.supabase&&CFG_OK)?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY,{global:{fetch:churchFetch}}):null;
 let me=null;
 function blobToB64(b){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(b);});}
@@ -3756,7 +3775,7 @@ async function askJSON(prompt,opts={}){const r=await sample(prompt,{modelTier:'c
 
 // ---- AI 남은 횟수: 팀원 모두 봐요. 서버가 아직 모르면(옛 서버) 아무것도 안 보여요 ----
 let AIQ=null,aiAt=0,RU=null; // RU: 옆 메뉴 막대의 팀원 수·용량. AI는 늘 AIQ로 그려요
-async function aiLeft(now){if(!sb||!me)return;const my=me;if(!now)await new Promise(r=>setTimeout(r,800));if(me!==my)return;aiAt=Date.now();const n=aiAt;
+async function aiLeft(now){if(!sb||!me||VIEW)return;const my=me;if(!now)await new Promise(r=>setTimeout(r,800));if(me!==my)return;aiAt=Date.now();const n=aiAt;
   const {data,error}=await sb.rpc('ai_left');if(me!==my||n!==aiAt)return;AIQ=error||!data?null:data;aiDraw();
   if(AIQ&&(!RU||RU.me!==my||Date.now()-RU.at>60000)){const u=await sb.rpc('church_usage');if(me===my&&u.data){RU={me:my,at:Date.now(),d:u.data};aiDraw();}}}
 async function aiOut(){if(AIQ&&AIQ.left<1)await aiLeft(true);return!!AIQ&&AIQ.left<1;}
@@ -4047,7 +4066,7 @@ async function convertOne(s,f,expand){
   renderSongs();
 }
 // 악보를 올리면 바로 읽어 두고, '찬양 자막에 넣기'를 누르면 찬양 자막에 넣어요
-async function readSongs(){
+async function readSongs(){if(VIEW)return;
   if(busy)return;
   let todo=pendingSongs();if(!todo.length)return;
   busy=true;updateConvertBtn();aiSkip=0;
@@ -6094,7 +6113,7 @@ addEventListener('paste',ev=>{if(!$('contibox').classList.contains('on')||$('con
   const f=[...(ev.clipboardData?.files||[])];if(f.length){ev.preventDefault();addContiFiles(f);return;}
   if(['contiIn','contiName'].includes(ev.target.id))return;
   const t=(ev.clipboardData?.getData('text')||'').trim();if(!t)return;ev.preventDefault();setContiMode('paste');const a=$('contiIn');a.value=[a.value.trim(),t].filter(Boolean).join('\n');contiReady();a.focus();});
-async function readConti(){const img=contiMode==='image',raw=img?'':$('contiIn').value.trim(),imgs=img?CPG.map(p=>p.blob):[]; // 지금 보이는 칸만 읽어요
+async function readConti(){if(VIEW){toast('읽기 전용으로 보는 중에는 AI를 쓸 수 없어요');return;}const img=contiMode==='image',raw=img?'':$('contiIn').value.trim(),imgs=img?CPG.map(p=>p.blob):[]; // 지금 보이는 칸만 읽어요
   if(!raw&&!imgs.length){toast('사진이나 글을 먼저 넣어 주세요');return;}
   if(await aiOut()){aiCharge();return;}
   const job=aiJob('bulletin');
@@ -7447,6 +7466,8 @@ $('gateForm').onsubmit=async e=>{
 async function afterLogin(u){
   const [{data:ms,error},{data:cs,error:e2}]=await Promise.all([sb.from('members').select('name,church_id,role').eq('user_id',u.id).order('joined_at'),sb.from('churches').select('*')]);
   if(error||e2){showGate();$('gErr').textContent='서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요';return;}
+  if(VIEW){if(!ms.some(m=>m.church_id===VIEW.id)&&(await sb.rpc('is_super')).data===true){await enterView(u);return;}
+    viewEnd(ms.some(m=>m.church_id===VIEW.id)?'':'읽기 전용 보기를 끝냈어요',!ms.some(m=>m.church_id===VIEW.id));return;} // 팀원인 교회면 내 자료라 안 지워요
   const was=inWas(u.id)&&CH&&!ms.some(m=>m.church_id===CH); // 이 사람이 이 브라우저에서 쓰던 교회에서 빠졌을 때
   if(!ms.length){CHURCHES=[];canMake=!cs.some(c=>c.created_by===u.id);if((await sb.rpc('is_super')).data===true){showAdm(u);return;}showJoin(u);if(was){inSet('');$('jErr').textContent=$('pkErr').textContent='쓰던 교회에서 나가게 되었어요. 다시 들어가려면 관리자에게 새 초대 링크를 받아 주세요';}return;}
   // 14단계 전 서버(함수 없음)면 묻지 않아요. 순서는 SQL → 화면
@@ -7537,7 +7558,7 @@ function fitTitle(){const el=$('docTitle');if(!el)return;const m=fitTitle.m||(fi
 $('docTitle').addEventListener('input',fitTitle);addEventListener('resize',fitTitle);document.fonts?.ready?.then(fitTitle);
 // 지금 접속 중인 팀원 (Supabase Realtime presence)
 let pres=null;const TAB=Math.random().toString(36).slice(2,8);
-function startPresence(){if(pres||!sb||!me)return;
+function startPresence(){if(pres||!sb||!me||VIEW)return;
   pres=sb.channel('online:'+me.church,{config:{private:true,presence:{key:me.id+':'+TAB}}}); // 우리 교회 팀원만 들어오는 잠긴 방
   pres.on('presence',{event:'sync'},renderOnline).subscribe(st=>{if(st==='SUBSCRIBED')trackMe();});
   addEventListener('beforeunload',()=>{try{pres.untrack();}catch(e){}});}
@@ -7570,7 +7591,7 @@ function renderChurch(){const c=CHURCHES.find(x=>x.id===me?.church),b=$('churchB
     bt.innerHTML=`<span class="tt"><b></b><small></small></span>${on?'<i class="ph ph-check" aria-label="지금 교회"></i>':''}`;bt.querySelector('b').textContent=x.name;bt.querySelector('small').textContent=x.my+(x.suspended_at?' · 쉬고 있어요':'');
     bt.disabled=!!x.suspended_at;bt.onclick=()=>on?$('chDlg').close():goChurch(x.id,bt);li.appendChild(bt);$('chList').appendChild(li);});}
 // 저장을 다 마쳐야 교회를 바꿔요. 하나라도 저장하지 못하면 바꾸지 않고 알려요
-async function flushAll(){
+async function flushAll(){if(VIEW)return'';
   if(busy)return'악보를 읽는 중이에요. 끝난 뒤에 바꿔 주세요';
   saveSession();Object.entries(failed).forEach(([id,c])=>{if(!clash[id])pushC[id]=c;});
   await flushSessions();await Promise.all(Object.values(chain));
@@ -7650,7 +7671,7 @@ const useBars=d=>aiBar(d)+(d.member_limit==null?'':spM('팀원',d.members,d.memb
 // 교회 정보 창의 사용량: 팀원 모두 봐요
 async function useBox(id){const u=$(id),my=me;u.hidden=!my;if(!my||!sb)return;u.innerHTML='<p>사용량을 불러오는 중…</p>';
   const {data:d,error}=await sb.rpc('church_usage');if(me!==my)return;u.innerHTML=error||!d?'<p>사용량을 불러오지 못했어요.</p>':useBars(d);if(d){RU={me:my,at:Date.now(),d};aiDraw();}}
-function openChurch(){closeRail();hideTip();chMode('pick');useBox('chUse');$('chMore').hidden=!me;chExtra();}
+function openChurch(){if(VIEW)return;closeRail();hideTip();chMode('pick');useBox('chUse');$('chMore').hidden=!me;chExtra();}
 $('chMore').onclick=()=>openPay();
 // 신청 내역(팀원 모두) · 교회 정보(관리자만). 옛 서버면 아무것도 안 보여요
 let CHI=null;
@@ -7767,7 +7788,8 @@ function spPane(){const c=spCur,row=(a,b)=>`<div class="sprow"><span>${a}</span>
       if(spTab==='limit'){spPane();$('spOk').textContent='제한을 바꿨어요';}};return;}
   if(spTab==='use'){const k=spD.ai_days.map(Number),mx=Math.max(...k),B=spD.bytes;
     p.innerHTML=`<div class="spbox">${row('이번 달 AI',spNum(c.ai_month)+'번')+row('오늘 AI',spNum(c.ai_today)+'번')+row('마지막 사용',spLast(c))}</div><h3>최근 14일 AI 사용</h3><div class="spbox"><div class="spbars" role="img" aria-label="최근 14일 AI 사용, 가장 많은 날 ${mx}번">${k.map(x=>`<i style="height:${mx?x/mx*100:0}%" title="${x}번"></i>`).join('')}</div><div class="spax"><span>13일 전</span><span>가장 많은 날 ${spNum(mx)}번</span><span>오늘</span></div></div><h3>이번 달 무엇에 썼나</h3><div class="spbox">${(spD.ai_kinds||[]).filter(x=>+x.n||+x.claude_in||+x.gemini_in).map(x=>row(AIK[x.kind]||'기타',`${spNum(x.n)}번<small>Claude ${spNum(x.claude_in)} / ${spNum(x.claude_out)}<br>Gemini ${spNum(x.gemini_in)} / ${spNum(x.gemini_out)}</small>`)).join('')||row('아직 없음','')}</div><p class="spnote">작은 글씨는 보낸 양 / 받은 양(토큰)이에요. 가사와 사진 내용은 남기지 않아요.</p><h3>용량 (어림)</h3><div class="spbox">${[['배경 사진 · 로고','media'],['예배','services'],['곡','songs'],['설정','settings'],['편집 기록','log']].map(x=>row(x[0],spSize(B[x[1]]))).join('')+row('모두',spSize(c.bytes))}</div>`;return;}
-  p.innerHTML=`${c.is_new?'<div class="spnew"><span>새로 만들어진 교회예요</span><button type="button" class="btn pri" id="spSeen">확인했어요</button></div>':''}<div class="spbox"><div class="sprow"><span>상태</span>${spTag(c)}</div>${row('만든 날',ymd(c.created_at))+row('관리자','')+row('팀원',spNum(c.members)+'명')+row('예배 · 곡',`${spNum(c.services)}개 · ${spNum(c.songs)}곡`)+(spD.free!=null?row('AI 남은 횟수',`${aiN(c.ai_left)}번<small>처음 무료 ${aiN(spD.free)} · 충전 ${aiN(spD.paid)}${c.ai_limit?` · 매달 무료 ${spNum(c.ai_limit)}`:''}</small>`):'')}</div>${spD.info!==undefined?`<h3>교회 정보</h3><div class="spbox">${spD.info?row('주소',esc([spD.info.road,spD.info.detail].filter(Boolean).join(', ')+(spD.info.zip?` (${spD.info.zip})`:'')))+row('교단',esc(spD.info.denom||'—'))+row('대표 전화',esc(spD.info.phone||'—')):row('아직 없음','')}</div>`:''}<h3>호감 메모</h3><textarea id="spMemo" maxlength="2000" aria-label="호감 메모" placeholder="호감만 보는 메모"></textarea><div class="spacts"><button type="button" class="btn pri" id="spSave">메모 저장</button><button type="button" class="btn${c.suspended_at?'':' danger'}" id="spSus">${c.suspended_at?'다시 열기':'교회 멈추기'}</button></div><p class="spnote">${c.suspended_at?'쉬고 있는 교회예요. 팀원이 열 수 없어요.':'멈추면 팀원이 이 교회를 열 수 없어요. 자료는 그대로 있어요.'} 예배와 곡의 내용은 호감에게도 보이지 않아요.</p>`;
+  p.innerHTML=`${c.is_new?'<div class="spnew"><span>새로 만들어진 교회예요</span><button type="button" class="btn pri" id="spSeen">확인했어요</button></div>':''}<div class="spbox"><div class="sprow"><span>상태</span>${spTag(c)}</div>${row('만든 날',ymd(c.created_at))+row('관리자','')+row('팀원',spNum(c.members)+'명')+row('예배 · 곡',`${spNum(c.services)}개 · ${spNum(c.songs)}곡`)+(spD.free!=null?row('AI 남은 횟수',`${aiN(c.ai_left)}번<small>처음 무료 ${aiN(spD.free)} · 충전 ${aiN(spD.paid)}${c.ai_limit?` · 매달 무료 ${spNum(c.ai_limit)}`:''}</small>`):'')}</div>${spD.info!==undefined?`<h3>교회 정보</h3><div class="spbox">${spD.info?row('주소',esc([spD.info.road,spD.info.detail].filter(Boolean).join(', ')+(spD.info.zip?` (${spD.info.zip})`:'')))+row('교단',esc(spD.info.denom||'—'))+row('대표 전화',esc(spD.info.phone||'—')):row('아직 없음','')}</div>`:''}<h3>호감 메모</h3><textarea id="spMemo" maxlength="2000" aria-label="호감 메모" placeholder="호감만 보는 메모"></textarea><div class="spacts"><button type="button" class="btn pri" id="spSave">메모 저장</button><button type="button" class="btn" id="spView">읽기 전용으로 보기</button><button type="button" class="btn${c.suspended_at?'':' danger'}" id="spSus">${c.suspended_at?'다시 열기':'교회 멈추기'}</button></div><p class="spnote">${c.suspended_at?'쉬고 있는 교회예요. 팀원이 열 수 없어요.':'멈추면 팀원이 이 교회를 열 수 없어요. 자료는 그대로 있어요.'} 예배와 곡은 ‘읽기 전용으로 보기’로만 열려요. 열 때마다 호감 기록에 남고 2시간 뒤 닫혀요.</p>`;
+  $('spView').onclick=()=>viewStart(c);
   p.querySelectorAll('.sprow b')[1].textContent=spD.admins.join(', ')||'없음';const ta=$('spMemo');ta.value=spD.draft??spD.memo;ta.oninput=()=>{if(spD)spD.draft=ta.value;};
   if($('spSeen'))$('spSeen').onclick=async e=>{const bt=e.target;bt.disabled=true;$('spErr').textContent=$('spOk').textContent='';const {error}=await sb.rpc('super_seen',{p_church:c.id});bt.disabled=false;
     if(error){if(spCur===c)$('spErr').textContent='바꾸지 못했어요. 다시 해 주세요';return;}
@@ -7811,6 +7833,22 @@ function admGo(p,quiet){if(ADMP==='churches'&&p!=='churches'&&!spLeave())return;
   if(!quiet)$('admT').focus();}
 $('admSide').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>admGo(b.dataset.p));
 function hideAdm(){$('adm').hidden=true;}
+async function enterView(u){if(!(VIEW.until>Date.now())){viewEnd('읽기 전용 보기 2시간이 끝났어요',true);return;}
+  CHURCHES=[{id:VIEW.id,name:VIEW.name,my:''}];canMake=false;me={id:u.id,name:'호감 (읽기 전용)',church:VIEW.id,role:'viewer'};
+  document.body.classList.add('viewonly');$('viewName').textContent=VIEW.name;$('viewBar').hidden=false;viewTick();setInterval(viewTick,30000);
+  $('meName').textContent=me.name;$('meAv').textContent='호';renderChurch();hideAdm();hideGate();await bootRemote();
+  const last=SESS.filter(x=>x.ver!=null).sort((a,b)=>(b.updated||0)-(a.updated||0))[0];if(last)loadSession(last.id);} // 보기에서는 서버의 가장 최근 예배부터
+function viewTick(){const m=Math.ceil((VIEW.until-Date.now())/60000);if(m<=0){viewEnd('읽기 전용 보기 2시간이 끝났어요',true);return;}$('viewLeft').textContent=`${m}분 남음`;}
+// 끝내기: 이 교회 자료를 이 브라우저에서 지우고(wipe) 새로 열어요. 다시 보려면 관리 홈에서 다시 열어요
+async function viewEnd(msg,wipe=true){const id=VIEW?.id;VIEW=null;if(wipe)NOSTORE=true;
+  try{sessionStorage.removeItem('hogam_view');sessionStorage.removeItem('cj_church');if(wipe&&id)Object.keys(localStorage).filter(k=>k.startsWith(`cj_c:${id}:`)).forEach(k=>localStorage.removeItem(k));if(msg)sessionStorage.setItem('hogam_note',msg);}catch(e){}
+  if(wipe)await liveWipe().catch(()=>{});location.reload();}
+$('viewOut').onclick=()=>viewEnd('읽기 전용 보기를 끝냈어요');
+async function viewStart(c){if(!confirm(`‘${c.name}’ 안(예배·곡·슬라이드 모양)을 읽기 전용으로 열까요?\n2시간 동안 볼 수 있고, 고쳐도 저장되지 않아요. 연 기록은 호감 기록에 남아요.`))return;
+  $('spErr').textContent='';const {data,error}=await sb.rpc('super_view_open',{p_church:c.id});
+  if(error||!data?.ok){$('spErr').textContent=data?.error||'열지 못했어요. 다시 해 주세요';return;}
+  try{sessionStorage.setItem('hogam_view',JSON.stringify({id:c.id,name:data.name,until:Date.parse(data.until)}));sessionStorage.setItem('cj_church',c.id);}catch(e){$('spErr').textContent='이 브라우저가 저장을 막고 있어서 열 수 없어요';return;}
+  location.reload();}
 // 유료 신청·입금 (17단계): 열면 NEW가 꺼져요. 승인·취소·환불됨은 아래 확인 칸에서 한 번 더 눌러요
 let APAY=null,APF='pending',APC=null;
 const APA={approve:['승인','입금 확인·승인'],cancel:['취소','취소'],refund:['환불됨','환불됨']};
@@ -7901,7 +7939,7 @@ $('tmClose').onclick=()=>$('tmDlg').close();$('tmDlg').addEventListener('click',
 function inSet(v){try{localStorage.setItem('hg_in',v);}catch(e){}}
 function inWas(uid){try{return localStorage.getItem('hg_in')===uid+':'+CH;}catch(e){return false;}}
 let chkAt=0;
-async function checkIn(now){if(!sb||!me||(!now&&Date.now()-chkAt<5000))return;chkAt=Date.now();const my=me;
+async function checkIn(now){if(!sb||!me||VIEW||(!now&&Date.now()-chkAt<5000))return;chkAt=Date.now();const my=me; // 보기 중(VIEW)에는 팀원이 아니라서 '나가게 됨'으로 보지 않게
   const [a,b]=await Promise.all([sb.from('members').select('name,church_id,role').eq('user_id',my.id),sb.from('churches').select('*')]);
   if(a.error||b.error||me!==my)return; // 인터넷이 끊긴 것과 나가게 된 것을 헷갈리지 않게
   // 로그인이 풀리면 목록이 빈 채로 올 수 있어요. 로그인이 살아 있을 때만 판단해요
@@ -8033,7 +8071,7 @@ async function initAuth(){
 const NEWS=[{v:'1.0',d:'2026년 11월 25일',at:'2026-11-25T00:00:00+09:00',t:'예배당 화면에 바로 송출해요',b:['빨간 ‘송출’을 누르면 프로젝터나 TV에 띄워요.','편집한 내용이 바로 나가요.','호감 매뉴얼이 생겼어요. 설정에서 볼 수 있어요.'],man:'live'}];
 function newsList(ul,n){ul.innerHTML='';n.b.forEach(x=>{const li=document.createElement('li');li.textContent=x;ul.appendChild(li);});}
 // 버전이 바뀐 뒤 한 번만. 송출 중이면 다음에, 소식보다 늦게 가입한 사람에게는 안 띄워요
-async function startNews(next){
+async function startNews(next){if(VIEW)return;
   const n=NEWS[0];let show=store.get('newsSeen','')!==n.v&&!LIVE;
   if(show)try{const u=(await sb.auth.getSession()).data.session?.user;if(!u||new Date(u.created_at)>=new Date(n.at)){store.set('newsSeen',n.v);show=false;}}catch(e){show=false;}
   if(!show||LIVE||$('newsDlg').open){next();return;}
@@ -8110,7 +8148,7 @@ let liveKeepT;function liveKeepSoon(){clearTimeout(liveKeepT);liveKeepT=setTimeo
 function liveKeepPos(){if(!LIVE)return;const{i,bg,black,clear,t0}=LIVE;liveKv('readwrite',o=>o.put({i,bg,black,clear,t0},'pos:'+CH)).catch(()=>{});}
 
 /* 송출 창: 이 창을 새로고침해도 이름으로 다시 찾아 이어 써요 */
-function liveOpen(scr){
+function liveOpen(scr){if(VIEW){toast('읽기 전용으로 보는 중에는 송출할 수 없어요');return false;}
   const f=scr?`popup,left=${scr.availLeft},top=${scr.availTop},width=${scr.availWidth},height=${scr.availHeight}${liveFsOk?',fullscreen':''}`:'popup,width=1280,height=720';
   let w=null;try{w=window.open('','hogamLive',f);}catch(e){}
   if(!w){toast('송출 창이 막혔어요. 주소 칸에서 팝업을 허용해 주세요');return false;}

@@ -1648,3 +1648,49 @@ revoke execute on function public.create_church(text, text, jsonb), public.churc
   public.pay_request(text, text), public.pay_mine(), public.super_pay_list(), public.super_pay_seen(), public.super_pay_set(bigint, text) from public, anon;
 grant execute on function public.create_church(text, text, jsonb), public.church_info_get(uuid), public.church_info_set(uuid, jsonb),
   public.pay_request(text, text), public.pay_mine(), public.super_pay_list(), public.super_pay_seen(), public.super_pay_set(bigint, text) to authenticated;
+
+-- ───────────── 18단계 추가 (2026-11-27): 호감 읽기 전용 보기 ─────────────
+-- 호감(전체 관리자)이 문의 처리 때 교회 안(예배·곡·슬라이드 모양)을 읽기만 해요.
+-- 열 때마다 기록이 남고(호감 쪽에만, 1년), 기록이 있어야 그 뒤 2시간 동안만 읽혀요. 쓰기는 팀원 규칙 그대로라 막혀요.
+create table if not exists public.super_views (
+  id        bigint generated always as identity primary key,
+  at        timestamptz not null default now(),
+  church_id uuid not null references public.churches on delete cascade,
+  user_id   uuid references auth.users on delete set null
+);
+create index if not exists super_views_church on public.super_views (church_id, user_id, at desc);
+alter table public.super_views enable row level security;
+revoke all on public.super_views from public, anon, authenticated;
+
+create or replace function public.super_view_open(p_church uuid) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_name text;
+begin
+  if not public.is_super() then raise exception '전체 관리자만 볼 수 있어요'; end if;
+  select name into v_name from public.churches where id = p_church;
+  if v_name is null then return jsonb_build_object('ok', false, 'error', '교회를 찾지 못했어요'); end if;
+  insert into public.super_views (church_id, user_id) values (p_church, auth.uid());
+  insert into public.super_log (church_id, what) values (p_church, '읽기 전용으로 봄');
+  return jsonb_build_object('ok', true, 'name', v_name, 'until', now() + interval '2 hours');
+end $$;
+-- 지금 이 교회를 읽기 전용으로 보는 중인가: 호감 · 화면이 이 교회를 알림 · 2시간 안에 연 기록
+create or replace function public.super_viewing(c uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.is_super() and public.req_church() = c
+     and exists (select 1 from public.super_views where church_id = c and user_id = auth.uid() and at > now() - interval '2 hours');
+$$;
+drop policy if exists "호감은 연 동안 예배를 읽기만" on public.services;
+create policy "호감은 연 동안 예배를 읽기만" on public.services for select using (public.super_viewing(church_id));
+drop policy if exists "호감은 연 동안 곡을 읽기만" on public.songs;
+create policy "호감은 연 동안 곡을 읽기만" on public.songs for select using (public.super_viewing(church_id));
+drop policy if exists "호감은 연 동안 설정을 읽기만" on public.team_settings;
+create policy "호감은 연 동안 설정을 읽기만" on public.team_settings for select using (public.super_viewing(church_id));
+
+create or replace function public.clear_old_super_views() returns void
+language sql security definer set search_path = public as $$
+  delete from public.super_views where at < now() - interval '1 year';
+$$;
+select cron.schedule('hogam-clear-super-views', '50 18 * * *', 'select public.clear_old_super_views()');
+revoke execute on function public.clear_old_super_views() from public, anon, authenticated;
+revoke execute on function public.super_view_open(uuid), public.super_viewing(uuid) from public, anon;
+grant execute on function public.super_view_open(uuid), public.super_viewing(uuid) to authenticated;
