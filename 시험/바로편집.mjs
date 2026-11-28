@@ -60,6 +60,13 @@ try{
     const one=await ev(`return document.contains(C0)&&ED&&ED.keys.join()==='${k}'`);await z(260);await click(q,{n:2});await z(150);
     res.push(one&&await ev(`return !$('sbInl').hidden&&sbEditK==='${k}'`)?'':p+(one?' 두 번 누르기 안 열림':' 첫 클릭에 그림이 바뀜'));await ev(`endInline(false)`);}
    const b=res.filter(Boolean);if(b.length)console.log('  '+b.join(', '));is('다른 탭 슬라이드도 처음 누르면 골라지고 두 번 누르면 열림',!b.length);}
+  // 0-2) Shift로 글씨와 작은 상자를 같이 골라 작은 상자를 끌어도 같이 옮겨짐 (옆 항목의 크기 점이 상자를 덮어 튀던 것)
+  {const res=[];for(const big of [false,true]){await prep('info:a1','full',big);const pa=await ev(`return at(CV,'ititle')`),pb=await ev(`return at(CV,'bandr')`);
+    await click(pa);await click(pb,{shift:true});const n=await ev(`return [document.querySelectorAll('.edfr:not(.grp) i').length,document.querySelectorAll('.edfr.grp i').length].join()`);
+    const r0=await ev(`return regs(CV)`);await drag(pb,[pb[0]+30,pb[1]+20]);if(!big)await ev(`window.CV=cvOf('info:a1')`);const r1=await ev(`return regs(CV)`);
+    const g=r=>[r.bandr[0]-r.ititle[0],r.bandr[1]-r.ititle[1]],d=g(r1).map((v,i)=>Math.abs(v-g(r0)[i])),sz=Math.abs(r1.bandr[2]/r0.bandr[2]-1);
+    if(n!=='0,8'||d.some(v=>v>.002)||sz>.01||Math.abs(r1.ititle[0]-r0.ititle[0])<.01)res.push((big?'크게':'작게')+` 점 ${n} 간격 ${d.map(v=>v.toFixed(3))} 크기 ${sz.toFixed(2)}`);}
+   if(res.length)console.log('  '+res.join(', '));is('Shift로 글씨+작은 상자: 크기 점은 바깥 틀에만, 상자를 끌면 같이 옮겨짐',!res.length);}
   // 1) 고르기 · 2) 크기 · 3) 두 번 누르기: 화면 종류마다 모든 항목
   const badRest=[],badMove=[],badSel=[],badSize=[],badEdit=[],noReach=[];let nItem=0;
   for(const[p,st,nm]of KIND)for(const big of [false,true]){
@@ -107,11 +114,11 @@ try{
     for(const type of ['keyDown','keyUp'])await send('Input.dispatchKeyEvent',{type,key:'Delete',code:'Delete',windowsVirtualKeyCode:46},S);await z(300);
     is('Delete는 그 장에서만 숨김 · 글은 그대로',await ev(`window.CV=cvOf('info:a1');const a=Object.keys(regs(CV)),b=Object.keys(regs(cvOf('info:a4')));return !a.includes('bandr')&&a.includes('iband')&&b.includes('bandr')&&JSON.stringify(INFO)===I0`));
     is('숨긴 것이 저장되고 되돌려짐',await ev(`const o=textOv(ovLine()[0]);const r=Object.values(o.v).some(v=>v.hide_bandr===true);undoLook();await W(300);return r&&Object.keys(regs(cvOf('info:a1'))).includes('bandr')`));
-    await ev(`window.CV=cvOf('info:a1')`);await click(await ev(`return at(CV,'ititle')`));await ev(`window.b3=regs(CV)`);for(const type of ['keyDown','keyUp'])await send('Input.dispatchKeyEvent',{type,key:'ArrowRight',code:'ArrowRight',windowsVirtualKeyCode:39},S);await z(300);
+    await ev(`window.CV=cvOf('info:a1');CV.scrollIntoView({block:'center'});await W(150)`);await click(await ev(`return at(CV,'ititle')`));await ev(`window.b3=regs(CV)`);for(const type of ['keyDown','keyUp'])await send('Input.dispatchKeyEvent',{type,key:'ArrowRight',code:'ArrowRight',windowsVirtualKeyCode:39},S);await z(300);
     is('화살표로 그 항목만 옮김',await ev(`const n=regs(cvOf('info:a1'));return Object.keys(n).filter(q=>Math.abs(n[q][0]-b3[q][0])>.0005).join()==='ititle'`));
     for(const type of ['keyDown','keyUp'])await send('Input.dispatchKeyEvent',{type,key:'Tab',code:'Tab',windowsVirtualKeyCode:9},S);await z(200);is('Tab으로 다음 항목',await ev(`return ED&&ED.keys.length===1&&ED.keys[0]!=='ititle'`));
     await keys('a',4);is('⌘A로 모두 고름',await ev(`return ED.keys.length===edCtx().lay.regions.length`));await keys('Escape');
-    await ev(`window.CV=cvOf('info:a1')`);await click(await ev(`return at(CV,'iband')`));await keys('Enter');is('Enter로 글 고치기',await ev(`return !$('sbInl').hidden&&sbEditK==='iband'`));await keys('Escape');}
+    await ev(`window.CV=cvOf('info:a1');CV.scrollIntoView({block:'center'});await W(150)`);await click(await ev(`return at(CV,'iband')`));await keys('Enter');is('Enter로 글 고치기',await ev(`return !$('sbInl').hidden&&sbEditK==='iband'`));await keys('Escape');}
   // 복사·붙여넣기는 항목 자체 · 새 글상자·도형 · 도형 8점 · 가이드 · 말풍선 · 숫자 위아래
   await prep('song','',false);{await click(await ev(`return at(CV,'lyrics')`));await keys('c',4);await keys('v',4);await z(400);
     is('⌘C·⌘V로 항목 자체를 복사 (이 장에만)',await ev(`window.CV=cvOf('song');const s=find('song'),o=objsOf(s);return o.length===1&&o[0].t==='text'&&o[0].text.includes('온 백성')&&ED.keys[0]==='o:'+o[0].id&&!objParse(LOOK.song.objsAll).length&&!!SLIDE_OV[s.ovKey].objs`));
@@ -125,7 +132,7 @@ try{
     is('옆 점은 너비만 바꿈',await ev(`window.CV=cvOf('info:a1');const r=regs(CV)[ED.keys[0]],a=${JSON.stringify(r0)};return r[2]>a[2]+.02&&Math.abs(r[3]-a[3])<.002&&Math.abs(r[0]-a[0])<.002`));
     await ev(`window.CV=cvOf('info:a1');window.g0=null;const o=MutationObserver;window.GL=[];new o(()=>{const n=document.querySelectorAll('.edgd');if(n.length)GL.push(n.length);}).observe(document.body,{subtree:true,childList:true})`);
     const p=await ev(`return at(CV,ED.keys[0])`);await drag(p,[p[0]+25,p[1]+12]);is('끌면 십자 가이드가 나오고 놓으면 사라짐',await ev(`return GL.some(n=>n>=2)&&!document.querySelector('.edgd')`));
-    await ev(`window.CV=cvOf('info:a1')`);await click(await ev(`return at(CV,ED.keys[0])`));await ev(`lookPane='place';buildLookUI()`);const b=await ev(`const r=$('tpW').closest('.tp-num').querySelector('.tp-ud button').getBoundingClientRect();window.w0=+$('tpW').value;return[r.left+r.width/2,r.top+r.height/2]`);await click(b);await z(300);
+    await ev(`window.CV=cvOf('info:a1');CV.scrollIntoView({block:'center'});await W(150)`);await click(await ev(`return at(CV,ED.keys[0])`));await ev(`lookPane='place';buildLookUI()`);const b=await ev(`const r=$('tpW').closest('.tp-num').querySelector('.tp-ud button').getBoundingClientRect();window.w0=+$('tpW').value;return[r.left+r.width/2,r.top+r.height/2]`);await click(b);await z(300);
     is('숫자 칸 위 단추로 올림',await ev(`return Math.abs(+$('tpW').value-(w0+.5))<.01&&Math.abs(objsOf(find('info:a1')).find(q=>q.t==='shape').w-(w0+.5))<.01`));
     await ev(`window.CV=cvOf('info:a1');CV.scrollIntoView({block:'center'});await W(150)`);const q=await ev(`return at(CV,'ititle')`);await mouse('mouseMoved',q[0],q[1]);await z(700);
     is('커서를 올리면 이름이 그 아래 나옴',await ev(`const t=document.querySelector('.edtip');if(!t)return false;const r=t.getBoundingClientRect();return t.textContent.includes('제목')&&r.top>`+q[1]+`-60&&r.top<`+q[1]+`+260`));
